@@ -47,6 +47,7 @@ A Next.js 14 web application that mimics Instagram's design to create an engagin
 4. `/login` - Fake Instagram login with password breaking
 5. `/feed` - Instagram feed with Stories bar
 6. `/direct` - Instagram Direct Messages (DM) screen
+7. `/pitch?username=X` - Sales pitch page with pricing plans
 
 ## Development
 ```bash

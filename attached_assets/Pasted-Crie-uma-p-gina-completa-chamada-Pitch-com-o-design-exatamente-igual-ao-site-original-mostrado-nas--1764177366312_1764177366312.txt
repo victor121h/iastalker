@@ -1,0 +1,210 @@
+Crie uma página completa chamada Pitch, com o design exatamente igual ao site original mostrado nas imagens, mantendo fidelidade total em todas as cores, fontes, ícones, espaçamentos, sombras, blocos e seções.
+A página deve ser 100% idêntica visualmente ao site do DeepGram no link:
+https://www.deepgram.online/pitch/ovictortv
+
+Reproduza todos os elementos listados abaixo sem alterar nada:
+
+🎨 ESTILO GERAL
+
+Fundo com efeito matrix (linhas verticais com letras coloridas caindo).
+
+Paleta principal:
+
+Preto profundo (#000000 / #040607)
+
+Cinza grafite (#0C1011)
+
+Verde neon (#00FF75)
+
+Roxo (#EB1C8F)
+
+Amarelo (#DFB313)
+
+Vermelho (#E53935)
+
+Bordas arredondadas grandes (border-radius 22px – 28px).
+
+Fontes brancas com contraste (#FFFFFF / #E5E5E5 / #C0C0C0).
+
+Ícones sempre coloridos no mesmo padrão das imagens.
+
+🔥 SEÇÃO 1 – HEADER COM TIMER
+
+Crie no topo um banner vermelho (#E53935) com timer:
+
+Texto do banner:
+"Seu Acesso Exclusivo Expira em: 04:52"
+
+À esquerda coloque um ícone de seta para voltar.
+
+🧬 SEÇÃO 2 – LOGO + SLOGAN
+
+Centralize:
+
+Logo "DeepGram" igual ao original (lock rosa + texto multicolorido).
+
+Título:
+"A maior ferramenta de stalkear do Brasil"
+em fonte branca, grande, centralizado.
+
+Sem alterar tamanhos.
+
+🟩 SEÇÃO 3 – BLOCO DE PERFIL DO USUÁRIO
+
+Um card grande com bordas arredondadas:
+
+Título:
+"Acesso completo ao perfil de:"
+
+Mostra dinamicamente:
+
+Foto do usuário com borda colorida igual ao Instagram
+
+Nome = @username
+
+Nome real
+
+4 posts
+
+seguidores
+
+seguindo
+
+Bio com cidade (igual às imagens)
+
+No final, um botão verde grande:
+
+"Sem precisar de senha. Sem deixar rastros. Sem que a pessoa saiba."
+
+🟥 SEÇÃO 4 – Cards de Recursos Bloqueados
+
+Crie os blocos EXATAMENTE iguais:
+
+1. "Todas as mídias recebidas e enviadas por @username"
+
+Ícone rosa
+
+Texto pequeno em cinza claro
+
+Grade 2x3 com blocos bloqueados (cadeado no centro)
+
+2. "Localização em tempo real"
+
+Ícone amarelo
+
+Texto explicativo
+
+Bloco mostrando localização borrada com foto do usuário no centro
+
+3. "Stories e posts ocultos"
+
+Ícone roxo
+
+Texto explicativo
+
+Dois cards borrados com cadeado e label "Conteúdo restrito"
+
+4. "Mensagens privadas do Instagram (Directs)"
+
+Ícone azul
+
+Card idêntico ao DM do Instagram, com:
+
+Foto
+
+Status "online"
+
+Botões de ligação e vídeo
+
+Bolhas de conversa roxas borradas
+
+🛡️ SEÇÃO 5 – PROMO DO DEEPGRAM
+
+Card preto com bordas grandes contendo textos:
+
+Título:
+“Além do acesso ao perfil de @username você poderá ter acesso à ferramenta do DeepGram”
+
+Subtítulo:
+“De forma completa e vitalícia…”
+
+Lista com ícones verdes:
+
+Pesquisar quantos perfis quiser
+
+Visualizar todos os dados com 1 clique
+
+Acesso vitalício sem mensalidade
+
+Sem instalar nada
+
+Botão vermelho grande:
+
+“SEM O DEEPGRAM, VOCÊ NÃO VÊ NADA”
+
+⚠️ SEÇÃO 6 – “Tenha o controle de qualquer perfil em suas mãos”
+
+Card com 4 itens e ícones:
+
+Descobrir traição
+
+Espionar em silêncio
+
+Ver se alguém fala mal de você
+
+Proteger família e relação
+
+Rodapé vermelho de aviso:
+
+"Atenção: Use Com Discernimento"
+
+⭐ SEÇÃO 7 – Depoimentos
+
+Replique tudo exatamente:
+
+Foto circular
+
+Nome borrado
+
+Texto cinza
+
+Data (3h, 5h, 1d, 5d, 2sem)
+
+Último card vermelho:
+
+"Essa é a verdade crua. Você decide se quer ver."
+
+💲 SEÇÃO 8 – PLANOS
+🟦 Plano 1 (Acesso ao Perfil) – Igual às imagens
+
+Faixa "BLACK FRIDAY LIMITADA" (rosa + amarelo)
+
+Preço: R$ 39,90
+
+Lista de benefícios com ícones verdes
+
+Botão cinza-azulado "Escolher Plano"
+
+🟩 Plano 2 – Ferramenta DeepGram (Recomendado)
+
+Borda verde neon
+
+Preço: R$ 59,90
+
+Todos os recursos listados
+
+Botão verde "Escolher Plano"
+
+🔗 IMPORTANTE
+
+Todos os botões “Escolher Plano” devem abrir este link:
+
+👉 https://go.perfectpay.com.br/PPU38CQ3TAS
+
+📱 RESPONSIVIDADE
+
+Faça tudo 100% responsivo e idêntico ao modelo mobile das imagens.
+
+🎯 OBJETIVO FINAL
+
+O resultado final deve ser visual e funcionalmente idêntico ao pitch do DeepGram original, com fidelidade total aos prints enviados.
