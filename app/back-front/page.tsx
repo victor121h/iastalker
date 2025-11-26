@@ -45,25 +45,8 @@ function BackFrontContent() {
           boxShadow: '0 20px 60px rgba(0, 0, 0, 0.5)' 
         }}
       >
-        <div className="flex items-center justify-center gap-2 mb-6">
-          <div 
-            className="w-10 h-10 rounded-full flex items-center justify-center"
-            style={{ background: 'linear-gradient(135deg, #EC4899, #F97316, #FBBF24)' }}
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <circle cx="12" cy="12" r="3" />
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
-            </svg>
-          </div>
-          <div className="flex items-baseline">
-            <span className="text-white text-xl font-bold">Deep</span>
-            <span 
-              className="text-xl font-bold"
-              style={{ background: 'linear-gradient(90deg, #EC4899, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
-            >
-              gram
-            </span>
-          </div>
+        <div className="flex items-center justify-center mb-6">
+          <img src="/logo-deepgram.png" alt="DeepGram" className="h-[48px] w-auto" />
         </div>
 
         <div className="text-center mb-4">
