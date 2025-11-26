@@ -1,0 +1,30 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-instagram-bg text-instagram-text-white;
+    font-family: 'Inter', 'Roboto', system-ui, -apple-system, sans-serif;
+  }
+}
+
+@layer utilities {
+  .instagram-gradient {
+    background: linear-gradient(to right, #f56040, #f77737, #fcaf45, #ffdc80);
+  }
+  
+  .instagram-gradient-text {
+    background: linear-gradient(to right, #f56040, #f77737, #fcaf45, #ffdc80);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+  
+  .story-gradient-border {
+    position: relative;
+    background: linear-gradient(45deg, #f56040, #fcaf45, #ffdc80);
+    padding: 2px;
+    border-radius: 50%;
+  }
+}
