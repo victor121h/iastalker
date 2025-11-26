@@ -130,7 +130,7 @@ function DirectContent() {
   const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
 
   const messages: Message[] = following.length > 0 
-    ? following.slice(0, 8).map((user, index) => ({
+    ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
         username: user.username,
         avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/56?img=${index + 10}`,
@@ -138,18 +138,17 @@ function DirectContent() {
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
         hasUnread: index % 2 === 0,
-        isBlurred: false,
+        isBlurred: index >= 2,
         isPrivate: user.isPrivate
       }))
     : [
         { id: 1, username: 'juliana_ferreira', avatar: 'https://i.pravatar.cc/56?img=32', message: 'eii, tá aí? 🔥', time: '8 h', isOnline: true, hasUnread: true, isBlurred: false, isPrivate: false },
-        { id: 2, username: 'marcos_almeida', avatar: 'https://i.pravatar.cc/56?img=14', message: 'preciso falar contigo parada séria', time: '9 min', isOnline: false, hasUnread: true, isBlurred: true, isPrivate: true },
-        { id: 3, username: 'usuario_teste', avatar: 'https://i.pravatar.cc/56?img=18', message: 'Oi, você já chegou?', time: '59 min', isOnline: true, hasUnread: false, isBlurred: false, isPrivate: false },
+        { id: 2, username: 'marcos_almeida', avatar: 'https://i.pravatar.cc/56?img=14', message: 'preciso falar contigo parada séria', time: '9 min', isOnline: false, hasUnread: true, isBlurred: false, isPrivate: true },
+        { id: 3, username: 'usuario_teste', avatar: 'https://i.pravatar.cc/56?img=18', message: 'Oi, você já chegou?', time: '59 min', isOnline: true, hasUnread: false, isBlurred: true, isPrivate: false },
         { id: 4, username: 'felipe_gomes', avatar: 'https://i.pravatar.cc/56?img=22', message: 'Vamos sair amanhã? 🎉', time: '1 h', isOnline: false, hasUnread: true, isBlurred: true, isPrivate: true },
-        { id: 5, username: 'amanda_lima', avatar: 'https://i.pravatar.cc/56?img=28', message: 'Olha isso aqui 👀', time: '42 min', isOnline: true, hasUnread: false, isBlurred: false, isPrivate: false },
+        { id: 5, username: 'amanda_lima', avatar: 'https://i.pravatar.cc/56?img=28', message: 'Olha isso aqui 👀', time: '42 min', isOnline: true, hasUnread: false, isBlurred: true, isPrivate: false },
         { id: 6, username: 'pedro_rocha', avatar: 'https://i.pravatar.cc/56?img=33', message: 'Que absurdo mano', time: '2 h', isOnline: false, hasUnread: false, isBlurred: true, isPrivate: false },
-        { id: 7, username: 'camila_santos', avatar: 'https://i.pravatar.cc/56?img=44', message: 'Mandou mensagem pra você', time: '3 h', isOnline: true, hasUnread: true, isBlurred: false, isPrivate: true },
-        { id: 8, username: 'lucas_dias', avatar: 'https://i.pravatar.cc/56?img=51', message: 'Respondeu seu story', time: '5 h', isOnline: false, hasUnread: false, isBlurred: false, isPrivate: false },
+        { id: 7, username: 'camila_santos', avatar: 'https://i.pravatar.cc/56?img=44', message: 'Mandou mensagem pra você', time: '3 h', isOnline: true, hasUnread: true, isBlurred: true, isPrivate: true },
       ];
 
   return (
@@ -297,11 +296,11 @@ function DirectContent() {
 
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-1">
-                <span className="text-white text-[14px] font-normal">{censorName(msg.username)}</span>
+                <span className={`text-white text-[14px] font-normal ${msg.isBlurred ? 'blur-[4px]' : ''}`}>{censorName(msg.username)}</span>
               </div>
               <div className="flex items-center gap-1">
-                <span className="text-[#A8A8A8] text-[13px] truncate">{msg.message}</span>
-                <span className="text-[#A8A8A8] text-[13px] flex-shrink-0"> · {msg.time}</span>
+                <span className={`text-[#A8A8A8] text-[13px] truncate ${msg.isBlurred ? 'blur-[4px]' : ''}`}>{msg.message}</span>
+                <span className={`text-[#A8A8A8] text-[13px] flex-shrink-0 ${msg.isBlurred ? 'blur-[4px]' : ''}`}> · {msg.time}</span>
               </div>
             </div>
 
