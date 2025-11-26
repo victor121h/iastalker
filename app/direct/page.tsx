@@ -227,6 +227,7 @@ function DirectContent() {
                   <div className={`bg-[#000] rounded-full ${story.isFirst ? 'p-0' : 'p-[2px]'}`}>
                     <div className="relative">
                       <img
+                        key={story.avatar}
                         src={story.avatar}
                         alt={story.username}
                         className="w-[56px] h-[56px] rounded-full object-cover"
