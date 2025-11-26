@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 
 type Step = 'input' | 'syncing' | 'locked';
 
@@ -13,6 +14,7 @@ interface SyncStep {
 }
 
 export default function Up2Page() {
+  const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>('input');
   const [username, setUsername] = useState('');
   const [location, setLocation] = useState('Carregando...');
@@ -36,6 +38,24 @@ export default function Up2Page() {
       })
       .catch(() => setLocation('São Paulo, SP'));
   }, []);
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToLink = (baseLink: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${baseLink}?${utmParams}`;
+    }
+    return baseLink;
+  };
 
   const handleSubmit = () => {
     if (!username.trim()) return;
@@ -323,7 +343,7 @@ export default function Up2Page() {
             </div>
 
             <a
-              href="https://go.perfectpay.com.br/PPU38CQ3TGJ"
+              href={appendUtmToLink("https://go.perfectpay.com.br/PPU38CQ3TGJ")}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"

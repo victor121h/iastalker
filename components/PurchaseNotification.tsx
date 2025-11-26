@@ -2,7 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useCallback, createContext, useContext } from 'react';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 interface NotificationContextType {
   showNotification: () => void;
@@ -20,6 +20,7 @@ export function useNotification() {
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isVisible, setIsVisible] = useState(false);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
 
@@ -46,8 +47,9 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [timerId]);
 
   const handlePurchase = useCallback(() => {
-    router.push('/pitch');
-  }, [router]);
+    const params = new URLSearchParams(searchParams.toString());
+    router.push(`/pitch?${params.toString()}`);
+  }, [router, searchParams]);
 
   useEffect(() => {
     return () => {

@@ -2,10 +2,30 @@
 
 import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
+import { useSearchParams } from 'next/navigation';
 import MatrixBackground from '@/components/MatrixBackground';
 
 export default function Up1Page() {
+  const searchParams = useSearchParams();
   const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 59 });
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToLink = (baseLink: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${baseLink}?${utmParams}`;
+    }
+    return baseLink;
+  };
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -228,7 +248,7 @@ export default function Up1Page() {
                 </div>
 
                 <a
-                  href={plan.link}
+                  href={appendUtmToLink(plan.link)}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="block w-full py-3.5 rounded-xl text-center font-bold text-white"

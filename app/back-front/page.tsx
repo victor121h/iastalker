@@ -1,9 +1,29 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { useSearchParams } from 'next/navigation';
 import MatrixBackground from '@/components/MatrixBackground';
 
 export default function BackFrontPage() {
+  const searchParams = useSearchParams();
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToLink = (baseLink: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${baseLink}?${utmParams}`;
+    }
+    return baseLink;
+  };
   return (
     <div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center p-4 relative overflow-hidden">
       <MatrixBackground />
@@ -98,7 +118,7 @@ export default function BackFrontPage() {
         </div>
 
         <a
-          href="https://go.perfectpay.com.br/PPU38CQ3TJ3"
+          href={appendUtmToLink("https://go.perfectpay.com.br/PPU38CQ3TJ3")}
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full py-4 rounded-xl font-bold text-white text-center mb-6 transition-all hover:opacity-90"

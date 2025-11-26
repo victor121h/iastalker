@@ -54,8 +54,26 @@ function PitchContent() {
     return url;
   };
 
-  const purchaseLink39 = 'https://go.perfectpay.com.br/PPU38CQ3TAS';
-  const purchaseLink59 = 'https://go.perfectpay.com.br/PPU38CQ3TCI';
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToLink = (baseLink: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${baseLink}?${utmParams}`;
+    }
+    return baseLink;
+  };
+
+  const purchaseLink39 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ3TAS');
+  const purchaseLink59 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ3TCI');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

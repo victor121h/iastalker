@@ -152,7 +152,7 @@ function DirectContent() {
         <div className="flex items-center justify-between px-4 h-[52px]">
           <div className="flex items-center gap-3">
             <button 
-              onClick={() => router.push(`/feed?username=${encodeURIComponent(username)}`)}
+              onClick={() => router.push(`/feed?${searchParams.toString()}`)}
               className="p-1"
             >
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
