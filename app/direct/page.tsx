@@ -56,7 +56,7 @@ function censorName(name: string): string {
 function DirectContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const username = searchParams.get('username') || 'ovictortv';
+  const username = searchParams.get('username') || '';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loadingFollowing, setLoadingFollowing] = useState(false);

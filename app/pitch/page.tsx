@@ -19,7 +19,7 @@ interface ProfileData {
 
 function PitchContent() {
   const searchParams = useSearchParams();
-  const username = searchParams.get('username') || 'ovictortv';
+  const username = searchParams.get('username') || '';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 52 });
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
