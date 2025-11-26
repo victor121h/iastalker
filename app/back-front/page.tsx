@@ -98,7 +98,7 @@ export default function BackFrontPage() {
         </div>
 
         <a
-          href="https://go.perfectpay.com.br/PPU38CQ3TH7"
+          href="https://go.perfectpay.com.br/PPU38CQ3TJ3"
           target="_blank"
           rel="noopener noreferrer"
           className="block w-full py-4 rounded-xl font-bold text-white text-center mb-6 transition-all hover:opacity-90"
