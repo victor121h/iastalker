@@ -1,0 +1,147 @@
+Quero que você crie uma página chamada /up1 totalmente idêntica ao design das imagens que vou descrever abaixo. Reproduza 100% igual em layout, cores, fontes, espaçamentos, sombras, botões, caixas, barras e estrutura.
+
+🔴 TOPO DA PÁGINA – BARRA VERMELHA
+
+Criar uma barra fixa no topo, totalmente igual à do exemplo:
+
+Altura baixa, largura total.
+
+Cor: #D6272D (vermelho).
+
+Ícone ⚠️ no canto esquerdo.
+
+Texto branco: “SUA SESSÃO EXPIRA EM:”
+
+Ao lado, um contador regressivo com:
+
+Fundo preto.
+
+Números brancos grandes.
+
+Minutos e segundos separados.
+
+Tudo centralizado verticalmente igual ao modelo.
+
+🟣 BLOCO PRINCIPAL – LOGO + MENSAGEM DE ACESSO GARANTIDO
+
+Criar um card grande centralizado com:
+
+Logo do DeepGram
+
+Exatamente igual ao da imagem (ícone + "Deep" branco + “gram” rosa).
+
+Caixa verde de sucesso
+
+Fundo verde escuro com bordas suaves.
+
+Ícone de check verde neon brilhante.
+
+Texto branco dizendo:
+
+“Parabéns, seu acesso ao DeepGram foi garantido, falta apenas 1 passo para você poder utilizar a ferramenta de modo completo e espionar qualquer perfil.”
+
+Barra de progresso
+
+Fundo cinza escuro.
+
+Barra interna com gradiente rosa → roxo.
+
+Legenda acima: “Passo 2 de 3 · Ative seu plano”
+
+Aviso importante (caixa rosa clara)
+
+Fundo rosa claro com borda.
+
+Ícone triangular vermelho.
+
+Texto: “IMPORTANTE: Se o seu plano não for ativado agora você não irá conseguir espionar nenhum perfil.”
+
+🔻 TÍTULO DA SEÇÃO
+
+Texto centralizado:
+
+“SELECIONE seu plano abaixo:”
+
+“SELECIONE” branco
+
+“seu plano abaixo:” rosa
+
+🟢 PLANO ULTRA – CARTÃO PRINCIPAL
+
+Card com bordas arredondadas e contorno verde neon.
+
+Elementos:
+
+Selo no topo direito: “DESCONTO: 57% off"
+
+Título grande: “Plano Ultra – Olho de Deus”
+
+Lista de benefícios com ✔️ verde para itens incluídos.
+
+Itens excluídos com ❌ vermelho (se houver).
+
+Preço:
+
+Preço antigo pequeno e riscado.
+
+Preço grande: R$ 99,90
+
+Texto roxo “Economize R$ 120,00”
+
+Botão grande com gradiente rosa → laranja escrito “SELECIONAR PLANO”.
+
+Rodapé do card:
+
+Texto pequeno cinza: “Acesso disponível: 7”
+
+🟧 PLANO PREMIUM
+
+Mesma estrutura do card principal, porém:
+
+Badge: “Desconto: 40% off”
+
+Preço: R$ 69,90
+
+Borda laranja
+
+Lista de benefícios diferente (copiar fielmente como no layout)
+
+⚫ PLANO BÁSICO
+
+Card igual, porém:
+
+Borda cinza clara
+
+Badge: “Desconto: 45% off”
+
+Preço: R$ 49,90
+
+Benefícios limitados (ver imagem)
+
+📝 OBSERVAÇÕES GERAIS
+
+Fundo do site: preto com padrão de caracteres verdes estilo "Matrix".
+
+Cards com sombras suaves para dar profundidade.
+
+Fonte padrão estilo Instagram/Deepgram (pode usar Inter, SF Pro ou Poppins).
+
+Espaçamentos iguais ao modelo (padding grande).
+
+Fidelidade TOTAL ao design original.
+
+⭐ Resumo
+
+Crie a página /up1 com 100% de fidelidade às imagens, incluindo:
+
+Barra vermelha com contador.
+
+Logo + mensagem de acesso garantido.
+
+Barra de progresso.
+
+Aviso rosa.
+
+Três cartões de planos (Ultra, Premium, Básico).
+
+Preços, cores, badges, ícones ✔️ ❌, gradientes e tudo igual ao exemplo.
