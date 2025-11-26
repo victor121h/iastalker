@@ -46,6 +46,7 @@ A Next.js 14 web application that mimics Instagram's design to create an engagin
 3. `/confirm?username=X` - Confirm profile to spy on
 4. `/login` - Fake Instagram login with password breaking
 5. `/feed` - Instagram feed with Stories bar
+6. `/direct` - Instagram Direct Messages (DM) screen
 
 ## Development
 ```bash
@@ -63,6 +64,7 @@ app/
   confirm/page.tsx  # Profile confirmation
   login/page.tsx    # Fake Instagram login
   feed/page.tsx     # Feed with stories
+  direct/page.tsx   # Instagram Direct Messages
   layout.tsx        # Root layout
   globals.css       # Global styles
 
@@ -85,6 +87,13 @@ components/
 - ✅ Fixed React hydration warnings with suppressHydrationWarning
 - ✅ Enabled login button and fixed design specs (22px radius, 44px height)
 - ✅ Configured workflow for port 5000 webview
+- ✅ Added /direct page - Instagram Direct Messages clone with:
+  - Header with username and settings/compose icons
+  - Meta AI search bar
+  - Stories carousel with Instagram gradient borders and blur effects
+  - Messages list with censored usernames, online indicators, unread badges
+  - Camera icons, timestamps, and bottom navigation
+  - Smooth Framer Motion animations
 
 ## API Integration
 - **HikerAPI Integration**: Real Instagram profile data via HikerAPI

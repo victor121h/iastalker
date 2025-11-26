@@ -1,0 +1,205 @@
+Crie uma página chamada “/direct” (ou “Barra Direct”) que copie 100% o layout da página de Direct do Instagram Dark Mode mostrada na imagem enviada. A página deve ser fiel ao visual, comportamento e estilo do Instagram.
+
+🎨 1. CORES (usar exatamente essas)
+
+Fundo principal: #000000 até #0C0C0C
+
+Topo (header): #0A0C0D
+
+Caixa de busca: #1A1D20
+
+Texto primário: #FFFFFF
+
+Texto secundário: #A8A8A8
+
+Texto azul (links): #1A73E8
+
+Bordas e divisores: rgba(255,255,255,0.08)
+
+Indicadores online: #19C463
+
+Ícone de câmera nas conversas: #A5A5A6
+
+Story ring (borda redonda): degradê Instagram
+
+#D62976
+
+#FA7E1E
+
+#FEDA75
+
+#962FBF
+
+#4F5BD5
+
+🧱 2. ESTRUTURA GERAL
+
+A página deve conter:
+
+✔ Topo (Header) igual ao Instagram
+
+À esquerda: nome do usuário logado → por exemplo ovictortv
+
+Deve puxar automaticamente de uma variável: userName
+
+Dois ícones à direita:
+
+⚙ Ícone de configurações
+
+✏ Ícone de criar mensagem
+
+Todos brancos, alinhados à direita.
+
+✔ Caixa de pesquisa Meta AI
+
+Uma barra grande parecida com a imagem:
+
+Placeholder: "Pergunte à Meta AI ou pesquise"
+
+Ícone de busca à esquerda
+
+Fundo arredondado
+
+Cor: #1A1D20
+
+✔ Carrossel de Stories no Direct
+
+Exatamente como na imagem:
+
+Horizontal scroll
+
+Avatares redondos
+
+Borda com degradê (igual stories do Instagram)
+
+Nome abaixo censurado com asteriscos (ex: j***** , u***** etc)
+
+Alguns avatares devem estar borrados (blur CSS)
+
+Primeiro item deve mostrar:
+
+Foto do usuário logado
+
+Texto: “Conte as novidades”
+
+💬 3. LISTA DE MENSAGENS (Mensagens Normais)
+
+Abaixo do carrossel:
+
+Título:
+
+“Mensagens”
+
+E à direita: Pedidos (1) em azul
+
+Cada conversa deve ter:
+✔ Avatar
+
+Circular
+
+Alguns normais
+
+Alguns com ícone de cadeado em overlay (para simular conta privada)
+
+Alguns borrados (blur) para simular privacidade
+
+Indicador verde de online quando necessário → pequeno círculo verde
+
+✔ Nome do usuário
+
+Deve aparecer parcialmente censurado, formato:
+
+j*****
+
+m*****
+
+u*****
+
+Deixe isso automático:
+
+function censurarNome(nome) {
+  if (nome.length <= 1) return nome;
+  return nome[0] + "*****";
+}
+
+✔ Mensagem
+
+Texto da mensagem, cor branca
+
+Emojis permitidos
+
+Exemplo:
+
+“Oi, você já chegou?”
+
+“eii, tá aí? 🔥”
+
+“preciso falar contigo parada séria”
+
+✔ Tempo da mensagem (cinza)
+
+Exemplo:
+
+8 h
+
+9 min
+
+59 min
+
+1 h
+
+42 min
+
+✔ Ícone de câmera à direita
+
+Ícone branco/cinza
+
+Igual ao Instagram
+
+✔ Indicador azul de nova mensagem
+
+Pequena bolinha azul para conversas não lidas
+
+🧠 4. FUNCIONALIDADES / COMPORTAMENTO QUE DEVEM EXISTIR
+🔹 Deve puxar automaticamente do sistema:
+
+Foto de perfil do usuário logado
+
+Nome do usuário no header
+
+Lista de seguidores / following via API HikerAPI (ou dados mock se necessário)
+
+Mostrar avatar real quando foto estiver disponível
+
+Borrar avatar quando você quiser criar mistério (blur CSS)
+
+🔹 Itens censurados e borrados
+
+Possibilidade de aplicar:
+
+filter: blur(6px);
+
+🔹 Asteriscos automáticos
+
+Aplicar a censura no nome dos seguidores.
+
+🔹 Ordenação
+
+Últimas mensagens primeiro.
+
+📌 5. EXPECTATIVA DE ENTREGA (IMPORTANTE)
+
+A IA deve entregar:
+
+✔ Página /direct idêntica ao Instagram
+✔ Totalmente responsiva (mobile-first)
+✔ Pixel-perfect (o mais fiel possível à imagem)
+✔ Ícones de alta qualidade
+✔ CSS organizado
+✔ Simulação de conversas com base nos dados enviados
+✔ Stories com rolagem horizontal suave
+✔ Área de mensagens com scroll vertical
+
+🧨 6. EXEMPLO DE COMO DESCREVER PARA O SISTEMA
+
+“Reproduza exatamente a tela mostrada na imagem: mesma tipografia, mesma paleta, mesmo espaçamento, mesma hierarquia visual, funções iguais, efeitos iguais, censuras iguais, blur igual, bolinhas de notificação, ícones, estrutura, ordem dos elementos e comportamento da interface do Instagram.”
