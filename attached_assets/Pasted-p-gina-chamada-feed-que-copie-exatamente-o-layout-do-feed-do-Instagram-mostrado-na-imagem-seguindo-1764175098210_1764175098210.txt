@@ -1,0 +1,137 @@
+página chamada /feed que copie exatamente o layout do feed do Instagram mostrado na imagem, seguindo fielmente o design, cores, espaçamentos, sombras, ícones e hierarquia. A página deve parecer 100% com o Instagram Dark Mode.
+
+📌 DETALHES VISUAIS QUE A PÁGINA DEVE TER
+🔹 1. Topo igual ao Instagram
+
+Fundo preto (#0D0D0D ou #111)
+
+Logo do Instagram no canto esquerdo (estilo manuscrito branco)
+
+Ícone de coração no topo
+
+Ícone de notificação (sino) com badge vermelho mostrando número
+
+Ícones alinhados à direita
+
+🔹 2. Carrossel de Stories (parte superior)
+
+Faixa de stories igual ao Instagram
+
+Foto redonda com borda em degradê rosa/roxa
+
+Ícone de cadeado quando o story é bloqueado
+
+Nome abaixo da foto (ex: "Seu story", "j*****", etc)
+
+Stories devem ser roláveis horizontalmente
+
+🔹 3. Card do post (conteúdo restrito)
+
+Crie um card idêntico ao da imagem:
+
+Fundo do post: preto mais claro (#111)
+
+Nome do usuário (ex: “p*****”) com asteriscos
+
+Status abaixo: “Local oculto” — texto cinza claro
+
+Menu “3 pontinhos” no canto direito
+
+Área central grande com fundo #0C1011
+
+Dentro dela, centralizado:
+
+[ ícone de cadeado ]
+Conteúdo restrito
+24/11/2024 – 22:47
+
+
+Ícone do cadeado deve ser cinza claro
+
+Texto “Conteúdo restrito” deve ser cinza #B0B0B0
+
+Data deve ser menor e mais fraca
+
+🔹 4. Barra de ações do post
+
+Logo abaixo:
+
+Ícone de coração
+
+Ícone de comentário
+
+Ícone de compartilhar
+
+Ícones devem ser exatamente iguais do Instagram
+
+Número de curtidas: “12 curtidas”
+
+Data da postagem abaixo (“24 de novembro”)
+
+Texto deve seguir a tipografia do Instagram (parecido com "Roboto" ou "Inter")
+
+Espaçamento idêntico ao Instagram
+
+🔹 5. Footer (barra inferior)
+
+Barra fixa no rodapé com:
+
+Ícone de Home
+
+Ícone de Busca
+
+Ícone de Novo Post
+
+Ícone de Reels / Play
+
+Ícone de Perfil com avatar redondo
+
+Tudo no estilo Instagram black.
+
+🎨 Cores Exatas para usar
+
+Fundo geral: #000 a #0D0D0D
+
+Fundo de cards: #111
+
+Textos primários: #FFF
+
+Textos secundários: #A0A0A0
+
+Ícones: #FFF ou #999
+
+Borda dos stories: degradê:
+
+#D62976
+
+#FA7E1E
+
+#FEDA75
+
+#962FBF
+
+#4F5BD5
+
+🔧 Comportamentos
+
+Nenhuma funcionalidade real precisa existir agora.
+
+Ícones podem ser estáticos.
+
+Conteúdo restrito deve ficar sempre bloqueado com o cadeado.
+
+📌 Entrega esperada
+
+Gerar HTML + CSS + JS / React (qual preferir) com:
+
+Design pixel-perfect
+
+Responsivo para mobile
+
+Animações suaves
+
+Estrutura idêntica ao Instagram
+
+Files organizados
+
+Pronto para ser convertido em SPA
