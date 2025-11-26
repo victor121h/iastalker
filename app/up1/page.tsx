@@ -42,7 +42,7 @@ export default function Up1Page() {
         { text: 'Pesquisas ilimitadas de perfis', included: true },
         { text: 'Suporte prioritário 24h', included: true },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ3TCI',
+      link: 'https://go.perfectpay.com.br/PPU38CQ3TEE',
       recommended: true,
     },
     {
@@ -65,7 +65,7 @@ export default function Up1Page() {
         { text: 'Pesquisas ilimitadas de perfis', included: false },
         { text: 'Suporte prioritário 24h', included: false },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ3TAS',
+      link: 'https://go.perfectpay.com.br/PPU38CQ3TEJ',
       recommended: false,
     },
     {
@@ -88,7 +88,7 @@ export default function Up1Page() {
         { text: 'Pesquisas ilimitadas de perfis', included: false },
         { text: 'Suporte prioritário 24h', included: false },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ3TAS',
+      link: 'https://go.perfectpay.com.br/PPU38CQ3TEK',
       recommended: false,
     },
   ];
