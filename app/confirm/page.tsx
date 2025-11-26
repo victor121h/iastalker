@@ -158,7 +158,7 @@ function ConfirmContent() {
             <div className="bg-instagram-bg rounded-full p-1">
               {profile.avatar ? (
                 <img
-                  src={profile.avatar}
+                  src={`/api/proxy-image?url=${encodeURIComponent(profile.avatar)}`}
                   alt={profile.name}
                   className="w-32 h-32 rounded-full object-cover"
                 />
