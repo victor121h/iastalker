@@ -44,7 +44,21 @@ function FeedContent() {
   const username = searchParams.get('username') || '';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
+  const [location, setLocation] = useState<string>('Carregando...');
   const { showNotification } = useNotification();
+
+  useEffect(() => {
+    fetch('/api/geolocation')
+      .then(res => res.json())
+      .then(data => {
+        if (data.location) {
+          setLocation(data.location);
+        } else {
+          setLocation('Local oculto');
+        }
+      })
+      .catch(() => setLocation('Local oculto'));
+  }, []);
 
   useEffect(() => {
     if (username) {
@@ -196,7 +210,7 @@ function FeedContent() {
             </div>
             <div className="flex flex-col">
               <span className="text-white text-[13px] font-semibold">{maskedUsername}</span>
-              <span className="text-[#A0A0A0] text-[11px]">Local oculto</span>
+              <span className="text-[#A0A0A0] text-[11px]">{location}</span>
             </div>
           </div>
           <button className="p-2">

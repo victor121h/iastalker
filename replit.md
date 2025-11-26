@@ -112,6 +112,11 @@ components/
 - **Endpoint**: `/api/instagram?username=<username>`
 - **Data Returned**: Username, name, avatar, bio, posts count, followers, following, verified status, private account status
 
+- **Geolocation API**: IP-based location detection for visitors
+- **Endpoint**: `/api/geolocation`
+- **Data Returned**: City, state, country, lat/lng coordinates
+- **Usage**: Displays visitor's real location in /feed page post header
+
 ## Environment Variables Required
 - `HIKERAPI_ACCESS_KEY`: Your HikerAPI access token for Instagram data
 - `GOOGLE_GEOLOCATION_API_KEY`: Google Geolocation API key for real-time location tracking
