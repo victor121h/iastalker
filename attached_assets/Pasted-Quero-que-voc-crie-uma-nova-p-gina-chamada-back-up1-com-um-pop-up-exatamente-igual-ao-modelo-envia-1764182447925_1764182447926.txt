@@ -1,0 +1,99 @@
+Quero que você crie uma nova página chamada /back-up1 com um pop-up exatamente igual ao modelo enviado na imagem, seguindo rigorosamente o mesmo design, cores, sombras, tipografia, espaçamentos e layout.
+
+A página deve exibir somente esse popup, centralizado na tela, com fundo escurecido e efeito de glow igual ao modelo.
+
+🎯 DETALHES QUE DEVEM SER IDÊNTICOS AO MODELO
+🔸 Estrutura do popup
+
+Caixa central com bordas arredondadas grandes
+
+Glow rosa/roxo externo (igual ao exemplo)
+
+Close button (X) no canto superior direito
+
+Badge no topo escrito:
+"🔥 OFERTA RELÂMPAGO"
+– mesma cor, mesma fonte, mesmo estilo de pill
+
+✏ Textos (mantendo o mesmo estilo visual)
+Título:
+
+Espere! Última Chance
+
+“Última Chance” deve ter o mesmo gradiente rosa-roxo igual ao modelo.
+
+Subtítulo:
+
+"Leve o plano mais completo com um desconto que não se repetirá."
+
+💸 Caixa de preços — IGUAL AO MODELO, mas com novo valor
+❌ Preço antigo:
+
+De R$ 129,90
+(texto cinza + tachado igual ao exemplo)
+
+✅ Preço atual:
+
+Por R$ 34,90
+– deve substituir o valor de 79,90
+– manter exatamente o mesmo tamanho, fonte, cor e destaque
+
+💗 Faixa de economia:
+
+"Você economiza R$ 95,00 (73% OFF)"
+→ atualize automaticamente esse valor com base no novo preço
+→ mantenha a barra rosa com bordas arredondadas idêntica
+
+🔍 Lista de benefícios (copiar igual ao modelo)
+
+Mesmo estilo, ícones e espaçamento:
+
+✔️ Busca ilimitada de perfis
+
+✔️ Anonimato total
+
+✔️ Notificações em tempo real
+
+✔️ GPS 24h
+
+✔️ Histórico completo
+
+✔️ WhatsApp Spy
+
+✔️ Galeria oculta
+
+✔️ Múltiplos alvos
+
+🔘 Botão principal (igual ao modelo):
+
+▶️ ADQUIRIR OFERTA E ATIVAR
+
+– Deve ser idêntico:
+
+gradiente rosa → laranja
+
+texto branco
+
+bordas arredondadas
+
+ícone roxo
+
+⏳ Texto de urgência:
+
+"Esta oferta expira em 04:57"
+– cronômetro deve ser estático (não precisa funcionar)
+
+❌ Link final:
+
+“Não, obrigado. Prefiro pagar mais caro depois.”
+– deve estar em cinza claro + sublinhado, igual ao modelo
+
+📌 IMPORTANTE
+
+A página inteira deve ser somente esse pop-up, no centro.
+
+Fundo escuro (#0D0D0D) com overlay suave igual ao modelo.
+
+100% responsivo em mobile.
+
+Nada de mudar cores, fontes ou espaçamentos. Deve ficar realmente 1:1.
