@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 
+export const dynamic = 'force-dynamic';
+
 async function fetchLocation(ip?: string) {
   const apiUrl = ip 
     ? `http://ip-api.com/json/${ip}?lang=pt-BR&fields=status,city,regionName,country,lat,lon`

@@ -1,11 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MatrixBackground from '@/components/MatrixBackground';
 
-export default function Up1Page() {
+function Up1Content() {
   const searchParams = useSearchParams();
   const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 59 });
 
@@ -295,5 +295,13 @@ export default function Up1Page() {
         </main>
       </div>
     </div>
+  );
+}
+
+export default function Up1Page() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0C1011] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <Up1Content />
+    </Suspense>
   );
 }

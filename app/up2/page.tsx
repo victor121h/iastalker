@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 type Step = 'input' | 'syncing' | 'locked';
@@ -13,7 +13,7 @@ interface SyncStep {
   active: boolean;
 }
 
-export default function Up2Page() {
+function Up2Content() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>('input');
   const [username, setUsername] = useState('');
@@ -360,5 +360,13 @@ export default function Up2Page() {
         </motion.div>
       )}
     </div>
+  );
+}
+
+export default function Up2Page() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <Up2Content />
+    </Suspense>
   );
 }

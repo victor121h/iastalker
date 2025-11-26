@@ -1,10 +1,11 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import MatrixBackground from '@/components/MatrixBackground';
 
-export default function BackFrontPage() {
+function BackFrontContent() {
   const searchParams = useSearchParams();
 
   const getUtmParams = () => {
@@ -137,5 +138,13 @@ export default function BackFrontPage() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function BackFrontPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <BackFrontContent />
+    </Suspense>
   );
 }

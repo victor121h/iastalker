@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 
-export default function BackUp1Page() {
+function BackUp1Content() {
   const searchParams = useSearchParams();
 
   const getUtmParams = () => {
@@ -154,5 +155,13 @@ export default function BackUp1Page() {
         </div>
       </motion.div>
     </div>
+  );
+}
+
+export default function BackUp1Page() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <BackUp1Content />
+    </Suspense>
   );
 }
