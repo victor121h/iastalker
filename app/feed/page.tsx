@@ -14,6 +14,16 @@ interface ProfileData {
   following: number;
   isPrivate: boolean;
   isVerified: boolean;
+  pk: string;
+}
+
+interface FollowingUser {
+  pk: string;
+  username: string;
+  fullName: string;
+  avatar: string;
+  isPrivate: boolean;
+  isVerified: boolean;
 }
 
 interface Story {
@@ -23,16 +33,34 @@ interface Story {
   isLocked: boolean;
 }
 
+function censorName(name: string): string {
+  if (name.length <= 1) return name;
+  return name[0] + '*****';
+}
+
 function FeedContent() {
   const searchParams = useSearchParams();
   const username = searchParams.get('username') || '';
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [following, setFollowing] = useState<FollowingUser[]>([]);
 
   useEffect(() => {
     if (username) {
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`)
         .then(res => res.json())
-        .then(data => setProfile(data))
+        .then(data => {
+          setProfile(data);
+          if (data.pk) {
+            fetch(`/api/instagram/following?userId=${encodeURIComponent(data.pk)}`)
+              .then(res => res.json())
+              .then(followData => {
+                if (followData.following && followData.following.length > 0) {
+                  setFollowing(followData.following);
+                }
+              })
+              .catch(console.error);
+          }
+        })
         .catch(console.error);
     }
   }, [username]);
@@ -50,16 +78,17 @@ function FeedContent() {
 
   const stories: Story[] = [
     { 
-      id: 1, 
+      id: 0, 
       username: 'Seu story', 
       avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/68?img=1', 
       isLocked: false 
     },
-    { id: 2, username: 'j*****', avatar: 'https://i.pravatar.cc/68?img=5', isLocked: true },
-    { id: 3, username: 'u*****', avatar: 'https://i.pravatar.cc/68?img=12', isLocked: true },
-    { id: 4, username: 'r*****', avatar: 'https://i.pravatar.cc/68?img=9', isLocked: true },
-    { id: 5, username: 'e*****', avatar: 'https://i.pravatar.cc/68?img=13', isLocked: true },
-    { id: 6, username: 's*****', avatar: 'https://i.pravatar.cc/68?img=20', isLocked: true },
+    ...following.slice(0, 10).map((user, index) => ({
+      id: index + 1,
+      username: censorName(user.username),
+      avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/68?img=${index + 5}`,
+      isLocked: true
+    }))
   ];
 
   return (
