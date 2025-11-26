@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
 interface ProfileData {
@@ -55,6 +55,7 @@ function censorName(name: string): string {
 
 function DirectContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const username = searchParams.get('username') || 'ovictortv';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
@@ -147,7 +148,15 @@ function DirectContent() {
     <div className="min-h-screen bg-[#000000]">
       <header className="sticky top-0 z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
         <div className="flex items-center justify-between px-4 h-[52px]">
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-3">
+            <button 
+              onClick={() => router.push(`/feed?username=${encodeURIComponent(username)}`)}
+              className="p-1"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
             <img 
               src="/logo-insta.png" 
               alt="Instagram" 
