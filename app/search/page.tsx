@@ -1,8 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 function DeepGramLogo() {
   return (
@@ -34,13 +34,30 @@ function DeepGramLogo() {
   );
 }
 
-export default function SearchPage() {
+function SearchContent() {
   const [username, setUsername] = useState('');
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
 
   const handleSubmit = () => {
     if (username.trim()) {
-      router.push(`/confirm?username=${encodeURIComponent(username)}`);
+      const utmParams = getUtmParams();
+      const baseParams = `username=${encodeURIComponent(username)}`;
+      if (utmParams) {
+        router.push(`/confirm?${baseParams}&${utmParams}`);
+      } else {
+        router.push(`/confirm?${baseParams}`);
+      }
     }
   };
 
@@ -133,5 +150,13 @@ export default function SearchPage() {
         </div>
       </motion.div>
     </main>
+  );
+}
+
+export default function SearchPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <SearchContent />
+    </Suspense>
   );
 }

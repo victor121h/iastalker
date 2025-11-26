@@ -1,11 +1,32 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import DeepGramLogo from '@/components/DeepGramLogo';
 
-export default function Home() {
+function HomeContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const navigateWithParams = (path: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      router.push(`${path}?${utmParams}`);
+    } else {
+      router.push(path);
+    }
+  };
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden bg-[#0a0a0c]">
@@ -56,7 +77,7 @@ export default function Home() {
             className="w-full pt-2 flex justify-center"
           >
             <button 
-              onClick={() => router.push('/search')}
+              onClick={() => navigateWithParams('/search')}
               className="px-8 h-[48px] rounded-full font-semibold text-white text-[15px] flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(90deg, #f56040 0%, #f77737 50%, #fcaf45 100%)'
@@ -95,5 +116,13 @@ export default function Home() {
         </div>
       </motion.div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0c] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+      <HomeContent />
+    </Suspense>
   );
 }

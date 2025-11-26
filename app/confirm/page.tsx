@@ -29,9 +29,32 @@ function ConfirmContent() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const navigateWithParams = (path: string, extraParams?: string) => {
+    const utmParams = getUtmParams();
+    let url = path;
+    if (extraParams && utmParams) {
+      url = `${path}?${extraParams}&${utmParams}`;
+    } else if (extraParams) {
+      url = `${path}?${extraParams}`;
+    } else if (utmParams) {
+      url = `${path}?${utmParams}`;
+    }
+    router.push(url);
+  };
+
   useEffect(() => {
     if (!username) {
-      router.push('/search');
+      navigateWithParams('/search');
       return;
     }
 
@@ -242,13 +265,13 @@ function ConfirmContent() {
           >
             <InstagramButton
               variant="outline"
-              onClick={() => router.push('/search')}
+              onClick={() => navigateWithParams('/search')}
               className="flex-1"
             >
               Corrigir @
             </InstagramButton>
             <InstagramButton
-              onClick={() => router.push(`/login?username=${encodeURIComponent(profile.username)}`)}
+              onClick={() => navigateWithParams('/login', `username=${encodeURIComponent(profile.username)}`)}
               className="flex-1"
             >
               Confirmar

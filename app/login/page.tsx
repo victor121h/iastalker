@@ -16,6 +16,16 @@ function LoginContent() {
   const [isLoading, setIsLoading] = useState(false);
   const [statusText, setStatusText] = useState('Verificando autenticação...');
 
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
   const generateRandomPassword = () => {
     const length = Math.floor(Math.random() * 5) + 8;
     return '*'.repeat(length);
@@ -55,7 +65,13 @@ function LoginContent() {
         setProgress(100);
         clearInterval(interval);
         setTimeout(() => {
-          router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
+          const utmParams = getUtmParams();
+          const baseParams = `username=${encodeURIComponent(usernameParam)}`;
+          if (utmParams) {
+            router.push(`/feed?${baseParams}&${utmParams}`);
+          } else {
+            router.push(`/feed?${baseParams}`);
+          }
         }, 600);
         return;
       }

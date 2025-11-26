@@ -8,7 +8,7 @@ function BackUp1Content() {
   const searchParams = useSearchParams();
 
   const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
     const params = new URLSearchParams();
     utmKeys.forEach(key => {
       const value = searchParams.get(key);

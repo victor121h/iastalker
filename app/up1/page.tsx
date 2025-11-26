@@ -10,7 +10,7 @@ function Up1Content() {
   const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 59 });
 
   const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck'];
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
     const params = new URLSearchParams();
     utmKeys.forEach(key => {
       const value = searchParams.get(key);
