@@ -371,10 +371,10 @@ function DirectContent() {
         </button>
         <button className="p-3" onClick={showNotification}>
           <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
-            {profile?.avatar ? (
+            {profileAvatar ? (
               <img 
-                key={profile.avatar}
-                src={getProxiedAvatar(profile.avatar)} 
+                key={`nav-${profileAvatar}`}
+                src={profileAvatar} 
                 alt="" 
                 className="w-full h-full object-cover" 
               />

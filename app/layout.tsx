@@ -15,17 +15,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="pt-BR" suppressHydrationWarning>
-      <head>
-        <noscript>
-          <img 
-            height="1" 
-            width="1" 
-            style={{ display: 'none' }}
-            src="https://www.facebook.com/tr?id=352893769785277&ev=PageView&noscript=1"
-            alt=""
-          />
-        </noscript>
-      </head>
       <body className="antialiased" suppressHydrationWarning>
         <Script id="meta-pixel" strategy="afterInteractive">
           {`
@@ -39,6 +28,16 @@ export default function RootLayout({
             'https://connect.facebook.net/en_US/fbevents.js');
             fbq('init', '352893769785277');
             fbq('track', 'PageView');
+            
+            // Noscript fallback
+            var noscript = document.createElement('noscript');
+            var img = document.createElement('img');
+            img.height = 1;
+            img.width = 1;
+            img.style.display = 'none';
+            img.src = 'https://www.facebook.com/tr?id=352893769785277&ev=PageView&noscript=1';
+            noscript.appendChild(img);
+            document.body.appendChild(noscript);
           `}
         </Script>
         <Script
