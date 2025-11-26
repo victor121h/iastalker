@@ -1,0 +1,96 @@
+Quero que você crie uma página chamada /back-front com design idêntico ao modelo exibido na imagem enviada.
+Reproduza tudo 100% igual: layout, espaçamentos, bordas, cores, sombras, tipografias, gradientes, tamanhos, ícones e posicionamento.
+
+🎨 ESTRUTURA GERAL DA PÁGINA
+
+Fundo escuro com padrão vertical estilo "código / matriz" em opacidade baixa (igual ao modelo).
+
+Card central grande com bordas arredondadas bem suaves.
+
+O card deve ter cor #0F0F0F, com leve sombra externa difusa.
+
+Tudo deve ser centralizado na tela.
+
+🎯 ELEMENTOS DO CARD (EXATAMENTE COMO NA IMAGEM)
+🔹 1. Logo DeepGram
+
+Ícone circular colorido idêntico.
+
+Texto “Deep” branco
+
+Texto “gram” com gradiente rosa → roxo igual ao modelo.
+
+🔹 2. Título principal:
+
+Oferta Exclusiva por Tempo Limitado!
+
+Fonte grande, pesada, branca
+
+A palavra “Exclusiva” e “Tempo Limitado!” com gradiente rosa → laranja igual à imagem.
+
+🔹 3. Subtítulo / descrição
+
+Texto exatamente assim:
+
+Aproveite esta oportunidade única para ter acesso completo à plataforma DeepGram com um desconto especial. Esta oferta está disponível apenas por tempo limitado!
+
+Deve usar fonte média clara e destacar “DeepGram” com o mesmo gradiente da marca.
+
+💸 4. Bloco de preço
+
+Criar uma caixa com bordas arredondadas e fundo roxo escuro translúcido:
+
+Linha com preço antigo:
+De R$ 59,90
+→ texto cinza claro + tachado
+
+Linha com preço atual (destacado):
+Por apenas R$ 29,90
+→ mesmo tom de laranja/rosa do modelo
+→ fonte grande e em negrito
+
+⏳ 5. Bloco do tempo restante
+
+Outra caixa idêntica ao modelo:
+
+Texto:
+Tempo restante para garantir este desconto
+→ Fonte branca média
+
+Timer estático com 04:58
+→ Fonte grande, laranja/rosa, igual ao exemplo.
+
+🔘 6. Botão principal
+
+Botão idêntico ao modelo:
+
+GARANTIR MEU DESCONTO AGORA ▶
+
+Gradiente rosa → laranja
+
+Texto branco
+
+Ícone ▶ branco no final
+
+Borda arredondada grande
+
+Mesma altura e largura proporcional (full width dentro do card)
+
+📝 7. Texto inferior (rodapé do card)
+
+Ao adquirir, você terá acesso completo e imediato à plataforma.
+O processamento é instantâneo via PIX ou Cartão de Crédito.
+
+Fonte pequena
+
+Palavras importantes em negrito
+
+Cor cinza clara
+
+📌 IMPORTANTE
+
+A página /back-front inteira deve exibir apenas esse card, centralizado verticalmente e horizontalmente.
+
+Totalmente responsivo para mobile.
+
+O visual final deve ser 100% idêntico ao modelo na imagem, sem adaptações.
