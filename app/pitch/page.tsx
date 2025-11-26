@@ -127,18 +127,8 @@ function PitchContent() {
             animate={{ opacity: 1, y: 0 }}
             className="text-center py-8"
           >
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <div className="relative">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                  <path d="M19 11H5a4 4 0 0 0-4 4v5a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4z" fill="#EB1C8F"/>
-                  <path d="M17 11V7a5 5 0 0 0-10 0v4" stroke="#EB1C8F" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="12" cy="16" r="1.5" fill="white"/>
-                </svg>
-              </div>
-              <span className="text-2xl font-bold">
-                <span className="text-[#EB1C8F]">Deep</span>
-                <span className="text-white">Gram</span>
-              </span>
+            <div className="flex items-center justify-center mb-4">
+              <img src="/logo-deepgram.png" alt="DeepGram" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-white text-xl font-bold leading-tight">
               A maior ferramenta de stalkear do Brasil
