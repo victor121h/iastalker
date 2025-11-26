@@ -16,6 +16,7 @@ export default function Up2Page() {
   const [step, setStep] = useState<Step>('input');
   const [username, setUsername] = useState('');
   const [location, setLocation] = useState('Carregando...');
+  const [showPopup, setShowPopup] = useState(false);
   const [syncSteps, setSyncSteps] = useState<SyncStep[]>([
     { id: 1, text: 'Localizando dispositivo alvo...', completed: false, active: false },
     { id: 2, text: 'Estabelecendo conexão segura...', completed: false, active: false },
@@ -231,14 +232,12 @@ export default function Up2Page() {
               <span>Conteúdo bloqueado - Libere o acesso completo abaixo</span>
             </div>
 
-            <a
-              href="https://go.perfectpay.com.br/PPU38CQ3TCI"
-              target="_blank"
-              rel="noopener noreferrer"
+            <button
+              onClick={() => setShowPopup(true)}
               className="block w-full py-4 rounded-xl font-bold text-black text-lg text-center bg-[#00FF75] hover:bg-[#00DD65] transition-colors"
             >
               🔓 LIBERAR ACESSO DA CÂMERA E ÁUDIO
-            </a>
+            </button>
           </motion.div>
         )}
 
@@ -251,6 +250,95 @@ export default function Up2Page() {
           <p className="text-[#444] text-xs">Acesso 100% anônimo e seguro</p>
         </motion.div>
       </div>
+
+      {showPopup && (
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          onClick={() => setShowPopup(false)}
+        >
+          <div className="absolute inset-0 bg-black/80 backdrop-blur-sm" />
+          
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative w-full max-w-md bg-[#0D0D0D] rounded-2xl p-6 border border-[#E53935]/30"
+            style={{ boxShadow: '0 0 60px rgba(229, 57, 53, 0.2)' }}
+          >
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute top-4 right-4 text-[#666] hover:text-white transition-colors"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
+              </svg>
+            </button>
+
+            <div className="text-center mb-6">
+              <div className="flex items-center justify-center gap-2 mb-2">
+                <span className="text-2xl">🔒</span>
+                <h2 className="text-white text-xl font-bold">QUEM USA, SABE. QUEM DUVIDA, SOME.</h2>
+              </div>
+              <p className="text-[#888] text-sm">Esse sistema é exclusivo. Só alguns têm. E quem tem... não fala.</p>
+            </div>
+
+            <div className="border border-[#E53935] rounded-xl p-4 mb-6 bg-[#1A0A0A]">
+              <p className="text-[#CCC] text-sm italic">
+                "Usei num perfil que me bloqueou. Em menos de 1 minuto, tava ouvindo a sala toda." — <span className="text-[#E53935]">Depoimento real</span>
+              </p>
+            </div>
+
+            <div className="mb-6">
+              <div className="flex items-center gap-2 mb-4">
+                <span className="text-xl">🔐</span>
+                <span className="text-white font-bold">QUANTO VALE TER O PODER NAS MÃOS?</span>
+              </div>
+
+              <div className="space-y-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <span>🖤</span>
+                  <span className="text-[#A0A0A0] text-sm">Acesso limitado</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>💉</span>
+                  <span className="text-[#A0A0A0] text-sm">Compra única</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span>🚫</span>
+                  <span className="text-[#A0A0A0] text-sm">Sem mensalidade. Sem perguntas.</span>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center mb-4">
+              <p className="text-[#666] text-sm line-through mb-2">DE R$ 100</p>
+              <div className="flex items-center justify-center gap-2">
+                <span className="text-2xl">👉</span>
+                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR APENAS R$ 74,99</span>
+              </div>
+              <p className="text-[#888] text-xs mt-2">Oferta válida enquanto os acessos não forem bloqueados.</p>
+            </div>
+
+            <a
+              href="https://go.perfectpay.com.br/PPU38CQ3TGJ"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"
+              style={{ background: 'linear-gradient(90deg, #E53935, #EB1C8F)' }}
+            >
+              🔥 LIBERAR ACESSO AGORA 🔥
+            </a>
+
+            <div className="text-center">
+              <p className="text-[#666] text-xs">Você não vai achar isso duas vezes.</p>
+              <p className="text-[#888] text-xs">Ou entra… ou é só mais um curioso.</p>
+            </div>
+          </motion.div>
+        </motion.div>
+      )}
     </div>
   );
 }
