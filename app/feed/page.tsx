@@ -197,9 +197,9 @@ function FeedContent() {
           <div className="flex items-center gap-2.5">
             <div className="relative">
               <div className="w-8 h-8 rounded-full bg-[#262626] flex items-center justify-center overflow-hidden">
-                {profile?.avatar ? (
+                {following.length > 0 && following[0]?.avatar ? (
                   <img 
-                    src={getProxiedAvatar(profile.avatar)} 
+                    src={getProxiedAvatar(following[0].avatar)} 
                     alt="" 
                     className="w-full h-full object-cover"
                   />
@@ -211,7 +211,7 @@ function FeedContent() {
               </div>
             </div>
             <div className="flex flex-col">
-              <span className="text-white text-[13px] font-semibold">{maskedUsername}</span>
+              <span className="text-white text-[13px] font-semibold">{following.length > 0 ? censorName(following[0].username) : maskedUsername}</span>
               <span className="text-[#A0A0A0] text-[11px]">{location}</span>
             </div>
           </div>
