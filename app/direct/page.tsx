@@ -273,6 +273,7 @@ function DirectContent() {
             animate={{ opacity: 1, x: 0 }}
             transition={{ duration: 0.3, delay: index * 0.05 }}
             className="flex items-center px-4 py-2 hover:bg-[#0C0C0C] transition-colors cursor-pointer"
+            onClick={showNotification}
           >
             <div className="relative mr-3">
               <div className="relative">
