@@ -79,7 +79,11 @@ function LoginContent() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
           >
-            <h1 className="text-4xl text-white font-serif italic tracking-tight">Instagram</h1>
+            <img 
+              src="/images/instagram-logo.webp" 
+              alt="Instagram" 
+              className="h-[51px] w-auto"
+            />
           </motion.div>
 
           <motion.div
