@@ -54,7 +54,8 @@ function PitchContent() {
     return url;
   };
 
-  const purchaseLink = 'https://go.perfectpay.com.br/PPU38CQ3TAS';
+  const purchaseLink39 = 'https://go.perfectpay.com.br/PPU38CQ3TAS';
+  const purchaseLink59 = 'https://go.perfectpay.com.br/PPU38CQ3TCI';
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -408,7 +409,7 @@ function PitchContent() {
             </div>
 
             <a 
-              href={purchaseLink}
+              href={purchaseLink59}
               target="_blank"
               rel="noopener noreferrer"
               className="block bg-[#E53935] rounded-xl py-4 px-4 text-center"
@@ -583,7 +584,7 @@ function PitchContent() {
               </div>
 
               <a 
-                href={purchaseLink}
+                href={purchaseLink39}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block bg-[#2A3A4A] rounded-xl py-3 text-center text-white font-bold"
@@ -662,7 +663,7 @@ function PitchContent() {
               </div>
 
               <a 
-                href={purchaseLink}
+                href={purchaseLink59}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold"
