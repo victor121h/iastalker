@@ -6,30 +6,12 @@ import { useRouter, useSearchParams } from 'next/navigation';
 
 function DeepGramLogo() {
   return (
-    <div className="flex items-center gap-2">
-      <div className="relative">
-        <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-          <circle cx="16" cy="16" r="12" stroke="white" strokeWidth="3"/>
-          <path d="M25 25L36 36" stroke="white" strokeWidth="3" strokeLinecap="round"/>
-          <path d="M12 11V14C12 16.2091 13.7909 18 16 18C18.2091 18 20 16.2091 20 14V11C20 8.79086 18.2091 7 16 7C13.7909 7 12 8.79086 12 11Z" fill="url(#lockGradient)"/>
-          <rect x="10" y="13" width="12" height="9" rx="2" fill="url(#lockGradient)"/>
-          <defs>
-            <linearGradient id="lockGradient" x1="10" y1="7" x2="22" y2="22" gradientUnits="userSpaceOnUse">
-              <stop stopColor="#f56040"/>
-              <stop offset="1" stopColor="#fcaf45"/>
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
-      <div className="flex flex-col leading-none">
-        <span className="text-white font-bold text-xl tracking-tight">Deep</span>
-        <span 
-          className="font-bold text-xl tracking-tight bg-clip-text text-transparent"
-          style={{ backgroundImage: 'linear-gradient(90deg, #f56040, #fcaf45)' }}
-        >
-          Gram
-        </span>
-      </div>
+    <div className="flex items-center justify-center">
+      <img 
+        src="/logo-deepgram.png" 
+        alt="DeepGram" 
+        className="h-[48px] w-auto"
+      />
     </div>
   );
 }
