@@ -67,7 +67,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -100 }}
             transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-[9999] w-[calc(100%-32px)] max-w-[380px]"
+            className="fixed top-4 inset-x-0 mx-auto z-[9999] max-w-[380px]"
+            style={{ width: 'calc(100% - 32px)' }}
           >
             <div 
               className="relative rounded-[14px] p-4 pr-14 shadow-2xl"
