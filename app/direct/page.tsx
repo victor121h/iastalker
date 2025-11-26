@@ -14,6 +14,16 @@ interface ProfileData {
   following: number;
   isPrivate: boolean;
   isVerified: boolean;
+  pk: string;
+}
+
+interface FollowingUser {
+  pk: string;
+  username: string;
+  fullName: string;
+  avatar: string;
+  isPrivate: boolean;
+  isVerified: boolean;
 }
 
 interface Story {
@@ -22,6 +32,7 @@ interface Story {
   avatar: string;
   isBlurred: boolean;
   isFirst: boolean;
+  isLocked: boolean;
 }
 
 interface Message {
@@ -45,13 +56,35 @@ function DirectContent() {
   const searchParams = useSearchParams();
   const username = searchParams.get('username') || 'ovictortv';
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [following, setFollowing] = useState<FollowingUser[]>([]);
+  const [loadingFollowing, setLoadingFollowing] = useState(false);
 
   useEffect(() => {
     if (username) {
+      console.log('Fetching profile for:', username);
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`)
         .then(res => res.json())
-        .then(data => setProfile(data))
-        .catch(console.error);
+        .then(data => {
+          console.log('Profile data received:', data.username, 'pk:', data.pk);
+          setProfile(data);
+          if (data.pk) {
+            console.log('Fetching following for pk:', data.pk);
+            setLoadingFollowing(true);
+            fetch(`/api/instagram/following?userId=${encodeURIComponent(data.pk)}`)
+              .then(res => res.json())
+              .then(followData => {
+                console.log('Following data received:', followData.following?.length || 0, 'users');
+                if (followData.following && followData.following.length > 0) {
+                  setFollowing(followData.following);
+                }
+              })
+              .catch(err => console.error('Following fetch error:', err))
+              .finally(() => setLoadingFollowing(false));
+          } else {
+            console.log('No pk found in profile data');
+          }
+        })
+        .catch(err => console.error('Profile fetch error:', err));
     }
   }, [username]);
 
@@ -64,110 +97,58 @@ function DirectContent() {
 
   const stories: Story[] = [
     { 
-      id: 1, 
+      id: 0, 
       username: 'Conte as novidades', 
       avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/68?img=1', 
       isBlurred: false,
-      isFirst: true
+      isFirst: true,
+      isLocked: false
     },
-    { id: 2, username: 'joana_maria', avatar: 'https://i.pravatar.cc/68?img=5', isBlurred: true, isFirst: false },
-    { id: 3, username: 'usuario123', avatar: 'https://i.pravatar.cc/68?img=12', isBlurred: false, isFirst: false },
-    { id: 4, username: 'rafael_silva', avatar: 'https://i.pravatar.cc/68?img=9', isBlurred: true, isFirst: false },
-    { id: 5, username: 'eduarda_santos', avatar: 'https://i.pravatar.cc/68?img=13', isBlurred: false, isFirst: false },
-    { id: 6, username: 'sergio_costa', avatar: 'https://i.pravatar.cc/68?img=20', isBlurred: true, isFirst: false },
-    { id: 7, username: 'marina_oliveira', avatar: 'https://i.pravatar.cc/68?img=25', isBlurred: false, isFirst: false },
+    ...following.slice(0, 10).map((user, index) => ({
+      id: index + 1,
+      username: user.username,
+      avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/68?img=${index + 5}`,
+      isBlurred: false,
+      isFirst: false,
+      isLocked: true
+    }))
   ];
 
-  const messages: Message[] = [
-    { 
-      id: 1, 
-      username: 'juliana_ferreira', 
-      avatar: 'https://i.pravatar.cc/56?img=32', 
-      message: 'eii, tá aí? 🔥', 
-      time: '8 h',
-      isOnline: true,
-      hasUnread: true,
-      isBlurred: false,
-      isPrivate: false
-    },
-    { 
-      id: 2, 
-      username: 'marcos_almeida', 
-      avatar: 'https://i.pravatar.cc/56?img=14', 
-      message: 'preciso falar contigo parada séria', 
-      time: '9 min',
-      isOnline: false,
-      hasUnread: true,
-      isBlurred: true,
-      isPrivate: true
-    },
-    { 
-      id: 3, 
-      username: 'usuario_teste', 
-      avatar: 'https://i.pravatar.cc/56?img=18', 
-      message: 'Oi, você já chegou?', 
-      time: '59 min',
-      isOnline: true,
-      hasUnread: false,
-      isBlurred: false,
-      isPrivate: false
-    },
-    { 
-      id: 4, 
-      username: 'felipe_gomes', 
-      avatar: 'https://i.pravatar.cc/56?img=22', 
-      message: 'Vamos sair amanhã? 🎉', 
-      time: '1 h',
-      isOnline: false,
-      hasUnread: true,
-      isBlurred: true,
-      isPrivate: true
-    },
-    { 
-      id: 5, 
-      username: 'amanda_lima', 
-      avatar: 'https://i.pravatar.cc/56?img=28', 
-      message: 'Olha isso aqui 👀', 
-      time: '42 min',
-      isOnline: true,
-      hasUnread: false,
-      isBlurred: false,
-      isPrivate: false
-    },
-    { 
-      id: 6, 
-      username: 'pedro_rocha', 
-      avatar: 'https://i.pravatar.cc/56?img=33', 
-      message: 'Que absurdo mano', 
-      time: '2 h',
-      isOnline: false,
-      hasUnread: false,
-      isBlurred: true,
-      isPrivate: false
-    },
-    { 
-      id: 7, 
-      username: 'camila_santos', 
-      avatar: 'https://i.pravatar.cc/56?img=44', 
-      message: 'Mandou mensagem pra você', 
-      time: '3 h',
-      isOnline: true,
-      hasUnread: true,
-      isBlurred: false,
-      isPrivate: true
-    },
-    { 
-      id: 8, 
-      username: 'lucas_dias', 
-      avatar: 'https://i.pravatar.cc/56?img=51', 
-      message: 'Respondeu seu story', 
-      time: '5 h',
-      isOnline: false,
-      hasUnread: false,
-      isBlurred: false,
-      isPrivate: false
-    },
+  const mockMessages = [
+    'eii, tá aí? 🔥',
+    'preciso falar contigo parada séria',
+    'Oi, você já chegou?',
+    'Vamos sair amanhã? 🎉',
+    'Olha isso aqui 👀',
+    'Que absurdo mano',
+    'Mandou mensagem pra você',
+    'Respondeu seu story',
   ];
+
+  const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
+
+  const messages: Message[] = following.length > 0 
+    ? following.slice(0, 8).map((user, index) => ({
+        id: index + 1,
+        username: user.username,
+        avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/56?img=${index + 10}`,
+        message: mockMessages[index % mockMessages.length],
+        time: mockTimes[index % mockTimes.length],
+        isOnline: index % 3 === 0,
+        hasUnread: index % 2 === 0,
+        isBlurred: false,
+        isPrivate: user.isPrivate
+      }))
+    : [
+        { id: 1, username: 'juliana_ferreira', avatar: 'https://i.pravatar.cc/56?img=32', message: 'eii, tá aí? 🔥', time: '8 h', isOnline: true, hasUnread: true, isBlurred: false, isPrivate: false },
+        { id: 2, username: 'marcos_almeida', avatar: 'https://i.pravatar.cc/56?img=14', message: 'preciso falar contigo parada séria', time: '9 min', isOnline: false, hasUnread: true, isBlurred: true, isPrivate: true },
+        { id: 3, username: 'usuario_teste', avatar: 'https://i.pravatar.cc/56?img=18', message: 'Oi, você já chegou?', time: '59 min', isOnline: true, hasUnread: false, isBlurred: false, isPrivate: false },
+        { id: 4, username: 'felipe_gomes', avatar: 'https://i.pravatar.cc/56?img=22', message: 'Vamos sair amanhã? 🎉', time: '1 h', isOnline: false, hasUnread: true, isBlurred: true, isPrivate: true },
+        { id: 5, username: 'amanda_lima', avatar: 'https://i.pravatar.cc/56?img=28', message: 'Olha isso aqui 👀', time: '42 min', isOnline: true, hasUnread: false, isBlurred: false, isPrivate: false },
+        { id: 6, username: 'pedro_rocha', avatar: 'https://i.pravatar.cc/56?img=33', message: 'Que absurdo mano', time: '2 h', isOnline: false, hasUnread: false, isBlurred: true, isPrivate: false },
+        { id: 7, username: 'camila_santos', avatar: 'https://i.pravatar.cc/56?img=44', message: 'Mandou mensagem pra você', time: '3 h', isOnline: true, hasUnread: true, isBlurred: false, isPrivate: true },
+        { id: 8, username: 'lucas_dias', avatar: 'https://i.pravatar.cc/56?img=51', message: 'Respondeu seu story', time: '5 h', isOnline: false, hasUnread: false, isBlurred: false, isPrivate: false },
+      ];
 
   return (
     <div className="min-h-screen bg-[#000000]">
@@ -218,6 +199,12 @@ function DirectContent() {
 
       <div className="border-b border-[rgba(255,255,255,0.08)] py-3 overflow-x-auto scrollbar-hide">
         <div className="flex gap-4 px-4">
+          {loadingFollowing && following.length === 0 && (
+            <div className="flex items-center gap-2 text-[#A8A8A8] text-sm">
+              <div className="animate-spin w-4 h-4 border-2 border-[#A8A8A8] border-t-transparent rounded-full"></div>
+              Carregando...
+            </div>
+          )}
           {stories.map((story, index) => (
             <motion.div
               key={story.id}
@@ -240,12 +227,19 @@ function DirectContent() {
                       <img
                         src={story.avatar}
                         alt={story.username}
-                        className={`w-[56px] h-[56px] rounded-full object-cover ${story.isBlurred ? 'blur-[6px]' : ''}`}
+                        className="w-[56px] h-[56px] rounded-full object-cover"
                       />
                       {story.isFirst && (
                         <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
                             <path d="M12 5v14M5 12h14" strokeWidth="3" stroke="white" strokeLinecap="round"/>
+                          </svg>
+                        </div>
+                      )}
+                      {story.isLocked && !story.isFirst && (
+                        <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+                          <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+                            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
                           </svg>
                         </div>
                       )}
