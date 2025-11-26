@@ -1,0 +1,111 @@
+Crie uma página na rota /up2 com o design idêntico às imagens fornecidas do site “Olho Oculto”.
+A página deve ser totalmente igual em layout, cores, fontes, espaçamentos, sombras, ícones e animações.
+
+🎯 ESTRUTURA DA PÁGINA
+🔥 Topo
+
+Título grande: OLHO OCULTO
+– Estilo degradê vermelho → laranja igual ao modelo
+– Ícone de olho à esquerda, igualzinho
+
+Subtítulo em vermelho rosado:
+A nova era da vigilância silenciosa começou.
+
+🧩 SEÇÃO 1 – Tela inicial (Passo 1)
+Texto principal:
+
+“Você já imaginou acessar a câmera e o microfone de qualquer celular digitando apenas o @ do Instagram?”
+
+Lista com ícones coloridos exatamente iguais:
+
+🔵 Nada de número de telefone.
+
+🎯 Nada de instalar nada no aparelho-alvo.
+
+🟣 Zero rastros. Zero notificações.
+
+Caixa central arredondada (cor #111 / bordas suaves):
+
+Título: COMO FUNCIONA?
+
+Campo:
+
+Input grande, placeholder: @usuario_alvo
+
+Caixinha idêntica à do modelo.
+
+Botão:
+
+Grande, arredondado, vermelho → rosa degradê
+
+Texto: 🔍 CONFIRMAR E INICIAR ACESSO
+
+🧩 SEÇÃO 2 – Sincronização oculta
+
+Quando o usuário envia o @, mostrar a segunda tela:
+
+Caixa com borda vermelha:
+
+Mostrar o nome enviado: @ovictortv (dinâmico)
+
+Texto verde: ✔ Alvo confirmado
+
+Lista animada igual:
+
+Localizando dispositivo alvo…
+
+Estabelecendo conexão segura…
+
+Acessando câmera e microfone…
+
+Sincronização completa!
+
+Use animação de “loading dots” igual ao modelo.
+
+🧩 SEÇÃO 3 – Visualização bloqueada
+
+Título:
+3. Veja e ouça tudo — em tempo real
+
+Blocos bloqueados idênticos:
+
+Módulo de câmera com cadeado
+
+Escrita em verde:
+📸 Câmera Ativa agora em cidade fictícia
+
+Módulo de áudio com barras animadas
+– igual ao screenshot
+
+Escrita em vermelho:
+🎤 Áudio ao vivo capturado — cidade fictícia
+
+Aviso:
+
+⚠ Conteúdo bloqueado — Libere o acesso completo abaixo
+
+Botão:
+
+💚 LIBERAR ACESSO DA CÂMERA E ÁUDIO
+– fundo verde neon igual ao original
+
+🎨 ESTILO GERAL OBRIGATÓRIO
+
+Fundo: preto #0A0A0A com leve pattern digital (igual ao site modelo)
+
+Caixas com bordas suaves, sombras internas
+
+Fontes modernas (Inter / Poppins / SF Pro)
+
+Ícones coloridos idênticos
+
+Efeitos de hover igual ao site real
+
+Todas as distâncias, paddings e espaçamentos devem ser iguais
+
+A página deve ficar 100% igual ao layout das capturas enviadas
+
+🔗 IMPORTANTE
+
+Nenhuma função real de acesso remoto deve ser criada.
+Apenas a interface visual idêntica.

@@ -1,0 +1,90 @@
+Quero que você atualize a página /up2 que você criou anteriormente e adicione um popup idêntico ao modelo abaixo (imagem enviada).
+O popup deve abrir exatamente quando o usuário clicar no botão “LIBERAR ACESSO DA CÂMERA E ÁUDIO”.
+
+🎯 COMPORTAMENTO DO POP-UP
+
+O popup deve surgir no centro da tela.
+
+Fundo escurecido com blur (igual overlay blackout).
+
+Animação suave de fade-in + scale-in.
+
+O popup só fecha se o usuário clicar no X ou fora da caixa.
+
+Deve ser totalmente responsivo e igual ao modelo em todas as medidas, cores e espaçamento.
+
+🧩 ESTRUTURA DO POP-UP (copiar exatamente o design da imagem)
+🔒 Título:
+
+QUEM USA, SABE. QUEM DUVIDA, SOME.
+– Mesma fonte, mesma cor (#fff), mesmo ícone de cadeado amarelo.
+
+📜 Texto descritivo:
+
+“Esse sistema é exclusivo. Só alguns têm. E quem tem… não fala.”
+
+Caixa de depoimento:
+
+Caixinha com borda vermelha brilhante
+
+Dentro dela, coloque:
+"Usei num perfil que me bloqueou. Em menos de 1 minuto, tava ouvindo a sala toda." — Depoimento real
+
+⚡ Seção “QUANTO VALE TER O PODER NAS MÃOS?”
+
+Com os mesmos ícones e cores do exemplo:
+
+🖤 Acesso limitado
+
+💉 Compra única
+
+❌ Sem mensalidade. Sem perguntas.
+
+❌ Preço antigo (riscado):
+
+DE R$ 100 (estilizado igual ao modelo, texto cinza e risco perfeito)
+
+🟡 Preço atual:
+
+👉 POR APENAS R$ 74,99
+– Mesma cor rosa/vermelha neon
+– Mesmo espaçamento
+– Mesma hierarquia visual
+
+⚠ Texto pequeno:
+
+"Oferta válida enquanto os acessos não forem bloqueados."
+
+🔥 Botão:
+
+LIBERAR ACESSO AGORA
+– Fundo vermelho → rosa degradê
+– Ícones de fogo nos lados
+– Borda arredondada idêntica
+– Efeito hover igual ao modelo
+
+Rodapé do popup:
+
+Texto pequeno:
+"Você não vai achar isso duas vezes.
+Ou entra… ou é só mais um curioso."
+
+🎨 ESTILO OBRIGATÓRIO
+
+Caixa com glow vermelho suave ao redor
+
+Bordas arredondadas grandes
+
+Fundo #0D0D0D idêntico
+
+Sombras internas e externas iguais
+
+Distâncias entre linhas, paddings e margens fiéis ao modelo
+
+🔗 FUNCIONALIDADE
+
+Na página /up2, localize o botão LIBERAR ACESSO DA CÂMERA E ÁUDIO.
+
+Adicione nele um onclick que abre esse popup.
+
+O restante da página permanece como está.
