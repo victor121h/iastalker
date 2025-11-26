@@ -82,11 +82,11 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.3 }}
-            className="w-full pt-2"
+            className="w-full pt-2 flex justify-center"
           >
             <button 
               onClick={() => router.push('/search')}
-              className="w-full h-[48px] rounded-full font-semibold text-white text-[15px] flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
+              className="px-8 h-[48px] rounded-full font-semibold text-white text-[15px] flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
               style={{
                 background: 'linear-gradient(90deg, #f56040 0%, #f77737 50%, #fcaf45 100%)'
               }}
