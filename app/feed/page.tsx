@@ -126,7 +126,7 @@ function FeedContent() {
                 <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            <h1 className="text-white text-2xl font-serif italic tracking-tight">Instagram</h1>
+            <img src="/logo-instagram.png" alt="Instagram" className="h-[32px] w-auto" />
           </div>
           <div className="flex items-center gap-5">
             <button className="relative">
