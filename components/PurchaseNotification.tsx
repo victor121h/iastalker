@@ -85,8 +85,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                 </svg>
               </button>
 
-              <div className="flex items-center gap-3">
-                <div className="flex-1">
+              <div>
+                <div className="flex-1 mb-3">
                   <h3 className="text-white font-bold text-[14px] leading-tight mb-1">
                     No momento o seu acesso só permite visualização do conteúdo.
                   </h3>
@@ -97,12 +97,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
 
                 <button
                   onClick={handlePurchase}
-                  className="flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-transform hover:scale-105 active:scale-95"
+                  className="w-full py-2.5 rounded-lg font-bold text-[13px] text-white transition-all hover:opacity-90 active:scale-[0.98]"
                   style={{ background: '#991B1B' }}
                 >
-                  <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                    <path d="M8.59 16.59L13.17 12 8.59 7.41 10 6l6 6-6 6-1.41-1.41z"/>
-                  </svg>
+                  Assine agora clicando aqui
                 </button>
               </div>
             </div>
