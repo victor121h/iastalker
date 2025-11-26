@@ -174,7 +174,11 @@ function DirectContent() {
       <header className="sticky top-0 z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
         <div className="flex items-center justify-between px-4 h-[52px]">
           <div className="flex items-center gap-1">
-            <span className="text-white text-[18px] font-semibold">{username}</span>
+            <img 
+              src="/logo-insta.png" 
+              alt="Instagram" 
+              className="h-[29px] w-auto"
+            />
             <svg width="12" height="12" viewBox="0 0 24 24" fill="white" className="mt-0.5">
               <path d="M7 10l5 5 5-5z"/>
             </svg>
