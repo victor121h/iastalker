@@ -108,6 +108,13 @@ function FeedContent() {
     }))
   ];
 
+  const posts = [
+    { id: 1, likes: 12, comments: 5, shares: 3, date: '24 de novembro', time: '22:47', userIndex: 0 },
+    { id: 2, likes: 47, comments: 12, shares: 8, date: '23 de novembro', time: '18:32', userIndex: 1 },
+    { id: 3, likes: 89, comments: 23, shares: 15, date: '22 de novembro', time: '14:15', userIndex: 2 },
+    { id: 4, likes: 156, comments: 34, shares: 21, date: '21 de novembro', time: '09:28', userIndex: 3 },
+  ];
+
   return (
     <div className="min-h-screen bg-[#000]">
       {/* Header */}
@@ -185,107 +192,118 @@ function FeedContent() {
         </div>
       </div>
 
-      {/* Post */}
-      <motion.article
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, delay: 0.2 }}
-        className="bg-[#000]"
-      >
-        {/* Post Header */}
-        <div className="flex items-center justify-between px-3 py-2.5">
-          <div className="flex items-center gap-2.5">
-            <div className="relative">
-              <div className="w-8 h-8 rounded-full bg-[#262626] flex items-center justify-center overflow-hidden">
-                {following.length > 0 && following[0]?.avatar ? (
-                  <img 
-                    src={getProxiedAvatar(following[0].avatar)} 
-                    alt="" 
-                    className="w-full h-full object-cover"
-                  />
-                ) : (
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#666">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+      {/* Posts */}
+      <div className="pb-16">
+        {posts.map((post, index) => {
+          const postUser = following[post.userIndex] || null;
+          const postAvatar = postUser?.avatar ? getProxiedAvatar(postUser.avatar) : `https://i.pravatar.cc/40?img=${post.userIndex + 10}`;
+          const postUsername = postUser ? censorName(postUser.username) : maskedUsername;
+          
+          return (
+            <motion.article
+              key={post.id}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.35, delay: 0.2 + index * 0.1 }}
+              className="bg-[#000] border-b border-[#262626]"
+            >
+              {/* Post Header */}
+              <div className="flex items-center justify-between px-3 py-2.5">
+                <div className="flex items-center gap-2.5">
+                  <div className="relative">
+                    <div className="w-8 h-8 rounded-full bg-[#262626] flex items-center justify-center overflow-hidden">
+                      {postUser?.avatar ? (
+                        <img 
+                          src={postAvatar} 
+                          alt="" 
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <svg width="14" height="14" viewBox="0 0 24 24" fill="#666">
+                          <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                        </svg>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-white text-[13px] font-semibold">{postUsername}</span>
+                    <span className="text-[#A0A0A0] text-[11px]">{location}</span>
+                  </div>
+                </div>
+                <button className="p-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <circle cx="12" cy="5" r="2"/>
+                    <circle cx="12" cy="12" r="2"/>
+                    <circle cx="12" cy="19" r="2"/>
                   </svg>
-                )}
+                </button>
               </div>
-            </div>
-            <div className="flex flex-col">
-              <span className="text-white text-[13px] font-semibold">{following.length > 0 ? censorName(following[0].username) : maskedUsername}</span>
-              <span className="text-[#A0A0A0] text-[11px]">{location}</span>
-            </div>
-          </div>
-          <button className="p-2">
-            <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-              <circle cx="12" cy="5" r="2"/>
-              <circle cx="12" cy="12" r="2"/>
-              <circle cx="12" cy="19" r="2"/>
-            </svg>
-          </button>
-        </div>
 
-        {/* Post Content - Restricted */}
-        <div className="bg-[#0C1011] aspect-square flex flex-col items-center justify-center">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.4, delay: 0.3 }}
-            className="flex flex-col items-center gap-3"
-          >
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="#666" className="opacity-80">
-              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
-            </svg>
-            <span className="text-[#B0B0B0] text-[15px]">Conteúdo restrito</span>
-            <span className="text-[#666] text-[12px]">24/11/2024 - 22:47</span>
-          </motion.div>
-        </div>
+              {/* Post Content - Restricted */}
+              <div className="bg-[#0C1011] aspect-square flex flex-col items-center justify-center">
+                <motion.div
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.4, delay: 0.3 + index * 0.1 }}
+                  className="flex flex-col items-center gap-3"
+                >
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="#666" className="opacity-80">
+                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+                  </svg>
+                  <span className="text-[#B0B0B0] text-[15px]">Conteúdo restrito</span>
+                  <span className="text-[#666] text-[12px]">{post.date.split(' de ')[0]}/11/2024 - {post.time}</span>
+                </motion.div>
+              </div>
 
-        {/* Post Actions */}
-        <div className="px-3 py-2.5">
-          <div className="flex items-center justify-between mb-2">
-            <div className="flex items-center gap-4">
-              <button className="flex items-center gap-1" onClick={showNotification}>
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF3B30">
-                  <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
-                </svg>
-              </button>
-              <button className="flex items-center gap-1.5">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                  <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="text-white text-[13px]">5</span>
-              </button>
-              <button className="flex items-center gap-1.5">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                  <path d="M17 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M3 11V9a4 4 0 0 1 4-4h14" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M7 23l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M21 13v2a4 4 0 0 1-4 4H3" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-                <span className="text-white text-[13px]">3</span>
-              </button>
-              <button>
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                  <path d="M22 2L11 13" strokeLinecap="round" strokeLinejoin="round"/>
-                  <path d="M22 2l-7 20-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-            </div>
-            <button>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-          </div>
+              {/* Post Actions */}
+              <div className="px-3 py-2.5">
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-4">
+                    <button className="flex items-center gap-1" onClick={showNotification}>
+                      <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF3B30">
+                        <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+                      </svg>
+                    </button>
+                    <button className="flex items-center gap-1.5" onClick={showNotification}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-white text-[13px]">{post.comments}</span>
+                    </button>
+                    <button className="flex items-center gap-1.5" onClick={showNotification}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                        <path d="M17 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M3 11V9a4 4 0 0 1 4-4h14" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M7 23l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M21 13v2a4 4 0 0 1-4 4H3" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                      <span className="text-white text-[13px]">{post.shares}</span>
+                    </button>
+                    <button onClick={showNotification}>
+                      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                        <path d="M22 2L11 13" strokeLinecap="round" strokeLinejoin="round"/>
+                        <path d="M22 2l-7 20-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round"/>
+                      </svg>
+                    </button>
+                  </div>
+                  <button onClick={showNotification}>
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                      <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                  </button>
+                </div>
 
-          <div className="text-white text-[13px] font-semibold mb-1">
-            12 curtidas
-          </div>
-          <div className="text-[#A0A0A0] text-[11px]">
-            24 de novembro
-          </div>
-        </div>
-      </motion.article>
+                <div className="text-white text-[13px] font-semibold mb-1">
+                  {post.likes} curtidas
+                </div>
+                <div className="text-[#A0A0A0] text-[11px]">
+                  {post.date}
+                </div>
+              </div>
+            </motion.article>
+          );
+        })}
+      </div>
 
       {/* Bottom Navigation */}
       <nav className="fixed bottom-0 left-0 right-0 h-[50px] bg-[#000] border-t border-[#262626] flex items-center justify-around px-2">
