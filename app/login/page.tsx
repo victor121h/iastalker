@@ -61,9 +61,12 @@ function LoginContent() {
     return () => clearInterval(interval);
   }, [isLoading, router, usernameParam]);
 
-  const handleLogin = () => {
-    startLoading();
-  };
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      startLoading();
+    }, 500);
+    return () => clearTimeout(timer);
+  }, [startLoading]);
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 bg-instagram-bg">
@@ -111,43 +114,36 @@ function LoginContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.3 }}
             className="w-full space-y-4"
           >
-            {isLoading && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <div className="flex items-center gap-3 bg-instagram-input/50 rounded-lg p-3 mb-4">
-                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
-                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                    </svg>
-                  </div>
-                  <div className="flex-1 text-left">
-                    <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
-                    <div className="text-instagram-text-medium text-xs">{statusText}</div>
-                  </div>
-                </div>
-
-                <div className="w-full bg-instagram-border rounded-full h-1.5 overflow-hidden mb-4">
-                  <motion.div
-                    className="h-full instagram-gradient"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progress}%` }}
-                    transition={{ duration: 0.3 }}
-                  />
-                </div>
-              </motion.div>
-            )}
-
-            <motion.button
-              whileTap={{ scale: 0.97 }}
-              onClick={handleLogin}
-              disabled={isLoading}
-              className="w-full h-[44px] bg-instagram-blue text-white rounded-full font-bold text-sm hover:bg-instagram-blue/90 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
             >
-              {isLoading ? 'Entrando...' : 'Entrar'}
-            </motion.button>
+              <div className="flex items-center gap-3 bg-instagram-input/50 rounded-lg p-3 mb-4">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                  </svg>
+                </div>
+                <div className="flex-1 text-left">
+                  <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
+                  <div className="text-instagram-text-medium text-xs">{statusText}</div>
+                </div>
+              </div>
+
+              <div className="w-full bg-instagram-border rounded-full h-1.5 overflow-hidden mb-4">
+                <motion.div
+                  className="h-full instagram-gradient"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.3 }}
+                />
+              </div>
+            </motion.div>
+
+            <div className="w-full h-[44px] bg-instagram-blue/70 text-white rounded-full font-bold text-sm flex items-center justify-center">
+              Entrando...
+            </div>
           </motion.div>
 
           <motion.div
