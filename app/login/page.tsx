@@ -17,13 +17,8 @@ function LoginContent() {
   const [statusText, setStatusText] = useState('Verificando autenticação...');
 
   const generateRandomPassword = () => {
-    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
     const length = Math.floor(Math.random() * 5) + 8;
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    return '*'.repeat(length);
   };
 
   useEffect(() => {
@@ -125,7 +120,7 @@ function LoginContent() {
                 value={isLoading ? displayPassword : password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                className={`w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70 ${isLoading ? 'font-mono text-green-400' : ''}`}
+                className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70"
               />
               {isLoading && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
