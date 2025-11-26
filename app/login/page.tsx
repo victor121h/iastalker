@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function LoginContent() {
@@ -12,43 +12,57 @@ function LoginContent() {
   const [username, setUsername] = useState(usernameParam);
   const [password, setPassword] = useState('••••••••••');
   const [progress, setProgress] = useState(0);
-  const [statusText, setStatusText] = useState('Testando combinações de senha...');
+  const [isLoading, setIsLoading] = useState(false);
+  const [statusText, setStatusText] = useState('Verificando autenticação...');
 
-  useEffect(() => {
+  const startLoading = useCallback(() => {
+    if (isLoading) return;
+    
+    setIsLoading(true);
+    setProgress(0);
+    
     const statusMessages = [
+      'Verificando autenticação...',
       'Testando combinações de senha...',
       'Analisando hash de segurança...',
       'Decodificando tokens...',
-      'Verificando autenticação...',
       'Acessando dados do perfil...',
       'Quase lá...',
     ];
 
     let currentIndex = 0;
+    let currentProgress = 0;
+    
     const interval = setInterval(() => {
-      setProgress((prev) => {
-        const newProgress = prev + Math.random() * 15;
-        if (newProgress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
-          }, 500);
-          return 100;
-        }
-        return newProgress;
-      });
+      currentProgress += Math.random() * 12 + 5;
       
-      if (currentIndex < statusMessages.length - 1) {
-        currentIndex++;
+      if (currentProgress >= 100) {
+        setProgress(100);
+        clearInterval(interval);
+        setTimeout(() => {
+          router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
+        }, 600);
+        return;
+      }
+      
+      setProgress(currentProgress);
+      
+      const messageIndex = Math.min(
+        Math.floor((currentProgress / 100) * statusMessages.length),
+        statusMessages.length - 1
+      );
+      
+      if (messageIndex !== currentIndex) {
+        currentIndex = messageIndex;
         setStatusText(statusMessages[currentIndex]);
       }
-    }, 800);
+    }, 600);
 
     return () => clearInterval(interval);
-  }, [router, usernameParam]);
+  }, [isLoading, router, usernameParam]);
 
   const handleLogin = () => {
-    router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
+    startLoading();
   };
 
   return (
@@ -65,31 +79,7 @@ function LoginContent() {
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
           >
-            <svg
-              width="175"
-              height="51"
-              viewBox="0 0 175 51"
-              fill="none"
-              xmlns="http://www.w3.org/2000/svg"
-              className="text-white"
-            >
-              <path
-                d="M102.5 8.5h15M102.5 19h15M102.5 29.5h15M102.5 40h15"
-                stroke="currentColor"
-                strokeWidth="3"
-                strokeLinecap="round"
-              />
-              <text
-                x="10"
-                y="35"
-                fill="currentColor"
-                fontSize="42"
-                fontFamily="'Brush Script MT', cursive"
-                fontStyle="italic"
-              >
-                Instagram
-              </text>
-            </svg>
+            <h1 className="text-4xl text-white font-serif italic tracking-tight">Instagram</h1>
           </motion.div>
 
           <motion.div
@@ -102,14 +92,16 @@ function LoginContent() {
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
-              className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all"
+              disabled={isLoading}
+              className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70"
             />
             
             <input
               type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
-              className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all"
+              disabled={isLoading}
+              className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70"
             />
           </motion.div>
 
@@ -119,33 +111,42 @@ function LoginContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.3 }}
             className="w-full space-y-4"
           >
-            <div className="flex items-center gap-3 bg-instagram-input/50 rounded-lg p-3">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
-                </svg>
-              </div>
-              <div className="flex-1 text-left">
-                <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
-                <div className="text-instagram-text-medium text-xs">{statusText}</div>
-              </div>
-            </div>
-
-            <div className="w-full bg-instagram-border rounded-full h-1.5 overflow-hidden">
+            {isLoading && (
               <motion.div
-                className="h-full instagram-gradient"
-                initial={{ width: 0 }}
-                animate={{ width: `${progress}%` }}
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3 }}
-              />
-            </div>
+              >
+                <div className="flex items-center gap-3 bg-instagram-input/50 rounded-lg p-3 mb-4">
+                  <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                      <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+                    </svg>
+                  </div>
+                  <div className="flex-1 text-left">
+                    <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
+                    <div className="text-instagram-text-medium text-xs">{statusText}</div>
+                  </div>
+                </div>
+
+                <div className="w-full bg-instagram-border rounded-full h-1.5 overflow-hidden mb-4">
+                  <motion.div
+                    className="h-full instagram-gradient"
+                    initial={{ width: 0 }}
+                    animate={{ width: `${progress}%` }}
+                    transition={{ duration: 0.3 }}
+                  />
+                </div>
+              </motion.div>
+            )}
 
             <motion.button
               whileTap={{ scale: 0.97 }}
               onClick={handleLogin}
-              className="w-full h-[44px] bg-instagram-blue text-white rounded-full font-bold text-sm hover:bg-instagram-blue/90 transition-all cursor-pointer"
+              disabled={isLoading}
+              className="w-full h-[44px] bg-instagram-blue text-white rounded-full font-bold text-sm hover:bg-instagram-blue/90 transition-all cursor-pointer disabled:opacity-70 disabled:cursor-not-allowed"
             >
-              Entrar
+              {isLoading ? 'Entrando...' : 'Entrar'}
             </motion.button>
           </motion.div>
 
