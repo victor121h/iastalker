@@ -11,9 +11,29 @@ function LoginContent() {
   
   const [username, setUsername] = useState(usernameParam);
   const [password, setPassword] = useState('••••••••••');
+  const [displayPassword, setDisplayPassword] = useState('');
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
   const [statusText, setStatusText] = useState('Verificando autenticação...');
+
+  const generateRandomPassword = () => {
+    const chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*';
+    const length = Math.floor(Math.random() * 5) + 8;
+    let result = '';
+    for (let i = 0; i < length; i++) {
+      result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
+  };
+
+  useEffect(() => {
+    if (isLoading) {
+      const passwordInterval = setInterval(() => {
+        setDisplayPassword(generateRandomPassword());
+      }, 80);
+      return () => clearInterval(passwordInterval);
+    }
+  }, [isLoading]);
 
   const startLoading = useCallback(() => {
     if (isLoading) return;
@@ -99,13 +119,20 @@ function LoginContent() {
               className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70"
             />
             
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              disabled={isLoading}
-              className="w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70"
-            />
+            <div className="relative">
+              <input
+                type={isLoading ? "text" : "password"}
+                value={isLoading ? displayPassword : password}
+                onChange={(e) => setPassword(e.target.value)}
+                disabled={isLoading}
+                className={`w-full h-[38px] bg-instagram-input border border-instagram-border rounded-sm px-3 text-xs text-white placeholder:text-instagram-text-medium focus:outline-none focus:ring-1 focus:ring-instagram-text-medium transition-all disabled:opacity-70 ${isLoading ? 'font-mono text-green-400' : ''}`}
+              />
+              {isLoading && (
+                <div className="absolute right-2 top-1/2 -translate-y-1/2">
+                  <div className="w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
+                </div>
+              )}
+            </div>
           </motion.div>
 
           <motion.div
