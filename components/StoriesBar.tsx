@@ -15,11 +15,18 @@ interface StoriesBarProps {
 }
 
 export default function StoriesBar({ targetUsername, targetAvatar }: StoriesBarProps) {
+  const getProxiedAvatar = (url: string) => {
+    if (url.includes('cdninstagram.com') || url.includes('fbcdn.net')) {
+      return `/api/proxy-image?url=${encodeURIComponent(url)}`;
+    }
+    return url;
+  };
+
   const mockStories: Story[] = [
     { 
       id: 1, 
       username: targetUsername ? `${targetUsername.charAt(0)}*****` : 'Seu story', 
-      avatar: targetAvatar || 'https://i.pravatar.cc/68?img=1', 
+      avatar: targetAvatar ? getProxiedAvatar(targetAvatar) : 'https://i.pravatar.cc/68?img=1', 
       isLocked: false 
     },
     { id: 2, username: 'm*****', avatar: 'https://i.pravatar.cc/68?img=5', isLocked: true },

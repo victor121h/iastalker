@@ -131,7 +131,11 @@ function FeedContent() {
         <button className="hover:opacity-70 transition-opacity">
           <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
             {profile?.avatar ? (
-              <img src={profile.avatar} alt="" className="w-full h-full object-cover" />
+              <img 
+                src={`/api/proxy-image?url=${encodeURIComponent(profile.avatar)}`} 
+                alt="" 
+                className="w-full h-full object-cover" 
+              />
             ) : (
               <div className="w-full h-full bg-instagram-border" />
             )}
