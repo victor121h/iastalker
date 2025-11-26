@@ -98,11 +98,13 @@ function DirectContent() {
     return url;
   };
 
+  const profileAvatar = profile?.avatar ? getProxiedAvatar(profile.avatar) : '';
+  
   const stories: Story[] = [
     { 
       id: 0, 
       username: 'Conte as novidades', 
-      avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : '', 
+      avatar: profileAvatar, 
       isBlurred: false,
       isFirst: true,
       isLocked: false
@@ -209,7 +211,7 @@ function DirectContent() {
           )}
           {stories.map((story, index) => (
             <motion.div
-              key={story.id}
+              key={`${story.id}-${story.avatar || 'empty'}`}
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
@@ -227,7 +229,18 @@ function DirectContent() {
                 >
                   <div className={`bg-[#000] rounded-full ${story.isFirst ? 'p-0' : 'p-[2px]'}`}>
                     <div className="relative">
-                      {story.avatar ? (
+                      {story.isFirst ? (
+                        profileAvatar ? (
+                          <img
+                            key={`first-story-${profileAvatar}`}
+                            src={profileAvatar}
+                            alt={story.username}
+                            className="w-[56px] h-[56px] rounded-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
+                        )
+                      ) : story.avatar ? (
                         <img
                           key={story.avatar}
                           src={story.avatar}
