@@ -1,76 +1,83 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, memo } from 'react';
 
-export default function MatrixBackground() {
+function MatrixBackgroundComponent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
+  const animationRef = useRef<number>(0);
+  const dropsRef = useRef<number[]>([]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { alpha: false });
     if (!ctx) return;
 
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
+    const resize = () => {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const fontSize = 16;
+      const columns = Math.floor(canvas.width / fontSize);
+      dropsRef.current = Array(columns).fill(0).map(() => Math.random() * -50);
+    };
 
-    const letters = 'DEEPGRAMINSTAGRAMABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789@#$%&*';
-    const fontSize = 14;
-    const columns = canvas.width / fontSize;
-    const drops: number[] = [];
+    resize();
 
-    for (let i = 0; i < columns; i++) {
-      drops[i] = Math.random() * -100;
-    }
+    const letters = 'DEEPGRAM01';
+    const fontSize = 16;
+    let lastTime = 0;
+    const fps = 20;
+    const frameInterval = 1000 / fps;
 
-    const draw = () => {
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    const draw = (timestamp: number) => {
+      if (timestamp - lastTime < frameInterval) {
+        animationRef.current = requestAnimationFrame(draw);
+        return;
+      }
+      lastTime = timestamp;
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       ctx.fillStyle = '#f56040';
       ctx.font = `${fontSize}px monospace`;
 
+      const drops = dropsRef.current;
       for (let i = 0; i < drops.length; i++) {
         const text = letters[Math.floor(Math.random() * letters.length)];
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        const gradient = ctx.createLinearGradient(x, y - fontSize * 10, x, y);
-        gradient.addColorStop(0, 'rgba(245, 96, 64, 0.1)');
-        gradient.addColorStop(0.5, 'rgba(252, 175, 69, 0.3)');
-        gradient.addColorStop(1, 'rgba(255, 220, 128, 0.5)');
-
-        ctx.fillStyle = gradient;
+        ctx.fillStyle = `rgba(255, ${150 + Math.random() * 50}, ${50 + Math.random() * 30}, 0.4)`;
         ctx.fillText(text, x, y);
 
-        if (y > canvas.height && Math.random() > 0.975) {
+        if (y > canvas.height && Math.random() > 0.95) {
           drops[i] = 0;
         }
         drops[i]++;
       }
+
+      animationRef.current = requestAnimationFrame(draw);
     };
 
-    const interval = setInterval(draw, 35);
-
-    const handleResize = () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-
-    window.addEventListener('resize', handleResize);
+    animationRef.current = requestAnimationFrame(draw);
+    window.addEventListener('resize', resize);
 
     return () => {
-      clearInterval(interval);
-      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(animationRef.current);
+      window.removeEventListener('resize', resize);
     };
   }, []);
 
   return (
     <canvas
       ref={canvasRef}
-      className="fixed inset-0 pointer-events-none opacity-20"
+      className="fixed inset-0 pointer-events-none opacity-15"
       style={{ zIndex: 0 }}
     />
   );
 }
+
+const MatrixBackground = memo(MatrixBackgroundComponent);
+export default MatrixBackground;
