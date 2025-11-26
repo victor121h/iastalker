@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useNotification } from '@/components/PurchaseNotification';
 
 interface ProfileData {
   username: string;
@@ -58,6 +59,7 @@ function DirectContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [loadingFollowing, setLoadingFollowing] = useState(false);
+  const { showNotification } = useNotification();
 
   useEffect(() => {
     if (username) {
@@ -211,7 +213,8 @@ function DirectContent() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.3, delay: index * 0.05 }}
-              className="flex flex-col items-center gap-1.5 flex-shrink-0"
+              className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer"
+              onClick={() => story.isLocked && showNotification()}
             >
               <div className="relative">
                 <div 
@@ -317,25 +320,25 @@ function DirectContent() {
       </div>
 
       <nav className="fixed bottom-0 left-0 right-0 h-[50px] bg-[#000] border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around px-2">
-        <button className="p-3">
+        <button className="p-3" onClick={showNotification}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z" strokeLinecap="round" strokeLinejoin="round"/>
           </svg>
         </button>
-        <button className="p-3">
+        <button className="p-3" onClick={showNotification}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
           </svg>
         </button>
-        <button className="p-3">
+        <button className="p-3" onClick={showNotification}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
             <rect x="3" y="3" width="18" height="18" rx="2"/>
             <line x1="12" y1="8" x2="12" y2="16"/>
             <line x1="8" y1="12" x2="16" y2="12"/>
           </svg>
         </button>
-        <button className="p-3 relative">
+        <button className="p-3 relative" onClick={showNotification}>
           <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
             <path d="M22 3l-1.67 1.67C18.09 3.26 15.66 2 13 2 7.48 2 3 6.48 3 12s4.48 10 10 10c4.76 0 8.72-3.33 9.73-7.77H20.1c-.95 3.12-3.86 5.42-7.36 5.42-4.24 0-7.68-3.44-7.68-7.68 0-4.24 3.44-7.68 7.68-7.68 2.12 0 4.04.86 5.43 2.25L15 9.5h7V3z"/>
           </svg>
@@ -343,7 +346,7 @@ function DirectContent() {
             9+
           </span>
         </button>
-        <button className="p-3">
+        <button className="p-3" onClick={showNotification}>
           <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
             {profile?.avatar ? (
               <img 

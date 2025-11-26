@@ -69,11 +69,13 @@ app/
   globals.css       # Global styles
 
 components/
-  MatrixBackground.tsx    # Animated canvas background
-  DeepGramLogo.tsx       # Logo component
-  InstagramButton.tsx    # Reusable gradient button
-  StoriesBar.tsx         # Instagram stories bar
-  InstagramHeader.tsx    # Instagram-style header
+  MatrixBackground.tsx       # Animated canvas background
+  DeepGramLogo.tsx          # Logo component
+  InstagramButton.tsx       # Reusable gradient button
+  StoriesBar.tsx            # Instagram stories bar
+  InstagramHeader.tsx       # Instagram-style header
+  PurchaseNotification.tsx  # Purchase notification with payment redirect
+  ClientProviders.tsx       # Client-side context providers
 ```
 
 ## Recent Changes (Nov 26, 2025)
@@ -94,6 +96,15 @@ components/
   - Messages list with censored usernames, online indicators, unread badges
   - Camera icons, timestamps, and bottom navigation
   - Smooth Framer Motion animations
+- ✅ Added Purchase Notification Component:
+  - Red gradient card (top-center, border-radius: 14px)
+  - Title: "No momento o seu acesso só permite visualização do conteúdo."
+  - Subtitle: "Para poder mexer e ver de forma completa adquira a ferramenta do DeepGram."
+  - Purchase button redirects to: https://go.perfectpay.com.br/PPU38CQ3TAS
+  - Close button (X) in top-right corner
+  - 6-second auto-dismiss with fade-out animation
+  - Triggers: locked stories, like button, all bottom nav buttons
+  - Timer resets if another trigger action occurs
 
 ## API Integration
 - **HikerAPI Integration**: Real Instagram profile data via HikerAPI
