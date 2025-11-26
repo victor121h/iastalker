@@ -114,6 +114,8 @@ components/
 
 ## Environment Variables Required
 - `HIKERAPI_ACCESS_KEY`: Your HikerAPI access token for Instagram data
+- `GOOGLE_GEOLOCATION_API_KEY`: Google Geolocation API key for real-time location tracking
+  - Documentation: https://developers.google.com/maps/documentation/geolocation/overview?hl=pt-br
 
 ## Known Issues & Notes
 - Cross-origin dev warnings are expected in Replit environment
