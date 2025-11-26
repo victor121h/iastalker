@@ -2,6 +2,7 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import { useEffect, useState, useCallback, createContext, useContext } from 'react';
+import { useRouter } from 'next/navigation';
 
 interface NotificationContextType {
   showNotification: () => void;
@@ -18,6 +19,7 @@ export function useNotification() {
 }
 
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
   const [isVisible, setIsVisible] = useState(false);
   const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
 
@@ -44,8 +46,8 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [timerId]);
 
   const handlePurchase = useCallback(() => {
-    window.open('https://go.perfectpay.com.br/PPU38CQ3TAS', '_blank');
-  }, []);
+    router.push('/pitch');
+  }, [router]);
 
   useEffect(() => {
     return () => {
