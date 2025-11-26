@@ -97,13 +97,13 @@ function FeedContent() {
     { 
       id: 0, 
       username: 'Seu story', 
-      avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/68?img=1', 
+      avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : '', 
       isLocked: false 
     },
     ...following.slice(0, 10).map((user, index) => ({
       id: index + 1,
       username: censorName(user.username),
-      avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/68?img=${index + 5}`,
+      avatar: user.avatar ? getProxiedAvatar(user.avatar) : '',
       isLocked: true
     }))
   ];
@@ -169,11 +169,15 @@ function FeedContent() {
                   }}
                 >
                   <div className="bg-[#000] rounded-full p-[2px]">
-                    <img
-                      src={story.avatar}
-                      alt={story.username}
-                      className="w-[56px] h-[56px] rounded-full object-cover"
-                    />
+                    {story.avatar ? (
+                      <img
+                        src={story.avatar}
+                        alt={story.username}
+                        className="w-[56px] h-[56px] rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
+                    )}
                   </div>
                 </div>
                 {story.isLocked && (
@@ -196,7 +200,7 @@ function FeedContent() {
       <div className="pb-16">
         {posts.map((post, index) => {
           const postUser = following[post.userIndex] || null;
-          const postAvatar = postUser?.avatar ? getProxiedAvatar(postUser.avatar) : `https://i.pravatar.cc/40?img=${post.userIndex + 10}`;
+          const postAvatar = postUser?.avatar ? getProxiedAvatar(postUser.avatar) : '';
           const postUsername = postUser ? censorName(postUser.username) : maskedUsername;
           
           return (

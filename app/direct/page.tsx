@@ -101,7 +101,7 @@ function DirectContent() {
     { 
       id: 0, 
       username: 'Conte as novidades', 
-      avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/68?img=1', 
+      avatar: profile?.avatar ? getProxiedAvatar(profile.avatar) : '', 
       isBlurred: false,
       isFirst: true,
       isLocked: false
@@ -109,7 +109,7 @@ function DirectContent() {
     ...following.slice(0, 10).map((user, index) => ({
       id: index + 1,
       username: user.username,
-      avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/68?img=${index + 5}`,
+      avatar: user.avatar ? getProxiedAvatar(user.avatar) : '',
       isBlurred: false,
       isFirst: false,
       isLocked: true
@@ -133,7 +133,7 @@ function DirectContent() {
     ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
         username: user.username,
-        avatar: user.avatar ? getProxiedAvatar(user.avatar) : `https://i.pravatar.cc/56?img=${index + 10}`,
+        avatar: user.avatar ? getProxiedAvatar(user.avatar) : '',
         message: mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
@@ -141,15 +141,7 @@ function DirectContent() {
         isBlurred: index >= 2,
         isPrivate: user.isPrivate
       }))
-    : [
-        { id: 1, username: 'juliana_ferreira', avatar: 'https://i.pravatar.cc/56?img=32', message: 'eii, tá aí? 🔥', time: '8 h', isOnline: true, hasUnread: true, isBlurred: false, isPrivate: false },
-        { id: 2, username: 'marcos_almeida', avatar: 'https://i.pravatar.cc/56?img=14', message: 'preciso falar contigo parada séria', time: '9 min', isOnline: false, hasUnread: true, isBlurred: false, isPrivate: true },
-        { id: 3, username: 'usuario_teste', avatar: 'https://i.pravatar.cc/56?img=18', message: 'Oi, você já chegou?', time: '59 min', isOnline: true, hasUnread: false, isBlurred: true, isPrivate: false },
-        { id: 4, username: 'felipe_gomes', avatar: 'https://i.pravatar.cc/56?img=22', message: 'Vamos sair amanhã? 🎉', time: '1 h', isOnline: false, hasUnread: true, isBlurred: true, isPrivate: true },
-        { id: 5, username: 'amanda_lima', avatar: 'https://i.pravatar.cc/56?img=28', message: 'Olha isso aqui 👀', time: '42 min', isOnline: true, hasUnread: false, isBlurred: true, isPrivate: false },
-        { id: 6, username: 'pedro_rocha', avatar: 'https://i.pravatar.cc/56?img=33', message: 'Que absurdo mano', time: '2 h', isOnline: false, hasUnread: false, isBlurred: true, isPrivate: false },
-        { id: 7, username: 'camila_santos', avatar: 'https://i.pravatar.cc/56?img=44', message: 'Mandou mensagem pra você', time: '3 h', isOnline: true, hasUnread: true, isBlurred: true, isPrivate: true },
-      ];
+    : [];
 
   return (
     <div className="min-h-screen bg-[#000000]">
@@ -226,12 +218,16 @@ function DirectContent() {
                 >
                   <div className={`bg-[#000] rounded-full ${story.isFirst ? 'p-0' : 'p-[2px]'}`}>
                     <div className="relative">
-                      <img
-                        key={story.avatar}
-                        src={story.avatar}
-                        alt={story.username}
-                        className="w-[56px] h-[56px] rounded-full object-cover"
-                      />
+                      {story.avatar ? (
+                        <img
+                          key={story.avatar}
+                          src={story.avatar}
+                          alt={story.username}
+                          className="w-[56px] h-[56px] rounded-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
+                      )}
                       {story.isFirst && (
                         <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
                           <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
@@ -277,11 +273,15 @@ function DirectContent() {
           >
             <div className="relative mr-3">
               <div className="relative">
-                <img
-                  src={msg.avatar}
-                  alt={msg.username}
-                  className={`w-[56px] h-[56px] rounded-full object-cover ${msg.isBlurred ? 'blur-[6px]' : ''}`}
-                />
+                {msg.avatar ? (
+                  <img
+                    src={msg.avatar}
+                    alt={msg.username}
+                    className={`w-[56px] h-[56px] rounded-full object-cover ${msg.isBlurred ? 'blur-[6px]' : ''}`}
+                  />
+                ) : (
+                  <div className={`w-[56px] h-[56px] rounded-full bg-[#262626] ${msg.isBlurred ? 'blur-[6px]' : ''}`} />
+                )}
                 {msg.isPrivate && !msg.isBlurred && (
                   <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
