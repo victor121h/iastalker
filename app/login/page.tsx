@@ -1,16 +1,54 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 
-export default function LoginPage() {
-  const [username, setUsername] = useState('ovictortv');
-  const [password, setPassword] = useState('••••••••••');
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const usernameParam = searchParams.get('username') || 'usuario';
+  
+  const [username, setUsername] = useState(usernameParam);
+  const [password, setPassword] = useState('••••••••••');
+  const [progress, setProgress] = useState(0);
+  const [statusText, setStatusText] = useState('Testando combinações de senha...');
+
+  useEffect(() => {
+    const statusMessages = [
+      'Testando combinações de senha...',
+      'Analisando hash de segurança...',
+      'Decodificando tokens...',
+      'Verificando autenticação...',
+      'Acessando dados do perfil...',
+      'Quase lá...',
+    ];
+
+    let currentIndex = 0;
+    const interval = setInterval(() => {
+      setProgress((prev) => {
+        const newProgress = prev + Math.random() * 15;
+        if (newProgress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
+          }, 500);
+          return 100;
+        }
+        return newProgress;
+      });
+      
+      if (currentIndex < statusMessages.length - 1) {
+        currentIndex++;
+        setStatusText(statusMessages[currentIndex]);
+      }
+    }, 800);
+
+    return () => clearInterval(interval);
+  }, [router, usernameParam]);
 
   const handleLogin = () => {
-    router.push('/feed');
+    router.push(`/feed?username=${encodeURIComponent(usernameParam)}`);
   };
 
   return (
@@ -82,15 +120,24 @@ export default function LoginPage() {
             className="w-full space-y-4"
           >
             <div className="flex items-center gap-3 bg-instagram-input/50 rounded-lg p-3">
-              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0">
+              <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
                   <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                 </svg>
               </div>
               <div className="flex-1 text-left">
                 <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
-                <div className="text-instagram-text-medium text-xs">Testando combinações de senha...</div>
+                <div className="text-instagram-text-medium text-xs">{statusText}</div>
               </div>
+            </div>
+
+            <div className="w-full bg-instagram-border rounded-full h-1.5 overflow-hidden">
+              <motion.div
+                className="h-full instagram-gradient"
+                initial={{ width: 0 }}
+                animate={{ width: `${progress}%` }}
+                transition={{ duration: 0.3 }}
+              />
             </div>
 
             <motion.button
@@ -149,5 +196,13 @@ export default function LoginPage() {
         </motion.div>
       </motion.div>
     </main>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-instagram-bg" />}>
+      <LoginContent />
+    </Suspense>
   );
 }

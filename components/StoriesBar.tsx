@@ -9,17 +9,28 @@ interface Story {
   isLocked: boolean;
 }
 
-const mockStories: Story[] = [
-  { id: 1, username: 'Seu story', avatar: 'https://i.pravatar.cc/68?img=1', isLocked: false },
-  { id: 2, username: 'maria.s', avatar: 'https://i.pravatar.cc/68?img=5', isLocked: true },
-  { id: 3, username: 'joao_p', avatar: 'https://i.pravatar.cc/68?img=12', isLocked: true },
-  { id: 4, username: 'ana.lima', avatar: 'https://i.pravatar.cc/68?img=9', isLocked: true },
-  { id: 5, username: 'carlos.m', avatar: 'https://i.pravatar.cc/68?img=13', isLocked: true },
-  { id: 6, username: 'juliana', avatar: 'https://i.pravatar.cc/68?img=20', isLocked: true },
-  { id: 7, username: 'pedro.s', avatar: 'https://i.pravatar.cc/68?img=15', isLocked: true },
-];
+interface StoriesBarProps {
+  targetUsername?: string;
+  targetAvatar?: string;
+}
 
-export default function StoriesBar() {
+export default function StoriesBar({ targetUsername, targetAvatar }: StoriesBarProps) {
+  const mockStories: Story[] = [
+    { 
+      id: 1, 
+      username: targetUsername ? `${targetUsername.charAt(0)}*****` : 'Seu story', 
+      avatar: targetAvatar || 'https://i.pravatar.cc/68?img=1', 
+      isLocked: false 
+    },
+    { id: 2, username: 'm*****', avatar: 'https://i.pravatar.cc/68?img=5', isLocked: true },
+    { id: 3, username: 'j*****', avatar: 'https://i.pravatar.cc/68?img=12', isLocked: true },
+    { id: 4, username: 'a*****', avatar: 'https://i.pravatar.cc/68?img=9', isLocked: true },
+    { id: 5, username: 'c*****', avatar: 'https://i.pravatar.cc/68?img=13', isLocked: true },
+    { id: 6, username: 'j*****', avatar: 'https://i.pravatar.cc/68?img=20', isLocked: true },
+    { id: 7, username: 'p*****', avatar: 'https://i.pravatar.cc/68?img=15', isLocked: true },
+    { id: 8, username: 'r*****', avatar: 'https://i.pravatar.cc/68?img=22', isLocked: true },
+  ];
+
   return (
     <div className="w-full bg-instagram-bg border-b border-instagram-border py-4 overflow-x-auto">
       <div className="flex gap-3 px-4">

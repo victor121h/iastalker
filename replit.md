@@ -86,13 +86,19 @@ components/
 - ✅ Enabled login button and fixed design specs (22px radius, 44px height)
 - ✅ Configured workflow for port 5000 webview
 
+## API Integration
+- **HikerAPI Integration**: Real Instagram profile data via HikerAPI
+- **Endpoint**: `/api/instagram?username=<username>`
+- **Data Returned**: Username, name, avatar, bio, posts count, followers, following, verified status, private account status
+
+## Environment Variables Required
+- `HIKERAPI_ACCESS_KEY`: Your HikerAPI access token for Instagram data
+
 ## Known Issues & Notes
-- Cross-origin dev warnings are expected in Replit environment (configured allowedDevOrigins)
+- Cross-origin dev warnings are expected in Replit environment
 - Framer Motion may show findDOMNode warnings in StrictMode (known issue with version compatibility)
-- All screens use mock data (no real Instagram API integration)
 
 ## Future Enhancements
-- Add real Instagram API integration
 - Implement backend rate limiting (1 search per user)
 - Add session/cookie tracking
 - Create database for search history
