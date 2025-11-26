@@ -142,11 +142,15 @@ function PitchContent() {
                   style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)' }}
                 >
                   <div className="bg-[#0C1011] rounded-full p-[2px]">
-                    <img
-                      src={profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/80'}
-                      alt=""
-                      className="w-[64px] h-[64px] rounded-full object-cover"
-                    />
+                    {profile?.avatar ? (
+                      <img
+                        src={getProxiedAvatar(profile.avatar)}
+                        alt=""
+                        className="w-[64px] h-[64px] rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-[64px] h-[64px] rounded-full bg-[#262626]" />
+                    )}
                   </div>
                 </div>
               </div>
@@ -235,11 +239,15 @@ function PitchContent() {
                     className="p-[2px] rounded-full"
                     style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75)' }}
                   >
-                    <img
-                      src={profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/40'}
-                      alt=""
-                      className="w-10 h-10 rounded-full object-cover"
-                    />
+                    {profile?.avatar ? (
+                      <img
+                        src={getProxiedAvatar(profile.avatar)}
+                        alt=""
+                        className="w-10 h-10 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-10 h-10 rounded-full bg-[#262626]" />
+                    )}
                   </div>
                   <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF75] rounded-full border-2 border-[#0C1011]"></div>
                 </div>
@@ -306,11 +314,15 @@ function PitchContent() {
             <div className="bg-[#1A1A1A] rounded-xl p-3">
               <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#262626]">
                 <div className="relative">
-                  <img
-                    src={profile?.avatar ? getProxiedAvatar(profile.avatar) : 'https://i.pravatar.cc/40'}
-                    alt=""
-                    className="w-10 h-10 rounded-full object-cover"
-                  />
+                  {profile?.avatar ? (
+                    <img
+                      src={getProxiedAvatar(profile.avatar)}
+                      alt=""
+                      className="w-10 h-10 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-10 h-10 rounded-full bg-[#262626]" />
+                  )}
                   <div className="absolute -bottom-0.5 -right-0.5 w-3 h-3 bg-[#00FF75] rounded-full border-2 border-[#1A1A1A]"></div>
                 </div>
                 <div className="flex-1">
