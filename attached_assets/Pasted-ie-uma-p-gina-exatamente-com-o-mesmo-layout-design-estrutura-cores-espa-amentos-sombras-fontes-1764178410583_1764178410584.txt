@@ -1,0 +1,162 @@
+ie uma página exatamente com o mesmo layout, design, estrutura, cores, espaçamentos, sombras, fontes e estilo visual da página enviada nas referências.
+Use o design “DeepGram Style”: fundo escuro #0b0b0d, linhas verticais brilhantes ao fundo, cards arredondados, sombras fortes e botões com degradê rosa → laranja.
+
+A página deve conter:
+
+🔴 Header fixo no topo
+
+Altura ~65px
+
+Fundo vermelho degradê (#e61e25 → #c2171b)
+
+Ícone de seta para voltar (esquerda)
+
+Texto centralizado em branco: “Seu Acesso Exclusivo Expira em: 04:37”
+
+Ícone “X” à direita
+
+Fonte bold, tamanho 15px
+
+🟣 Card Principal – Estilo DeepGram
+
+Card central com os seguintes elementos:
+
+1. Logo DeepGram
+
+Ícone redondo colorido (degradê rosa → laranja)
+
+Palavra Deep em branco
+
+Palavra gram em rosa
+
+2. Título
+
+Texto grande, centralizado, cor #ff4d4d
+
+Ex: “Alerta de Segurança”
+(Você pode trocar o texto livremente, pois aqui é só exemplo.)
+
+3. Caixa interna (card menor)
+
+Fundo quase preto #111113
+
+Borda suave
+
+Blur leve
+
+Padding 20px
+
+Texto branco em parágrafos curtos
+
+Conteúdo exemplo seguro:
+
+Informações da sessão atual:
+
+Sistema operacional
+
+Navegador
+
+Data e hora
+
+(Sem IP, sem localização real.)
+
+🔻 Texto Informativo
+
+Parágrafo explicando alguma coisa neutra, ex:
+
+"Para continuar utilizando a plataforma, finalize sua validação abaixo."
+
+💰 Card de Pagamento / Ação
+
+Card com fundo escuro, borda arredondada, texto branco.
+
+Título em destaque: “Finalize a ativação”
+
+Subtítulo: “Complete o processo para acessar todos os recursos.”
+
+Valor em destaque grande
+
+Fonte bold, branca
+
+⏳ Timer
+
+Caixa larga
+
+Fundo vermelho escuro
+
+Texto branco
+
+Contagem regressiva animada (exemplo: 04:37)
+
+▶️ Botão Principal
+
+Botão grande com degradê rosa → laranja:
+
+ADQUIRIR ACESSO
+
+Propriedades:
+
+Bordas arredondadas
+
+Texto branco bold
+
+Hover com leve brilho
+
+Ícone “play” à direita
+
+📝 Rodapé Informativo
+
+Texto pequeno em branco opaco:
+
+“Processamento automático e seguro.”
+
+🎨 ESPECIFICAÇÕES DE DESIGN
+
+Para garantir que fique IGUAL, use:
+
+Cores
+
+Fundo principal: #0b0b0d
+
+Cards: #111113
+
+Texto principal: #ffffff
+
+Subtexto: #c7c7c7
+
+Destaques: #ff4d4d
+
+Degradê botões:
+
+Esquerda: #ff007f
+
+Direita: #ff7f00
+
+Bordas & Sombra
+
+Border-radius: 22px
+
+Sombra forte preta com opacidade 30%
+
+Blur leve (filtro glassmorphism)
+
+Fontes
+
+Fonte: Inter ou SF Pro Display
+
+Títulos: semibold/bold
+
+Texto: regular/medium
+
+Animações
+
+Fade-in suave ao carregar
+
+Timer piscando lentamente
+
+Botão com hover brilhante
+
+📌 IMPORTANTE
+
+O layout deve ser idêntico ao modelo, mudando apenas o texto para algo seguro.
+Estrutura, espaçamentos, estilo visual — tudo igual.

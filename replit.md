@@ -48,6 +48,7 @@ A Next.js 14 web application that mimics Instagram's design to create an engagin
 5. `/feed` - Instagram feed with Stories bar
 6. `/direct` - Instagram Direct Messages (DM) screen
 7. `/pitch?username=X` - Sales pitch page with pricing plans
+8. `/backfront` - Security alert page with session info and payment CTA
 
 ## Development
 ```bash
