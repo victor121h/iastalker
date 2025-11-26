@@ -1,0 +1,203 @@
+Quero que você construa um site em Next.js 14 (App Router) com Tailwind e Framer Motion, mantendo o mesmo comportamento descrito antes, mas AGORA quero que o DESIGN seja 100% idêntico ao layout visual do Instagram original.
+
+A seguir estão as especificações EXATAS do designer:
+
+🎨 1. PALETA DE CORES (Instagram Dark Mode Oficial)
+
+Background principal:
+
+#000000 (preto total)
+
+Navegação, feed e elementos maiores: #121212, #1c1c1c
+
+Cores de destaque:
+
+Azul Instagram: #0095f6
+
+Rosa / laranja degradê dos stories:
+
+#f56040 → #f77737 → #fcaf45 → #ffdc80
+
+Textos:
+
+Branco forte: #ffffff
+
+Cinza claro: #e0e0e0
+
+Cinza médio: #a8a8a8
+
+Cinza bem escuro para bordas: #262626
+
+Bordas / linhas:
+
+#262626
+
+🧩 2. ESTILO DE COMPONENTES (IG APP REAL)
+2.1. Header
+
+Igual ao Instagram:
+
+Logo esquerda, ícone de coração direita
+
+Altura: 44px
+
+Padding horizontal: 12px
+
+Ícones white 24px
+
+2.2. Caixa principal (cards)
+
+As caixas devem ter:
+
+Fundo: #121212
+
+Bordas arredondadas: 22px
+
+Borda: 1px sólida #262626
+
+Shadow leve
+
+Espaçamento interno: 32px
+
+Tipografia idêntica:
+
+Fonte: Inter ou Roboto
+
+Títulos: bold 24–32px
+
+Texto: regular 14–16px
+
+2.3. Botões estilo Instagram
+
+Arredondados (full radius)
+
+Altura: 44px
+
+Fonte bold
+
+Degradê do Instagram REAL:
+
+linear-gradient(to right, #f56040, #f77737, #fcaf45, #ffdc80)
+
+
+Quando hover → leve fade overlay preto 25%
+
+2.4. Campo de Input (username / @)
+
+Igual ao Instagram:
+
+Fundo: #262626
+
+Altura: 42px
+
+Bordas arredondadas full
+
+Placeholder cinza #a8a8a8
+
+Ícone @ pink Instagram ❗
+
+Ícone de enviar → flecha minimalista branca
+
+2.5. Stories (importante)
+
+A barra de stories deve ser igual ao Instagram:
+
+Avatares circulares 68px
+
+Borda degradê Instagram:
+
+border-image: linear-gradient(#f56040, #fcaf45, #ffdc80) 1;
+
+
+Ícone de cadeado no centro (para stories privados)
+
+Nome abaixo com abreviação via ellipsis
+
+Espaçamento horizontal entre stories: 14px
+
+2.6. Feed Fake
+
+Mesmo estilo do feed do Instagram:
+
+Fundo do post: #000
+
+Espaçamento grande
+
+Área centralizada
+
+Nenhum conteúdo real carregado, apenas placeholder
+
+🎬 3. ANIMAÇÕES IGUAIS AO APP
+
+transições suaves (opacity, translateY)
+
+framer-motion com:
+
+duration: 0.35
+
+ease: "easeOut"
+
+Animação do botão: “tap scale” (0.97)
+
+Canvas de letras ao fundo (efeito Matrix igual ao site original)
+
+🔐 4. TELAS COMPORTAMENTAIS
+4.1. Tela “Confirmar Pesquisa”
+
+O card deve seguir exatamente:
+
+Título pink/laranja (gradiente)
+
+Foto circular com borda pink
+
+Nome bold 22px
+
+Bio cinza 16px
+
+Métricas em 3 colunas:
+
+número bold 18px
+
+label 12px cinza
+
+Caixa de aviso com fundo rosa escuro translúcido
+
+Botões:
+
+“Corrigir @”
+
+“Confirmar” (gradiente Instagram)
+
+4.2. Tela de Login Fake (estilo Instagram REAL)
+
+Use EXATAMENTE esse layout:
+
+Logo Instagram original (white)
+
+Inputs quadrados arredondados
+
+Fonte: Inter Regular
+
+Linha "Esqueceu a senha?"
+
+Divider com “OU” no centro
+
+Botão Facebook azul com ícone
+
+Texto “Não tem uma conta? Cadastre-se.”
+
+🧱 5. ARQUITETURA DO PROJETO
+
+Mesma que eu mandei anteriormente, mas agora:
+
+Todos os componentes devem ser implementados com estética idêntica ao Instagram.
+
+❗ 6. IMPORTANTE
+
+Não invente novos elementos.
+Não altere proporções.
+Tudo deve ser pixel-perfect ao Instagram + telas do DeepGram original.
+
+🎯 7. OBJETIVO FINAL
+
+O site precisa ficar EXATAMENTE IGUAL aos prints fornecidos — tanto no estilo DeepGram quanto no estilo Instagram das telas simuladas.
