@@ -351,6 +351,7 @@ function DirectContent() {
           <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
             {profile?.avatar ? (
               <img 
+                key={profile.avatar}
                 src={getProxiedAvatar(profile.avatar)} 
                 alt="" 
                 className="w-full h-full object-cover" 
