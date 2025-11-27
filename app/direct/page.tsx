@@ -320,7 +320,7 @@ function DirectContent() {
   const messages: Message[] = following.length > 0 
     ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
-        username: user.username,
+        username: index === 1 ? 'L*****' : user.username,
         avatar: index === 0 ? chat1Avatar : index === 1 ? chat2Avatar : index === 2 ? chat3Avatar : (user.avatar || ''),
         message: mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
