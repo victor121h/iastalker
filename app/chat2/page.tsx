@@ -99,7 +99,7 @@ function Chat2Content() {
   const { showNotification } = useNotification();
   
   const username = searchParams.get('username') || '';
-  const profileAvatar = '/attached_assets/23408e565fc3f43454636fec27572d1f_1764244798332.jpg';
+  const profileAvatar = '/attached_assets/chat2_1764243660020.png';
   const [userCity, setUserCity] = useState<string>('São Paulo');
 
   useEffect(() => {

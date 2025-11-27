@@ -314,8 +314,8 @@ function DirectContent() {
   const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
 
   const chat1Avatar = '/attached_assets/chat2_1764243660020.png';
-  const chat2Avatar = '/attached_assets/23408e565fc3f43454636fec27572d1f_1764244798332.jpg';
-  const chat3Avatar = '/attached_assets/chat2-1_1764243715250.png';
+  const chat2Avatar = '/attached_assets/chat2_1764243660020.png';
+  const chat3Avatar = '/attached_assets/chat2_1764243660020.png';
   
   const messages: Message[] = following.length > 0 
     ? following.slice(0, 7).map((user, index) => ({

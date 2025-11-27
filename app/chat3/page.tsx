@@ -101,7 +101,7 @@ function Chat3Content() {
   const { showNotification } = useNotification();
   
   const username = searchParams.get('username') || '';
-  const profileAvatar = '/attached_assets/chat2-1_1764243715250.png';
+  const profileAvatar = '/attached_assets/chat2_1764243660020.png';
 
   const buildUrlWithParams = (path: string) => {
     const params = new URLSearchParams();
