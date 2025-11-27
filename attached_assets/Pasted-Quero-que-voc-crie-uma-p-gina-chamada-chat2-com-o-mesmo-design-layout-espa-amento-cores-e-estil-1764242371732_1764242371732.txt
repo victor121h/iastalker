@@ -1,0 +1,117 @@
+Quero que você crie uma página chamada /chat2 com o mesmo design, layout, espaçamento, cores e estilo da imagem que enviei.
+Reproduza tudo 100% igual, seguindo detalhadamente as instruções abaixo:
+
+🎨 FUNDO E ESTRUTURA GERAL
+
+Fundo deve ser cinza-escuro profundo, tom aproximado: #0F1215.
+
+Página em full width e full height, sem barras laterais.
+
+Sistema de chat idêntico ao Instagram Web (modo escuro).
+
+👤 BARRA SUPERIOR (TOPO DO CHAT)
+
+Reproduza exatamente:
+
+Foto do contato com borda em degradê rosa/roxo, igual ao Direct.
+
+Ícone de cadeado sobre a foto (igual à imagem).
+
+Nome do contato com asteriscos (ex.: j***).
+
+Status “offline” em texto pequeno, cor #9CA3AF.
+
+Ícones no lado direito:
+
+📞 chamada de voz
+
+🎥 chamada de vídeo
+
+Ambos brancos, iguais ao Direct.
+
+💬 ESTILO DAS MENSAGENS
+Mensagens recebidas (lado esquerdo)
+
+Balões arredondados com cor #1C2125.
+
+Texto branco (#FFFFFF).
+
+Balões não devem tocar nas bordas — manter o mesmo espaçamento da imagem.
+
+Trechos sensíveis borrados com Gaussian blur.
+
+Tamanho do balão deve se adaptar ao texto exato.
+
+Mensagens enviadas (lado direito)
+
+Balões roxos com gradiente (#7C3AED → #A855F7).
+
+Texto branco.
+
+Alinhamento totalmente à direita.
+
+Mesma forma arredondada do Instagram.
+
+🗺️ MENSAGEM DE LOCALIZAÇÃO (COMPARTILHAMENTO DE MAPA)
+
+Recrie o card exatamente como no print:
+
+Card de localização com:
+
+Mini mapa borrado no topo (imagem desfocada).
+
+Ícone de cadeado no centro (mesmo estilo do Direct).
+
+Abaixo: card escuro com:
+
+Texto “Localização atual” em branco.
+
+Texto “j***** está compartilhando” em cinza claro.
+
+Botão “Ver” em azul-escuro, com bordas arredondadas.
+
+Após o mapa, uma mensagem pequena “Em São Paulo viu” em balão cinza.
+
+📌 INPUT INFERIOR (CAIXA DE MENSAGEM)
+
+Criar exatamente igual ao Direct:
+
+Barra inferior fixa.
+
+Campo “Mensagem…” com placeholder cinza.
+
+Ícones no lado direito:
+
+Microfone
+
+Imagem
+
+Emoji
+
+Todos brancos, em estilo minimalista igual ao Instagram.
+
+📏 RESPONSIVIDADE
+
+O layout deve se comportar exatamente igual ao Instagram Web em desktop.
+
+Em mobile, manter proporções idênticas às do Direct.
+
+❗ INSTRUÇÕES FINAIS
+
+O design deve ficar idêntico ao da imagem.
+
+Não simplifique nenhum elemento.
+
+Mantenha:
+
+Espaçamentos
+
+Bordas
+
+Cores
+
+Sombras
+
+Tamanhos
+
+As mensagens devem aparecer estáticas, apenas exibidas como no print.

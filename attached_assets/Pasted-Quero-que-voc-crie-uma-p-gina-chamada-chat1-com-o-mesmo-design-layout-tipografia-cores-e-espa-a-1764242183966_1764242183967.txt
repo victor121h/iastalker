@@ -1,0 +1,102 @@
+Quero que você crie uma página chamada /chat1 com o mesmo design, layout, tipografia, cores e espaçamento do chat exibido na imagem enviada.
+Reproduza tudo 100% igual aos detalhes abaixo:
+
+📌 ESTRUTURA GERAL DA PÁGINA
+
+Fundo deve ser cinza-preto azulado, idêntico ao fundo do Instagram Web.
+Cor de referência: #111418.
+
+Página full-screen, sem barras e sem scroll lateral.
+
+O chat ocupa toda a largura disponível, com o conteúdo alinhado à esquerda e direita conforme o remetente.
+
+👤 TOPO DO CHAT
+
+Criar uma barra superior idêntica:
+
+Foto do contato em círculo com borda colorida (rosa/roxo igual ao Instagram).
+
+Nome do contato com asteriscos para simular privacidade (ex.: l****).
+
+Status “online” logo abaixo, em verde claro.
+
+No canto direito: ícones de chamada de voz e chamada de vídeo, exatamente como no Direct oficial.
+
+💬 MENSAGENS NO CHAT
+
+Reproduzir exatamente:
+
+▸ Mensagens recebidas (esquerda)
+
+Balão arredondado, cor #1B1F23, texto branco.
+
+Espaçamento grande entre os balões, igual ao layout original.
+
+Tamanho do balão adaptável ao conteúdo.
+
+Em alguns balões, mostrar apenas parte do texto e borrar trechos sensíveis.
+
+▸ Mensagens enviadas (direita)
+
+Balões roxos com gradiente:
+#8740FF → #B768FF
+
+Texto branco.
+
+Balão com bordas arredondadas idênticas ao print.
+
+Sempre alinhado totalmente à direita.
+
+🔊 MENSAGENS DE ÁUDIO
+
+Reproduzir exatamente como no print:
+
+Áudio recebido (esquerda)
+
+Card escuro #1B1F23
+
+Ícone play branco
+
+Ondas sonoras brancas
+
+Duração “0:32” ao lado
+
+Abaixo: botão “Ver transcrição” com fonte pequena.
+
+Áudio enviado (direita)
+
+Mesma estrutura, porém com o card roxo igual às mensagens enviadas.
+
+Ondas sonoras em lilás.
+
+🔎 EFEITOS VISUAIS
+
+Trechos sensíveis borrados com efeito Gaussian blur.
+
+Mensagens grandes devem ocupar até ~60% da largura da tela, como no Instagram Web.
+
+Os balões não podem colar nas bordas — manter padding amplo.
+
+📌 RESPONSIVIDADE
+
+A página deve reproduzir exatamente esse layout tanto em desktop quanto em mobile.
+
+Em mobile, manter as mesmas proporções do Instagram Direct original.
+
+🧱 FUNCIONALIDADES (APENAS VISUAL)
+
+Não precisa funcionar de verdade, é só o mockup visual:
+
+Listagem fixa dessas mensagens exatamente iguais ao print.
+
+Mensagens estáticas (não precisa enviar nada).
+
+O topo permanece fixo ao rolar o chat.
+
+❗ IMPORTANTE
+
+O layout final deve ser idêntico ao da imagem enviada.
+
+Use as mesmas cores, fontes, opacidades e espaçamentos.
+
+Não modifique nada ou simplifique.
