@@ -1,0 +1,141 @@
+Crie uma página chamada /chat3 com design idêntico à imagem enviada.
+Reproduza tudo exatamente igual, sem simplificações.
+Siga todos os detalhes abaixo:
+
+🎨 FUNDO E LAYOUT
+
+Fundo: cinza-escuro profundo (#0F1215).
+
+Página deve ocupar 100% da tela, estilo Instagram Direct Web.
+
+Área do chat totalmente limpa, com grande espaço vazio ao centro — igual ao print.
+
+👤 CABEÇALHO DO CHAT (TOPO)
+
+Reproduzir exatamente:
+
+Foto do contato com borda em degradê rosa/roxo, como no Direct.
+
+Ícone de cadeado em cima da foto.
+
+Nome mascarado com asteriscos (ex.: m***).
+
+Status “offline” em cinza claro.
+
+Ícones da direita:
+
+📞 chamada de voz
+
+🎥 chamada de vídeo
+
+Todos brancos, minimalistas, estilo Instagram.
+
+💬 MENSAGENS (LADO ESQUERDO)
+
+Reproduza exatamente a aparência dos balões:
+
+Mensagens recebidas
+
+Balão arredondado cinza azulado (#1E2A39).
+
+Texto branco.
+
+Espaçamento idêntico ao print (bem afastado do topo e da esquerda).
+
+Trechos sensíveis borrados, igual à imagem.
+
+Mensagem enviada (lado direito)
+
+Balão roxo com gradiente Instagram:
+
+#7C3AED → #B06AF8
+
+Texto branco.
+
+Mesmo formato arredondado, colado à direita.
+
+🎥 BLOCO DE FOTO / VÍDEO (MÍDIA RECEBIDA)
+
+Reproduza o bloco de mídia exatamente como na imagem:
+
+Mensagem “olha” em balão cinza escuro.
+
+Embaixo, dois botões:
+
+▶ Foto
+
+▶ Vídeo
+
+Borda arredondada
+
+Ícone de câmera ao lado
+
+Cor dos botões: cinza escuro (#1E2A39)
+
+Texto branco
+
+Ícone branco
+
+🔒 BLOCO DE CONTEÚDO RESTRITO (LADO DIREITO)
+
+Criar o card exatamente igual:
+
+Card retangular vertical
+
+Fundo: #14181D
+
+Contorno e sombreamento leve
+
+Ícone de cadeado grande branco
+
+Texto “Conteúdo restrito” centralizado, branco
+
+O card deve ficar preso no canto inferior direito, como um preview.
+
+💬 CAIXA INFERIOR DE DIGITAÇÃO
+
+Criar igual ao Direct:
+
+Barra fixa no rodapé
+
+Fundo cinza escuro (#121417)
+
+Texto placeholder “Mensagem…” (cinza claro)
+
+Ícone de emoji à esquerda
+
+Ícones no lado direito:
+
+microfone
+
+imagem
+
+emoji
+
+Todos brancos e minimalistas.
+
+📏 COMPORTAMENTO
+
+Nada deve rolar para os lados.
+
+Deve haver muito espaço vazio ao centro, igual ao print.
+
+Balões devem manter posição estática conforme a imagem.
+
+❗ NÃO SIMPLIFICAR NADA
+
+Copie TODOS os detalhes da imagem:
+
+Bordas
+
+Espaçamentos
+
+Cores
+
+Sombreamento
+
+Formatos dos balões
+
+Estilo dos ícones
+
+Posição dos elementos
