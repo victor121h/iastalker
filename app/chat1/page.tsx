@@ -118,7 +118,7 @@ function Chat1Content() {
     return queryString ? `${path}?${queryString}` : path;
   };
 
-  const censoredName = username ? `${username.charAt(0)}${'*'.repeat(Math.min(4, username.length - 1))}` : 'j****';
+  const censoredName = 'A****';
 
   const handleBack = () => {
     router.push(buildUrlWithParams('/direct'));
