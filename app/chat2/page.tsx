@@ -100,6 +100,25 @@ function Chat2Content() {
   
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat1_1764243704781.png';
+  const [userCity, setUserCity] = useState<string>('São Paulo');
+
+  useEffect(() => {
+    const fetchCity = async () => {
+      try {
+        const response = await fetch('https://ipapi.co/json/');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.city) {
+            setUserCity(data.city);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching location:', error);
+      }
+    };
+
+    fetchCity();
+  }, []);
 
   const buildUrlWithParams = (path: string) => {
     const params = new URLSearchParams();
@@ -299,7 +318,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">Em São Paulo viu</p>
+                <p className="text-white text-[15px]">Em {userCity} viu</p>
               </div>
             </div>
           </div>
