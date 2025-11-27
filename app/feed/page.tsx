@@ -4,6 +4,32 @@ import { Suspense, useEffect, useState, memo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
+function ImageWithFallback({ src, alt, className, fallbackClassName }: { src: string; alt: string; className: string; fallbackClassName?: string }) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  if (!src || hasError) {
+    return <div className={fallbackClassName || className} style={{ backgroundColor: '#262626' }} />;
+  }
+
+  return (
+    <div className="relative">
+      {!isLoaded && (
+        <div className={`absolute inset-0 ${fallbackClassName || className} animate-pulse`} style={{ backgroundColor: '#262626' }} />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        loading="eager"
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
 interface ProfileData {
   username: string;
   name: string;
@@ -62,16 +88,11 @@ const StoryItem = memo(function StoryItem({
           }}
         >
           <div className="bg-[#000] rounded-full p-[2px]">
-            {story.avatar ? (
-              <img
-                src={getProxiedAvatar(story.avatar)}
-                alt={story.username}
-                className="w-[56px] h-[56px] rounded-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
-            )}
+            <ImageWithFallback
+              src={story.avatar ? getProxiedAvatar(story.avatar) : ''}
+              alt={story.username}
+              className="w-[56px] h-[56px] rounded-full object-cover"
+            />
           </div>
         </div>
         {story.isLocked && (
@@ -113,18 +134,11 @@ const PostItem = memo(function PostItem({
         <div className="flex items-center gap-2.5">
           <div className="relative">
             <div className="w-8 h-8 rounded-full bg-[#262626] flex items-center justify-center overflow-hidden">
-              {postUser?.avatar ? (
-                <img 
-                  src={postAvatar} 
-                  alt="" 
-                  className="w-full h-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#666">
-                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
-                </svg>
-              )}
+              <ImageWithFallback
+                src={postAvatar}
+                alt=""
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
           <div className="flex flex-col">
@@ -236,16 +250,11 @@ const BottomNav = memo(function BottomNav({
       </button>
       <button className="p-3" onClick={showNotification}>
         <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
-          {profileAvatar ? (
-            <img 
-              src={getProxiedAvatar(profileAvatar)} 
-              alt="" 
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          ) : (
-            <div className="w-full h-full bg-[#262626]" />
-          )}
+          <ImageWithFallback
+            src={profileAvatar ? getProxiedAvatar(profileAvatar) : ''}
+            alt=""
+            className="w-full h-full object-cover"
+          />
         </div>
       </button>
     </nav>

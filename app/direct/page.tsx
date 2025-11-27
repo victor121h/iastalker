@@ -4,6 +4,32 @@ import { Suspense, useEffect, useState, memo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
+function ImageWithFallback({ src, alt, className, blurred = false }: { src: string; alt: string; className: string; blurred?: boolean }) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  if (!src || hasError) {
+    return <div className={`${className} ${blurred ? 'blur-[6px]' : ''}`} style={{ backgroundColor: '#262626' }} />;
+  }
+
+  return (
+    <div className="relative">
+      {!isLoaded && (
+        <div className={`absolute inset-0 ${className} animate-pulse ${blurred ? 'blur-[6px]' : ''}`} style={{ backgroundColor: '#262626' }} />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={`${className} ${blurred ? 'blur-[6px]' : ''}`}
+        loading="eager"
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
 interface ProfileData {
   username: string;
   name: string;
@@ -79,27 +105,11 @@ const StoryItem = memo(function StoryItem({
         >
           <div className={`bg-[#000] rounded-full ${story.isFirst ? 'p-0' : 'p-[2px]'}`}>
             <div className="relative">
-              {story.isFirst ? (
-                profileAvatar ? (
-                  <img
-                    src={profileAvatar}
-                    alt={story.username}
-                    className="w-[56px] h-[56px] rounded-full object-cover"
-                    loading="lazy"
-                  />
-                ) : (
-                  <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
-                )
-              ) : story.avatar ? (
-                <img
-                  src={getProxiedAvatar(story.avatar)}
-                  alt={story.username}
-                  className="w-[56px] h-[56px] rounded-full object-cover"
-                  loading="lazy"
-                />
-              ) : (
-                <div className="w-[56px] h-[56px] rounded-full bg-[#262626]" />
-              )}
+              <ImageWithFallback
+                src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
+                alt={story.username}
+                className="w-[56px] h-[56px] rounded-full object-cover"
+              />
               {story.isFirst && (
                 <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
@@ -141,16 +151,12 @@ const MessageItem = memo(function MessageItem({
     >
       <div className="relative mr-3">
         <div className="relative">
-          {msg.avatar ? (
-            <img
-              src={getProxiedAvatar(msg.avatar)}
-              alt={msg.username}
-              className={`w-[56px] h-[56px] rounded-full object-cover ${msg.isBlurred ? 'blur-[6px]' : ''}`}
-              loading="lazy"
-            />
-          ) : (
-            <div className={`w-[56px] h-[56px] rounded-full bg-[#262626] ${msg.isBlurred ? 'blur-[6px]' : ''}`} />
-          )}
+          <ImageWithFallback
+            src={msg.avatar ? getProxiedAvatar(msg.avatar) : ''}
+            alt={msg.username}
+            className="w-[56px] h-[56px] rounded-full object-cover"
+            blurred={msg.isBlurred}
+          />
           {msg.isPrivate && !msg.isBlurred && (
             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
@@ -441,16 +447,11 @@ function DirectContent() {
         </button>
         <button className="p-3" onClick={showNotification}>
           <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
-            {profileAvatar ? (
-              <img 
-                src={profileAvatar} 
-                alt="" 
-                className="w-full h-full object-cover"
-                loading="lazy"
-              />
-            ) : (
-              <div className="w-full h-full bg-[#262626]" />
-            )}
+            <ImageWithFallback
+              src={profileAvatar}
+              alt=""
+              className="w-full h-full object-cover"
+            />
           </div>
         </button>
       </nav>
