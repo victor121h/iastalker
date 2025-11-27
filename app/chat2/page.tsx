@@ -306,7 +306,7 @@ function Chat2Content() {
                   <LockIcon size={10} />
                 </div>
               </div>
-              <LocationCard onClick={handleUnlockClick} />
+              <LocationCard onClick={showNotification} />
             </div>
           </div>
 

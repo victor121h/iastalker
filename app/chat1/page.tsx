@@ -278,7 +278,7 @@ function Chat1Content() {
                 <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
                   <p className="text-white text-[15px]">Não acredito!!! Você sempre faz isso quando está com <BlurredText text="ela" /></p>
                 </div>
-                <AudioMessage isReceived={true} duration="0:32" onClick={handleUnlockClick} />
+                <AudioMessage isReceived={true} duration="0:32" onClick={showNotification} />
               </div>
             </div>
           </div>
@@ -286,7 +286,7 @@ function Chat1Content() {
           {/* Message 6 - Sent audio */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
-              <AudioMessage isReceived={false} duration="1:47" onClick={handleUnlockClick} />
+              <AudioMessage isReceived={false} duration="1:47" onClick={showNotification} />
             </div>
           </div>
 

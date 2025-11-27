@@ -325,7 +325,7 @@ function Chat3Content() {
                   <p className="text-white text-[15px]">olha</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MediaButton type="Foto" onClick={handleUnlockClick} />
+                  <MediaButton type="Foto" onClick={showNotification} />
                   <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-[#1E2A39] flex items-center justify-center">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -335,7 +335,7 @@ function Chat3Content() {
                   </div>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MediaButton type="Vídeo" onClick={handleUnlockClick} />
+                  <MediaButton type="Vídeo" onClick={showNotification} />
                   <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-[#1E2A39] flex items-center justify-center">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -358,7 +358,7 @@ function Chat3Content() {
                 <p className="text-white text-[15px]"><BlurredText text="olha que interessante agora" /></p>
               </div>
             </div>
-            <RestrictedContentCard onClick={handleUnlockClick} />
+            <RestrictedContentCard onClick={showNotification} />
           </div>
 
         </div>
