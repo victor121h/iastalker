@@ -313,11 +313,13 @@ function DirectContent() {
 
   const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
 
+  const chat1Avatar = '/attached_assets/chat2_1764243660020.png';
+  
   const messages: Message[] = following.length > 0 
     ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
         username: user.username,
-        avatar: user.avatar || '',
+        avatar: index === 0 ? chat1Avatar : (user.avatar || ''),
         message: mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
