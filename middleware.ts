@@ -6,7 +6,7 @@ export function middleware(request: NextRequest) {
   
   const visitedPitch = request.cookies.get('visited_pitch')?.value === 'true';
   
-  const excludedPaths = ['/pitch', '/up1', '/up2', '/back-front', '/back-up1', '/api', '/_next', '/favicon.ico', '/logo', '/public'];
+  const excludedPaths = ['/pitch', '/up1', '/up2', '/back-front', '/back-up1', '/chat1', '/chat2', '/chat3', '/api', '/_next', '/favicon.ico', '/logo', '/public'];
   const isExcluded = excludedPaths.some(path => pathname.startsWith(path)) || pathname.includes('.');
   
   if (visitedPitch && !isExcluded) {
