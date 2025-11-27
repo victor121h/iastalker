@@ -133,7 +133,7 @@ function Chat2Content() {
     return queryString ? `${path}?${queryString}` : path;
   };
 
-  const censoredName = username ? `${username.charAt(0)}${'*'.repeat(Math.min(3, username.length - 1))}` : 'j***';
+  const censoredName = 'L*****';
 
   const handleBack = () => {
     router.push(buildUrlWithParams('/direct'));
