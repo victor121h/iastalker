@@ -322,10 +322,30 @@ function DirectContent() {
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
         hasUnread: index % 2 === 0,
-        isBlurred: index >= 2,
+        isBlurred: index >= 3,
         isPrivate: user.isPrivate
       }))
     : [];
+
+  const handleMessageClick = (index: number) => {
+    const params = new URLSearchParams();
+    const paramsToCopy = ['username', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    paramsToCopy.forEach(param => {
+      const value = searchParams.get(param);
+      if (value) params.set(param, value);
+    });
+    const queryString = params.toString();
+    
+    if (index === 0) {
+      router.push(queryString ? `/chat1?${queryString}` : '/chat1');
+    } else if (index === 1) {
+      router.push(queryString ? `/chat2?${queryString}` : '/chat2');
+    } else if (index === 2) {
+      router.push(queryString ? `/chat3?${queryString}` : '/chat3');
+    } else {
+      showNotification();
+    }
+  };
 
   if (isLoading) {
     return <DirectSkeleton />;
@@ -408,11 +428,11 @@ function DirectContent() {
       </div>
 
       <div className="overflow-y-auto pb-20">
-        {messages.map((msg) => (
+        {messages.map((msg, index) => (
           <MessageItem
             key={msg.id}
             msg={msg}
-            onClick={showNotification}
+            onClick={() => handleMessageClick(index)}
             getProxiedAvatar={getProxiedAvatar}
           />
         ))}
