@@ -315,12 +315,13 @@ function DirectContent() {
 
   const chat1Avatar = '/attached_assets/chat2_1764243660020.png';
   const chat2Avatar = '/attached_assets/chat1_1764243704781.png';
+  const chat3Avatar = '/attached_assets/chat2-1_1764243715250.png';
   
   const messages: Message[] = following.length > 0 
     ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
         username: user.username,
-        avatar: index === 0 ? chat1Avatar : index === 1 ? chat2Avatar : (user.avatar || ''),
+        avatar: index === 0 ? chat1Avatar : index === 1 ? chat2Avatar : index === 2 ? chat3Avatar : (user.avatar || ''),
         message: mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,

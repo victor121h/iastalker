@@ -101,12 +101,7 @@ function Chat3Content() {
   const { showNotification } = useNotification();
   
   const username = searchParams.get('username') || '';
-  const [profileAvatar, setProfileAvatar] = useState<string>('');
-
-  const getProxiedAvatar = (url: string) => {
-    if (!url) return '';
-    return `/api/proxy-image?url=${encodeURIComponent(url)}`;
-  };
+  const profileAvatar = '/attached_assets/chat2-1_1764243715250.png';
 
   const buildUrlWithParams = (path: string) => {
     const params = new URLSearchParams();
@@ -120,26 +115,6 @@ function Chat3Content() {
     const queryString = params.toString();
     return queryString ? `${path}?${queryString}` : path;
   };
-
-  useEffect(() => {
-    const fetchProfile = async () => {
-      if (!username) return;
-      
-      try {
-        const response = await fetch(`/api/instagram?username=${username}`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.avatar) {
-            setProfileAvatar(getProxiedAvatar(data.avatar));
-          }
-        }
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    fetchProfile();
-  }, [username]);
 
   const censoredName = username ? `${username.charAt(0)}${'*'.repeat(Math.min(4, username.length - 1))}` : 'm****';
 
