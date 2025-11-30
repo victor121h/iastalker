@@ -25,6 +25,10 @@ function PitchContent() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
 
   useEffect(() => {
+    document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
+  }, []);
+
+  useEffect(() => {
     if (username) {
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`)
         .then(res => res.json())

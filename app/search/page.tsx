@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useEffect } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function DeepGramLogo() {
@@ -20,6 +20,18 @@ function SearchContent() {
   const [username, setUsername] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+
+  useEffect(() => {
+    const hasVisited = document.cookie.includes('deepgram_visited=true');
+    if (hasVisited) {
+      const utmParams = getUtmParams();
+      if (utmParams) {
+        router.replace(`/pitch?${utmParams}`);
+      } else {
+        router.replace('/pitch');
+      }
+    }
+  }, []);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
