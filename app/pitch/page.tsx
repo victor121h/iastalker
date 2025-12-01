@@ -236,11 +236,11 @@ function PitchContent() {
               <div 
                 className="absolute inset-0"
                 style={{
-                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e8e4dc' width='400' height='200'/%3E%3Cpath d='M0 50h400M0 100h400M0 150h400M50 0v200M100 0v200M150 0v200M200 0v200M250 0v200M300 0v200M350 0v200' stroke='%23d4d0c8' stroke-width='1'/%3E%3Cpath d='M20 30h80M120 80h100M50 120h60M180 140h90M280 60h80M320 110h60' stroke='%23c8c4bc' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='200' cy='100' r='3' fill='%23666'/%3E%3C/svg%3E")`,
+                  backgroundImage: `url("/map-blur.png")`,
                   backgroundSize: 'cover',
                   backgroundPosition: 'center',
-                  filter: 'blur(3px)',
-                  opacity: 0.6
+                  filter: 'blur(4px)',
+                  opacity: 0.7
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a2332]/90" />
