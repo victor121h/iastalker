@@ -230,41 +230,46 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6"
           >
-            <div className="flex items-start gap-3 mb-4">
-              <div className="w-8 h-8 rounded-full bg-[#DFB313]/20 flex items-center justify-center flex-shrink-0">
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#DFB313">
-                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-                </svg>
-              </div>
-              <div>
-                <p className="text-white font-semibold text-sm">Localização em tempo real</p>
-                <p className="text-[#808080] text-xs mt-1">Veja onde @{username} está agora</p>
-              </div>
-            </div>
-            <div className="relative rounded-xl overflow-hidden h-40">
-              <div className="absolute inset-0 bg-gradient-to-br from-[#1A1A1A] to-[#0A0A0A] blur-sm"></div>
-              <div className="absolute inset-0 flex items-center justify-center z-10">
+            <div className="relative h-32">
+              <div 
+                className="absolute inset-0"
+                style={{
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='200'%3E%3Crect fill='%23e8e4dc' width='400' height='200'/%3E%3Cpath d='M0 50h400M0 100h400M0 150h400M50 0v200M100 0v200M150 0v200M200 0v200M250 0v200M300 0v200M350 0v200' stroke='%23d4d0c8' stroke-width='1'/%3E%3Cpath d='M20 30h80M120 80h100M50 120h60M180 140h90M280 60h80M320 110h60' stroke='%23c8c4bc' stroke-width='8' stroke-linecap='round'/%3E%3Ccircle cx='200' cy='100' r='3' fill='%23666'/%3E%3C/svg%3E")`,
+                  backgroundSize: 'cover',
+                  backgroundPosition: 'center',
+                  filter: 'blur(3px)',
+                  opacity: 0.6
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a2332]/90" />
+              <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
                   <div 
-                    className="p-[2px] rounded-full"
-                    style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75)' }}
+                    className="p-[3px] rounded-full"
+                    style={{ background: '#E53935' }}
                   >
                     {profile?.avatar ? (
                       <img
                         key={`location-${profile.avatar}`}
                         src={getProxiedAvatar(profile.avatar)}
                         alt=""
-                        className="w-10 h-10 rounded-full object-cover"
+                        className="w-14 h-14 rounded-full object-cover border-2 border-[#1a2332]"
                       />
                     ) : (
-                      <div className="w-10 h-10 rounded-full bg-[#262626]" />
+                      <div className="w-14 h-14 rounded-full bg-[#262626] border-2 border-[#1a2332]" />
                     )}
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-[#00FF75] rounded-full border-2 border-[#0C1011]"></div>
                 </div>
               </div>
+            </div>
+            <div className="bg-[#1a2332] px-5 py-4 text-center">
+              <p className="text-white font-semibold text-base mb-1">Localização atual</p>
+              <p className="text-[#808080] text-sm mb-4">@{username} está compartilhando</p>
+              <button className="bg-[#2a3a4a] hover:bg-[#3a4a5a] text-white font-medium py-2.5 px-12 rounded-lg transition-colors">
+                Ver
+              </button>
             </div>
           </motion.section>
 
