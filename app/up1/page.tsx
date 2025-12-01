@@ -68,7 +68,7 @@ function Up1Content() {
     {
       id: 'premium',
       name: 'Plano Premium',
-      badge: 'Desconto: 40% off',
+      badge: 'Desconto: 80% off',
       badgeColor: 'bg-orange-500',
       borderColor: 'border-orange-500',
       price: '19,90',
