@@ -50,7 +50,7 @@ function Up1Content() {
       borderColor: 'border-[#00FF75]',
       price: '27,90',
       oldPrice: '230,00',
-      savings: '120,00',
+      savings: '202,10',
       access: 7,
       features: [
         { text: 'Acessar todos os dados do perfil pesquisado', included: true },
@@ -73,7 +73,7 @@ function Up1Content() {
       borderColor: 'border-orange-500',
       price: '19,90',
       oldPrice: '120,00',
-      savings: '50,00',
+      savings: '100,10',
       access: 5,
       features: [
         { text: 'Acessar todos os dados do perfil pesquisado', included: true },
@@ -96,7 +96,7 @@ function Up1Content() {
       borderColor: 'border-gray-500',
       price: '9,90',
       oldPrice: '90,00',
-      savings: '40,00',
+      savings: '80,10',
       access: 3,
       features: [
         { text: 'Acessar todos os dados do perfil pesquisado', included: true },
