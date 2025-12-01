@@ -91,7 +91,7 @@ function Up1Content() {
     {
       id: 'basic',
       name: 'Plano Básico',
-      badge: 'Desconto: 45% off',
+      badge: 'Desconto: 90% off',
       badgeColor: 'bg-gray-500',
       borderColor: 'border-gray-500',
       price: '9,90',
