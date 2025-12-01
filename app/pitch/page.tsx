@@ -287,15 +287,25 @@ function PitchContent() {
             </div>
             <div className="flex gap-3">
               {[1,2].map(i => (
-                <div key={i} className="flex-1 aspect-[3/4] bg-[#1A1A1A] rounded-xl relative overflow-hidden">
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent"></div>
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <svg width="28" height="28" viewBox="0 0 24 24" fill="#666">
-                      <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
-                    </svg>
+                <div key={i} className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
+                  <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+                    {profile?.avatar ? (
+                      <img
+                        src={getProxiedAvatar(profile.avatar)}
+                        alt=""
+                        className="w-6 h-6 rounded-full object-cover"
+                      />
+                    ) : (
+                      <div className="w-6 h-6 rounded-full bg-[#262626]" />
+                    )}
+                    <span className="text-white text-xs font-medium">@{username}</span>
                   </div>
-                  <div className="absolute bottom-2 left-2 right-2">
-                    <span className="text-[#808080] text-[10px]">Conteúdo restrito</span>
+                  <div className="aspect-[3/4] flex flex-col items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                    <p className="text-[#808080] text-xs mt-3">Conteúdo restrito</p>
                   </div>
                 </div>
               ))}
