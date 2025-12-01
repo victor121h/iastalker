@@ -387,16 +387,8 @@ function PitchContent() {
             transition={{ delay: 0.4 }}
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
-            <div className="flex items-center justify-center gap-2 mb-4">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none">
-                <path d="M19 11H5a4 4 0 0 0-4 4v5a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4z" fill="#EB1C8F"/>
-                <path d="M17 11V7a5 5 0 0 0-10 0v4" stroke="#EB1C8F" strokeWidth="2" strokeLinecap="round"/>
-                <circle cx="12" cy="16" r="1.5" fill="white"/>
-              </svg>
-              <span className="text-lg font-bold">
-                <span className="text-[#EB1C8F]">Deep</span>
-                <span className="text-white">Gram</span>
-              </span>
+            <div className="flex items-center justify-center mb-4">
+              <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[36px] w-auto" />
             </div>
 
             <h2 className="text-white text-center font-bold text-lg mb-2">
