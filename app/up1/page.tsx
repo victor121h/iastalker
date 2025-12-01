@@ -45,7 +45,7 @@ function Up1Content() {
     {
       id: 'ultra',
       name: 'Plano Ultra – Olho de Deus',
-      badge: 'DESCONTO: 57% off',
+      badge: 'DESCONTO: 90% off',
       badgeColor: 'bg-green-500',
       borderColor: 'border-[#00FF75]',
       price: '27,90',
