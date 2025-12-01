@@ -132,7 +132,7 @@ function PitchContent() {
             className="text-center py-8"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram.png" alt="DeepGram" className="h-[48px] w-auto" />
+              <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-white text-xl font-bold leading-tight">
               A maior ferramenta de stalkear do Brasil
