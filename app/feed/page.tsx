@@ -110,13 +110,25 @@ const StoryItem = memo(function StoryItem({
   );
 });
 
+const blurredComments = [
+  "Que foto linda! 😍",
+  "Arrasou demais!",
+  "Perfeito(a) 🔥",
+  "Saudades...",
+  "Te amo ❤️",
+  "Maravilhoso(a)!",
+  "Que lugar incrível!",
+  "Lindo(a) demais 💕",
+];
+
 const PostItem = memo(function PostItem({
   post,
   postUser,
   maskedUsername,
   location,
   showNotification,
-  getProxiedAvatar
+  getProxiedAvatar,
+  commentUsers
 }: {
   post: { id: number; likes: number; comments: number; shares: number; date: string; time: string };
   postUser: FollowingUser | null;
@@ -124,6 +136,7 @@ const PostItem = memo(function PostItem({
   location: string;
   showNotification: () => void;
   getProxiedAvatar: (url: string) => string;
+  commentUsers: FollowingUser[];
 }) {
   const postAvatar = postUser?.avatar ? getProxiedAvatar(postUser.avatar) : '';
   const postUsername = postUser ? censorName(postUser.username) : maskedUsername;
@@ -202,9 +215,32 @@ const PostItem = memo(function PostItem({
           </button>
         </div>
 
-        <div className="text-white text-[13px] font-semibold mb-1">
+        <div className="text-white text-[13px] font-semibold mb-2">
           {post.likes} curtidas
         </div>
+        
+        <div className="space-y-1.5 mb-2">
+          {commentUsers.slice(0, 2).map((user, idx) => (
+            <div key={user.pk || idx} className="flex items-center gap-2" onClick={showNotification}>
+              <span className="text-white text-[13px] font-semibold">{censorName(user.username)}</span>
+              <span 
+                className="text-[#A8A8A8] text-[13px]"
+                style={{ filter: 'blur(4px)', userSelect: 'none' }}
+              >
+                {blurredComments[(post.id + idx) % blurredComments.length]}
+              </span>
+            </div>
+          ))}
+          {post.comments > 2 && (
+            <button 
+              className="text-[#A8A8A8] text-[13px]"
+              onClick={showNotification}
+            >
+              Ver todos os {post.comments} comentários
+            </button>
+          )}
+        </div>
+
         <div className="text-[#A0A0A0] text-[11px]">
           {post.date}
         </div>
@@ -422,7 +458,7 @@ function FeedContent() {
       </div>
 
       <div className="pb-16">
-        {posts.map((post) => (
+        {posts.map((post, idx) => (
           <PostItem
             key={post.id}
             post={post}
@@ -431,6 +467,7 @@ function FeedContent() {
             location={location}
             showNotification={showNotification}
             getProxiedAvatar={getProxiedAvatar}
+            commentUsers={following.slice((idx * 2) % Math.max(following.length, 1), ((idx * 2) % Math.max(following.length, 1)) + 3)}
           />
         ))}
       </div>
