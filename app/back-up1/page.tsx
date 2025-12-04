@@ -71,11 +71,11 @@ function BackUp1Content() {
         <div className="flex items-center justify-center gap-6 mb-4">
           <div className="text-center">
             <p className="text-[#666] text-xs">De R$</p>
-            <p className="text-[#666] text-lg line-through">129,90</p>
+            <p className="text-[#666] text-lg line-through">39,90</p>
           </div>
           <div className="text-center">
             <p className="text-white text-lg">Por R$</p>
-            <p className="text-white text-4xl font-bold">34,90</p>
+            <p className="text-white text-4xl font-bold">14,90</p>
           </div>
         </div>
 
@@ -83,7 +83,7 @@ function BackUp1Content() {
           className="rounded-full py-2 px-4 text-center mb-6"
           style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)' }}
         >
-          <span className="text-white font-bold text-sm">Você economiza R$ 95,00 (73% OFF)</span>
+          <span className="text-white font-bold text-sm">Você economiza R$ 25,00 (63% OFF)</span>
         </div>
 
         <div className="mb-6">
