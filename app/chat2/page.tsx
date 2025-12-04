@@ -47,10 +47,8 @@ function LockIcon({ size = 24 }: { size?: number }) {
   );
 }
 
-function LocationCard({ onClick, username }: { onClick: () => void; username: string }) {
-  const censoredName = username.length > 2 
-    ? username.slice(0, 2) + '*'.repeat(Math.min(username.length - 2, 4)) 
-    : username + '****';
+function LocationCard({ onClick }: { onClick: () => void }) {
+  const censoredName = 'La*****';
   
   return (
     <div className="w-[180px] rounded-xl overflow-hidden bg-[#1C2125] cursor-pointer" onClick={onClick}>
@@ -319,7 +317,7 @@ function Chat2Content() {
                   <LockIcon size={10} />
                 </div>
               </div>
-              <LocationCard onClick={showNotification} username={username} />
+              <LocationCard onClick={showNotification} />
             </div>
           </div>
 
