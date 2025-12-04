@@ -47,11 +47,7 @@ function LockIcon({ size = 24 }: { size?: number }) {
   );
 }
 
-function LocationCard({ onClick, username }: { onClick: () => void; username: string }) {
-  const censoredName = username.length > 2 
-    ? username.slice(0, 2) + '*'.repeat(Math.min(username.length - 2, 4)) 
-    : username + '****';
-  
+function LocationCard({ onClick }: { onClick: () => void }) {
   return (
     <div className="w-[180px] rounded-xl overflow-hidden bg-[#1C2125] cursor-pointer" onClick={onClick}>
       <div className="relative h-[100px] bg-gradient-to-br from-[#2a3a4a] to-[#1a2a3a] overflow-hidden">
@@ -71,7 +67,7 @@ function LocationCard({ onClick, username }: { onClick: () => void; username: st
       </div>
       <div className="p-3 space-y-1">
         <p className="text-white text-sm font-medium">Localização atual</p>
-        <p className="text-[#9CA3AF] text-xs">{censoredName} está compartilhando</p>
+        <p className="text-[#9CA3AF] text-xs">La***** está compartilhando</p>
         <button className="w-full mt-2 py-2 bg-[#1E3A5F] hover:bg-[#2a4a6f] text-white text-sm font-medium rounded-lg transition-colors">
           Ver
         </button>
@@ -302,7 +298,7 @@ function Chat2Content() {
                   <LockIcon size={10} />
                 </div>
               </div>
-              <LocationCard onClick={showNotification} username={username} />
+              <LocationCard onClick={showNotification} />
             </div>
           </div>
 
