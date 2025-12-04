@@ -83,7 +83,7 @@ function BackFrontContent() {
               className="text-2xl font-bold"
               style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
-              R$ 29,90
+              R$ 19,90
             </span>
           </p>
         </div>
