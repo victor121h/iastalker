@@ -49,7 +49,7 @@ function Up3Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ3TEE')}
+            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ49C2')}
             className="inline-block text-white py-4 px-8 rounded-full text-base font-bold no-underline transition-all duration-300 hover:brightness-110"
             style={{ background: 'linear-gradient(90deg, #ff008c, #ffcc33)' }}
           >
