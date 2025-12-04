@@ -128,7 +128,7 @@ const PostItem = memo(function PostItem({
   location,
   showNotification,
   getProxiedAvatar,
-  commentUsers
+  targetUsername
 }: {
   post: { id: number; likes: number; comments: number; shares: number; date: string; time: string };
   postUser: FollowingUser | null;
@@ -136,7 +136,7 @@ const PostItem = memo(function PostItem({
   location: string;
   showNotification: () => void;
   getProxiedAvatar: (url: string) => string;
-  commentUsers: FollowingUser[];
+  targetUsername: string;
 }) {
   const postAvatar = postUser?.avatar ? getProxiedAvatar(postUser.avatar) : '';
   const postUsername = postUser ? censorName(postUser.username) : maskedUsername;
@@ -220,18 +220,16 @@ const PostItem = memo(function PostItem({
         </div>
         
         <div className="space-y-1.5 mb-2">
-          {commentUsers.slice(0, 2).map((user, idx) => (
-            <div key={user.pk || idx} className="flex items-center gap-2" onClick={showNotification}>
-              <span className="text-white text-[13px] font-semibold">{censorName(user.username)}</span>
-              <span 
-                className="text-[#A8A8A8] text-[13px]"
-                style={{ filter: 'blur(4px)', userSelect: 'none' }}
-              >
-                {blurredComments[(post.id + idx) % blurredComments.length]}
-              </span>
-            </div>
-          ))}
-          {post.comments > 2 && (
+          <div className="flex items-center gap-2" onClick={showNotification}>
+            <span className="text-white text-[13px] font-semibold">{targetUsername}</span>
+            <span 
+              className="text-[#A8A8A8] text-[13px]"
+              style={{ filter: 'blur(4px)', userSelect: 'none' }}
+            >
+              {blurredComments[post.id % blurredComments.length]}
+            </span>
+          </div>
+          {post.comments > 1 && (
             <button 
               className="text-[#A8A8A8] text-[13px]"
               onClick={showNotification}
@@ -458,7 +456,7 @@ function FeedContent() {
       </div>
 
       <div className="pb-16">
-        {posts.map((post, idx) => (
+        {posts.map((post) => (
           <PostItem
             key={post.id}
             post={post}
@@ -467,7 +465,7 @@ function FeedContent() {
             location={location}
             showNotification={showNotification}
             getProxiedAvatar={getProxiedAvatar}
-            commentUsers={following.slice((idx * 2) % Math.max(following.length, 1), ((idx * 2) % Math.max(following.length, 1)) + 3)}
+            targetUsername={username}
           />
         ))}
       </div>
