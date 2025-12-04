@@ -38,23 +38,31 @@ function LeadPopup({
 
     setIsSubmitting(true);
     try {
+      const payload = {
+        primeiro_nome: primeiroNome.trim(),
+        segundo_nome: segundoNome.trim(),
+        whatsapp: whatsapp.replace(/\D/g, ''),
+        username_pesquisado: username
+      };
+      
       const response = await fetch('/api/leads', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          primeiro_nome: primeiroNome.trim(),
-          segundo_nome: segundoNome.trim(),
-          whatsapp: whatsapp.replace(/\D/g, ''),
-          username_pesquisado: username
-        })
+        headers: { 
+          'Content-Type': 'application/json',
+          'Accept': 'application/json'
+        },
+        body: JSON.stringify(payload)
       });
 
-      if (response.ok) {
+      const data = await response.json().catch(() => null);
+
+      if (response.ok && data?.success) {
         onClose();
       } else {
         setError('Erro ao salvar. Tente novamente.');
       }
-    } catch {
+    } catch (err) {
+      console.error('Lead submit error:', err);
       setError('Erro ao salvar. Tente novamente.');
     } finally {
       setIsSubmitting(false);
