@@ -4,134 +4,6 @@ import { Suspense, useEffect, useState, memo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
-function LeadPopup({ 
-  isOpen, 
-  onClose, 
-  username 
-}: { 
-  isOpen: boolean; 
-  onClose: () => void; 
-  username: string;
-}) {
-  const [primeiroNome, setPrimeiroNome] = useState('');
-  const [segundoNome, setSegundoNome] = useState('');
-  const [whatsapp, setWhatsapp] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [error, setError] = useState('');
-
-  const formatWhatsapp = (value: string) => {
-    const numbers = value.replace(/\D/g, '');
-    if (numbers.length <= 2) return numbers;
-    if (numbers.length <= 7) return `(${numbers.slice(0, 2)}) ${numbers.slice(2)}`;
-    if (numbers.length <= 11) return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7)}`;
-    return `(${numbers.slice(0, 2)}) ${numbers.slice(2, 7)}-${numbers.slice(7, 11)}`;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError('');
-    
-    if (!primeiroNome.trim() || !segundoNome.trim() || !whatsapp.trim()) {
-      setError('Por favor, preencha todos os campos');
-      return;
-    }
-
-    setIsSubmitting(true);
-    try {
-      const payload = {
-        primeiro_nome: primeiroNome.trim(),
-        segundo_nome: segundoNome.trim(),
-        whatsapp: whatsapp.replace(/\D/g, ''),
-        username_pesquisado: username
-      };
-      
-      const response = await fetch('/api/leads', {
-        method: 'POST',
-        headers: { 
-          'Content-Type': 'application/json',
-          'Accept': 'application/json'
-        },
-        body: JSON.stringify(payload)
-      });
-
-      const data = await response.json().catch(() => null);
-
-      if (response.ok && data?.success) {
-        onClose();
-      } else {
-        setError('Erro ao salvar. Tente novamente.');
-      }
-    } catch (err) {
-      console.error('Lead submit error:', err);
-      setError('Erro ao salvar. Tente novamente.');
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
-  if (!isOpen) return null;
-
-  return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
-      <div className="bg-[#1A1A1A] rounded-2xl p-6 w-full max-w-[340px] border border-[#333]">
-        <div className="text-center mb-6">
-          <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-gradient-to-r from-[#EC4899] to-[#F97316] flex items-center justify-center">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-              <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-            </svg>
-          </div>
-          <p className="text-white text-[15px] leading-relaxed">
-            Essa é uma versão gratuita do DeepGram, preencha as informações abaixo para continuar.
-          </p>
-        </div>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <input
-              type="text"
-              placeholder="Primeiro Nome"
-              value={primeiroNome}
-              onChange={(e) => setPrimeiroNome(e.target.value)}
-              className="w-full bg-[#262626] border border-[#333] rounded-xl px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899] transition-colors"
-            />
-          </div>
-          <div>
-            <input
-              type="text"
-              placeholder="Segundo Nome"
-              value={segundoNome}
-              onChange={(e) => setSegundoNome(e.target.value)}
-              className="w-full bg-[#262626] border border-[#333] rounded-xl px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899] transition-colors"
-            />
-          </div>
-          <div>
-            <input
-              type="tel"
-              placeholder="WhatsApp"
-              value={whatsapp}
-              onChange={(e) => setWhatsapp(formatWhatsapp(e.target.value))}
-              className="w-full bg-[#262626] border border-[#333] rounded-xl px-4 py-3 text-white placeholder-[#666] focus:outline-none focus:border-[#EC4899] transition-colors"
-            />
-          </div>
-
-          {error && (
-            <p className="text-red-500 text-sm text-center">{error}</p>
-          )}
-
-          <button
-            type="submit"
-            disabled={isSubmitting}
-            className="w-full py-3.5 rounded-xl font-bold text-white transition-all hover:opacity-90 disabled:opacity-50"
-            style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)' }}
-          >
-            {isSubmitting ? 'Salvando...' : 'Continuar'}
-          </button>
-        </form>
-      </div>
-    </div>
-  );
-}
-
 function ImageWithFallback({ src, alt, className, fallbackClassName }: { src: string; alt: string; className: string; fallbackClassName?: string }) {
   const [hasError, setHasError] = useState(false);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -469,7 +341,6 @@ function FeedContent() {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [location, setLocation] = useState<string>('Carregando...');
   const [isLoading, setIsLoading] = useState(true);
-  const [showLeadPopup, setShowLeadPopup] = useState(true);
   const { showNotification } = useNotification();
 
   const getProxiedAvatar = useCallback((url: string) => {
@@ -542,11 +413,6 @@ function FeedContent() {
 
   return (
     <div className="min-h-screen bg-[#000]">
-      <LeadPopup 
-        isOpen={showLeadPopup} 
-        onClose={() => setShowLeadPopup(false)} 
-        username={username} 
-      />
       <header className="sticky top-0 z-50 bg-[#000] border-b border-[#262626]">
         <div className="flex items-center justify-between px-4 h-[44px]">
           <div className="flex items-center gap-2">

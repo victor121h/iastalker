@@ -47,8 +47,10 @@ function LockIcon({ size = 24 }: { size?: number }) {
   );
 }
 
-function LocationCard({ onClick }: { onClick: () => void }) {
-  const censoredName = 'La*****';
+function LocationCard({ onClick, username }: { onClick: () => void; username: string }) {
+  const censoredName = username.length > 2 
+    ? username.slice(0, 2) + '*'.repeat(Math.min(username.length - 2, 4)) 
+    : username + '****';
   
   return (
     <div className="w-[180px] rounded-xl overflow-hidden bg-[#1C2125] cursor-pointer" onClick={onClick}>
@@ -101,7 +103,6 @@ function Chat2Content() {
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
   const [userCity, setUserCity] = useState<string>('São Paulo');
-  const [leadName, setLeadName] = useState<string | null>(null);
 
   useEffect(() => {
     const fetchCity = async () => {
@@ -118,23 +119,7 @@ function Chat2Content() {
       }
     };
 
-    const fetchLead = async () => {
-      try {
-        const response = await fetch('/api/leads/latest');
-        if (response.ok) {
-          const data = await response.json();
-          setLeadName(data.primeiro_nome || '');
-        } else {
-          setLeadName('');
-        }
-      } catch (error) {
-        console.error('Error fetching lead:', error);
-        setLeadName('');
-      }
-    };
-
     fetchCity();
-    fetchLead();
   }, []);
 
   const buildUrlWithParams = (path: string) => {
@@ -317,7 +302,7 @@ function Chat2Content() {
                   <LockIcon size={10} />
                 </div>
               </div>
-              <LocationCard onClick={showNotification} />
+              <LocationCard onClick={showNotification} username={username} />
             </div>
           </div>
 
@@ -341,15 +326,13 @@ function Chat2Content() {
           </div>
 
           {/* Message 8 - Sent */}
-          {leadName !== null && (
-            <div className="flex justify-end">
-              <div className="max-w-[60%]">
-                <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                  <p className="text-white text-[15px]">{leadName || 'Ela'} não pode nem sonhar que beijei <BlurredText text="Lucas" /></p>
-                </div>
+          <div className="flex justify-end">
+            <div className="max-w-[60%]">
+              <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
+                <p className="text-white text-[15px]"><BlurredText text="ok amor" /></p>
               </div>
             </div>
-          )}
+          </div>
 
         </div>
       </div>
