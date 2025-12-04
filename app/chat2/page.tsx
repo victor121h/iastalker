@@ -253,7 +253,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">{leadName || 'Ela'} não pode nem sonhar que beijei <BlurredText text="Lucas" /></p>
+                <p className="text-white text-[15px]">uai mas e <BlurredText text="a fulana" /> não vai tá com vc não?</p>
               </div>
             </div>
           </div>
@@ -345,7 +345,7 @@ function Chat2Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]"><BlurredText text="ok amor" /></p>
+                <p className="text-white text-[15px]">{leadName || 'Ela'} não pode nem sonhar que beijei <BlurredText text="Lucas" /></p>
               </div>
             </div>
           </div>
