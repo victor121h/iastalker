@@ -1,0 +1,92 @@
+'use client';
+
+import { motion } from 'framer-motion';
+import { Suspense } from 'react';
+import { useSearchParams } from 'next/navigation';
+import MatrixBackground from '@/components/MatrixBackground';
+
+function UpsellContent() {
+  const searchParams = useSearchParams();
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToLink = (baseLink: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${baseLink}?${utmParams}`;
+    }
+    return baseLink;
+  };
+
+  return (
+    <div className="min-h-screen bg-black relative overflow-x-hidden">
+      <MatrixBackground />
+      
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          className="max-w-[420px] w-full bg-[#121212] rounded-[24px] p-8 text-center"
+          style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
+        >
+          <div className="flex justify-center mb-6">
+            <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[40px] w-auto" />
+          </div>
+
+          <h1 className="text-white text-2xl font-bold leading-tight mb-4">
+            Ative sua conta agora
+          </h1>
+          
+          <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
+            Para ativar sua conta e permitir a instalação do aplicativo no seu celular, é necessário pagar uma taxa única de <strong className="text-white">R$27,90</strong>.
+          </p>
+
+          <p className="text-[#888] text-sm mb-8">
+            Isso garante que tudo funcione corretamente, sem erros. Esta é uma taxa obrigatória — caso não seja paga, o acesso à conta não será liberado.
+          </p>
+
+          <a
+            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ49C2')}
+            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
+            style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
+          >
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M12 16v-4M12 8h.01"/>
+            </svg>
+            Ativar Conta
+          </a>
+
+          <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>100% Anônimo. A pessoa <span className="text-[#EB1C8F] font-bold">NUNCA</span> saberá.</span>
+          </div>
+        </motion.div>
+
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+          <p className="text-[#444] text-sm">+8.486 perfis analisados hoje</p>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default function UpsellPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+      <UpsellContent />
+    </Suspense>
+  );
+}
