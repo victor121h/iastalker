@@ -103,6 +103,7 @@ function Chat2Content() {
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
   const [userCity, setUserCity] = useState<string>('São Paulo');
+  const [leadName, setLeadName] = useState<string>('');
 
   useEffect(() => {
     const fetchCity = async () => {
@@ -119,7 +120,22 @@ function Chat2Content() {
       }
     };
 
+    const fetchLead = async () => {
+      try {
+        const response = await fetch('/api/leads/latest');
+        if (response.ok) {
+          const data = await response.json();
+          if (data.primeiro_nome) {
+            setLeadName(data.primeiro_nome);
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching lead:', error);
+      }
+    };
+
     fetchCity();
+    fetchLead();
   }, []);
 
   const buildUrlWithParams = (path: string) => {
@@ -237,7 +253,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">uai mas e <BlurredText text="a fulana" /> não vai tá com vc não?</p>
+                <p className="text-white text-[15px]">{leadName || 'Ela'} não pode nem sonhar que beijei <BlurredText text="Lucas" /></p>
               </div>
             </div>
           </div>
