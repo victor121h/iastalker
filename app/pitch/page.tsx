@@ -134,7 +134,7 @@ function PitchContent() {
             <div className="flex items-center justify-center mb-4">
               <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[48px] w-auto" />
             </div>
-            <h1 className="text-white text-xl font-bold leading-tight">
+            <h1 className="text-black text-xl font-bold leading-tight">
               A maior ferramenta de stalkear do Brasil
             </h1>
           </motion.section>
