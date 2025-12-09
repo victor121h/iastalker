@@ -714,7 +714,7 @@ function PitchContent() {
                     <polyline points="12 6 12 12 16 14"/>
                   </svg>
                 </div>
-                <p className="text-white text-xs">Acesso Vitalício</p>
+                <p className="text-black text-xs">Acesso Vitalício</p>
               </div>
               <div className="text-center">
                 <div className="w-14 h-14 rounded-2xl bg-[#0C1011] border border-[#262626] flex items-center justify-center mb-2 mx-auto">
@@ -722,7 +722,7 @@ function PitchContent() {
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
                 </div>
-                <p className="text-white text-xs">Suporte 24/7</p>
+                <p className="text-black text-xs">Suporte 24/7</p>
               </div>
             </div>
 
