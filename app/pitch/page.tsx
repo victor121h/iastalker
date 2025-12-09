@@ -511,7 +511,7 @@ function PitchContent() {
             transition={{ delay: 0.5 }}
             className="mb-6"
           >
-            <h2 className="text-white text-center font-bold text-xl mb-6">
+            <h2 className="text-black text-center font-bold text-xl mb-6">
               Veja o que falam as pessoas que usam o IA Stalker:
             </h2>
 
