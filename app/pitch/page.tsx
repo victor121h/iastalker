@@ -29,6 +29,15 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
+    if (!document.querySelector('script[src*="693793a5c5639aae3427db49"]')) {
+      const s = document.createElement("script");
+      s.src = "https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/693793a5c5639aae3427db49/v4/player.js";
+      s.async = true;
+      document.head.appendChild(s);
+    }
+  }, []);
+
+  useEffect(() => {
     if (username) {
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`)
         .then(res => res.json())
@@ -207,17 +216,7 @@ function PitchContent() {
             <div 
               className="rounded-[22px] overflow-hidden"
               dangerouslySetInnerHTML={{
-                __html: `
-                  <vturb-smartplayer id="vid-693793a5c5639aae3427db49" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>
-                  <script type="text/javascript">
-                    if (!document.querySelector('script[src*="693793a5c5639aae3427db49"]')) {
-                      var s = document.createElement("script");
-                      s.src = "https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/693793a5c5639aae3427db49/v4/player.js";
-                      s.async = true;
-                      document.head.appendChild(s);
-                    }
-                  </script>
-                `
+                __html: `<vturb-smartplayer id="vid-693793a5c5639aae3427db49" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>`
               }}
             />
           </motion.section>
