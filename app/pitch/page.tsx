@@ -76,8 +76,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ3TAS');
-  const purchaseLink59 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ3TCI');
+  const purchaseLink39 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4EJ4');
+  const purchaseLink59 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4FPQ');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
