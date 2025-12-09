@@ -39,7 +39,7 @@ function UpsellContent() {
           style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
         >
           <div className="flex justify-center mb-6">
-            <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[40px] w-auto" />
+            <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[40px] w-auto" />
           </div>
 
           <h1 className="text-white text-2xl font-bold leading-tight mb-4">

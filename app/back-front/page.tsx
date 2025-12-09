@@ -46,7 +46,7 @@ function BackFrontContent() {
         }}
       >
         <div className="flex items-center justify-center mb-6">
-          <img src="/logo-deepgram.png" alt="DeepGram" className="h-[48px] w-auto" />
+          <img src="/logo-deepgram.png" alt="IA Stalker" className="h-[48px] w-auto" />
         </div>
 
         <div className="text-center mb-4">
@@ -66,7 +66,7 @@ function BackFrontContent() {
           <p className="text-[#999] text-sm leading-relaxed">
             Aproveite esta oportunidade única para ter acesso completo à plataforma{' '}
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
-              DeepGram
+              IA Stalker
             </span>
             {' '}com um desconto especial. Esta oferta está disponível apenas por tempo limitado!
           </p>

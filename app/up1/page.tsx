@@ -58,7 +58,7 @@ function Up1Content() {
         { text: 'Histórico de localização', included: true },
         { text: 'Mensagens (enviadas e recebidas) em tempo real', included: true },
         { text: 'Histórico de mensagens (até 18 meses)', included: true },
-        { text: 'Acesso vitalício ao DeepGram', included: true },
+        { text: 'Acesso vitalício ao IA Stalker', included: true },
         { text: 'Pesquisas ilimitadas de perfis', included: true },
         { text: 'Suporte prioritário 24h', included: true },
       ],
@@ -81,7 +81,7 @@ function Up1Content() {
         { text: 'Histórico de localização', included: true },
         { text: 'Mensagens (enviadas e recebidas) em tempo real', included: true },
         { text: 'Histórico de mensagens (até 18 meses)', included: false },
-        { text: 'Acesso vitalício ao DeepGram', included: false },
+        { text: 'Acesso vitalício ao IA Stalker', included: false },
         { text: 'Pesquisas ilimitadas de perfis', included: false },
         { text: 'Suporte prioritário 24h', included: false },
       ],
@@ -104,7 +104,7 @@ function Up1Content() {
         { text: 'Histórico de localização', included: false },
         { text: 'Mensagens (enviadas e recebidas) em tempo real', included: false },
         { text: 'Histórico de mensagens (até 18 meses)', included: false },
-        { text: 'Acesso vitalício ao DeepGram', included: false },
+        { text: 'Acesso vitalício ao IA Stalker', included: false },
         { text: 'Pesquisas ilimitadas de perfis', included: false },
         { text: 'Suporte prioritário 24h', included: false },
       ],
@@ -150,8 +150,8 @@ function Up1Content() {
                 </svg>
               </div>
               <span className="text-2xl font-bold">
-                <span className="text-white">Deep</span>
-                <span className="text-[#EB1C8F]">Gram</span>
+                <span className="text-white">IA </span>
+                <span className="text-[#EB1C8F]">Stalker</span>
               </span>
             </div>
 
@@ -163,7 +163,7 @@ function Up1Content() {
                   </svg>
                 </div>
                 <p className="text-white text-sm leading-relaxed">
-                  <span className="font-bold">Parabéns</span>, seu acesso ao DeepGram foi garantido, falta apenas <span className="font-bold">1 passo</span> para você poder utilizar a ferramenta de modo completo e espionar qualquer perfil.
+                  <span className="font-bold">Parabéns</span>, seu acesso ao IA Stalker foi garantido, falta apenas <span className="font-bold">1 passo</span> para você poder utilizar a ferramenta de modo completo e espionar qualquer perfil.
                 </p>
               </div>
             </div>

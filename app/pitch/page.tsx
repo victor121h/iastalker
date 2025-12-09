@@ -95,8 +95,8 @@ function PitchContent() {
   ];
 
   const faqs = [
-    { q: 'A ferramenta realmente funciona?', a: 'Sim, o DeepGram utiliza tecnologia avançada para acessar dados públicos e privados de perfis do Instagram.' },
-    { q: 'A pessoa vai saber que eu stalkeei o perfil dela?', a: 'Não. O DeepGram opera de forma 100% invisível e anônima.' },
+    { q: 'A ferramenta realmente funciona?', a: 'Sim, o IA Stalker utiliza tecnologia avançada para acessar dados públicos e privados de perfis do Instagram.' },
+    { q: 'A pessoa vai saber que eu stalkeei o perfil dela?', a: 'Não. O IA Stalker opera de forma 100% invisível e anônima.' },
     { q: 'Funciona em perfis privados?', a: 'Sim, funciona em qualquer tipo de perfil, público ou privado.' },
     { q: 'Preciso instalar alguma coisa?', a: 'Não. Todo o serviço funciona 100% online, direto pelo navegador.' },
     { q: 'Como funciona a garantia?', a: 'Oferecemos garantia de 30 dias. Se não gostar, devolvemos 100% do seu dinheiro.' },
@@ -132,7 +132,7 @@ function PitchContent() {
             className="text-center py-8"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[48px] w-auto" />
+              <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-white text-xl font-bold leading-tight">
               A maior ferramenta de stalkear do Brasil
@@ -388,11 +388,11 @@ function PitchContent() {
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="DeepGram" className="h-[36px] w-auto" />
+              <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[36px] w-auto" />
             </div>
 
             <h2 className="text-white text-center font-bold text-lg mb-2">
-              Além do acesso ao perfil de @{username} você poderá ter acesso a ferramenta do DeepGram
+              Além do acesso ao perfil de @{username} você poderá ter acesso a ferramenta do IA Stalker
             </h2>
             <p className="text-[#A0A0A0] text-center text-sm mb-6">
               De forma completa e vitalícia, ou seja, stalkear quantos perfis quiser, quando quiser pra sempre.
@@ -441,7 +441,7 @@ function PitchContent() {
               rel="noopener noreferrer"
               className="block bg-[#E53935] rounded-xl py-4 px-4 text-center"
             >
-              <p className="text-white font-bold text-sm mb-1">SEM O DEEPGRAM, VOCÊ NÃO VÊ NADA</p>
+              <p className="text-white font-bold text-sm mb-1">SEM O IA STALKER, VOCÊ NÃO VÊ NADA</p>
               <p className="text-white/80 text-xs">É ele quem desbloqueia os dados de @{username} de forma invisível</p>
             </a>
           </motion.section>
@@ -512,7 +512,7 @@ function PitchContent() {
             className="mb-6"
           >
             <h2 className="text-white text-center font-bold text-xl mb-6">
-              Veja o que falam as pessoas que usam o DeepGram:
+              Veja o que falam as pessoas que usam o IA Stalker:
             </h2>
 
             <div className="space-y-4">
@@ -625,7 +625,7 @@ function PitchContent() {
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMENDADO</span>
               </div>
 
-              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">Ferramenta DeepGram</h3>
+              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">Ferramenta IA Stalker</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Acesso completo + Ferramenta vitalícia</p>
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">De: R$ 200,00</p>

@@ -93,7 +93,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     No momento o seu acesso só permite visualização do conteúdo.
                   </h3>
                   <p className="text-white/70 text-[12px] leading-snug">
-                    Para poder mexer e ver de forma completa adquira a ferramenta do DeepGram.
+                    Para poder mexer e ver de forma completa adquira a ferramenta do IA Stalker.
                   </p>
                 </div>
 
