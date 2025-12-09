@@ -21,6 +21,7 @@ function PitchContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const urlUsername = searchParams.get('username') || '';
+  const searchParamsString = searchParams.toString();
   
   const [username, setUsername] = useState(urlUsername);
   
@@ -31,13 +32,14 @@ function PitchContent() {
     } else {
       const storedUsername = sessionStorage.getItem('pitch_username');
       if (storedUsername) {
-        const params = new URLSearchParams(searchParams.toString());
+        const params = new URLSearchParams(searchParamsString);
         params.set('username', storedUsername);
         router.replace(`/pitch?${params.toString()}`);
         setUsername(storedUsername);
       }
     }
-  }, [urlUsername, searchParams, router]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [urlUsername]);
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 52 });
