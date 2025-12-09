@@ -26,13 +26,6 @@ function PitchContent() {
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
-    
-    if (!document.querySelector('script[src*="693793a5c5639aae3427db49"]')) {
-      const s = document.createElement("script");
-      s.src = "https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/693793a5c5639aae3427db49/v4/player.js";
-      s.async = true;
-      document.head.appendChild(s);
-    }
   }, []);
 
   useEffect(() => {
@@ -211,13 +204,21 @@ function PitchContent() {
             transition={{ delay: 0.15 }}
             className="mb-6"
           >
-            <div 
-              id="vturb-container"
-              className="rounded-[22px] overflow-hidden"
-              dangerouslySetInnerHTML={{
-                __html: '<vturb-smartplayer id="vid-693793a5c5639aae3427db49" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>'
-              }}
-            />
+            <div className="rounded-[22px] overflow-hidden" style={{ position: 'relative', paddingTop: '56.25%' }}>
+              <iframe
+                src="https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/693793a5c5639aae3427db49/embed.html"
+                style={{
+                  position: 'absolute',
+                  top: 0,
+                  left: 0,
+                  width: '100%',
+                  height: '100%',
+                  border: 'none'
+                }}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowFullScreen
+              />
+            </div>
           </motion.section>
 
           <motion.section
