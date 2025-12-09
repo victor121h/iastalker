@@ -37,10 +37,10 @@ function MatrixBackgroundComponent() {
       }
       lastTime = timestamp;
 
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.08)';
+      ctx.fillStyle = 'rgba(240, 247, 255, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#f56040';
+      ctx.fillStyle = '#0ea5e9';
       ctx.font = `${fontSize}px monospace`;
 
       const drops = dropsRef.current;
@@ -49,7 +49,7 @@ function MatrixBackgroundComponent() {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        ctx.fillStyle = `rgba(255, ${150 + Math.random() * 50}, ${50 + Math.random() * 30}, 0.4)`;
+        ctx.fillStyle = `rgba(14, 165, 233, 0.3)`;
         ctx.fillText(text, x, y);
 
         if (y > canvas.height && Math.random() > 0.95) {

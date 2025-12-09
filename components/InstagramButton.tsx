@@ -21,8 +21,8 @@ export default function InstagramButton({
   const baseStyles = 'h-[44px] px-6 rounded-full font-bold text-[15px] flex items-center justify-center gap-2 transition-all duration-200';
   
   const variantStyles = {
-    gradient: 'instagram-gradient text-white hover:opacity-90 relative overflow-hidden',
-    outline: 'border border-instagram-border text-instagram-text-white hover:bg-instagram-border',
+    gradient: 'bg-gradient-to-r from-sky-500 to-blue-500 text-white hover:opacity-90 relative overflow-hidden',
+    outline: 'border border-sky-300 text-slate-700 hover:bg-sky-50',
   };
 
   return (
