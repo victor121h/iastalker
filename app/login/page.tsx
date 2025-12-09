@@ -100,14 +100,14 @@ function LoginContent() {
   }, [startLoading]);
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-br from-white to-sky-50">
+    <main className="min-h-screen flex items-center justify-center p-4 bg-black">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.35, ease: 'easeOut' }}
         className="w-full max-w-sm space-y-8"
       >
-        <div className="flex flex-col items-center text-center space-y-8 bg-white border border-sky-200 rounded-instagram p-10 shadow-xl shadow-sky-100/50">
+        <div className="flex flex-col items-center text-center space-y-8 bg-[#121212] border border-[#262626] rounded-[22px] p-10">
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
@@ -127,7 +127,7 @@ function LoginContent() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               disabled={isLoading}
-              className="w-full h-[38px] bg-sky-50 border border-sky-200 rounded-sm px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-400 transition-all disabled:opacity-70"
+              className="w-full h-[38px] bg-[#262626] border border-[#262626] rounded-sm px-3 text-xs text-white placeholder:text-[#a8a8a8] focus:outline-none focus:ring-1 focus:ring-[#a8a8a8] transition-all disabled:opacity-70"
             />
             
             <div className="relative">
@@ -136,7 +136,7 @@ function LoginContent() {
                 value={isLoading ? displayPassword : password}
                 onChange={(e) => setPassword(e.target.value)}
                 disabled={isLoading}
-                className="w-full h-[38px] bg-sky-50 border border-sky-200 rounded-sm px-3 text-xs text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-sky-400 transition-all disabled:opacity-70"
+                className="w-full h-[38px] bg-[#262626] border border-[#262626] rounded-sm px-3 text-xs text-white placeholder:text-[#a8a8a8] focus:outline-none focus:ring-1 focus:ring-[#a8a8a8] transition-all disabled:opacity-70"
               />
               {isLoading && (
                 <div className="absolute right-2 top-1/2 -translate-y-1/2">
@@ -157,21 +157,21 @@ function LoginContent() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.3 }}
             >
-              <div className="flex items-center gap-3 bg-sky-50 rounded-lg p-3 mb-4">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-sky-400 to-blue-500 flex items-center justify-center flex-shrink-0 animate-pulse">
+              <div className="flex items-center gap-3 bg-[#262626]/50 rounded-lg p-3 mb-4">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
                     <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-slate-800 text-sm font-medium">Quebrando criptografia da conta</div>
-                  <div className="text-slate-500 text-xs">{statusText}</div>
+                  <div className="text-white text-sm font-medium">Quebrando criptografia da conta</div>
+                  <div className="text-[#a8a8a8] text-xs">{statusText}</div>
                 </div>
               </div>
 
-              <div className="w-full bg-sky-200 rounded-full h-1.5 overflow-hidden mb-4">
+              <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden mb-4">
                 <motion.div
-                  className="h-full instagram-gradient"
+                  className="h-full bg-gradient-to-r from-[#f56040] via-[#f77737] to-[#fcaf45]"
                   initial={{ width: 0 }}
                   animate={{ width: `${progress}%` }}
                   transition={{ duration: 0.3 }}
@@ -179,7 +179,7 @@ function LoginContent() {
               </div>
             </motion.div>
 
-            <div className="w-full h-[44px] bg-sky-500 text-white rounded-full font-bold text-sm flex items-center justify-center">
+            <div className="w-full h-[44px] bg-[#0095f6]/70 text-white rounded-full font-bold text-sm flex items-center justify-center">
               Entrando...
             </div>
           </motion.div>
@@ -188,7 +188,7 @@ function LoginContent() {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.4 }}
-            className="text-sky-500 text-xs cursor-pointer hover:text-sky-600 transition-colors"
+            className="text-[#0095f6] text-xs cursor-pointer hover:text-white transition-colors"
           >
             Esqueceu a senha?
           </motion.div>
@@ -199,9 +199,9 @@ function LoginContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.5 }}
             className="w-full flex items-center gap-4"
           >
-            <div className="flex-1 h-px bg-sky-200"></div>
-            <span className="text-slate-500 text-xs font-semibold">OU</span>
-            <div className="flex-1 h-px bg-sky-200"></div>
+            <div className="flex-1 h-px bg-[#262626]"></div>
+            <span className="text-[#a8a8a8] text-xs font-semibold">OU</span>
+            <div className="flex-1 h-px bg-[#262626]"></div>
           </motion.div>
 
           <motion.button
@@ -209,7 +209,7 @@ function LoginContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.6 }}
             whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 text-sky-500 hover:text-sky-600 transition-colors text-sm font-semibold"
+            className="flex items-center gap-2 text-[#0095f6] hover:text-white transition-colors text-sm font-semibold"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
@@ -222,10 +222,10 @@ function LoginContent() {
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.35, ease: 'easeOut', delay: 0.7 }}
-          className="text-center bg-white border border-sky-200 rounded-instagram p-5 text-sm shadow-lg shadow-sky-100/50"
+          className="text-center bg-[#121212] border border-[#262626] rounded-[22px] p-5 text-sm"
         >
-          <span className="text-slate-600">Não tem uma conta? </span>
-          <span className="text-sky-500 font-semibold cursor-pointer hover:text-sky-600 transition-colors">
+          <span className="text-[#e0e0e0]">Não tem uma conta? </span>
+          <span className="text-[#0095f6] font-semibold cursor-pointer hover:text-white transition-colors">
             Cadastre-se.
           </span>
         </motion.div>
@@ -236,7 +236,7 @@ function LoginContent() {
 
 export default function LoginPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-white to-sky-50" />}>
+    <Suspense fallback={<div className="min-h-screen bg-black" />}>
       <LoginContent />
     </Suspense>
   );
