@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState, useRef } from 'react';
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import MatrixBackground from '@/components/MatrixBackground';
 
 interface ProfileData {
@@ -19,7 +19,26 @@ interface ProfileData {
 
 function PitchContent() {
   const searchParams = useSearchParams();
-  const username = searchParams.get('username') || '';
+  const router = useRouter();
+  const urlUsername = searchParams.get('username') || '';
+  
+  const [username, setUsername] = useState(urlUsername);
+  
+  useEffect(() => {
+    if (urlUsername) {
+      sessionStorage.setItem('pitch_username', urlUsername);
+      setUsername(urlUsername);
+    } else {
+      const storedUsername = sessionStorage.getItem('pitch_username');
+      if (storedUsername) {
+        const params = new URLSearchParams(searchParams.toString());
+        params.set('username', storedUsername);
+        router.replace(`/pitch?${params.toString()}`);
+        setUsername(storedUsername);
+      }
+    }
+  }, [urlUsername, searchParams, router]);
+  
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 52 });
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
