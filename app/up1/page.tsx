@@ -114,8 +114,7 @@ function Up1Content() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] relative">
-      <MatrixBackground />
+    <div className="min-h-screen bg-white relative">
       
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#D6272D] py-2.5 px-4">
@@ -141,18 +140,12 @@ function Up1Content() {
             transition={{ duration: 0.4 }}
             className="bg-[#0C1011] rounded-[22px] p-6 mb-6"
           >
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <div className="relative">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="none">
-                  <path d="M19 11H5a4 4 0 0 0-4 4v5a2 2 0 0 0 2 2h18a2 2 0 0 0 2-2v-5a4 4 0 0 0-4-4z" fill="#EB1C8F"/>
-                  <path d="M17 11V7a5 5 0 0 0-10 0v4" stroke="#EB1C8F" strokeWidth="2" strokeLinecap="round"/>
-                  <circle cx="12" cy="16" r="1.5" fill="white"/>
-                </svg>
-              </div>
-              <span className="text-2xl font-bold">
-                <span className="text-white">IA </span>
-                <span className="text-[#EB1C8F]">Stalker</span>
-              </span>
+            <div className="flex items-center justify-center mb-6">
+              <img 
+                src="/logo-stalker.png" 
+                alt="IA Stalker Logo" 
+                className="w-20 h-20 rounded-xl"
+              />
             </div>
 
             <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl p-4 mb-6">
@@ -202,7 +195,7 @@ function Up1Content() {
             className="text-center mb-6"
           >
             <h2 className="text-xl font-bold">
-              <span className="text-white">SELECIONE </span>
+              <span className="text-black">SELECIONE </span>
               <span className="text-[#EB1C8F]">seu plano abaixo:</span>
             </h2>
           </motion.div>
