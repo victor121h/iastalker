@@ -104,7 +104,7 @@ function PitchContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-[#000000] relative">
+    <div className="min-h-screen bg-white relative">
       <MatrixBackground />
       
       <div className="relative z-10">
