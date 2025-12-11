@@ -65,6 +65,14 @@ function Up1Content() {
     return () => clearInterval(timer);
   }, [showPopup]);
 
+  const closePopup = () => {
+    setShowPopup(false);
+    setTimeout(() => {
+      setShowPopup(true);
+      setPopupTimer({ minutes: 4, seconds: 45 });
+    }, 10000);
+  };
+
   const plans = [
     {
       id: 'ultra',
@@ -337,7 +345,7 @@ function Up1Content() {
             }}
           >
             <button
-              onClick={() => setShowPopup(false)}
+              onClick={closePopup}
               className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -435,7 +443,7 @@ function Up1Content() {
             </p>
 
             <button
-              onClick={() => setShowPopup(false)}
+              onClick={closePopup}
               className="text-gray-500 text-xs text-center w-full underline hover:text-gray-400 transition-colors"
             >
               Não, obrigado. Prefiro pagar mais caro depois.
