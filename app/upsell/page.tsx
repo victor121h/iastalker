@@ -47,11 +47,15 @@ function UpsellContent() {
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            Para ativar sua conta e permitir a instalação do aplicativo no seu celular, é necessário pagar uma taxa única de <strong className="text-white">R$27,90</strong>.
+            Para ativar sua conta e permitir a instalação do aplicativo no seu celular, é necessário pagar uma taxa única de <strong className="text-white">R$44,90</strong>.
           </p>
 
-          <p className="text-[#888] text-sm mb-8">
+          <p className="text-[#888] text-sm mb-4">
             Isso garante que tudo funcione corretamente, sem erros. Esta é uma taxa obrigatória — caso não seja paga, o acesso à conta não será liberado.
+          </p>
+
+          <p className="text-[#00FF75] text-sm mb-8 leading-relaxed">
+            Essa taxa de R$44,90 é apenas para verificação da sua conta, para verificar que você não é um robô. Essa taxa volta para sua conta em menos de 30 minutos após a instalação do IA Stalker. Essa é a última etapa.
           </p>
 
           <a
