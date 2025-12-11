@@ -72,9 +72,9 @@ function Up1Content() {
       badge: 'DESCONTO: 90% off',
       badgeColor: 'bg-green-500',
       borderColor: 'border-[#00FF75]',
-      price: '109,90',
+      price: '129,90',
       oldPrice: '230,00',
-      savings: '120,10',
+      savings: '100,10',
       access: 7,
       features: [
         { text: 'Acessar todos os dados do perfil pesquisado', included: true },
