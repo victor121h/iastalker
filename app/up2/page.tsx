@@ -337,7 +337,7 @@ function Up2Content() {
               <p className="text-[#666] text-sm line-through mb-2">DE R$ 100</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">👉</span>
-                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR APENAS R$ 17,00</span>
+                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR APENAS R$ 47,90</span>
               </div>
               <p className="text-[#888] text-xs mt-2">Oferta válida enquanto os acessos não forem bloqueados.</p>
             </div>
