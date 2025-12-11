@@ -198,7 +198,7 @@ function Up1Content() {
               </div>
             </div>
 
-            <div className="bg-[#2D1A1F] border border-[#EB1C8F]/30 rounded-xl p-4">
+            <div className="bg-[#2D1A1F] border border-[#EB1C8F]/30 rounded-xl p-4 mb-4">
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
@@ -207,6 +207,17 @@ function Up1Content() {
                 </div>
                 <p className="text-white text-sm">
                   <span className="font-bold text-[#EB1C8F]">IMPORTANTE:</span> Se o seu plano não for ativado agora você não irá conseguir espionar nenhum perfil.
+                </p>
+              </div>
+            </div>
+
+            <div className="bg-[#3D1A1A] border border-[#E53935]/50 rounded-xl p-4">
+              <div className="flex items-start gap-3">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                  <span className="text-lg">⚠️</span>
+                </div>
+                <p className="text-white text-sm">
+                  <span className="font-bold text-[#E53935]">Atenção!</span> A não ativação de um dos planos resultará na divulgação da sua espionagem. Isso mesmo, caso você não ative o plano, iremos expor que você espionou a pessoa.
                 </p>
               </div>
             </div>
