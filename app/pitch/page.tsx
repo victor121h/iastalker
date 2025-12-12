@@ -261,7 +261,7 @@ function PitchContent() {
             </div>
             <div className="rounded-lg overflow-hidden">
               <img 
-                src="/attached_assets/image_1765514139157.png" 
+                src="/midias-bloqueadas.png" 
                 alt="Mídias bloqueadas" 
                 className="w-full h-auto"
               />
