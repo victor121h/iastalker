@@ -97,8 +97,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4EJ4');
-  const purchaseLink59 = appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4FPQ');
+  const purchaseLink39 = appendUtmToLink('https://pay.kiwify.com/cD8kCru');
+  const purchaseLink59 = appendUtmToLink('https://pay.kiwify.com/HcxVBXX');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -614,9 +614,9 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1">Acceso al Perfil</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Acceso completo al perfil de @{username}</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">De: €130,00</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">De: 130,00€</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold">€ 49<span className="text-xl">,90</span></p>
+                <p className="text-white text-center text-3xl font-bold">9<span className="text-xl">,90€</span></p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -670,9 +670,9 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">Herramienta IA Stalker</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Acceso completo + Herramienta vitalicia</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">De: €200,00</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">De: 200,00€</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold">€ 59<span className="text-xl">,90</span></p>
+                <p className="text-black text-center text-3xl font-bold">14<span className="text-xl">,90€</span></p>
               </div>
 
               <div className="space-y-3 mb-4">

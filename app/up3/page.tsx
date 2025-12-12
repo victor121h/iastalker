@@ -51,7 +51,7 @@ function Up3Content() {
           </p>
 
           <p className="text-white text-lg font-bold mb-4">
-            Tasa de Verificación: <span className="text-[#EB1C8F]">€39,00</span>
+            Tasa de Verificación: <span className="text-[#EB1C8F]">24,90€</span>
           </p>
 
           <p className="text-[#00FF75] text-sm mb-8 leading-relaxed">
@@ -59,7 +59,7 @@ function Up3Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4L13')}
+            href={appendUtmToLink('https://pay.kiwify.com/u6OmteH')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
             style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
           >

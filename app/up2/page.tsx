@@ -334,16 +334,16 @@ function Up2Content() {
             </div>
 
             <div className="text-center mb-4">
-              <p className="text-[#666] text-sm line-through mb-2">DE €100</p>
+              <p className="text-[#666] text-sm line-through mb-2">DE 100€</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">👉</span>
-                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR SOLO €47,90</span>
+                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR SOLO 9,90€</span>
               </div>
               <p className="text-[#888] text-xs mt-2">Oferta válida mientras los accesos no sean bloqueados.</p>
             </div>
 
             <a
-              href={appendUtmToLink("https://go.perfectpay.com.br/PPU38CQ3TGJ")}
+              href={appendUtmToLink("https://pay.kiwify.com/TAzNVeJ")}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"

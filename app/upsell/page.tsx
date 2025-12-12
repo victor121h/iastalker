@@ -47,7 +47,7 @@ function UpsellContent() {
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            Para activar tu cuenta y permitir la instalación de la aplicación en tu celular, es necesario pagar una tasa única de <strong className="text-white">€44,90</strong>.
+            Para activar tu cuenta y permitir la instalación de la aplicación en tu celular, es necesario pagar una tasa única de <strong className="text-white">14,90€</strong>.
           </p>
 
           <p className="text-[#888] text-sm mb-8">
@@ -55,7 +55,7 @@ function UpsellContent() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ49C2')}
+            href={appendUtmToLink('https://pay.kiwify.com/oBjhiHy')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
             style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
           >

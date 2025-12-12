@@ -80,9 +80,9 @@ function Up1Content() {
       badge: 'DESCUENTO: 90% off',
       badgeColor: 'bg-green-500',
       borderColor: 'border-[#00FF75]',
-      price: '129,90',
+      price: '49,90',
       oldPrice: '230,00',
-      savings: '100,10',
+      savings: '180,10',
       access: 7,
       features: [
         { text: 'Acceder a todos los datos del perfil buscado', included: true },
@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: true },
         { text: 'Soporte prioritario 24h', included: true },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ4FRQ',
+      link: 'https://pay.kiwify.com/cqVxFf6',
       recommended: true,
     },
     {
@@ -103,9 +103,9 @@ function Up1Content() {
       badge: 'Descuento: 80% off',
       badgeColor: 'bg-orange-500',
       borderColor: 'border-orange-500',
-      price: '79,90',
+      price: '29,90',
       oldPrice: '120,00',
-      savings: '40,10',
+      savings: '90,10',
       access: 5,
       features: [
         { text: 'Acceder a todos los datos del perfil buscado', included: true },
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: false },
         { text: 'Soporte prioritario 24h', included: false },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ4FRR',
+      link: 'https://pay.kiwify.com/DCM2tKt',
       recommended: false,
     },
     {
@@ -126,9 +126,9 @@ function Up1Content() {
       badge: 'Descuento: 90% off',
       badgeColor: 'bg-gray-500',
       borderColor: 'border-gray-500',
-      price: '59,90',
+      price: '19,90',
       oldPrice: '90,00',
-      savings: '30,10',
+      savings: '70,10',
       access: 3,
       features: [
         { text: 'Acceder a todos los datos del perfil buscado', included: true },
@@ -140,7 +140,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: false },
         { text: 'Soporte prioritario 24h', included: false },
       ],
-      link: 'https://go.perfectpay.com.br/PPU38CQ4FRQ',
+      link: 'https://pay.kiwify.com/OmlLRSx',
       recommended: false,
     },
   ];
@@ -276,11 +276,11 @@ function Up1Content() {
                 </div>
 
                 <div className="text-center mb-4">
-                  <p className="text-[#666] text-sm line-through mb-1">De: € {plan.oldPrice}</p>
+                  <p className="text-[#666] text-sm line-through mb-1">De: {plan.oldPrice}€</p>
                   <p className="text-white text-3xl font-bold">
-                    € {plan.price.split(',')[0]}<span className="text-xl">,{plan.price.split(',')[1]}</span>
+                    {plan.price.split(',')[0]}<span className="text-xl">,{plan.price.split(',')[1]}€</span>
                   </p>
-                  <p className="text-[#962FBF] text-sm font-medium mt-1">Ahorras € {plan.savings}</p>
+                  <p className="text-[#962FBF] text-sm font-medium mt-1">Ahorras {plan.savings}€</p>
                 </div>
 
                 <a
@@ -371,18 +371,18 @@ function Up1Content() {
 
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="text-gray-500 text-sm">
-                <span>De €</span>
-                <span className="line-through ml-1">129,90</span>
+                <span>De</span>
+                <span className="line-through ml-1">49,90€</span>
               </div>
               <div className="text-center">
-                <span className="text-[#FA7E1E] text-sm">Por €</span>
-                <p className="text-[#FA7E1E] text-4xl font-bold">79,90</p>
+                <span className="text-[#FA7E1E] text-sm">Por</span>
+                <p className="text-[#FA7E1E] text-4xl font-bold">29,90€</p>
               </div>
             </div>
 
             <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-5">
               <p className="text-[#00FF75] text-sm font-semibold">
-                Ahorras € 50,00 (39% OFF)
+                Ahorras 20,00€ (40% OFF)
               </p>
             </div>
 
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4JEP')}
+              href={appendUtmToLink('https://pay.kiwify.com/DCM2tKt')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
