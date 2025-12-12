@@ -284,7 +284,7 @@ function DirectContent() {
   const stories: Story[] = [
     { 
       id: 0, 
-      username: 'Conte as novidades', 
+      username: 'Cuenta las novedades', 
       avatar: profileAvatar, 
       isBlurred: false,
       isFirst: true,
@@ -301,14 +301,14 @@ function DirectContent() {
   ];
 
   const mockMessages = [
-    'eii, tá aí? 🔥',
-    'preciso falar contigo parada séria',
-    'Oi, você já chegou?',
-    'Vamos sair amanhã? 🎉',
-    'Olha isso aqui 👀',
-    'Que absurdo mano',
-    'Mandou mensagem pra você',
-    'Respondeu seu story',
+    'oye, ¿estás ahí? 🔥',
+    'necesito hablar contigo algo serio',
+    'Hola, ¿ya llegaste?',
+    '¿Salimos mañana? 🎉',
+    'Mira esto 👀',
+    'Qué locura hermano',
+    'Te mandó mensaje',
+    'Respondió tu historia',
   ];
 
   const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
@@ -404,7 +404,7 @@ function DirectContent() {
           </div>
           <input
             type="text"
-            placeholder="Pergunte à Meta AI ou pesquise"
+            placeholder="Pregunta a Meta AI o busca"
             className="w-full bg-[#1A1D20] text-white placeholder-[#A8A8A8] rounded-xl py-2.5 pl-11 pr-4 text-[15px] outline-none border-none"
           />
         </div>
@@ -426,8 +426,8 @@ function DirectContent() {
 
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
-          <span className="text-white text-[15px] font-semibold">Mensagens</span>
-          <span className="text-[#1A73E8] text-[14px]">Pedidos (1)</span>
+          <span className="text-white text-[15px] font-semibold">Mensajes</span>
+          <span className="text-[#1A73E8] text-[14px]">Solicitudes (1)</span>
         </div>
       </div>
 

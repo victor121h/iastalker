@@ -66,8 +66,8 @@ function LocationCard({ onClick }: { onClick: () => void }) {
         </div>
       </div>
       <div className="p-3 space-y-1">
-        <p className="text-white text-sm font-medium">Localização atual</p>
-        <p className="text-[#9CA3AF] text-xs">La***** está compartilhando</p>
+        <p className="text-white text-sm font-medium">Ubicación actual</p>
+        <p className="text-[#9CA3AF] text-xs">La***** está compartiendo</p>
         <button className="w-full mt-2 py-2 bg-[#1E3A5F] hover:bg-[#2a4a6f] text-white text-sm font-medium rounded-lg transition-colors">
           Ver
         </button>
@@ -98,7 +98,7 @@ function Chat2Content() {
   
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
-  const [userCity, setUserCity] = useState<string>('São Paulo');
+  const [userCity, setUserCity] = useState<string>('Madrid');
 
   useEffect(() => {
     const fetchCity = async () => {
@@ -143,7 +143,6 @@ function Chat2Content() {
 
   return (
     <div className="min-h-screen bg-[#0F1215] flex flex-col">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-[#0F1215] border-b border-white/10 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <button onClick={handleBack} className="p-2 -ml-2">
@@ -171,7 +170,7 @@ function Chat2Content() {
           
           <div className="flex flex-col">
             <span className="text-white font-semibold text-sm">{censoredName}</span>
-            <span className="text-[#9CA3AF] text-xs">offline</span>
+            <span className="text-[#9CA3AF] text-xs">desconectado</span>
           </div>
         </div>
         
@@ -190,36 +189,31 @@ function Chat2Content() {
         </div>
       </header>
 
-      {/* Chat Messages */}
       <div className="flex-1 pt-[60px] pb-[70px] px-4 overflow-y-auto">
         <div className="max-w-3xl mx-auto py-6 space-y-5">
           
-          {/* Date separator */}
           <div className="flex justify-center py-4">
             <span className="text-white/40 text-xs px-3 py-1 rounded-full bg-white/5">
-              <BlurredText text="ontem" />, 4:47
+              <BlurredText text="ayer" />, 4:47
             </span>
           </div>
 
-          {/* Message 1 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">ei, tá aí?</p>
+                <p className="text-white text-[15px]">oye, ¿estás ahí?</p>
               </div>
             </div>
           </div>
 
-          {/* Message 2 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">na <BlurredText text="quinta" /> dessa semana consigo <BlurredText text="ir aí" /></p>
+                <p className="text-white text-[15px]">el <BlurredText text="jueves" /> de esta semana puedo <BlurredText text="ir allá" /></p>
               </div>
             </div>
           </div>
 
-          {/* Message 3 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -233,21 +227,19 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">uai mas e <BlurredText text="a fulana" /> não vai tá com vc não?</p>
+                <p className="text-white text-[15px]">pero y <BlurredText text="la fulana" /> ¿no va a estar contigo?</p>
               </div>
             </div>
           </div>
 
-          {/* Message 4 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">não kkk <BlurredText text="ela vai viajar com a mãe dela pra outro lugar" /></p>
+                <p className="text-white text-[15px]">no jaja <BlurredText text="ella va a viajar con su mamá a otro lugar" /></p>
               </div>
             </div>
           </div>
 
-          {/* Message 5 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -261,12 +253,11 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">ai ai kkkkkk <BlurredText text="ela" /> <BlurredText text="confia em vc" /></p>
+                <p className="text-white text-[15px]">ay ay jajaja <BlurredText text="ella" /> <BlurredText text="confía en ti" /></p>
               </div>
             </div>
           </div>
 
-          {/* Message 6 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -280,12 +271,11 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">vou te mandar a localização</p>
+                <p className="text-white text-[15px]">te voy a mandar la ubicación</p>
               </div>
             </div>
           </div>
 
-          {/* Location Card - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2">
               <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -302,7 +292,6 @@ function Chat2Content() {
             </div>
           </div>
 
-          {/* Message 7 - Received (after location) */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="relative w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -316,12 +305,11 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">Em {userCity} viu</p>
+                <p className="text-white text-[15px]">En {userCity} ¿vale?</p>
               </div>
             </div>
           </div>
 
-          {/* Message 8 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
@@ -333,7 +321,6 @@ function Chat2Content() {
         </div>
       </div>
 
-      {/* Input Area */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#0F1215] border-t border-white/10 px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
           <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#405DE6] to-[#833AB4]">
@@ -348,7 +335,7 @@ function Chat2Content() {
             className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2.5 flex items-center cursor-pointer"
             onClick={handleUnlockClick}
           >
-            <span className="text-white/40 text-[15px]">Mensagem...</span>
+            <span className="text-white/40 text-[15px]">Mensaje...</span>
           </div>
           
           <div className="flex items-center gap-2">

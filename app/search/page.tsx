@@ -85,7 +85,7 @@ function SearchContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
             className="text-[26px] md:text-[28px] font-bold text-slate-800 leading-tight"
           >
-            O que realmente ele(a) faz quando tá no Insta?
+            ¿Qué hace realmente él/ella cuando está en Insta?
           </motion.h1>
           
           <motion.p
@@ -94,7 +94,7 @@ function SearchContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
             className="text-slate-500 text-[15px] leading-relaxed"
           >
-            Descubra a verdade sobre qualquer pessoa do Instagram. Só com o @.
+            Descubre la verdad sobre cualquier persona de Instagram. Solo con el @.
           </motion.p>
           
           <motion.div
@@ -115,7 +115,7 @@ function SearchContent() {
                 value={username}
                 onChange={(e) => setUsername(e.target.value.replace('@', ''))}
                 onKeyDown={(e) => e.key === 'Enter' && handleSubmit()}
-                placeholder="Digite o @ da pessoa."
+                placeholder="Escribe el @ de la persona."
                 className="w-full h-[48px] bg-sky-50 border border-sky-200 rounded-full px-12 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-sky-400 transition-all"
               />
               <button
@@ -139,7 +139,7 @@ function SearchContent() {
               <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2"/>
               <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
             </svg>
-            <span className="text-slate-500">Apenas 1 pesquisa por pessoa.</span>
+            <span className="text-slate-500">Solo 1 búsqueda por persona.</span>
           </motion.div>
         </div>
       </motion.div>
@@ -149,7 +149,7 @@ function SearchContent() {
 
 export default function SearchPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-white to-sky-50 flex items-center justify-center"><div className="text-slate-600">Carregando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-white to-sky-50 flex items-center justify-center"><div className="text-slate-600">Cargando...</div></div>}>
       <SearchContent />
     </Suspense>
   );

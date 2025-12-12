@@ -76,8 +76,8 @@ function Up1Content() {
   const plans = [
     {
       id: 'ultra',
-      name: 'Plano Ultra – Olho de Deus',
-      badge: 'DESCONTO: 90% off',
+      name: 'Plan Ultra – Ojo de Dios',
+      badge: 'DESCUENTO: 90% off',
       badgeColor: 'bg-green-500',
       borderColor: 'border-[#00FF75]',
       price: '129,90',
@@ -85,22 +85,22 @@ function Up1Content() {
       savings: '100,10',
       access: 7,
       features: [
-        { text: 'Acessar todos os dados do perfil pesquisado', included: true },
-        { text: 'Localização em tempo real', included: true },
-        { text: 'Histórico de localização', included: true },
-        { text: 'Mensagens (enviadas e recebidas) em tempo real', included: true },
-        { text: 'Histórico de mensagens (até 18 meses)', included: true },
-        { text: 'Acesso vitalício ao IA Stalker', included: true },
-        { text: 'Pesquisas ilimitadas de perfis', included: true },
-        { text: 'Suporte prioritário 24h', included: true },
+        { text: 'Acceder a todos los datos del perfil buscado', included: true },
+        { text: 'Ubicación en tiempo real', included: true },
+        { text: 'Historial de ubicación', included: true },
+        { text: 'Mensajes (enviados y recibidos) en tiempo real', included: true },
+        { text: 'Historial de mensajes (hasta 18 meses)', included: true },
+        { text: 'Acceso vitalicio a IA Stalker', included: true },
+        { text: 'Búsquedas ilimitadas de perfiles', included: true },
+        { text: 'Soporte prioritario 24h', included: true },
       ],
       link: 'https://go.perfectpay.com.br/PPU38CQ4FRQ',
       recommended: true,
     },
     {
       id: 'premium',
-      name: 'Plano Premium',
-      badge: 'Desconto: 80% off',
+      name: 'Plan Premium',
+      badge: 'Descuento: 80% off',
       badgeColor: 'bg-orange-500',
       borderColor: 'border-orange-500',
       price: '79,90',
@@ -108,22 +108,22 @@ function Up1Content() {
       savings: '40,10',
       access: 5,
       features: [
-        { text: 'Acessar todos os dados do perfil pesquisado', included: true },
-        { text: 'Localização em tempo real', included: true },
-        { text: 'Histórico de localização', included: true },
-        { text: 'Mensagens (enviadas e recebidas) em tempo real', included: true },
-        { text: 'Histórico de mensagens (até 18 meses)', included: false },
-        { text: 'Acesso vitalício ao IA Stalker', included: false },
-        { text: 'Pesquisas ilimitadas de perfis', included: false },
-        { text: 'Suporte prioritário 24h', included: false },
+        { text: 'Acceder a todos los datos del perfil buscado', included: true },
+        { text: 'Ubicación en tiempo real', included: true },
+        { text: 'Historial de ubicación', included: true },
+        { text: 'Mensajes (enviados y recibidos) en tiempo real', included: true },
+        { text: 'Historial de mensajes (hasta 18 meses)', included: false },
+        { text: 'Acceso vitalicio a IA Stalker', included: false },
+        { text: 'Búsquedas ilimitadas de perfiles', included: false },
+        { text: 'Soporte prioritario 24h', included: false },
       ],
       link: 'https://go.perfectpay.com.br/PPU38CQ4FRR',
       recommended: false,
     },
     {
       id: 'basic',
-      name: 'Plano Básico',
-      badge: 'Desconto: 90% off',
+      name: 'Plan Básico',
+      badge: 'Descuento: 90% off',
       badgeColor: 'bg-gray-500',
       borderColor: 'border-gray-500',
       price: '59,90',
@@ -131,14 +131,14 @@ function Up1Content() {
       savings: '30,10',
       access: 3,
       features: [
-        { text: 'Acessar todos os dados do perfil pesquisado', included: true },
-        { text: 'Localização em tempo real', included: true },
-        { text: 'Histórico de localização', included: false },
-        { text: 'Mensagens (enviadas e recebidas) em tempo real', included: false },
-        { text: 'Histórico de mensagens (até 18 meses)', included: false },
-        { text: 'Acesso vitalício ao IA Stalker', included: false },
-        { text: 'Pesquisas ilimitadas de perfis', included: false },
-        { text: 'Suporte prioritário 24h', included: false },
+        { text: 'Acceder a todos los datos del perfil buscado', included: true },
+        { text: 'Ubicación en tiempo real', included: true },
+        { text: 'Historial de ubicación', included: false },
+        { text: 'Mensajes (enviados y recibidos) en tiempo real', included: false },
+        { text: 'Historial de mensajes (hasta 18 meses)', included: false },
+        { text: 'Acceso vitalicio a IA Stalker', included: false },
+        { text: 'Búsquedas ilimitadas de perfiles', included: false },
+        { text: 'Soporte prioritario 24h', included: false },
       ],
       link: 'https://go.perfectpay.com.br/PPU38CQ4FRQ',
       recommended: false,
@@ -152,7 +152,7 @@ function Up1Content() {
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#D6272D] py-2.5 px-4">
           <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
             <span className="text-xl">⚠️</span>
-            <span className="text-white text-sm font-medium">SUA SESSÃO EXPIRA EM:</span>
+            <span className="text-white text-sm font-medium">TU SESIÓN EXPIRA EN:</span>
             <div className="flex items-center gap-1">
               <div className="bg-black rounded px-2 py-1">
                 <span className="text-white text-lg font-bold">{String(timeLeft.minutes).padStart(2, '0')}</span>
@@ -188,13 +188,13 @@ function Up1Content() {
                   </svg>
                 </div>
                 <p className="text-white text-sm leading-relaxed">
-                  <span className="font-bold">Parabéns</span>, seu acesso ao IA Stalker foi garantido, falta apenas <span className="font-bold">1 passo</span> para você poder utilizar a ferramenta de modo completo e espionar qualquer perfil.
+                  <span className="font-bold">Felicitaciones</span>, tu acceso a IA Stalker fue garantizado, solo falta <span className="font-bold">1 paso</span> para que puedas utilizar la herramienta de forma completa y espiar cualquier perfil.
                 </p>
               </div>
             </div>
 
             <div className="mb-6">
-              <p className="text-[#A0A0A0] text-xs text-center mb-2">Passo 2 de 3 · Ative seu plano</p>
+              <p className="text-[#A0A0A0] text-xs text-center mb-2">Paso 2 de 3 · Activa tu plan</p>
               <div className="w-full bg-[#1A1A1A] rounded-full h-2.5 overflow-hidden">
                 <div 
                   className="h-full rounded-full"
@@ -214,7 +214,7 @@ function Up1Content() {
                   </svg>
                 </div>
                 <p className="text-white text-sm">
-                  <span className="font-bold text-[#EB1C8F]">IMPORTANTE:</span> Se o seu plano não for ativado agora você não irá conseguir espionar nenhum perfil.
+                  <span className="font-bold text-[#EB1C8F]">IMPORTANTE:</span> Si tu plan no es activado ahora no podrás espiar ningún perfil.
                 </p>
               </div>
             </div>
@@ -225,7 +225,7 @@ function Up1Content() {
                   <span className="text-lg">⚠️</span>
                 </div>
                 <p className="text-white text-sm">
-                  <span className="font-bold text-[#E53935]">Atenção!</span> A não ativação de um dos planos resultará na divulgação da sua espionagem. Isso mesmo, caso você não ative o plano, iremos expor que você espionou a pessoa.
+                  <span className="font-bold text-[#E53935]">¡Atención!</span> La no activación de uno de los planes resultará en la divulgación de tu espionaje. Así es, si no activas el plan, expondremos que espiaste a la persona.
                 </p>
               </div>
             </div>
@@ -238,8 +238,8 @@ function Up1Content() {
             className="text-center mb-6"
           >
             <h2 className="text-xl font-bold">
-              <span className="text-black">SELECIONE </span>
-              <span className="text-[#EB1C8F]">seu plano abaixo:</span>
+              <span className="text-black">SELECCIONA </span>
+              <span className="text-[#EB1C8F]">tu plan abajo:</span>
             </h2>
           </motion.div>
 
@@ -276,11 +276,11 @@ function Up1Content() {
                 </div>
 
                 <div className="text-center mb-4">
-                  <p className="text-[#666] text-sm line-through mb-1">De: R$ {plan.oldPrice}</p>
+                  <p className="text-[#666] text-sm line-through mb-1">De: € {plan.oldPrice}</p>
                   <p className="text-white text-3xl font-bold">
-                    R$ {plan.price.split(',')[0]}<span className="text-xl">,{plan.price.split(',')[1]}</span>
+                    € {plan.price.split(',')[0]}<span className="text-xl">,{plan.price.split(',')[1]}</span>
                   </p>
-                  <p className="text-[#962FBF] text-sm font-medium mt-1">Economize R$ {plan.savings}</p>
+                  <p className="text-[#962FBF] text-sm font-medium mt-1">Ahorras € {plan.savings}</p>
                 </div>
 
                 <a
@@ -296,10 +296,10 @@ function Up1Content() {
                         : '#4B5563'
                   }}
                 >
-                  SELECIONAR PLANO
+                  SELECCIONAR PLAN
                 </a>
 
-                <p className="text-[#666] text-xs text-center mt-3">Acesso disponível: {plan.access}</p>
+                <p className="text-[#666] text-xs text-center mt-3">Acceso disponible: {plan.access}</p>
               </motion.div>
             ))}
           </div>
@@ -310,21 +310,21 @@ function Up1Content() {
             transition={{ duration: 0.4, delay: 0.6 }}
             className="mt-8 text-center"
           >
-            <p className="text-[#666] text-xs mb-4">Compra 100% Segura - Criptografia SSL</p>
+            <p className="text-[#666] text-xs mb-4">Compra 100% Segura - Encriptación SSL</p>
             <div className="flex justify-center gap-4">
               <div className="flex items-center gap-2 bg-[#0C1011] rounded-lg px-3 py-2">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   <path d="M9 12l2 2 4-4"/>
                 </svg>
-                <span className="text-white text-xs">Garantia 30 dias</span>
+                <span className="text-white text-xs">Garantía 30 días</span>
               </div>
               <div className="flex items-center gap-2 bg-[#0C1011] rounded-lg px-3 py-2">
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                   <rect x="1" y="4" width="22" height="16" rx="2"/>
                   <path d="M1 10h22"/>
                 </svg>
-                <span className="text-white text-xs">Pagamento Seguro</span>
+                <span className="text-white text-xs">Pago Seguro</span>
               </div>
             </div>
           </motion.div>
@@ -356,45 +356,45 @@ function Up1Content() {
             <div className="flex justify-center mb-4">
               <div className="bg-gradient-to-r from-[#EB1C8F] to-[#FA7E1E] text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5">
                 <span>⚡</span>
-                <span>OFERTA RELÂMPAGO</span>
+                <span>OFERTA RELÁMPAGO</span>
               </div>
             </div>
 
             <h2 className="text-center text-xl font-bold mb-2">
-              <span className="text-white">Espere! </span>
-              <span className="text-[#FA7E1E]">Última Chance</span>
+              <span className="text-white">¡Espera! </span>
+              <span className="text-[#FA7E1E]">Última Oportunidad</span>
             </h2>
 
             <p className="text-gray-400 text-sm text-center mb-5">
-              Leve o plano mais completo com um desconto que não se repetirá.
+              Llévate el plan más completo con un descuento que no se repetirá.
             </p>
 
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="text-gray-500 text-sm">
-                <span>De R$</span>
+                <span>De €</span>
                 <span className="line-through ml-1">129,90</span>
               </div>
               <div className="text-center">
-                <span className="text-[#FA7E1E] text-sm">Por R$</span>
+                <span className="text-[#FA7E1E] text-sm">Por €</span>
                 <p className="text-[#FA7E1E] text-4xl font-bold">79,90</p>
               </div>
             </div>
 
             <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-5">
               <p className="text-[#00FF75] text-sm font-semibold">
-                Você economiza R$ 50,00 (39% OFF)
+                Ahorras € 50,00 (39% OFF)
               </p>
             </div>
 
             <div className="mb-5">
               <p className="text-white text-sm font-semibold text-center mb-3 flex items-center justify-center gap-2">
                 <span className="text-[#FA7E1E]">◉</span>
-                Plano Ultra – Olho de Deus Incluso:
+                Plan Ultra – Ojo de Dios Incluido:
               </p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Busca ilimitada de perfis</span>
+                  <span>Búsqueda ilimitada de perfiles</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
@@ -406,11 +406,11 @@ function Up1Content() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Histórico completo</span>
+                  <span>Historial completo</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Notificações em tempo real</span>
+                  <span>Notificaciones en tiempo real</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
@@ -418,11 +418,11 @@ function Up1Content() {
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Galeria oculta</span>
+                  <span>Galería oculta</span>
                 </div>
                 <div className="flex items-center gap-2 text-gray-300">
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Múltiplos alvos</span>
+                  <span>Múltiples objetivos</span>
                 </div>
               </div>
             </div>
@@ -434,19 +434,19 @@ function Up1Content() {
             >
               <span className="flex items-center justify-center gap-2">
                 <span>▶</span>
-                ADQUIRIR OFERTA E ATIVAR
+                ADQUIRIR OFERTA Y ACTIVAR
               </span>
             </a>
 
             <p className="text-gray-500 text-xs text-center mb-3">
-              • Esta oferta expira em: <span className="text-white font-semibold">{String(popupTimer.minutes).padStart(2, '0')}:{String(popupTimer.seconds).padStart(2, '0')}</span>
+              • Esta oferta expira en: <span className="text-white font-semibold">{String(popupTimer.minutes).padStart(2, '0')}:{String(popupTimer.seconds).padStart(2, '0')}</span>
             </p>
 
             <button
               onClick={closePopup}
               className="text-gray-500 text-xs text-center w-full underline hover:text-gray-400 transition-colors"
             >
-              Não, obrigado. Prefiro pagar mais caro depois.
+              No, gracias. Prefiero pagar más caro después.
             </button>
           </motion.div>
         </div>
@@ -457,7 +457,7 @@ function Up1Content() {
 
 export default function Up1Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0C1011] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0C1011] flex items-center justify-center"><div className="text-white">Cargando...</div></div>}>
       <Up1Content />
     </Suspense>
   );

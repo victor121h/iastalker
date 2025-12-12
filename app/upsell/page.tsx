@@ -43,15 +43,15 @@ function UpsellContent() {
           </div>
 
           <h1 className="text-white text-2xl font-bold leading-tight mb-4">
-            Ative sua conta agora
+            Activa tu cuenta ahora
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            Para ativar sua conta e permitir a instalação do aplicativo no seu celular, é necessário pagar uma taxa única de <strong className="text-white">R$44,90</strong>.
+            Para activar tu cuenta y permitir la instalación de la aplicación en tu celular, es necesario pagar una tasa única de <strong className="text-white">€44,90</strong>.
           </p>
 
           <p className="text-[#888] text-sm mb-8">
-            Isso garante que tudo funcione corretamente, sem erros. Esta é uma taxa obrigatória — caso não seja paga, o acesso à conta não será liberado.
+            Esto garantiza que todo funcione correctamente, sin errores. Esta es una tasa obligatoria — si no es pagada, el acceso a la cuenta no será liberado.
           </p>
 
           <a
@@ -63,7 +63,7 @@ function UpsellContent() {
               <circle cx="12" cy="12" r="10"/>
               <path d="M12 16v-4M12 8h.01"/>
             </svg>
-            Ativar Conta
+            Activar Cuenta
           </a>
 
           <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
@@ -71,12 +71,12 @@ function UpsellContent() {
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>100% Anônimo. A pessoa <span className="text-[#EB1C8F] font-bold">NUNCA</span> saberá.</span>
+            <span>100% Anónimo. La persona <span className="text-[#EB1C8F] font-bold">NUNCA</span> lo sabrá.</span>
           </div>
         </motion.div>
 
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-[#444] text-sm">+8.486 perfis analisados hoje</p>
+          <p className="text-[#444] text-sm">+8.486 perfiles analizados hoy</p>
         </div>
       </div>
     </div>

@@ -52,29 +52,29 @@ function BackUp1Content() {
             style={{ background: 'linear-gradient(90deg, #F97316, #EA580C)' }}
           >
             <span>🔥</span>
-            <span className="text-white">OFERTA RELÂMPAGO</span>
+            <span className="text-white">OFERTA RELÁMPAGO</span>
           </div>
         </div>
 
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold mb-2">
-            <span className="text-white">Espere! </span>
+            <span className="text-white">¡Espera! </span>
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Última Chance
+              Última Oportunidad
             </span>
           </h1>
           <p className="text-[#888] text-sm">
-            Leve o plano mais completo com um desconto que não se repetirá.
+            Llévate el plan más completo con un descuento que no se repetirá.
           </p>
         </div>
 
         <div className="flex items-center justify-center gap-6 mb-4">
           <div className="text-center">
-            <p className="text-[#666] text-xs">De R$</p>
+            <p className="text-[#666] text-xs">De €</p>
             <p className="text-[#666] text-lg line-through">39,90</p>
           </div>
           <div className="text-center">
-            <p className="text-white text-lg">Por R$</p>
+            <p className="text-white text-lg">Por €</p>
             <p className="text-white text-4xl font-bold">14,90</p>
           </div>
         </div>
@@ -83,19 +83,19 @@ function BackUp1Content() {
           className="rounded-full py-2 px-4 text-center mb-6"
           style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)' }}
         >
-          <span className="text-white font-bold text-sm">Você economiza R$ 25,00 (63% OFF)</span>
+          <span className="text-white font-bold text-sm">Ahorras €25,00 (63% OFF)</span>
         </div>
 
         <div className="mb-6">
           <div className="flex items-center gap-2 mb-3">
             <span className="text-white">⚫</span>
-            <span className="text-white font-bold text-sm">Plano Ultra – Olho de Deus Incluso:</span>
+            <span className="text-white font-bold text-sm">Plan Ultra – Ojo de Dios Incluido:</span>
           </div>
 
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
-              <span className="text-[#CCC]">Busca ilimitada de perfis</span>
+              <span className="text-[#CCC]">Búsqueda ilimitada de perfiles</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
@@ -107,11 +107,11 @@ function BackUp1Content() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
-              <span className="text-[#CCC]">Histórico completo</span>
+              <span className="text-[#CCC]">Historial completo</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
-              <span className="text-[#CCC]">Notificações em tempo real</span>
+              <span className="text-[#CCC]">Notificaciones en tiempo real</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
@@ -119,11 +119,11 @@ function BackUp1Content() {
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
-              <span className="text-[#CCC]">Galeria oculta</span>
+              <span className="text-[#CCC]">Galería oculta</span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-[#EC4899]">✓</span>
-              <span className="text-[#CCC]">Múltiplos alvos</span>
+              <span className="text-[#CCC]">Múltiples objetivos</span>
             </div>
           </div>
         </div>
@@ -137,20 +137,20 @@ function BackUp1Content() {
         >
           <span className="flex items-center justify-center gap-2">
             <span className="bg-purple-600 rounded px-1">▶</span>
-            <span>ADQUIRIR OFERTA E ATIVAR</span>
+            <span>ADQUIRIR OFERTA Y ACTIVAR</span>
           </span>
         </a>
 
         <div className="text-center mb-3">
           <p className="text-[#888] text-xs flex items-center justify-center gap-1">
             <span>⏱</span>
-            <span>Esta oferta expira em 04:57</span>
+            <span>Esta oferta expira en 04:57</span>
           </p>
         </div>
 
         <div className="text-center">
           <a href="#" className="text-[#888] text-xs underline hover:text-[#AAA] transition-colors">
-            Não, obrigado. Prefiro pagar mais caro depois.
+            No, gracias. Prefiero pagar más caro después.
           </a>
         </div>
       </motion.div>
@@ -160,7 +160,7 @@ function BackUp1Content() {
 
 export default function BackUp1Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Cargando...</div></div>}>
       <BackUp1Content />
     </Suspense>
   );

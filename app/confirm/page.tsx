@@ -119,12 +119,12 @@ function ConfirmContent() {
                 <path d="M15 9l-6 6M9 9l6 6" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Perfil não encontrado</h2>
+            <h2 className="text-xl font-bold text-slate-800">Perfil no encontrado</h2>
             <p className="text-slate-500 text-sm">
-              {error || `Não foi possível encontrar o perfil @${username}`}
+              {error || `No fue posible encontrar el perfil @${username}`}
             </p>
             <InstagramButton onClick={() => router.push('/search')}>
-              Tentar novamente
+              Intentar de nuevo
             </InstagramButton>
           </div>
         </motion.div>
@@ -139,7 +139,7 @@ function ConfirmContent() {
     if (num >= 1000) {
       return (num / 1000).toFixed(1).replace('.0', '') + 'K';
     }
-    return num.toLocaleString('pt-BR');
+    return num.toLocaleString('es-ES');
   };
 
   return (
@@ -159,7 +159,7 @@ function ConfirmContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
             className="text-3xl font-bold instagram-gradient-text"
           >
-            Confirmar Pesquisa
+            Confirmar Búsqueda
           </motion.h1>
           
           <motion.p
@@ -168,7 +168,7 @@ function ConfirmContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
             className="text-slate-600 text-base"
           >
-            Você deseja espionar o perfil{' '}
+            ¿Deseas espiar el perfil{' '}
             <span className="text-slate-800 font-bold">@{profile.username}</span>?
           </motion.p>
           
@@ -228,7 +228,7 @@ function ConfirmContent() {
           >
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.posts)}</div>
-              <div className="text-slate-500 text-xs">Publicações</div>
+              <div className="text-slate-500 text-xs">Publicaciones</div>
             </div>
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.followers)}</div>
@@ -236,7 +236,7 @@ function ConfirmContent() {
             </div>
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.following)}</div>
-              <div className="text-slate-500 text-xs">Seguindo</div>
+              <div className="text-slate-500 text-xs">Siguiendo</div>
             </div>
           </motion.div>
           
@@ -252,7 +252,7 @@ function ConfirmContent() {
                 <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <p className="text-slate-600 text-sm">
-                Nossa plataforma libera somente uma pesquisa por pessoa, então confirme se realmente deseja espionar.
+                Nuestra plataforma permite solo una búsqueda por persona, así que confirma si realmente deseas espiar.
               </p>
             </div>
           </motion.div>
@@ -268,7 +268,7 @@ function ConfirmContent() {
               onClick={() => navigateWithParams('/search')}
               className="flex-1"
             >
-              Corrigir @
+              Corregir @
             </InstagramButton>
             <InstagramButton
               onClick={() => navigateWithParams('/login', `username=${encodeURIComponent(profile.username)}`)}

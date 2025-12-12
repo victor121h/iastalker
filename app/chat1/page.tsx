@@ -76,7 +76,7 @@ function AudioMessage({
         <span className="text-white/70 text-xs ml-2">{duration}</span>
       </div>
       <button className="text-white/60 text-xs mt-2 hover:text-white/80 transition-colors">
-        Ver transcrição
+        Ver transcripción
       </button>
     </div>
   );
@@ -130,7 +130,6 @@ function Chat1Content() {
 
   return (
     <div className="min-h-screen bg-[#111418] flex flex-col">
-      {/* Header */}
       <header className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-[#111418] border-b border-white/10 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <button onClick={handleBack} className="p-2 -ml-2">
@@ -155,7 +154,7 @@ function Chat1Content() {
           
           <div className="flex flex-col">
             <span className="text-white font-semibold text-sm">{censoredName}</span>
-            <span className="text-[#4ADE80] text-xs">online</span>
+            <span className="text-[#4ADE80] text-xs">en línea</span>
           </div>
         </div>
         
@@ -174,18 +173,15 @@ function Chat1Content() {
         </div>
       </header>
 
-      {/* Chat Messages */}
       <div className="flex-1 pt-[60px] pb-[70px] px-4 overflow-y-auto">
         <div className="max-w-3xl mx-auto py-6 space-y-6">
           
-          {/* Date separator */}
           <div className="flex justify-center py-4">
             <span className="text-white/40 text-xs px-3 py-1 rounded-full bg-white/5">
-              <BlurredText text="hoje" />, 19:31
+              <BlurredText text="hoy" />, 19:31
             </span>
           </div>
 
-          {/* Message 1 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -196,21 +192,19 @@ function Chat1Content() {
                 />
               </div>
               <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">Oi, você já chegou?</p>
+                <p className="text-white text-[15px]">Hola, ¿ya llegaste?</p>
               </div>
             </div>
           </div>
 
-          {/* Message 2 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">Não... ainda estou com <BlurredText text="alguém" /></p>
+                <p className="text-white text-[15px]">No... todavía estoy con <BlurredText text="alguien" /></p>
               </div>
             </div>
           </div>
 
-          {/* Message 3 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -221,25 +215,23 @@ function Chat1Content() {
                 />
               </div>
               <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">Denovo? Você disse que <BlurredText text="não ia mais fazer isso" /> 😡</p>
+                <p className="text-white text-[15px]">¿Otra vez? Dijiste que <BlurredText text="no lo ibas a hacer más" /> 😡</p>
               </div>
             </div>
           </div>
 
-          {/* Message 4 - Sent (longer) */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
                 <p className="text-white text-[15px]">
-                  <BlurredText text="Mensagem longa mais longa com conteúdo sensível" />
+                  <BlurredText text="Mensaje largo más extenso con contenido sensible" />
                   <br />
-                  <BlurredText text="sobre o nosso" /> 😐
+                  <BlurredText text="sobre lo nuestro" /> 😐
                 </p>
               </div>
             </div>
           </div>
 
-          {/* Message 5 - Received with audio */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -251,21 +243,19 @@ function Chat1Content() {
               </div>
               <div className="space-y-2">
                 <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
-                  <p className="text-white text-[15px]">Não acredito!!! Você sempre faz isso quando está com <BlurredText text="ela" /></p>
+                  <p className="text-white text-[15px]">¡No lo puedo creer! Siempre haces esto cuando estás con <BlurredText text="ella" /></p>
                 </div>
                 <AudioMessage isReceived={true} duration="0:32" onClick={showNotification} />
               </div>
             </div>
           </div>
 
-          {/* Message 6 - Sent audio */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <AudioMessage isReceived={false} duration="1:47" onClick={showNotification} />
             </div>
           </div>
 
-          {/* Message 7 - Received */}
           <div className="flex justify-start">
             <div className="flex items-end gap-2 max-w-[60%]">
               <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
@@ -276,16 +266,15 @@ function Chat1Content() {
                 />
               </div>
               <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">Não quero mais saber, vou <BlurredText text="fazer diferente" /></p>
+                <p className="text-white text-[15px]">No quiero saber más, voy a <BlurredText text="hacer diferente" /></p>
               </div>
             </div>
           </div>
 
-          {/* Message 8 - Sent */}
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">Vamos conversar pessoalmente na <BlurredText text="nossa casa às 20h" /></p>
+                <p className="text-white text-[15px]">Hablemos en persona en <BlurredText text="nuestra casa a las 20h" /></p>
               </div>
             </div>
           </div>
@@ -293,7 +282,6 @@ function Chat1Content() {
         </div>
       </div>
 
-      {/* Input Area */}
       <div className="fixed bottom-0 left-0 right-0 bg-[#111418] border-t border-white/10 px-4 py-3">
         <div className="max-w-3xl mx-auto flex items-center gap-3">
           <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#405DE6] to-[#833AB4]">
@@ -308,7 +296,7 @@ function Chat1Content() {
             className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2.5 flex items-center cursor-pointer"
             onClick={handleUnlockClick}
           >
-            <span className="text-white/40 text-[15px]">Mensagem...</span>
+            <span className="text-white/40 text-[15px]">Mensaje...</span>
           </div>
           
           <div className="flex items-center gap-2">
