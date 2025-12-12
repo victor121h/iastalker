@@ -30,36 +30,58 @@ function Up3Content() {
     <div className="min-h-screen bg-black relative overflow-x-hidden">
       <MatrixBackground />
       
-      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-20">
+      <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-[480px] w-full bg-[rgba(20,20,20,0.8)] p-10 rounded-[20px] text-center"
-          style={{ boxShadow: '0 0 40px rgba(255, 0, 255, 0.2)' }}
+          className="max-w-[420px] w-full bg-[#121212] rounded-[24px] p-8 text-center"
+          style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
         >
-          <h1 className="text-[28px] font-bold leading-tight mb-5 text-white">
-            Ative sua conta agora
+          <div className="flex justify-center mb-6">
+            <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[40px] w-auto" />
+          </div>
+
+          <h1 className="text-white text-2xl font-bold leading-tight mb-6">
+            ÚLTIMA ETAPA
           </h1>
           
-          <p className="text-white/90 text-base mb-8">
-            Para ativar sua conta e permitir a instalação do aplicativo no seu celular,
-            é necessário pagar uma taxa única de <strong>R$27,90</strong>.
-            Isso garante que tudo funcione corretamente, sem erros. Esta é uma taxa obrigatória — caso não seja paga, o acesso à conta não será liberado.
+          <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
+            É necessário você verificar sua identidade e comprovar que você não é um robô. Pois estávamos sofrendo ataque hacker em nossos servidores.
+          </p>
+
+          <p className="text-white text-lg font-bold mb-4">
+            Taxa de Verificação: <span className="text-[#EB1C8F]">R$39,00</span>
+          </p>
+
+          <p className="text-[#00FF75] text-sm mb-8 leading-relaxed">
+            Mas fique tranquila(o), esse valor volta para você assim que sua conta for confirmada no sistema.
           </p>
 
           <a
-            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ49C2')}
-            className="inline-block text-white py-4 px-8 rounded-full text-base font-bold no-underline transition-all duration-300 hover:brightness-110"
-            style={{ background: 'linear-gradient(90deg, #ff008c, #ffcc33)' }}
+            href={appendUtmToLink('https://go.perfectpay.com.br/PPU38CQ4L13')}
+            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
+            style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
           >
-            Ativar Conta
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <path d="M9 12l2 2 4-4"/>
+              <circle cx="12" cy="12" r="10"/>
+            </svg>
+            VERIFICAR MINHA CONTA
           </a>
 
-          <div className="mt-5 text-sm text-white/70">
-            Pagamento 100% seguro
+          <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+              <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+              <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+            </svg>
+            <span>100% Anônimo. A pessoa <span className="text-[#EB1C8F] font-bold">NUNCA</span> saberá.</span>
           </div>
         </motion.div>
+
+        <div className="absolute bottom-6 left-0 right-0 text-center">
+          <p className="text-[#444] text-sm">+8.486 perfis analisados hoje</p>
+        </div>
       </div>
     </div>
   );
