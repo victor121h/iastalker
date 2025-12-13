@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: true },
         { text: 'Soporte prioritario 24h', included: true },
       ],
-      link: 'https://pay.kiwify.com/cqVxFf6',
+      link: 'https://pay.hotmart.com/A103392154P?off=log9u1qh',
       recommended: true,
     },
     {
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: false },
         { text: 'Soporte prioritario 24h', included: false },
       ],
-      link: 'https://pay.kiwify.com/DCM2tKt',
+      link: 'https://pay.hotmart.com/A103392154P?off=eeb43l0q',
       recommended: false,
     },
     {
@@ -140,7 +140,7 @@ function Up1Content() {
         { text: 'Búsquedas ilimitadas de perfiles', included: false },
         { text: 'Soporte prioritario 24h', included: false },
       ],
-      link: 'https://pay.kiwify.com/OmlLRSx',
+      link: 'https://pay.hotmart.com/A103392154P?off=nagg8sz8',
       recommended: false,
     },
   ];
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://pay.kiwify.com/DCM2tKt')}
+              href={appendUtmToLink('https://pay.hotmart.com/A103392154P?off=eeb43l0q')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
