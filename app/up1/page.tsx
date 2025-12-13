@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=log9u1qh',
+      link: 'https://pay.kiwify.com/cqVxFf6',
       recommended: true,
     },
     {
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=eeb43l0q',
+      link: 'https://pay.kiwify.com/DCM2tKt',
       recommended: false,
     },
     {
@@ -140,7 +140,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=nagg8sz8',
+      link: 'https://pay.kiwify.com/OmlLRSx',
       recommended: false,
     },
   ];
@@ -276,11 +276,11 @@ function Up1Content() {
                 </div>
 
                 <div className="text-center mb-4">
-                  <p className="text-[#666] text-sm line-through mb-1">From: {plan.oldPrice}€</p>
+                  <p className="text-[#666] text-sm line-through mb-1">From: {plan.oldPrice}$</p>
                   <p className="text-white text-3xl font-bold">
-                    {plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}€</span>
+                    {plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}$</span>
                   </p>
-                  <p className="text-[#962FBF] text-sm font-medium mt-1">You save {plan.savings}€</p>
+                  <p className="text-[#962FBF] text-sm font-medium mt-1">You save {plan.savings}$</p>
                 </div>
 
                 <a
@@ -372,17 +372,17 @@ function Up1Content() {
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="text-gray-500 text-sm">
                 <span>From</span>
-                <span className="line-through ml-1">49.90€</span>
+                <span className="line-through ml-1">49.90$</span>
               </div>
               <div className="text-center">
                 <span className="text-[#FA7E1E] text-sm">For</span>
-                <p className="text-[#FA7E1E] text-4xl font-bold">29.90€</p>
+                <p className="text-[#FA7E1E] text-4xl font-bold">29.90$</p>
               </div>
             </div>
 
             <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-5">
               <p className="text-[#00FF75] text-sm font-semibold">
-                You save 20.00€ (40% OFF)
+                You save 20.00$ (40% OFF)
               </p>
             </div>
 
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://pay.hotmart.com/A103392154P?off=eeb43l0q')}
+              href={appendUtmToLink('https://pay.kiwify.com/DCM2tKt')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
