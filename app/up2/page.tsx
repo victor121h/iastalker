@@ -17,13 +17,13 @@ function Up2Content() {
   const searchParams = useSearchParams();
   const [step, setStep] = useState<Step>('input');
   const [username, setUsername] = useState('');
-  const [location, setLocation] = useState('Cargando...');
+  const [location, setLocation] = useState('Loading...');
   const [showPopup, setShowPopup] = useState(false);
   const [syncSteps, setSyncSteps] = useState<SyncStep[]>([
-    { id: 1, text: 'Localizando dispositivo objetivo...', completed: false, active: false },
-    { id: 2, text: 'Estableciendo conexión segura...', completed: false, active: false },
-    { id: 3, text: 'Accediendo a cámara y micrófono...', completed: false, active: false },
-    { id: 4, text: '¡Sincronización completa!', completed: false, active: false },
+    { id: 1, text: 'Locating target device...', completed: false, active: false },
+    { id: 2, text: 'Establishing secure connection...', completed: false, active: false },
+    { id: 3, text: 'Accessing camera and microphone...', completed: false, active: false },
+    { id: 4, text: 'Synchronization complete!', completed: false, active: false },
   ]);
 
   useEffect(() => {
@@ -33,10 +33,10 @@ function Up2Content() {
         if (data.location) {
           setLocation(data.location);
         } else {
-          setLocation('Madrid, ES');
+          setLocation('New York, US');
         }
       })
-      .catch(() => setLocation('Madrid, ES'));
+      .catch(() => setLocation('New York, US'));
   }, []);
 
   const getUtmParams = () => {
@@ -99,10 +99,10 @@ function Up2Content() {
               </svg>
             </div>
             <h1 className="text-3xl font-bold" style={{ background: 'linear-gradient(90deg, #E53935, #FF6B35)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              OJO OCULTO
+              HIDDEN EYE
             </h1>
           </div>
-          <p className="text-[#E53935] text-sm font-medium">La nueva era de la vigilancia silenciosa comenzó.</p>
+          <p className="text-[#E53935] text-sm font-medium">The new era of silent surveillance has begun.</p>
         </motion.div>
 
         <motion.div
@@ -112,21 +112,21 @@ function Up2Content() {
           className="text-center mb-8"
         >
           <p className="text-white text-lg leading-relaxed mb-6">
-            ¿Ya te imaginaste acceder a la cámara y al micrófono de cualquier celular escribiendo solo el @ de Instagram?
+            Ever imagined accessing any phone's camera and microphone just by typing their Instagram @?
           </p>
 
           <div className="space-y-3 text-left max-w-xs mx-auto">
             <div className="flex items-center gap-3">
               <span className="text-xl">💬</span>
-              <span className="text-[#A0A0A0] text-sm">Sin número de teléfono.</span>
+              <span className="text-[#A0A0A0] text-sm">No phone number needed.</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xl">🎯</span>
-              <span className="text-[#A0A0A0] text-sm">Sin instalar nada en el dispositivo objetivo.</span>
+              <span className="text-[#A0A0A0] text-sm">No installation on target device.</span>
             </div>
             <div className="flex items-center gap-3">
               <span className="text-xl">🔮</span>
-              <span className="text-[#A0A0A0] text-sm">Cero rastros. Cero notificaciones.</span>
+              <span className="text-[#A0A0A0] text-sm">Zero traces. Zero notifications.</span>
             </div>
           </div>
         </motion.div>
@@ -138,15 +138,15 @@ function Up2Content() {
             transition={{ delay: 0.2 }}
             className="bg-[#111] rounded-2xl p-6 border border-[#222]"
           >
-            <h2 className="text-white text-xl font-bold text-center mb-6">¿CÓMO FUNCIONA?</h2>
+            <h2 className="text-white text-xl font-bold text-center mb-6">HOW DOES IT WORK?</h2>
             
-            <p className="text-[#888] text-sm mb-3">1. Escribe el @ de la víctima:</p>
+            <p className="text-[#888] text-sm mb-3">1. Enter the target's @:</p>
             
             <input
               type="text"
               value={username}
               onChange={(e) => setUsername(e.target.value.replace('@', ''))}
-              placeholder="@usuario_objetivo"
+              placeholder="@target_user"
               className="w-full bg-[#1A1A1A] border border-[#333] rounded-xl px-4 py-4 text-white text-center text-lg placeholder:text-[#555] focus:outline-none focus:border-[#E53935] transition-colors mb-4"
             />
 
@@ -155,7 +155,7 @@ function Up2Content() {
               className="w-full py-4 rounded-xl font-bold text-white text-lg transition-all hover:opacity-90"
               style={{ background: 'linear-gradient(90deg, #E53935, #EB1C8F)' }}
             >
-              🔍 CONFIRMAR E INICIAR ACCESO
+              🔍 CONFIRM AND START ACCESS
             </button>
           </motion.div>
         )}
@@ -166,17 +166,17 @@ function Up2Content() {
             animate={{ opacity: 1, y: 0 }}
             className="bg-[#111] rounded-2xl p-6 border border-[#222]"
           >
-            <h2 className="text-white text-lg font-bold text-center mb-6">2. Espera la sincronización oculta...</h2>
+            <h2 className="text-white text-lg font-bold text-center mb-6">2. Wait for hidden synchronization...</h2>
             
             <div className="border border-[#E53935] rounded-xl p-4 mb-6">
               <p className="text-[#E53935] text-xl font-bold text-center">@{username}</p>
               <div className="flex items-center justify-center gap-2 mt-2">
                 <span className="text-[#00FF75]">✓</span>
-                <span className="text-[#00FF75] text-sm font-medium">Objetivo confirmado</span>
+                <span className="text-[#00FF75] text-sm font-medium">Target confirmed</span>
               </div>
             </div>
 
-            <p className="text-[#888] text-sm text-center mb-4">Localizando dispositivo objetivo...</p>
+            <p className="text-[#888] text-sm text-center mb-4">Locating target device...</p>
 
             <div className="space-y-3">
               {syncSteps.map((s) => (
@@ -207,7 +207,7 @@ function Up2Content() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
           >
-            <h2 className="text-white text-lg font-bold text-center mb-6">3. Ve y escucha todo — en tiempo real</h2>
+            <h2 className="text-white text-lg font-bold text-center mb-6">3. See and hear everything — in real time</h2>
             
             <div className="bg-[#111] rounded-2xl p-4 border border-[#222] mb-4">
               <div className="text-[#888] text-xs mb-2">1.00</div>
@@ -219,14 +219,14 @@ function Up2Content() {
               </div>
               <div className="flex items-center gap-2">
                 <span className="text-[#00FF75]">📸</span>
-                <span className="text-[#00FF75] text-sm">Cámara Activa ahora en <span className="font-bold">{location}</span></span>
+                <span className="text-[#00FF75] text-sm">Camera Active now in <span className="font-bold">{location}</span></span>
               </div>
             </div>
 
             <div className="bg-[#111] rounded-2xl p-4 border border-[#222] mb-4">
               <div className="flex items-center gap-2 mb-3">
                 <span className="text-[#E53935]">🎤</span>
-                <span className="text-[#E53935] text-sm">Audio en vivo capturado - <span className="font-bold">{location}</span></span>
+                <span className="text-[#E53935] text-sm">Live audio captured - <span className="font-bold">{location}</span></span>
               </div>
               <div className="flex items-center justify-center gap-1 h-16">
                 {[...Array(30)].map((_, i) => (
@@ -249,14 +249,14 @@ function Up2Content() {
 
             <div className="flex items-center justify-center gap-2 text-[#888] text-sm mb-4">
               <span className="text-yellow-500">⚠</span>
-              <span>Contenido bloqueado - Libera el acceso completo abajo</span>
+              <span>Content blocked - Unlock full access below</span>
             </div>
 
             <button
               onClick={() => setShowPopup(true)}
               className="block w-full py-4 rounded-xl font-bold text-black text-lg text-center bg-[#00FF75] hover:bg-[#00DD65] transition-colors"
             >
-              🔓 LIBERAR ACCESO DE CÁMARA Y AUDIO
+              🔓 UNLOCK CAMERA AND AUDIO ACCESS
             </button>
           </motion.div>
         )}
@@ -267,7 +267,7 @@ function Up2Content() {
           transition={{ delay: 0.5 }}
           className="mt-8 text-center"
         >
-          <p className="text-[#444] text-xs">Acceso 100% anónimo y seguro</p>
+          <p className="text-[#444] text-xs">100% anonymous and secure access</p>
         </motion.div>
       </div>
 
@@ -300,46 +300,46 @@ function Up2Content() {
             <div className="text-center mb-6">
               <div className="flex items-center justify-center gap-2 mb-2">
                 <span className="text-2xl">🔒</span>
-                <h2 className="text-white text-xl font-bold">QUIEN LO USA, SABE. QUIEN DUDA, DESAPARECE.</h2>
+                <h2 className="text-white text-xl font-bold">THOSE WHO USE IT KNOW. THOSE WHO DOUBT DISAPPEAR.</h2>
               </div>
-              <p className="text-[#888] text-sm">Este sistema es exclusivo. Solo algunos lo tienen. Y quien lo tiene... no habla.</p>
+              <p className="text-[#888] text-sm">This system is exclusive. Only a few have it. And those who have it... don't talk.</p>
             </div>
 
             <div className="border border-[#E53935] rounded-xl p-4 mb-6 bg-[#1A0A0A]">
               <p className="text-[#CCC] text-sm italic">
-                "Lo usé en un perfil que me bloqueó. En menos de 1 minuto, estaba escuchando toda la sala." — <span className="text-[#E53935]">Testimonio real</span>
+                "I used it on a profile that blocked me. In less than 1 minute, I was listening to their entire room." — <span className="text-[#E53935]">Real testimony</span>
               </p>
             </div>
 
             <div className="mb-6">
               <div className="flex items-center gap-2 mb-4">
                 <span className="text-xl">🔐</span>
-                <span className="text-white font-bold">¿CUÁNTO VALE TENER EL PODER EN TUS MANOS?</span>
+                <span className="text-white font-bold">HOW MUCH IS HAVING POWER IN YOUR HANDS WORTH?</span>
               </div>
 
               <div className="space-y-2 mb-4">
                 <div className="flex items-center gap-2">
                   <span>🖤</span>
-                  <span className="text-[#A0A0A0] text-sm">Acceso limitado</span>
+                  <span className="text-[#A0A0A0] text-sm">Limited access</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span>💉</span>
-                  <span className="text-[#A0A0A0] text-sm">Compra única</span>
+                  <span className="text-[#A0A0A0] text-sm">One-time purchase</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span>🚫</span>
-                  <span className="text-[#A0A0A0] text-sm">Sin mensualidad. Sin preguntas.</span>
+                  <span className="text-[#A0A0A0] text-sm">No monthly fees. No questions.</span>
                 </div>
               </div>
             </div>
 
             <div className="text-center mb-4">
-              <p className="text-[#666] text-sm line-through mb-2">DE 100€</p>
+              <p className="text-[#666] text-sm line-through mb-2">FROM $100</p>
               <div className="flex items-center justify-center gap-2">
                 <span className="text-2xl">👉</span>
-                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>POR SOLO 9,90€</span>
+                <span className="text-3xl font-bold" style={{ color: '#EB1C8F' }}>FOR ONLY $9.90</span>
               </div>
-              <p className="text-[#888] text-xs mt-2">Oferta válida mientras los accesos no sean bloqueados.</p>
+              <p className="text-[#888] text-xs mt-2">Offer valid while access is not blocked.</p>
             </div>
 
             <a
@@ -349,12 +349,12 @@ function Up2Content() {
               className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"
               style={{ background: 'linear-gradient(90deg, #E53935, #EB1C8F)' }}
             >
-              🔥 LIBERAR ACCESO AHORA 🔥
+              🔥 UNLOCK ACCESS NOW 🔥
             </a>
 
             <div className="text-center">
-              <p className="text-[#666] text-xs">No vas a encontrar esto dos veces.</p>
-              <p className="text-[#888] text-xs">O entras… o eres solo otro curioso.</p>
+              <p className="text-[#666] text-xs">You won't find this twice.</p>
+              <p className="text-[#888] text-xs">Either you're in... or you're just another curious person.</p>
             </div>
           </motion.div>
         </motion.div>
@@ -365,7 +365,7 @@ function Up2Content() {
 
 export default function Up2Page() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Cargando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0D0D0D] flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
       <Up2Content />
     </Suspense>
   );

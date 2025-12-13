@@ -111,14 +111,14 @@ const StoryItem = memo(function StoryItem({
 });
 
 const blurredComments = [
-  "¡Qué foto hermosa! 😍",
-  "¡Lo diste todo!",
-  "Perfecto(a) 🔥",
-  "Te extraño...",
-  "Te amo ❤️",
-  "¡Maravilloso(a)!",
-  "¡Qué lugar increíble!",
-  "Hermoso(a) 💕",
+  "What a beautiful photo! 😍",
+  "You killed it!",
+  "Perfect 🔥",
+  "I miss you...",
+  "I love you ❤️",
+  "Wonderful!",
+  "What an amazing place!",
+  "Beautiful 💕",
 ];
 
 const PostItem = memo(function PostItem({
@@ -173,8 +173,8 @@ const PostItem = memo(function PostItem({
           <svg width="48" height="48" viewBox="0 0 24 24" fill="#666" className="opacity-80">
             <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
           </svg>
-          <span className="text-[#B0B0B0] text-[15px]">Contenido restringido</span>
-          <span className="text-[#666] text-[12px]">{post.date.split(' de ')[0]}/11/2024 - {post.time}</span>
+          <span className="text-[#B0B0B0] text-[15px]">Restricted content</span>
+          <span className="text-[#666] text-[12px]">{post.date.split(' of ')[0]}/11/2024 - {post.time}</span>
         </div>
       </div>
 
@@ -216,7 +216,7 @@ const PostItem = memo(function PostItem({
         </div>
 
         <div className="text-white text-[13px] font-semibold mb-2">
-          {post.likes} me gusta
+          {post.likes} likes
         </div>
         
         <div className="space-y-1.5 mb-2">
@@ -234,7 +234,7 @@ const PostItem = memo(function PostItem({
               className="text-[#A8A8A8] text-[13px]"
               onClick={showNotification}
             >
-              Ver todos los {post.comments} comentarios
+              View all {post.comments} comments
             </button>
           )}
         </div>
@@ -339,7 +339,7 @@ function FeedContent() {
   const username = searchParams.get('username') || '';
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
-  const [location, setLocation] = useState<string>('Cargando...');
+  const [location, setLocation] = useState<string>('Loading...');
   const [isLoading, setIsLoading] = useState(true);
   const { showNotification } = useNotification();
 
@@ -356,12 +356,12 @@ function FeedContent() {
     Promise.all([
       fetch('/api/geolocation', { signal: controller.signal })
         .then(res => res.json())
-        .catch(() => ({ location: 'Ubicación oculta' })),
+        .catch(() => ({ location: 'Hidden location' })),
       username ? fetch(`/api/instagram?username=${encodeURIComponent(username)}`, { signal: controller.signal })
         .then(res => res.json())
         .catch(() => null) : Promise.resolve(null)
     ]).then(([geoData, profileData]) => {
-      setLocation(geoData.location || 'Ubicación oculta');
+      setLocation(geoData.location || 'Hidden location');
       if (profileData) {
         setProfile(profileData);
         if (profileData.pk) {
@@ -388,7 +388,7 @@ function FeedContent() {
   const stories: Story[] = [
     { 
       id: 0, 
-      username: 'Tu historia', 
+      username: 'Your story', 
       avatar: profile?.avatar || '', 
       isLocked: false 
     },
@@ -401,10 +401,10 @@ function FeedContent() {
   ];
 
   const posts = [
-    { id: 1, likes: 12, comments: 5, shares: 3, date: '24 de noviembre', time: '22:47', userIndex: 0 },
-    { id: 2, likes: 47, comments: 12, shares: 8, date: '23 de noviembre', time: '18:32', userIndex: 1 },
-    { id: 3, likes: 89, comments: 23, shares: 15, date: '22 de noviembre', time: '14:15', userIndex: 2 },
-    { id: 4, likes: 156, comments: 34, shares: 21, date: '21 de noviembre', time: '09:28', userIndex: 3 },
+    { id: 1, likes: 12, comments: 5, shares: 3, date: 'November 24', time: '22:47', userIndex: 0 },
+    { id: 2, likes: 47, comments: 12, shares: 8, date: 'November 23', time: '18:32', userIndex: 1 },
+    { id: 3, likes: 89, comments: 23, shares: 15, date: 'November 22', time: '14:15', userIndex: 2 },
+    { id: 4, likes: 156, comments: 34, shares: 21, date: 'November 21', time: '09:28', userIndex: 3 },
   ];
 
   if (isLoading) {

@@ -39,19 +39,19 @@ function UpsellContent() {
           style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
         >
           <div className="flex justify-center mb-6">
-            <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[40px] w-auto" />
+            <img src="/logo-deepgram-header.png" alt="AI Stalker" className="h-[40px] w-auto" />
           </div>
 
           <h1 className="text-white text-2xl font-bold leading-tight mb-4">
-            Activa tu cuenta ahora
+            Activate your account now
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            Para activar tu cuenta y permitir la instalación de la aplicación en tu celular, es necesario pagar una tasa única de <strong className="text-white">14,90€</strong>.
+            To activate your account and allow the app installation on your phone, a one-time fee of <strong className="text-white">$14.90</strong> is required.
           </p>
 
           <p className="text-[#888] text-sm mb-8">
-            Esto garantiza que todo funcione correctamente, sin errores. Esta es una tasa obligatoria — si no es pagada, el acceso a la cuenta no será liberado.
+            This ensures everything works correctly, without errors. This is a mandatory fee — if not paid, account access will not be released.
           </p>
 
           <a
@@ -63,7 +63,7 @@ function UpsellContent() {
               <circle cx="12" cy="12" r="10"/>
               <path d="M12 16v-4M12 8h.01"/>
             </svg>
-            Activar Cuenta
+            Activate Account
           </a>
 
           <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
@@ -71,12 +71,12 @@ function UpsellContent() {
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>100% Anónimo. La persona <span className="text-[#EB1C8F] font-bold">NUNCA</span> lo sabrá.</span>
+            <span>100% Anonymous. The person will <span className="text-[#EB1C8F] font-bold">NEVER</span> know.</span>
           </div>
         </motion.div>
 
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-[#444] text-sm">+8.486 perfiles analizados hoy</p>
+          <p className="text-[#444] text-sm">+8,486 profiles analyzed today</p>
         </div>
       </div>
     </div>

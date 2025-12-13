@@ -39,23 +39,23 @@ function Up3Content() {
           style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
         >
           <div className="flex justify-center mb-6">
-            <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[40px] w-auto" />
+            <img src="/logo-deepgram-header.png" alt="AI Stalker" className="h-[40px] w-auto" />
           </div>
 
           <h1 className="text-white text-2xl font-bold leading-tight mb-6">
-            ÚLTIMA ETAPA
+            FINAL STEP
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            Es necesario que verifiques tu identidad y compruebes que no eres un robot. Pues estábamos sufriendo ataques hackers en nuestros servidores.
+            You need to verify your identity and prove you're not a robot. We were experiencing hacker attacks on our servers.
           </p>
 
           <p className="text-white text-lg font-bold mb-4">
-            Tasa de Verificación: <span className="text-[#EB1C8F]">24,90€</span>
+            Verification Fee: <span className="text-[#EB1C8F]">$24.90</span>
           </p>
 
           <p className="text-[#00FF75] text-sm mb-8 leading-relaxed">
-            Pero quédate tranquilo(a), ese valor te será devuelto así que tu cuenta sea confirmada en el sistema.
+            But don't worry, this amount will be refunded once your account is confirmed in the system.
           </p>
 
           <a
@@ -67,7 +67,7 @@ function Up3Content() {
               <path d="M9 12l2 2 4-4"/>
               <circle cx="12" cy="12" r="10"/>
             </svg>
-            VERIFICAR MI CUENTA
+            VERIFY MY ACCOUNT
           </a>
 
           <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
@@ -75,12 +75,12 @@ function Up3Content() {
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>100% Anónimo. La persona <span className="text-[#EB1C8F] font-bold">NUNCA</span> lo sabrá.</span>
+            <span>100% Anonymous. The person will <span className="text-[#EB1C8F] font-bold">NEVER</span> know.</span>
           </div>
         </motion.div>
 
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-[#444] text-sm">+8.486 perfiles analizados hoy</p>
+          <p className="text-[#444] text-sm">+8,486 profiles analyzed today</p>
         </div>
       </div>
     </div>

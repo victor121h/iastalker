@@ -107,21 +107,21 @@ function PitchContent() {
   };
 
   const testimonials = [
-    { id: 1, avatar: '', name: 'María****', time: '3h', text: 'Tenía sospechas, pero no estaba segura... Cuando pagué la versión completa vi los DMs y los stories ocultos, me quedé sin piso. Pero al menos supe la verdad.' },
-    { id: 2, avatar: '', name: 'Carlos****', time: '5h', text: 'Lo usé en el insta de una chica con la que salía y vi que estaba con otro hace meses. La herramienta me dio paz.', hasLock: true },
-    { id: 3, avatar: '', name: 'Amanda****', time: '1d', text: 'Pensé que era falso al principio. En la versión completa probé con el @ de mi novio y vi un montón de cosas jaja. Ubicación, fotos ocultas, hasta conversaciones borradas.' },
-    { id: 4, avatar: '', name: 'Pedro****', time: '5d', text: 'la función de ver la ubicación en tiempo real es muy buena jaja', hasLock: true },
-    { id: 5, avatar: '', name: 'Julia****', time: '3 sem', text: 'no vivo sin esta herramienta, la conocí hace unos meses en tiktok y hasta hoy la uso en algunos perfiles sospechosos' },
-    { id: 6, avatar: '', name: 'Lucas****', time: '2 sem', text: 'No lo recomiendo para quienes no quieren ver la verdad.' },
+    { id: 1, avatar: '', name: 'Maria****', time: '3h', text: 'I had suspicions, but I wasn\'t sure... When I paid for the full version I saw the DMs and hidden stories, I was floored. But at least I knew the truth.' },
+    { id: 2, avatar: '', name: 'Carlos****', time: '5h', text: 'I used it on the insta of a girl I was dating and saw she had been with someone else for months. The tool gave me peace.', hasLock: true },
+    { id: 3, avatar: '', name: 'Amanda****', time: '1d', text: 'I thought it was fake at first. In the full version I tried my boyfriend\'s @ and saw a lot of things lol. Location, hidden photos, even deleted conversations.' },
+    { id: 4, avatar: '', name: 'Pedro****', time: '5d', text: 'the real-time location feature is really good lol', hasLock: true },
+    { id: 5, avatar: '', name: 'Julia****', time: '3 wks', text: 'I can\'t live without this tool, I discovered it a few months ago on tiktok and I still use it on some suspicious profiles' },
+    { id: 6, avatar: '', name: 'Lucas****', time: '2 wks', text: 'I don\'t recommend it for those who don\'t want to see the truth.' },
   ];
 
   const faqs = [
-    { q: '¿La herramienta realmente funciona?', a: 'Sí, IA Stalker utiliza tecnología avanzada para acceder a datos públicos y privados de perfiles de Instagram.' },
-    { q: '¿La persona sabrá que espié su perfil?', a: 'No. IA Stalker opera de forma 100% invisible y anónima.' },
-    { q: '¿Funciona en perfiles privados?', a: 'Sí, funciona en cualquier tipo de perfil, público o privado.' },
-    { q: '¿Necesito instalar algo?', a: 'No. Todo el servicio funciona 100% online, directo desde el navegador.' },
-    { q: '¿Cómo funciona la garantía?', a: 'Ofrecemos garantía de 30 días. Si no te gusta, te devolvemos el 100% de tu dinero.' },
-    { q: '¿Cuánto tiempo tengo acceso?', a: 'El acceso es vitalicio. Una vez que compras, tienes acceso para siempre.' },
+    { q: 'Does the tool really work?', a: 'Yes, IA Stalker uses advanced technology to access public and private data from Instagram profiles.' },
+    { q: 'Will the person know I spied on their profile?', a: 'No. IA Stalker operates 100% invisibly and anonymously.' },
+    { q: 'Does it work on private profiles?', a: 'Yes, it works on any type of profile, public or private.' },
+    { q: 'Do I need to install anything?', a: 'No. The entire service works 100% online, directly from your browser.' },
+    { q: 'How does the guarantee work?', a: 'We offer a 30-day guarantee. If you don\'t like it, we refund 100% of your money.' },
+    { q: 'How long do I have access?', a: 'Access is lifetime. Once you purchase, you have access forever.' },
   ];
 
   return (
@@ -137,7 +137,7 @@ function PitchContent() {
               </svg>
             </button>
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>Tu Acceso Exclusivo Expira en:</span>
+              <span>Your Exclusive Access Expires in:</span>
               <span className="font-bold">
                 {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
               </span>
@@ -156,7 +156,7 @@ function PitchContent() {
               <img src="/logo-deepgram-header.png" alt="IA Stalker" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-black text-xl font-bold leading-tight">
-              La mayor herramienta de espionaje de perfiles
+              The ultimate profile spying tool
             </h1>
           </motion.section>
 
@@ -166,7 +166,7 @@ function PitchContent() {
             transition={{ delay: 0.1 }}
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
-            <p className="text-[#A0A0A0] text-sm text-center mb-4">Acceso completo al perfil de:</p>
+            <p className="text-[#A0A0A0] text-sm text-center mb-4">Full access to the profile of:</p>
             
             <div className="flex items-center gap-4 mb-4">
               <div className="relative">
@@ -189,22 +189,22 @@ function PitchContent() {
               </div>
               <div>
                 <p className="text-white font-bold text-lg">@{username}</p>
-                <p className="text-[#A0A0A0] text-sm">{profile?.name || 'Cargando...'}</p>
+                <p className="text-[#A0A0A0] text-sm">{profile?.name || 'Loading...'}</p>
               </div>
             </div>
 
             <div className="flex justify-around py-3 border-y border-[#262626] mb-4">
               <div className="text-center">
                 <p className="text-white font-bold">{profile?.posts || 0}</p>
-                <p className="text-[#A0A0A0] text-xs">publicaciones</p>
+                <p className="text-[#A0A0A0] text-xs">posts</p>
               </div>
               <div className="text-center">
                 <p className="text-white font-bold">{formatNumber(profile?.followers || 0)}</p>
-                <p className="text-[#A0A0A0] text-xs">seguidores</p>
+                <p className="text-[#A0A0A0] text-xs">followers</p>
               </div>
               <div className="text-center">
                 <p className="text-white font-bold">{formatNumber(profile?.following || 0)}</p>
-                <p className="text-[#A0A0A0] text-xs">siguiendo</p>
+                <p className="text-[#A0A0A0] text-xs">following</p>
               </div>
             </div>
 
@@ -214,7 +214,7 @@ function PitchContent() {
 
             <div className="bg-[#00FF75] rounded-xl py-3 px-4">
               <p className="text-black text-center text-sm font-medium">
-                Sin necesidad de contraseña. Sin dejar rastros. Sin que la persona lo sepa.
+                No password needed. No traces left. Without the person knowing.
               </p>
             </div>
           </motion.section>
@@ -232,14 +232,14 @@ function PitchContent() {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold text-sm">Todos los medios recibidos y enviados por @{username}</p>
-                <p className="text-[#808080] text-xs mt-1">Fotos, videos y archivos intercambiados en los DMs</p>
+                <p className="text-white font-semibold text-sm">All media received and sent by @{username}</p>
+                <p className="text-[#808080] text-xs mt-1">Photos, videos and files exchanged in DMs</p>
               </div>
             </div>
             <div className="rounded-lg overflow-hidden">
               <img 
                 src="/midias-bloqueadas.png" 
-                alt="Medios bloqueados" 
+                alt="Blocked media" 
                 className="w-full h-auto"
               />
             </div>
@@ -284,10 +284,10 @@ function PitchContent() {
               </div>
             </div>
             <div className="bg-[#1a2332] px-5 py-4 text-center">
-              <p className="text-white font-semibold text-base mb-1">Ubicación actual</p>
-              <p className="text-[#808080] text-sm mb-4">@{username} está compartiendo</p>
+              <p className="text-white font-semibold text-base mb-1">Current location</p>
+              <p className="text-[#808080] text-sm mb-4">@{username} is sharing</p>
               <button className="bg-[#2a3a4a] hover:bg-[#3a4a5a] text-white font-medium py-2.5 px-12 rounded-lg transition-colors">
-                Ver
+                View
               </button>
             </div>
           </motion.section>
@@ -305,8 +305,8 @@ function PitchContent() {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold text-sm">Stories y posts ocultos</p>
-                <p className="text-[#808080] text-xs mt-1">Contenido que @{username} ocultó</p>
+                <p className="text-white font-semibold text-sm">Hidden stories and posts</p>
+                <p className="text-[#808080] text-xs mt-1">Content that @{username} hid</p>
               </div>
             </div>
             <div className="flex gap-3">
@@ -329,7 +329,7 @@ function PitchContent() {
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <p className="text-[#808080] text-xs mt-3">Contenido restringido</p>
+                    <p className="text-[#808080] text-xs mt-3">Restricted content</p>
                   </div>
                 </div>
               ))}
@@ -349,8 +349,8 @@ function PitchContent() {
                 </svg>
               </div>
               <div>
-                <p className="text-white font-semibold text-sm">Mensajes privados de Instagram (DMs)</p>
-                <p className="text-[#808080] text-xs mt-1">Todas las conversaciones de @{username}</p>
+                <p className="text-white font-semibold text-sm">Instagram private messages (DMs)</p>
+                <p className="text-[#808080] text-xs mt-1">All conversations from @{username}</p>
               </div>
             </div>
             <div className="bg-[#1A1A1A] rounded-xl p-3">
@@ -369,7 +369,7 @@ function PitchContent() {
                 </div>
                 <div className="flex-1">
                   <p className="text-white text-sm font-medium">@{username}</p>
-                  <p className="text-[#00FF75] text-xs">en línea</p>
+                  <p className="text-[#00FF75] text-xs">online</p>
                 </div>
                 <div className="flex gap-3">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#A0A0A0">
@@ -383,17 +383,17 @@ function PitchContent() {
               <div className="space-y-2">
                 <div className="flex justify-end">
                   <div className="bg-[#962FBF] rounded-2xl rounded-br-sm px-3 py-2 max-w-[70%] blur-[4px]">
-                    <p className="text-white text-sm">Mensaje oculto</p>
+                    <p className="text-white text-sm">Hidden message</p>
                   </div>
                 </div>
                 <div className="flex justify-start">
                   <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[70%] blur-[4px]">
-                    <p className="text-white text-sm">Respuesta oculta</p>
+                    <p className="text-white text-sm">Hidden reply</p>
                   </div>
                 </div>
                 <div className="flex justify-end">
                   <div className="bg-[#962FBF] rounded-2xl rounded-br-sm px-3 py-2 max-w-[70%] blur-[4px]">
-                    <p className="text-white text-sm">Otro mensaje</p>
+                    <p className="text-white text-sm">Another message</p>
                   </div>
                 </div>
               </div>
@@ -411,10 +411,10 @@ function PitchContent() {
             </div>
 
             <h2 className="text-white text-center font-bold text-lg mb-2">
-              Además del acceso al perfil de @{username} podrás tener acceso a la herramienta IA Stalker
+              In addition to access to @{username}'s profile, you will have access to the IA Stalker tool
             </h2>
             <p className="text-[#A0A0A0] text-center text-sm mb-6">
-              De forma completa y vitalicia, es decir, espiar cuantos perfiles quieras, cuando quieras, para siempre.
+              Complete and lifetime access, meaning you can spy on as many profiles as you want, whenever you want, forever.
             </p>
 
             <div className="space-y-4 mb-6">
@@ -425,7 +425,7 @@ function PitchContent() {
                     <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Buscar cuantos perfiles quieras.</p>
+                <p className="text-white text-sm">Search as many profiles as you want.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-[#00FF75]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -434,7 +434,7 @@ function PitchContent() {
                     <path d="M12 16v-4M12 8h.01" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Visualizar todos los datos con solo un clic.</p>
+                <p className="text-white text-sm">View all data with just one click.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-[#DFB313]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -442,7 +442,7 @@ function PitchContent() {
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Tener acceso vitalicio sin pagar mensualidad.</p>
+                <p className="text-white text-sm">Lifetime access without paying monthly fees.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 rounded-full bg-[#00FF75]/20 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -450,7 +450,7 @@ function PitchContent() {
                     <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Sin instalar nada, servicio funciona en la nube.</p>
+                <p className="text-white text-sm">No installation needed, service runs in the cloud.</p>
               </div>
             </div>
 
@@ -460,8 +460,8 @@ function PitchContent() {
               rel="noopener noreferrer"
               className="block bg-[#E53935] rounded-xl py-4 px-4 text-center"
             >
-              <p className="text-white font-bold text-sm mb-1">SIN IA STALKER, NO VES NADA</p>
-              <p className="text-white/80 text-xs">Es el que desbloquea los datos de @{username} de forma invisible</p>
+              <p className="text-white font-bold text-sm mb-1">WITHOUT IA STALKER, YOU SEE NOTHING</p>
+              <p className="text-white/80 text-xs">It's what unlocks @{username}'s data invisibly</p>
             </a>
           </motion.section>
 
@@ -472,7 +472,7 @@ function PitchContent() {
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
             <h2 className="text-white text-center font-bold text-xl mb-6">
-              ¡Ten el control de cualquier perfil en tus manos!
+              Take control of any profile in your hands!
             </h2>
 
             <div className="space-y-4 mb-6">
@@ -482,7 +482,7 @@ function PitchContent() {
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Descubrir una infidelidad antes de que te hagan tonto</p>
+                <p className="text-white text-sm">Discover an infidelity before you get played</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -491,7 +491,7 @@ function PitchContent() {
                     <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Espiar a quien amas en silencio</p>
+                <p className="text-white text-sm">Spy on someone you love in silence</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -499,7 +499,7 @@ function PitchContent() {
                     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Ver si alguien está hablando mal de ti a tus espaldas</p>
+                <p className="text-white text-sm">See if someone is talking bad about you behind your back</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
@@ -507,7 +507,7 @@ function PitchContent() {
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Proteger a tu familia, tu relación, tu paz</p>
+                <p className="text-white text-sm">Protect your family, your relationship, your peace</p>
               </div>
             </div>
 
@@ -517,8 +517,8 @@ function PitchContent() {
                   <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                 </svg>
                 <div>
-                  <p className="text-white font-bold text-sm">Atención: Usa con Discernimiento</p>
-                  <p className="text-[#A0A0A0] text-xs mt-1">Las informaciones reveladas pueden ser intensas y transformadoras. Esta herramienta expone la verdad desnuda y cruda.</p>
+                  <p className="text-white font-bold text-sm">Attention: Use with Discernment</p>
+                  <p className="text-[#A0A0A0] text-xs mt-1">The information revealed can be intense and transformative. This tool exposes the naked and raw truth.</p>
                 </div>
               </div>
             </div>
@@ -531,7 +531,7 @@ function PitchContent() {
             className="mb-6"
           >
             <h2 className="text-black text-center font-bold text-xl mb-6">
-              Mira lo que dicen las personas que usan IA Stalker:
+              See what people who use IA Stalker are saying:
             </h2>
 
             <div className="space-y-4">
@@ -565,7 +565,7 @@ function PitchContent() {
             </div>
 
             <div className="bg-[#E53935] rounded-xl py-4 px-6 mt-4 text-center">
-              <p className="text-white font-bold text-sm">Esta es la verdad cruda. Tú decides si quieres ver.</p>
+              <p className="text-white font-bold text-sm">This is the raw truth. You decide if you want to see it.</p>
             </div>
           </motion.section>
 
@@ -580,20 +580,20 @@ function PitchContent() {
                 className="px-4 py-1.5 rounded-full text-sm font-bold"
                 style={{ background: 'linear-gradient(90deg, #EB1C8F, #DFB313)' }}
               >
-                <span className="text-white">BLACK FRIDAY LIMITADO</span>
+                <span className="text-white">LIMITED BLACK FRIDAY</span>
               </div>
             </div>
 
-            <h2 className="text-black text-center font-bold text-2xl mb-1">ELIGE TU PLAN</h2>
-            <p className="text-[#DFB313] text-center text-sm mb-6">POR TIEMPO LIMITADO</p>
+            <h2 className="text-black text-center font-bold text-2xl mb-1">CHOOSE YOUR PLAN</h2>
+            <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
 
             <div className="bg-[#0C1011] rounded-[22px] p-5 mb-4">
-              <h3 className="text-white text-center font-bold text-lg mb-1">Acceso al Perfil</h3>
-              <p className="text-[#808080] text-center text-xs mb-4">Acceso completo al perfil de @{username}</p>
+              <h3 className="text-white text-center font-bold text-lg mb-1">Profile Access</h3>
+              <p className="text-[#808080] text-center text-xs mb-4">Full access to @{username}'s profile</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">De: 130,00€</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: 130.00€</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold">24<span className="text-xl">,90€</span></p>
+                <p className="text-white text-center text-3xl font-bold">24<span className="text-xl">.90€</span></p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -601,31 +601,31 @@ function PitchContent() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Acceso completo al perfil de @{username}</p>
+                  <p className="text-white text-sm">Full access to @{username}'s profile</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Stories ocultos o publicados solo para mejores amigos</p>
+                  <p className="text-white text-sm">Hidden stories or posts only for close friends</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Acceso a medios (fotos y videos) recibidos y enviados por @{username}</p>
+                  <p className="text-white text-sm">Access to media (photos and videos) received and sent by @{username}</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">DMs en tiempo real y DMs antiguos (hasta 18 meses atrás)</p>
+                  <p className="text-white text-sm">Real-time DMs and old DMs (up to 18 months back)</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Ubicación en tiempo real y lugares visitados frecuentemente</p>
+                  <p className="text-white text-sm">Real-time location and frequently visited places</p>
                 </div>
               </div>
 
@@ -635,21 +635,21 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#2A3A4A] rounded-xl py-3 text-center text-white font-bold"
               >
-                Elegir Plan
+                Choose Plan
               </a>
             </div>
 
             <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
-                <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMENDADO</span>
+                <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
 
-              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">Herramienta IA Stalker</h3>
-              <p className="text-[#808080] text-center text-xs mb-4">Acceso completo + Herramienta vitalicia</p>
+              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">IA Stalker Tool</h3>
+              <p className="text-[#808080] text-center text-xs mb-4">Full access + Lifetime tool</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">De: 200,00€</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: 200.00€</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold">29<span className="text-xl">,90€</span></p>
+                <p className="text-black text-center text-3xl font-bold">29<span className="text-xl">.90€</span></p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -657,31 +657,31 @@ function PitchContent() {
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Acceso completo al perfil de @{username}</p>
+                  <p className="text-white text-sm">Full access to @{username}'s profile</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Stories ocultos o publicados solo para mejores amigos</p>
+                  <p className="text-white text-sm">Hidden stories or posts only for close friends</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Acceso a medios (fotos y videos) recibidos y enviados por @{username}</p>
+                  <p className="text-white text-sm">Access to media (photos and videos) received and sent by @{username}</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">DMs en tiempo real y DMs antiguos (hasta 18 meses atrás)</p>
+                  <p className="text-white text-sm">Real-time DMs and old DMs (up to 18 months back)</p>
                 </div>
                 <div className="flex items-start gap-2">
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                     <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                   </svg>
-                  <p className="text-white text-sm">Ubicación en tiempo real y lugares visitados frecuentemente</p>
+                  <p className="text-white text-sm">Real-time location and frequently visited places</p>
                 </div>
               </div>
 
@@ -691,19 +691,19 @@ function PitchContent() {
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                     </svg>
-                    <p className="text-white text-sm font-semibold">Espiar cuantos perfiles quieras</p>
+                    <p className="text-white text-sm font-semibold">Spy on as many profiles as you want</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                     </svg>
-                    <p className="text-white text-sm font-semibold">Acceso vitalicio</p>
+                    <p className="text-white text-sm font-semibold">Lifetime access</p>
                   </div>
                   <div className="flex items-start gap-2">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                     </svg>
-                    <p className="text-white text-sm font-semibold">Sin mensualidades</p>
+                    <p className="text-white text-sm font-semibold">No monthly fees</p>
                   </div>
                 </div>
               </div>
@@ -714,7 +714,7 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold"
               >
-                Elegir Plan
+                Choose Plan
               </a>
             </div>
           </motion.section>
@@ -733,7 +733,7 @@ function PitchContent() {
                     <polyline points="12 6 12 12 16 14"/>
                   </svg>
                 </div>
-                <p className="text-black text-xs">Acceso Vitalicio</p>
+                <p className="text-black text-xs">Lifetime Access</p>
               </div>
               <div className="text-center">
                 <div className="w-14 h-14 rounded-2xl bg-[#0C1011] border border-[#262626] flex items-center justify-center mb-2 mx-auto">
@@ -741,12 +741,12 @@ function PitchContent() {
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
                 </div>
-                <p className="text-black text-xs">Soporte 24/7</p>
+                <p className="text-black text-xs">24/7 Support</p>
               </div>
             </div>
 
             <p className="text-[#808080] text-center text-xs mb-6">
-              🔒 Compra 100% Segura • Encriptación SSL
+              100% Secure Purchase - SSL Encryption
             </p>
 
             <div className="bg-[#00FF75] rounded-xl p-4 mb-6">
@@ -756,8 +756,8 @@ function PitchContent() {
                   <path d="M9 12l2 2 4-4"/>
                 </svg>
                 <div>
-                  <p className="text-black font-bold">Garantía de 30 Días</p>
-                  <p className="text-black/70 text-sm">¡Prueba sin riesgo! Si no te gusta, te devolvemos el 100% de tu dinero.</p>
+                  <p className="text-black font-bold">30-Day Guarantee</p>
+                  <p className="text-black/70 text-sm">Try risk-free! If you don't like it, we refund 100% of your money.</p>
                 </div>
               </div>
             </div>
@@ -769,7 +769,7 @@ function PitchContent() {
             transition={{ delay: 0.65 }}
             className="mb-8"
           >
-            <h2 className="text-black text-center font-bold text-xl mb-6">Preguntas Frecuentes</h2>
+            <h2 className="text-black text-center font-bold text-xl mb-6">Frequently Asked Questions</h2>
 
             <div className="space-y-3">
               {faqs.map((faq, i) => (

@@ -90,10 +90,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
               <div>
                 <div className="flex-1 mb-3">
                   <h3 className="text-white font-bold text-[14px] leading-tight mb-1">
-                    Por el momento tu acceso solo permite visualización del contenido.
+                    Your current access only allows content viewing.
                   </h3>
                   <p className="text-white/70 text-[12px] leading-snug">
-                    Para poder interactuar y ver de forma completa adquiere la herramienta IA Stalker.
+                    To interact and view content fully, get the AI Stalker tool.
                   </p>
                 </div>
 
@@ -102,7 +102,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                   className="w-full py-2.5 rounded-lg font-bold text-[13px] text-white transition-all hover:opacity-90 active:scale-[0.98]"
                   style={{ background: '#991B1B' }}
                 >
-                  Suscríbete ahora haciendo clic aquí
+                  Subscribe now by clicking here
                 </button>
               </div>
             </div>

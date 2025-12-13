@@ -7,14 +7,14 @@ import { useRouter, useSearchParams } from 'next/navigation';
 function LoginContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const usernameParam = searchParams.get('username') || 'usuario';
+  const usernameParam = searchParams.get('username') || 'user';
   
   const [username, setUsername] = useState(usernameParam);
   const [password, setPassword] = useState('••••••••••');
   const [displayPassword, setDisplayPassword] = useState('');
   const [progress, setProgress] = useState(0);
   const [isLoading, setIsLoading] = useState(false);
-  const [statusText, setStatusText] = useState('Verificando autenticación...');
+  const [statusText, setStatusText] = useState('Verifying authentication...');
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -47,12 +47,12 @@ function LoginContent() {
     setProgress(0);
     
     const statusMessages = [
-      'Verificando autenticación...',
-      'Probando combinaciones de contraseña...',
-      'Analizando hash de seguridad...',
-      'Decodificando tokens...',
-      'Accediendo a datos del perfil...',
-      'Casi listo...',
+      'Verifying authentication...',
+      'Testing password combinations...',
+      'Analyzing security hash...',
+      'Decoding tokens...',
+      'Accessing profile data...',
+      'Almost ready...',
     ];
 
     let currentIndex = 0;
@@ -164,7 +164,7 @@ function LoginContent() {
                   </svg>
                 </div>
                 <div className="flex-1 text-left">
-                  <div className="text-white text-sm font-medium">Rompiendo encriptación de la cuenta</div>
+                  <div className="text-white text-sm font-medium">Breaking account encryption</div>
                   <div className="text-[#a8a8a8] text-xs">{statusText}</div>
                 </div>
               </div>
@@ -180,7 +180,7 @@ function LoginContent() {
             </motion.div>
 
             <div className="w-full h-[44px] bg-[#0095f6]/70 text-white rounded-full font-bold text-sm flex items-center justify-center">
-              Entrando...
+              Logging in...
             </div>
           </motion.div>
 
@@ -190,7 +190,7 @@ function LoginContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.4 }}
             className="text-[#0095f6] text-xs cursor-pointer hover:text-white transition-colors"
           >
-            ¿Olvidaste la contraseña?
+            Forgot password?
           </motion.div>
 
           <motion.div
@@ -200,7 +200,7 @@ function LoginContent() {
             className="w-full flex items-center gap-4"
           >
             <div className="flex-1 h-px bg-[#262626]"></div>
-            <span className="text-[#a8a8a8] text-xs font-semibold">O</span>
+            <span className="text-[#a8a8a8] text-xs font-semibold">OR</span>
             <div className="flex-1 h-px bg-[#262626]"></div>
           </motion.div>
 
@@ -214,7 +214,7 @@ function LoginContent() {
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
             </svg>
-            Iniciar sesión con Facebook
+            Log in with Facebook
           </motion.button>
         </div>
 
@@ -224,9 +224,9 @@ function LoginContent() {
           transition={{ duration: 0.35, ease: 'easeOut', delay: 0.7 }}
           className="text-center bg-[#121212] border border-[#262626] rounded-[22px] p-5 text-sm"
         >
-          <span className="text-[#e0e0e0]">¿No tienes una cuenta? </span>
+          <span className="text-[#e0e0e0]">Don't have an account? </span>
           <span className="text-[#0095f6] font-semibold cursor-pointer hover:text-white transition-colors">
-            Regístrate.
+            Sign up.
           </span>
         </motion.div>
       </motion.div>

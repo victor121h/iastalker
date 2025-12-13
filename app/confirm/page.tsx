@@ -95,7 +95,7 @@ function ConfirmContent() {
         >
           <div className="flex flex-col items-center text-center space-y-6">
             <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-sky-500"></div>
-            <p className="text-slate-600">Buscando perfil @{username}...</p>
+            <p className="text-slate-600">Searching for profile @{username}...</p>
           </div>
         </motion.div>
       </main>
@@ -119,12 +119,12 @@ function ConfirmContent() {
                 <path d="M15 9l-6 6M9 9l6 6" />
               </svg>
             </div>
-            <h2 className="text-xl font-bold text-slate-800">Perfil no encontrado</h2>
+            <h2 className="text-xl font-bold text-slate-800">Profile not found</h2>
             <p className="text-slate-500 text-sm">
-              {error || `No fue posible encontrar el perfil @${username}`}
+              {error || `Could not find the profile @${username}`}
             </p>
             <InstagramButton onClick={() => router.push('/search')}>
-              Intentar de nuevo
+              Try again
             </InstagramButton>
           </div>
         </motion.div>
@@ -139,7 +139,7 @@ function ConfirmContent() {
     if (num >= 1000) {
       return (num / 1000).toFixed(1).replace('.0', '') + 'K';
     }
-    return num.toLocaleString('es-ES');
+    return num.toLocaleString('en-US');
   };
 
   return (
@@ -159,7 +159,7 @@ function ConfirmContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
             className="text-3xl font-bold instagram-gradient-text"
           >
-            Confirmar Búsqueda
+            Confirm Search
           </motion.h1>
           
           <motion.p
@@ -168,7 +168,7 @@ function ConfirmContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
             className="text-slate-600 text-base"
           >
-            ¿Deseas espiar el perfil{' '}
+            Do you want to spy on the profile{' '}
             <span className="text-slate-800 font-bold">@{profile.username}</span>?
           </motion.p>
           
@@ -228,15 +228,15 @@ function ConfirmContent() {
           >
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.posts)}</div>
-              <div className="text-slate-500 text-xs">Publicaciones</div>
+              <div className="text-slate-500 text-xs">Posts</div>
             </div>
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.followers)}</div>
-              <div className="text-slate-500 text-xs">Seguidores</div>
+              <div className="text-slate-500 text-xs">Followers</div>
             </div>
             <div className="text-center">
               <div className="text-slate-800 font-bold text-lg">{formatNumber(profile.following)}</div>
-              <div className="text-slate-500 text-xs">Siguiendo</div>
+              <div className="text-slate-500 text-xs">Following</div>
             </div>
           </motion.div>
           
@@ -252,7 +252,7 @@ function ConfirmContent() {
                 <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
               <p className="text-slate-600 text-sm">
-                Nuestra plataforma permite solo una búsqueda por persona, así que confirma si realmente deseas espiar.
+                Our platform allows only one search per person, so confirm if you really want to spy.
               </p>
             </div>
           </motion.div>
@@ -268,13 +268,13 @@ function ConfirmContent() {
               onClick={() => navigateWithParams('/search')}
               className="flex-1"
             >
-              Corregir @
+              Fix @
             </InstagramButton>
             <InstagramButton
               onClick={() => navigateWithParams('/login', `username=${encodeURIComponent(profile.username)}`)}
               className="flex-1"
             >
-              Confirmar
+              Confirm
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M5 12h14M12 5l7 7-7 7" strokeLinecap="round" strokeLinejoin="round" />
               </svg>

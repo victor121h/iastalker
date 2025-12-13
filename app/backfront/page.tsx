@@ -7,15 +7,15 @@ export default function BackfrontPage() {
   const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 37 });
   const [showBlink, setShowBlink] = useState(true);
   const [sessionInfo, setSessionInfo] = useState({
-    os: 'Cargando...',
-    browser: 'Cargando...',
-    datetime: 'Cargando...'
+    os: 'Loading...',
+    browser: 'Loading...',
+    datetime: 'Loading...'
   });
 
   useEffect(() => {
     const userAgent = navigator.userAgent;
-    let os = 'Desconocido';
-    let browser = 'Desconocido';
+    let os = 'Unknown';
+    let browser = 'Unknown';
     
     if (userAgent.includes('Windows')) os = 'Windows';
     else if (userAgent.includes('Mac')) os = 'macOS';
@@ -30,7 +30,7 @@ export default function BackfrontPage() {
     else if (userAgent.includes('Opera') || userAgent.includes('OPR')) browser = 'Opera';
     
     const now = new Date();
-    const datetime = now.toLocaleString('es-ES', {
+    const datetime = now.toLocaleString('en-US', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric',
@@ -92,7 +92,7 @@ export default function BackfrontPage() {
           </svg>
         </button>
         <span className="text-white font-bold text-[15px]">
-          Tu Acceso Exclusivo Expira en: {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
+          Your Exclusive Access Expires in: {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
         </span>
         <button className="p-2">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5">
@@ -131,7 +131,7 @@ export default function BackfrontPage() {
             className="text-center text-2xl font-bold mb-6"
             style={{ color: '#ff4d4d' }}
           >
-            Alerta de Seguridad
+            Security Alert
           </h1>
 
           <motion.div
@@ -145,7 +145,7 @@ export default function BackfrontPage() {
               backdropFilter: 'blur(10px)'
             }}
           >
-            <p className="text-white text-sm mb-4 font-medium">Información de la sesión actual:</p>
+            <p className="text-white text-sm mb-4 font-medium">Current session information:</p>
             
             <div className="space-y-3">
               <div className="flex items-center gap-3">
@@ -158,7 +158,7 @@ export default function BackfrontPage() {
                   </svg>
                 </div>
                 <div>
-                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Sistema Operativo</p>
+                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Operating System</p>
                   <p className="text-white text-sm font-medium">{sessionInfo.os}</p>
                 </div>
               </div>
@@ -173,7 +173,7 @@ export default function BackfrontPage() {
                   </svg>
                 </div>
                 <div>
-                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Navegador</p>
+                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Browser</p>
                   <p className="text-white text-sm font-medium">{sessionInfo.browser}</p>
                 </div>
               </div>
@@ -188,7 +188,7 @@ export default function BackfrontPage() {
                   </svg>
                 </div>
                 <div>
-                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Fecha y Hora</p>
+                  <p style={{ color: '#c7c7c7', fontSize: '12px' }}>Date and Time</p>
                   <p className="text-white text-sm font-medium">{sessionInfo.datetime}</p>
                 </div>
               </div>
@@ -196,7 +196,7 @@ export default function BackfrontPage() {
           </motion.div>
 
           <p className="text-center text-sm mb-6" style={{ color: '#c7c7c7' }}>
-            Para continuar utilizando la plataforma, finaliza tu validación abajo.
+            To continue using the platform, complete your validation below.
           </p>
         </motion.div>
 
@@ -211,16 +211,16 @@ export default function BackfrontPage() {
           }}
         >
           <h2 className="text-white text-xl font-bold text-center mb-2">
-            Finaliza la activación
+            Complete Activation
           </h2>
           <p className="text-center text-sm mb-6" style={{ color: '#c7c7c7' }}>
-            Completa el proceso para acceder a todos los recursos.
+            Complete the process to access all resources.
           </p>
 
           <div className="text-center mb-6">
-            <p style={{ color: '#c7c7c7', fontSize: '14px' }}>Valor único</p>
+            <p style={{ color: '#c7c7c7', fontSize: '14px' }}>One-time value</p>
             <p className="text-white text-4xl font-bold mt-1">
-              € 59<span className="text-2xl">,90</span>
+              $59<span className="text-2xl">.90</span>
             </p>
           </div>
 
@@ -231,7 +231,7 @@ export default function BackfrontPage() {
               border: '1px solid rgba(230,30,37,0.3)'
             }}
           >
-            <p className="text-white text-sm font-medium mb-1">Tiempo restante:</p>
+            <p className="text-white text-sm font-medium mb-1">Time remaining:</p>
             <p 
               className="text-3xl font-bold"
               style={{ 
@@ -255,7 +255,7 @@ export default function BackfrontPage() {
             }}
           >
             <span className="flex items-center justify-center gap-2">
-              ADQUIRIR ACCESO
+              GET ACCESS
               <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
                 <path d="M8 5v14l11-7z"/>
               </svg>
@@ -270,7 +270,7 @@ export default function BackfrontPage() {
           </a>
 
           <p className="text-center text-xs mt-4" style={{ color: 'rgba(255,255,255,0.5)' }}>
-            Procesamiento automático y seguro.
+            Automatic and secure processing.
           </p>
         </motion.div>
       </main>

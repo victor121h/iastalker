@@ -47,7 +47,7 @@ function LockIcon({ size = 24 }: { size?: number }) {
   );
 }
 
-function MediaButton({ type, onClick }: { type: 'Foto' | 'Video'; onClick: () => void }) {
+function MediaButton({ type, onClick }: { type: 'Photo' | 'Video'; onClick: () => void }) {
   return (
     <button 
       onClick={onClick}
@@ -75,7 +75,7 @@ function RestrictedContentCard({ onClick }: { onClick: () => void }) {
       <div className="w-16 h-16 flex items-center justify-center mb-4">
         <LockIcon size={40} />
       </div>
-      <p className="text-white text-sm font-medium">Contenido restringido</p>
+      <p className="text-white text-sm font-medium">Restricted content</p>
     </div>
   );
 }
@@ -155,7 +155,7 @@ function Chat3Content() {
           
           <div className="flex flex-col">
             <span className="text-white font-semibold text-sm">{censoredName}</span>
-            <span className="text-[#9CA3AF] text-xs">desconectado</span>
+            <span className="text-[#9CA3AF] text-xs">offline</span>
           </div>
         </div>
         
@@ -179,7 +179,7 @@ function Chat3Content() {
           
           <div className="flex justify-center py-4">
             <span className="text-white/40 text-xs px-3 py-1 rounded-full bg-white/5">
-              <BlurredText text="ayer" />, :12
+              <BlurredText text="yesterday" />, :12
             </span>
           </div>
 
@@ -196,7 +196,7 @@ function Chat3Content() {
                 </div>
               </div>
               <div className="bg-[#1E2A39] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">necesito hablar contigo algo serio</p>
+                <p className="text-white text-[15px]">I need to talk to you about something serious</p>
               </div>
             </div>
           </div>
@@ -204,7 +204,7 @@ function Chat3Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#B06AF8] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">disculpa la demora estaba <BlurredText text="ocupado con algo" /></p>
+                <p className="text-white text-[15px]">sorry for the delay I was <BlurredText text="busy with something" /></p>
               </div>
             </div>
           </div>
@@ -222,7 +222,7 @@ function Chat3Content() {
                 </div>
               </div>
               <div className="bg-[#1E2A39] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">¿vas a estar libre el <BlurredText text="viernes" /> de la semana que viene?</p>
+                <p className="text-white text-[15px]">will you be free on <BlurredText text="Friday" /> next week?</p>
               </div>
             </div>
           </div>
@@ -240,7 +240,7 @@ function Chat3Content() {
                 </div>
               </div>
               <div className="bg-[#1E2A39] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">de noche me refiero</p>
+                <p className="text-white text-[15px]">at night I mean</p>
               </div>
             </div>
           </div>
@@ -248,7 +248,7 @@ function Chat3Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#B06AF8] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">creo que sí, pero te aviso</p>
+                <p className="text-white text-[15px]">I think so, but I'll let you know</p>
               </div>
             </div>
           </div>
@@ -256,7 +256,7 @@ function Chat3Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#B06AF8] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">¿por?</p>
+                <p className="text-white text-[15px]">why?</p>
               </div>
             </div>
           </div>
@@ -264,7 +264,7 @@ function Chat3Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#B06AF8] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">no jaja <BlurredText text="ella va a viajar con otra" /></p>
+                <p className="text-white text-[15px]">no haha <BlurredText text="she's traveling with someone else" /></p>
               </div>
             </div>
           </div>
@@ -285,10 +285,10 @@ function Chat3Content() {
               </div>
               <div className="space-y-2">
                 <div className="bg-[#1E2A39] rounded-2xl rounded-bl-md px-4 py-3">
-                  <p className="text-white text-[15px]">mira</p>
+                  <p className="text-white text-[15px]">look</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <MediaButton type="Foto" onClick={showNotification} />
+                  <MediaButton type="Photo" onClick={showNotification} />
                   <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0 bg-[#1E2A39] flex items-center justify-center">
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                       <rect x="3" y="3" width="18" height="18" rx="2"/>
@@ -316,7 +316,7 @@ function Chat3Content() {
           <div className="flex justify-end items-end gap-4">
             <div className="max-w-[40%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#B06AF8] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]"><BlurredText text="mira qué interesante ahora" /></p>
+                <p className="text-white text-[15px]"><BlurredText text="look how interesting this is" /></p>
               </div>
             </div>
             <RestrictedContentCard onClick={showNotification} />
@@ -339,7 +339,7 @@ function Chat3Content() {
             className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2.5 flex items-center cursor-pointer"
             onClick={handleUnlockClick}
           >
-            <span className="text-white/40 text-[15px]">Mensaje...</span>
+            <span className="text-white/40 text-[15px]">Message...</span>
           </div>
           
           <div className="flex items-center gap-2">

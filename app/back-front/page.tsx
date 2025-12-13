@@ -46,29 +46,29 @@ function BackFrontContent() {
         }}
       >
         <div className="flex items-center justify-center mb-6">
-          <img src="/logo-deepgram.png" alt="IA Stalker" className="h-[48px] w-auto" />
+          <img src="/logo-deepgram.png" alt="AI Stalker" className="h-[48px] w-auto" />
         </div>
 
         <div className="text-center mb-4">
           <h1 className="text-2xl font-bold leading-tight">
-            <span className="text-white">Oferta </span>
+            <span className="text-white">Exclusive </span>
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Exclusiva
+              Offer
             </span>
-            <span className="text-white"> por </span>
+            <span className="text-white"> for </span>
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Tempo Limitado!
+              Limited Time!
             </span>
           </h1>
         </div>
 
         <div className="text-center mb-6">
           <p className="text-[#999] text-sm leading-relaxed">
-            Aproveite esta oportunidade única para ter acesso completo à plataforma{' '}
+            Take advantage of this unique opportunity to get full access to the{' '}
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
-              IA Stalker
+              AI Stalker
             </span>
-            {' '}com um desconto especial. Esta oferta está disponível apenas por tempo limitado!
+            {' '}platform with a special discount. This offer is available for a limited time only!
           </p>
         </div>
 
@@ -76,14 +76,14 @@ function BackFrontContent() {
           className="rounded-2xl p-4 mb-4 text-center"
           style={{ background: 'rgba(139, 69, 139, 0.15)', border: '1px solid rgba(139, 69, 139, 0.3)' }}
         >
-          <p className="text-[#888] text-sm line-through mb-1">De R$ 59,90</p>
+          <p className="text-[#888] text-sm line-through mb-1">From $59.90</p>
           <p className="text-lg">
-            <span className="text-white">Por apenas </span>
+            <span className="text-white">For only </span>
             <span 
               className="text-2xl font-bold"
               style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
             >
-              R$ 19,90
+              $19.90
             </span>
           </p>
         </div>
@@ -92,7 +92,7 @@ function BackFrontContent() {
           className="rounded-2xl p-4 mb-6 text-center"
           style={{ background: 'rgba(30, 30, 40, 0.8)', border: '1px solid rgba(60, 60, 80, 0.5)' }}
         >
-          <p className="text-white text-sm mb-2">Tempo restante para garantir este desconto</p>
+          <p className="text-white text-sm mb-2">Time remaining to secure this discount</p>
           <p 
             className="text-3xl font-bold"
             style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}
@@ -109,14 +109,14 @@ function BackFrontContent() {
           style={{ background: 'linear-gradient(90deg, #EC4899, #F97316)' }}
         >
           <span className="flex items-center justify-center gap-2">
-            <span>GARANTIR MEU DESCONTO AGORA</span>
+            <span>GET MY DISCOUNT NOW</span>
             <span>▶</span>
           </span>
         </a>
 
         <div className="text-center">
           <p className="text-[#777] text-xs leading-relaxed">
-            Ao adquirir, você terá acesso <strong className="text-[#999]">completo e imediato</strong> à plataforma. O processamento é instantâneo via <strong className="text-[#999]">PIX</strong> ou <strong className="text-[#999]">Cartão de Crédito</strong>.
+            Upon purchase, you will have <strong className="text-[#999]">complete and immediate</strong> access to the platform. Processing is instant via <strong className="text-[#999]">PIX</strong> or <strong className="text-[#999]">Credit Card</strong>.
           </p>
         </div>
       </motion.div>
@@ -126,7 +126,7 @@ function BackFrontContent() {
 
 export default function BackFrontPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="text-white">Carregando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-[#0A0A0A] flex items-center justify-center"><div className="text-white">Loading...</div></div>}>
       <BackFrontContent />
     </Suspense>
   );

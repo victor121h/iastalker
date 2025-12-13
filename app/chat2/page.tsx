@@ -66,10 +66,10 @@ function LocationCard({ onClick }: { onClick: () => void }) {
         </div>
       </div>
       <div className="p-3 space-y-1">
-        <p className="text-white text-sm font-medium">Ubicación actual</p>
-        <p className="text-[#9CA3AF] text-xs">La***** está compartiendo</p>
+        <p className="text-white text-sm font-medium">Current location</p>
+        <p className="text-[#9CA3AF] text-xs">L***** is sharing</p>
         <button className="w-full mt-2 py-2 bg-[#1E3A5F] hover:bg-[#2a4a6f] text-white text-sm font-medium rounded-lg transition-colors">
-          Ver
+          View
         </button>
       </div>
     </div>
@@ -98,7 +98,7 @@ function Chat2Content() {
   
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
-  const [userCity, setUserCity] = useState<string>('Madrid');
+  const [userCity, setUserCity] = useState<string>('New York');
 
   useEffect(() => {
     const fetchCity = async () => {
@@ -170,7 +170,7 @@ function Chat2Content() {
           
           <div className="flex flex-col">
             <span className="text-white font-semibold text-sm">{censoredName}</span>
-            <span className="text-[#9CA3AF] text-xs">desconectado</span>
+            <span className="text-[#9CA3AF] text-xs">offline</span>
           </div>
         </div>
         
@@ -194,14 +194,14 @@ function Chat2Content() {
           
           <div className="flex justify-center py-4">
             <span className="text-white/40 text-xs px-3 py-1 rounded-full bg-white/5">
-              <BlurredText text="ayer" />, 4:47
+              <BlurredText text="yesterday" />, 4:47
             </span>
           </div>
 
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">oye, ¿estás ahí?</p>
+                <p className="text-white text-[15px]">hey, are you there?</p>
               </div>
             </div>
           </div>
@@ -209,7 +209,7 @@ function Chat2Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">el <BlurredText text="jueves" /> de esta semana puedo <BlurredText text="ir allá" /></p>
+                <p className="text-white text-[15px]">on <BlurredText text="Thursday" /> this week I can <BlurredText text="go there" /></p>
               </div>
             </div>
           </div>
@@ -227,7 +227,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">pero y <BlurredText text="la fulana" /> ¿no va a estar contigo?</p>
+                <p className="text-white text-[15px]">but won't <BlurredText text="that girl" /> be with you?</p>
               </div>
             </div>
           </div>
@@ -235,7 +235,7 @@ function Chat2Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]">no jaja <BlurredText text="ella va a viajar con su mamá a otro lugar" /></p>
+                <p className="text-white text-[15px]">no haha <BlurredText text="she's traveling with her mom somewhere else" /></p>
               </div>
             </div>
           </div>
@@ -253,7 +253,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">ay ay jajaja <BlurredText text="ella" /> <BlurredText text="confía en ti" /></p>
+                <p className="text-white text-[15px]">oh oh hahaha <BlurredText text="she" /> <BlurredText text="trusts you" /></p>
               </div>
             </div>
           </div>
@@ -271,7 +271,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">te voy a mandar la ubicación</p>
+                <p className="text-white text-[15px]">I'll send you the location</p>
               </div>
             </div>
           </div>
@@ -305,7 +305,7 @@ function Chat2Content() {
                 </div>
               </div>
               <div className="bg-[#1C2125] rounded-2xl rounded-bl-md px-4 py-3">
-                <p className="text-white text-[15px]">En {userCity} ¿vale?</p>
+                <p className="text-white text-[15px]">In {userCity} ok?</p>
               </div>
             </div>
           </div>
@@ -313,7 +313,7 @@ function Chat2Content() {
           <div className="flex justify-end">
             <div className="max-w-[60%]">
               <div className="bg-gradient-to-r from-[#7C3AED] to-[#A855F7] rounded-2xl rounded-br-md px-4 py-3">
-                <p className="text-white text-[15px]"><BlurredText text="ok amor" /></p>
+                <p className="text-white text-[15px]"><BlurredText text="ok babe" /></p>
               </div>
             </div>
           </div>
@@ -335,7 +335,7 @@ function Chat2Content() {
             className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2.5 flex items-center cursor-pointer"
             onClick={handleUnlockClick}
           >
-            <span className="text-white/40 text-[15px]">Mensaje...</span>
+            <span className="text-white/40 text-[15px]">Message...</span>
           </div>
           
           <div className="flex items-center gap-2">
