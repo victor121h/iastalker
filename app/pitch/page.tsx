@@ -97,8 +97,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://pay.kiwify.com/cD8kCru');
-  const purchaseLink59 = appendUtmToLink('https://pay.kiwify.com/HcxVBXX');
+  const purchaseLink39 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=vs3dmzgb');
+  const purchaseLink59 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=zs7bfwku');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
