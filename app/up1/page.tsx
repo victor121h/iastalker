@@ -372,17 +372,17 @@ function Up1Content() {
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="text-gray-500 text-sm">
                 <span>From</span>
-                <span className="line-through ml-1">49.90$</span>
+                <span className="line-through ml-1">$49.90</span>
               </div>
               <div className="text-center">
                 <span className="text-[#FA7E1E] text-sm">For</span>
-                <p className="text-[#FA7E1E] text-4xl font-bold">29.90$</p>
+                <p className="text-[#FA7E1E] text-4xl font-bold">$29.90</p>
               </div>
             </div>
 
             <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-5">
               <p className="text-[#00FF75] text-sm font-semibold">
-                You save 20.00$ (40% OFF)
+                You save $20.00 (40% OFF)
               </p>
             </div>
 
