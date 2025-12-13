@@ -58,7 +58,7 @@ function HomeContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
             className="text-[26px] md:text-[28px] font-bold text-slate-800 leading-tight"
           >
-            ¿Qué hace realmente él/ella cuando está en Insta?
+            What do they really do when they're on Insta?
           </motion.h1>
           
           <motion.p
@@ -67,7 +67,7 @@ function HomeContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
             className="text-slate-500 text-[15px] leading-relaxed"
           >
-            Descubre la verdad sobre cualquier persona de Instagram. Solo con el @.
+            Discover the truth about anyone on Instagram. Just with their @.
           </motion.p>
           
           <motion.div
@@ -88,7 +88,7 @@ function HomeContent() {
                 <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="2"/>
                 <circle cx="18" cy="6" r="1.5" fill="white"/>
               </svg>
-              Espiar Ahora
+              Spy Now
             </button>
           </motion.div>
           
@@ -103,14 +103,14 @@ function HomeContent() {
               <path d="M17 11V7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
             <span className="text-slate-500">
-              100% Anónimo. La persona{' '}
+              100% Anonymous. They will{' '}
               <span 
                 className="font-bold bg-clip-text text-transparent"
                 style={{ backgroundImage: 'linear-gradient(90deg, #0ea5e9, #3b82f6)' }}
               >
-                NUNCA
+                NEVER
               </span>
-              {' '}lo sabrá.
+              {' '}know.
             </span>
           </motion.div>
         </div>
@@ -121,7 +121,7 @@ function HomeContent() {
 
 export default function Home() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-white to-sky-50 flex items-center justify-center"><div className="text-slate-600">Cargando...</div></div>}>
+    <Suspense fallback={<div className="min-h-screen bg-gradient-to-br from-white to-sky-50 flex items-center justify-center"><div className="text-slate-600">Loading...</div></div>}>
       <HomeContent />
     </Suspense>
   );
