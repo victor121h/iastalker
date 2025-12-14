@@ -98,10 +98,6 @@ export default function RootLayout({
             document.head.appendChild(a);
           `}
         </Script>
-        <Script
-          src="https://assets.mycartpanda.com/cartx-ecomm-ui-assets/js/cpsales.js"
-          strategy="afterInteractive"
-        />
         <ClientProviders>
           {children}
         </ClientProviders>
