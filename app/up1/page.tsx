@@ -126,9 +126,9 @@ function Up1Content() {
       badge: 'Discount: 90% off',
       badgeColor: 'bg-gray-500',
       borderColor: 'border-gray-500',
-      price: '19.90',
+      price: '39.90',
       oldPrice: '90.00',
-      savings: '70.10',
+      savings: '50.10',
       access: 3,
       features: [
         { text: 'Access all data from the searched profile', included: true },
