@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695107:1',
+      link: 'https://www.iastalker.com/checkout/204695107:1',
       recommended: true,
     },
     {
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695104:1',
+      link: 'https://www.iastalker.com/checkout/204695104:1',
       recommended: false,
     },
     {
@@ -140,7 +140,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695100:1',
+      link: 'https://www.iastalker.com/checkout/204695100:1',
       recommended: false,
     },
   ];
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://mounjarodelpobre.mycartpanda.com/checkout/204695104:1')}
+              href={appendUtmToLink('https://www.iastalker.com/checkout/204695104:1')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >

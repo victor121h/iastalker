@@ -55,7 +55,7 @@ function UpsellContent() {
           </p>
 
           <a
-            href={appendUtmToLink('https://mounjarodelpobre.mycartpanda.com/checkout/204695179:1')}
+            href={appendUtmToLink('https://www.iastalker.com/checkout/204695179:1')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
             style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
           >
