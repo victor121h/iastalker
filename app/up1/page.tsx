@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=log9u1qh',
+      link: 'https://pay.hotmart.com/A103392154P?off=eeb43l0q',
       recommended: true,
     },
     {
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=eeb43l0q',
+      link: 'https://pay.hotmart.com/A103392154P?off=log9u1qh',
       recommended: false,
     },
     {
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://pay.hotmart.com/A103392154P?off=eeb43l0q')}
+              href={appendUtmToLink('https://pay.hotmart.com/A103392154P?off=log9u1qh')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
