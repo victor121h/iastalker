@@ -94,7 +94,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=log9u1qh',
+      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695107:1',
       recommended: true,
     },
     {
@@ -117,7 +117,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=eeb43l0q',
+      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695104:1',
       recommended: false,
     },
     {
@@ -140,7 +140,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://pay.hotmart.com/A103392154P?off=nagg8sz8',
+      link: 'https://mounjarodelpobre.mycartpanda.com/checkout/204695100:1',
       recommended: false,
     },
   ];
@@ -428,7 +428,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://pay.hotmart.com/A103392154P?off=eeb43l0q')}
+              href={appendUtmToLink('https://mounjarodelpobre.mycartpanda.com/checkout/204695104:1')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
