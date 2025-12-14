@@ -97,8 +97,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=ell9ue6n');
-  const purchaseLink59 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=d9s2avyv');
+  const purchaseLink39 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=ell9ue6n&checkoutMode=10');
+  const purchaseLink59 = appendUtmToLink('https://pay.hotmart.com/E103391718P?off=d9s2avyv&checkoutMode=10');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
