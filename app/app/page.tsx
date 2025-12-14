@@ -73,7 +73,7 @@ function AppContent() {
               <div>
                 <p className="text-white font-semibold mb-2">Important Notice</p>
                 <p className="text-gray-300 text-sm leading-relaxed">
-                  Within <span className="text-[#00FF75] font-bold">5 to 16 days</span>, a member of our team will call you to help install the application on your phone.
+                  Within <span className="text-[#00FF75] font-bold">24 hours</span>, a member of our team will call you to help install the application on your phone.
                 </p>
               </div>
             </div>
@@ -169,7 +169,7 @@ function AppContent() {
                 </svg>
               </div>
               <p className="text-gray-300 text-sm">
-                After registration, our team will contact you within <span className="text-[#EB1C8F] font-semibold">5 to 16 days</span> to install the app on your phone.
+                After registration, our team will contact you within <span className="text-[#EB1C8F] font-semibold">24 hours</span> to install the app on your phone.
               </p>
             </div>
           </div>
