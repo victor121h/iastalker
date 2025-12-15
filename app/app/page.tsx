@@ -9,6 +9,7 @@ function AppContent() {
   const [email, setEmail] = useState('');
   const [submitted, setSubmitted] = useState(false);
   const [error, setError] = useState('');
+  const [showDownloadPopup, setShowDownloadPopup] = useState(false);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -44,7 +45,77 @@ function AppContent() {
 
   if (submitted) {
     return (
-      <div className="min-h-screen bg-[#0C1011] flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#0C1011] pt-16">
+        <header className="fixed top-0 left-0 right-0 z-50 bg-[#1A1A1A] border-b border-gray-800 py-3 px-4">
+          <div className="flex items-center justify-between max-w-md mx-auto">
+            <div className="flex items-center gap-2">
+              <img src="/logo-stalker.png" alt="IA Stalker" className="w-8 h-8 rounded-lg" />
+              <span className="text-white font-semibold">IA Stalker</span>
+            </div>
+            <button
+              onClick={() => setShowDownloadPopup(true)}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-white font-medium text-sm"
+              style={{ background: 'linear-gradient(90deg, #EB1C8F, #FA7E1E)' }}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+              Download
+            </button>
+          </div>
+        </header>
+
+        {showDownloadPopup && (
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="relative bg-[#1A1A1A] rounded-[22px] p-6 max-w-sm w-full border border-[#EB1C8F]/30"
+            >
+              <button
+                onClick={() => setShowDownloadPopup(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+
+              <div className="flex justify-center mb-4">
+                <div className="w-16 h-16 rounded-full bg-[#EB1C8F]/20 flex items-center justify-center">
+                  <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#EB1C8F" strokeWidth="2">
+                    <circle cx="12" cy="12" r="10"/>
+                    <path d="M12 6v6l4 2"/>
+                  </svg>
+                </div>
+              </div>
+
+              <h2 className="text-xl font-bold text-white text-center mb-3">
+                Please Wait
+              </h2>
+
+              <p className="text-gray-300 text-sm text-center mb-4">
+                Our team will contact you within <span className="text-[#EB1C8F] font-bold">24 hours</span> to help install the application on your phone.
+              </p>
+
+              <div className="bg-[#2D1A1F] border border-[#EB1C8F]/30 rounded-xl p-4 mb-4">
+                <p className="text-gray-300 text-sm text-center">
+                  The download will be done remotely with the assistance of our team.
+                </p>
+              </div>
+
+              <button
+                onClick={() => setShowDownloadPopup(false)}
+                className="w-full py-3 rounded-xl text-center font-bold text-white"
+                style={{ background: 'linear-gradient(90deg, #EB1C8F, #FA7E1E)' }}
+              >
+                Got it!
+              </button>
+            </motion.div>
+          </div>
+        )}
+
+        <div className="flex items-center justify-center p-4 min-h-[calc(100vh-4rem)]">
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -106,6 +177,7 @@ function AppContent() {
             </div>
           </div>
         </motion.div>
+        </div>
       </div>
     );
   }
