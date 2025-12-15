@@ -343,7 +343,7 @@ function Up2Content() {
             </div>
 
             <a
-              href={appendUtmToLink("https://pay.kiwify.com/TAzNVeJ")}
+              href={appendUtmToLink("https://www.iastalker.com/checkout/204743546:1")}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"
