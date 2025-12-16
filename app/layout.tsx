@@ -4,7 +4,7 @@ import "./globals.css";
 import { ClientProviders } from "@/components/ClientProviders";
 
 export const metadata: Metadata = {
-  title: "IA Stalker - O que realmente ele(a) faz quando tá no Insta?",
+  title: "IA Stalker",
   description: "Descubra a verdade sobre qualquer pessoa do Instagram. Só com o @.",
 };
 
