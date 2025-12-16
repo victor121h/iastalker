@@ -111,6 +111,16 @@ export default function RootLayout({
             document.head.appendChild(a);
           `}
         </Script>
+        <Script id="utmify-tiktok-pixel-2" strategy="afterInteractive">
+          {`
+            window.tikTokPixelId = "6940a9186513f2e74a2107e9";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel-tiktok.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
         <ClientProviders>
           {children}
         </ClientProviders>
