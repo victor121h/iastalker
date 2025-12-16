@@ -101,6 +101,16 @@ export default function RootLayout({
             document.head.appendChild(a);
           `}
         </Script>
+        <Script id="utmify-pixel-4" strategy="afterInteractive">
+          {`
+            window.pixelId = "6940a5304fd20c2db828ab35";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
         <ClientProviders>
           {children}
         </ClientProviders>
