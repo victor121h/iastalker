@@ -8,8 +8,6 @@ import MatrixBackground from '@/components/MatrixBackground';
 function Up1Content() {
   const searchParams = useSearchParams();
   const [timeLeft, setTimeLeft] = useState({ minutes: 14, seconds: 59 });
-  const [showPopup, setShowPopup] = useState(false);
-  const [popupTimer, setPopupTimer] = useState({ minutes: 4, seconds: 45 });
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -42,36 +40,6 @@ function Up1Content() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-
-  useEffect(() => {
-    const popupTimeout = setTimeout(() => {
-      setShowPopup(true);
-    }, 15000);
-    return () => clearTimeout(popupTimeout);
-  }, []);
-
-  useEffect(() => {
-    if (!showPopup) return;
-    const timer = setInterval(() => {
-      setPopupTimer(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { minutes: prev.minutes - 1, seconds: 59 };
-        }
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, [showPopup]);
-
-  const closePopup = () => {
-    setShowPopup(false);
-    setTimeout(() => {
-      setShowPopup(true);
-      setPopupTimer({ minutes: 4, seconds: 45 });
-    }, 10000);
-  };
 
   const plans = [
     {
@@ -330,127 +298,6 @@ function Up1Content() {
           </motion.div>
         </main>
       </div>
-
-      {showPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="relative w-full max-w-[380px] rounded-[24px] p-6 overflow-hidden"
-            style={{
-              background: 'linear-gradient(180deg, #1A1A1A 0%, #0C0C0C 100%)',
-              border: '2px solid transparent',
-              backgroundClip: 'padding-box',
-              boxShadow: '0 0 40px rgba(235, 28, 143, 0.3), inset 0 0 0 2px rgba(235, 28, 143, 0.3)'
-            }}
-          >
-            <button
-              onClick={closePopup}
-              className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-
-            <div className="flex justify-center mb-4">
-              <div className="bg-gradient-to-r from-[#EB1C8F] to-[#FA7E1E] text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5">
-                <span>⚡</span>
-                <span>FLASH SALE</span>
-              </div>
-            </div>
-
-            <h2 className="text-center text-xl font-bold mb-2">
-              <span className="text-white">Wait! </span>
-              <span className="text-[#FA7E1E]">Last Chance</span>
-            </h2>
-
-            <p className="text-gray-400 text-sm text-center mb-5">
-              Get the most complete plan with a discount that won't be repeated.
-            </p>
-
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="text-gray-500 text-sm">
-                <span>From</span>
-                <span className="line-through ml-1">$49.90</span>
-              </div>
-              <div className="text-center">
-                <span className="text-[#FA7E1E] text-sm">For</span>
-                <p className="text-[#FA7E1E] text-4xl font-bold">$29.90</p>
-              </div>
-            </div>
-
-            <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-5">
-              <p className="text-[#00FF75] text-sm font-semibold">
-                You save $20.00 (40% OFF)
-              </p>
-            </div>
-
-            <div className="mb-5">
-              <p className="text-white text-sm font-semibold text-center mb-3 flex items-center justify-center gap-2">
-                <span className="text-[#FA7E1E]">◉</span>
-                Ultra Plan – Eye of God Included:
-              </p>
-              <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Unlimited profile search</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>24h GPS</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Total anonymity</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Complete history</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Real-time notifications</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>WhatsApp Spy</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Hidden gallery</span>
-                </div>
-                <div className="flex items-center gap-2 text-gray-300">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="#EB1C8F"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
-                  <span>Multiple targets</span>
-                </div>
-              </div>
-            </div>
-
-            <a
-              href={appendUtmToLink('https://www.iastalker.com/checkout/204695104:1')}
-              className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
-              style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
-            >
-              <span className="flex items-center justify-center gap-2">
-                <span>▶</span>
-                GET OFFER AND ACTIVATE
-              </span>
-            </a>
-
-            <p className="text-gray-500 text-xs text-center mb-3">
-              • This offer expires in: <span className="text-white font-semibold">{String(popupTimer.minutes).padStart(2, '0')}:{String(popupTimer.seconds).padStart(2, '0')}</span>
-            </p>
-
-            <button
-              onClick={closePopup}
-              className="text-gray-500 text-xs text-center w-full underline hover:text-gray-400 transition-colors"
-            >
-              No, thanks. I prefer to pay more later.
-            </button>
-          </motion.div>
-        </div>
-      )}
     </div>
   );
 }
