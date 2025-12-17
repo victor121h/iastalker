@@ -58,7 +58,7 @@ function Up1Content() {
         { text: 'Location history', included: true },
         { text: 'Messages (sent and received) in real time', included: true },
         { text: 'Message history (up to 18 months)', included: true },
-        { text: 'Lifetime access to IA Stalker', included: true },
+        { text: 'Lifetime access to IA Observer', included: true },
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
@@ -81,7 +81,7 @@ function Up1Content() {
         { text: 'Location history', included: true },
         { text: 'Messages (sent and received) in real time', included: true },
         { text: 'Message history (up to 18 months)', included: false },
-        { text: 'Lifetime access to IA Stalker', included: false },
+        { text: 'Lifetime access to IA Observer', included: false },
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
@@ -104,7 +104,7 @@ function Up1Content() {
         { text: 'Location history', included: false },
         { text: 'Messages (sent and received) in real time', included: false },
         { text: 'Message history (up to 18 months)', included: false },
-        { text: 'Lifetime access to IA Stalker', included: false },
+        { text: 'Lifetime access to IA Observer', included: false },
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
@@ -143,7 +143,7 @@ function Up1Content() {
             <div className="flex items-center justify-center mb-6">
               <img 
                 src="/logo-stalker.png" 
-                alt="IA Stalker Logo" 
+                alt="IA Observer Logo" 
                 className="w-20 h-20 rounded-xl"
               />
             </div>
@@ -156,7 +156,7 @@ function Up1Content() {
                   </svg>
                 </div>
                 <p className="text-white text-sm leading-relaxed">
-                  <span className="font-bold">Congratulations</span>, your access to IA Stalker has been secured, there's only <span className="font-bold">1 step</span> left so you can use the tool completely and spy on any profile.
+                  <span className="font-bold">Congratulations</span>, your access to IA Observer has been secured, there's only <span className="font-bold">1 step</span> left so you can use the tool completely and spy on any profile.
                 </p>
               </div>
             </div>

@@ -49,8 +49,8 @@ function AppContent() {
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#1A1A1A] border-b border-gray-800 py-3 px-4">
           <div className="flex items-center justify-between max-w-md mx-auto">
             <div className="flex items-center gap-2">
-              <img src="/logo-stalker.png" alt="IA Stalker" className="w-8 h-8 rounded-lg" />
-              <span className="text-white font-semibold">IA Stalker</span>
+              <img src="/logo-stalker.png" alt="IA Observer" className="w-8 h-8 rounded-lg" />
+              <span className="text-white font-semibold">IA Observer</span>
             </div>
             <button
               onClick={() => setShowDownloadPopup(true)}
@@ -193,7 +193,7 @@ function AppContent() {
         <div className="flex justify-center mb-6">
           <img 
             src="/logo-stalker.png" 
-            alt="IA Stalker Logo" 
+            alt="IA Observer Logo" 
             className="w-20 h-20 rounded-xl"
           />
         </div>
@@ -202,7 +202,7 @@ function AppContent() {
           Create Your Account
         </h1>
         <p className="text-gray-400 text-center text-sm mb-8">
-          Enter your email to get started with IA Stalker
+          Enter your email to get started with IA Observer
         </p>
 
         <form onSubmit={handleSubmit} className="space-y-5">
