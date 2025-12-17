@@ -62,7 +62,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://www.iastalker.com/checkout/204695107:1',
+      link: 'https://go.centerpag.com/PPU38CQ4ODO',
       recommended: true,
     },
     {
@@ -85,7 +85,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://www.iastalker.com/checkout/204695104:1',
+      link: 'https://go.centerpag.com/PPU38CQ4ODN',
       recommended: false,
     },
     {
@@ -108,7 +108,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://www.iastalker.com/checkout/204695100:1',
+      link: 'https://go.centerpag.com/PPU38CQ4ODM',
       recommended: false,
     },
   ];
