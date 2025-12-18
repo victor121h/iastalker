@@ -3,7 +3,9 @@
 import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import MatrixBackground from '@/components/MatrixBackground';
+import dynamic from 'next/dynamic';
+
+const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
 interface ProfileData {
   username: string;

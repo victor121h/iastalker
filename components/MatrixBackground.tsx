@@ -1,13 +1,20 @@
 'use client';
 
-import { useEffect, useRef, memo } from 'react';
+import { useEffect, useRef, memo, useState } from 'react';
 
 function MatrixBackgroundComponent() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number>(0);
   const dropsRef = useRef<number[]>([]);
+  const [shouldAnimate, setShouldAnimate] = useState(true);
 
   useEffect(() => {
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) {
+      setShouldAnimate(false);
+      return;
+    }
+
     const canvas = canvasRef.current;
     if (!canvas) return;
 
@@ -69,6 +76,10 @@ function MatrixBackgroundComponent() {
       window.removeEventListener('resize', resize);
     };
   }, []);
+
+  if (!shouldAnimate) {
+    return null;
+  }
 
   return (
     <canvas

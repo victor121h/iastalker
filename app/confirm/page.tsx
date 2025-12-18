@@ -3,8 +3,10 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
-import MatrixBackground from '@/components/MatrixBackground';
+import dynamic from 'next/dynamic';
 import InstagramButton from '@/components/InstagramButton';
+
+const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
 interface ProfileData {
   username: string;

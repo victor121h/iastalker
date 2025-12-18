@@ -3,7 +3,9 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import MatrixBackground from '@/components/MatrixBackground';
+import dynamic from 'next/dynamic';
+
+const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
 function Up1Content() {
   const searchParams = useSearchParams();
