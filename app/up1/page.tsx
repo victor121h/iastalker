@@ -70,7 +70,7 @@ function Up1Content() {
     setTimeout(() => {
       setShowPopup(true);
       setPopupTimer({ minutes: 4, seconds: 45 });
-    }, 10000);
+    }, 22000);
   };
 
   const plans = [
