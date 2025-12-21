@@ -1,5 +1,4 @@
 import type { Metadata } from "next";
-import Script from "next/script";
 import "./globals.css";
 import { ClientProviders } from "@/components/ClientProviders";
 
@@ -16,42 +15,6 @@ export default function RootLayout({
   return (
     <html lang="pt-BR" suppressHydrationWarning>
       <body className="antialiased" suppressHydrationWarning>
-        <Script id="utmify-pixel-1" strategy="lazyOnload">
-          {`
-            window.pixelId = "6940a5304fd20c2db828ab35";
-            var a = document.createElement("script");
-            a.setAttribute("async", "");
-            a.setAttribute("defer", "");
-            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-            document.head.appendChild(a);
-          `}
-        </Script>
-        <Script id="utmify-pixel-2" strategy="lazyOnload">
-          {`
-            window.pixelId = "6937a7eb6a54da37cdd331fd";
-            var a = document.createElement("script");
-            a.setAttribute("async", "");
-            a.setAttribute("defer", "");
-            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-            document.head.appendChild(a);
-          `}
-        </Script>
-        <Script id="utmify-pixel-3" strategy="lazyOnload">
-          {`
-            window.pixelId = "69419f7655a6f781ede8a260";
-            var a = document.createElement("script");
-            a.setAttribute("async", "");
-            a.setAttribute("defer", "");
-            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
-            document.head.appendChild(a);
-          `}
-        </Script>
-        <Script
-          src="https://cdn.utmify.com.br/scripts/utms/latest.js"
-          data-utmify-prevent-xcod-sck=""
-          data-utmify-prevent-subids=""
-          strategy="lazyOnload"
-        />
         <ClientProviders>
           {children}
         </ClientProviders>
