@@ -53,7 +53,7 @@ function Up3Content() {
           </p>
 
           <p className="text-white text-lg font-bold mb-4">
-            Verification Fee: <span className="text-[#EB1C8F]">$34.90</span>
+            Verification Fee: <span className="text-[#EB1C8F]">$24.90</span>
           </p>
 
           <p className="text-[#00FF75] text-sm mb-8 leading-relaxed">
