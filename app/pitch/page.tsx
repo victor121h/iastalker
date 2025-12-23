@@ -593,9 +593,9 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1">Profile Access</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access to @{username}'s profile</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">From: 130.00$</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold">9<span className="text-xl">.90$</span></p>
+                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>9.90</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -649,9 +649,9 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">IA Observer Tool</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access + Lifetime tool</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">From: 200.00$</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold">19<span className="text-xl">.90$</span></p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>19.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
