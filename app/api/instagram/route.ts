@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getApiKeyWithFallback } from '@/lib/apiKeyRotation';
 
 export async function GET(request: NextRequest) {
   const searchParams = request.nextUrl.searchParams;
@@ -11,25 +12,41 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  const accessKey = process.env.HIKERAPI_ACCESS_KEY;
-
-  if (!accessKey) {
+  let accessKey: string;
+  let tryNextKey: () => string | null;
+  
+  try {
+    const keyRotation = getApiKeyWithFallback();
+    accessKey = keyRotation.key;
+    tryNextKey = keyRotation.tryNext;
+  } catch {
     return NextResponse.json(
       { error: 'API key not configured' },
       { status: 500 }
     );
   }
 
-  try {
-    const response = await fetch(
+  const makeRequest = async (key: string): Promise<Response> => {
+    return fetch(
       `https://api.hikerapi.com/v1/user/by/username?username=${encodeURIComponent(username)}`,
       {
         headers: {
           'accept': 'application/json',
-          'x-access-key': accessKey,
+          'x-access-key': key,
         },
       }
     );
+  };
+
+  try {
+    let response = await makeRequest(accessKey);
+    
+    while (!response.ok && (response.status === 429 || response.status === 503)) {
+      const nextKey = tryNextKey();
+      if (!nextKey) break;
+      console.log('Switching to next API key due to rate limit/overload');
+      response = await makeRequest(nextKey);
+    }
 
     if (!response.ok) {
       const errorText = await response.text();
