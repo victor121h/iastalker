@@ -99,8 +99,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODH');
-  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODK');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ54C1');
+  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ54C4');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
