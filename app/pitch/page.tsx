@@ -46,6 +46,8 @@ function PitchContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 52 });
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [showWarningModal, setShowWarningModal] = useState(true);
+  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -72,6 +74,20 @@ function PitchContent() {
       });
     }, 1000);
     return () => clearInterval(timer);
+  }, []);
+
+  useEffect(() => {
+    const warningTimer = setInterval(() => {
+      setWarningTimeLeft(prev => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { minutes: prev.minutes - 1, seconds: 59 };
+        }
+        return prev;
+      });
+    }, 1000);
+    return () => clearInterval(warningTimer);
   }, []);
 
   const getProxiedAvatar = (url: string) => {
@@ -129,6 +145,55 @@ function PitchContent() {
   return (
     <div className="min-h-screen bg-white relative">
       <MatrixBackground />
+
+      {showWarningModal && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            className="bg-[#0C1011] border border-[#E53935] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#E53935">
+                  <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                </svg>
+              </div>
+            </div>
+
+            <h2 className="text-white text-center font-bold text-xl mb-3">
+              Aviso Importante
+            </h2>
+
+            <div className="bg-[#E53935]/10 border border-[#E53935]/30 rounded-xl p-4 mb-4">
+              <p className="text-white text-center text-sm leading-relaxed">
+                Se em <span className="font-bold text-[#E53935]">20 minutos</span> não identificarmos o pagamento no sistema, iremos revelar para <span className="font-bold">@{username}</span> que você clonou o Instagram dela.
+              </p>
+            </div>
+
+            <div className="flex justify-center mb-4">
+              <div className="bg-[#1A1A1A] rounded-lg px-6 py-3">
+                <p className="text-[#A0A0A0] text-xs text-center mb-1">Tempo restante:</p>
+                <p className="text-[#E53935] text-2xl font-bold text-center font-mono">
+                  {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
+                </p>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowWarningModal(false)}
+              className="w-full bg-[#E53935] hover:bg-[#C62828] text-white font-bold py-3 rounded-xl transition-colors"
+            >
+              Entendi
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
       
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#E53935] py-2.5 px-4">

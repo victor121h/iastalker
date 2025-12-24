@@ -8,6 +8,9 @@ const nextConfig = {
     '*.picard.replit.dev',
     '*.janeway.replit.dev',
     '*.sisko.replit.dev',
+    '*.spock.replit.dev',
+    'localhost',
+    '127.0.0.1',
   ],
   images: {
     remotePatterns: [
