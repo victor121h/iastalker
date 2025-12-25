@@ -57,6 +57,7 @@ interface Story {
   username: string;
   avatar: string;
   isLocked: boolean;
+  isCloseFriend?: boolean;
 }
 
 function censorName(name: string): string {
@@ -73,6 +74,16 @@ const StoryItem = memo(function StoryItem({
   onClick: () => void;
   getProxiedAvatar: (url: string) => string;
 }) {
+  const getStoryGradient = () => {
+    if (story.isCloseFriend) {
+      return '#00D26A';
+    }
+    if (story.isLocked) {
+      return 'linear-gradient(45deg, #962FBF, #D62976, #FA7E1E, #FEDA75)';
+    }
+    return 'linear-gradient(45deg, #FEDA75, #FA7E1E, #D62976, #962FBF, #4F5BD5)';
+  };
+
   return (
     <div
       className="flex flex-col items-center gap-1.5 flex-shrink-0 cursor-pointer"
@@ -81,11 +92,7 @@ const StoryItem = memo(function StoryItem({
       <div className="relative">
         <div 
           className="p-[2px] rounded-full"
-          style={{
-            background: story.isLocked 
-              ? 'linear-gradient(45deg, #962FBF, #D62976, #FA7E1E, #FEDA75)'
-              : 'linear-gradient(45deg, #FEDA75, #FA7E1E, #D62976, #962FBF, #4F5BD5)'
-          }}
+          style={{ background: getStoryGradient() }}
         >
           <div className="bg-[#000] rounded-full p-[2px]">
             <ImageWithFallback
@@ -99,6 +106,13 @@ const StoryItem = memo(function StoryItem({
           <div className="absolute inset-[2px] bg-black/70 rounded-full flex items-center justify-center">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
               <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+            </svg>
+          </div>
+        )}
+        {story.isCloseFriend && (
+          <div className="absolute -bottom-0.5 -right-0.5 w-5 h-5 rounded-full bg-[#00D26A] flex items-center justify-center border-2 border-black">
+            <svg width="10" height="10" viewBox="0 0 24 24" fill="white">
+              <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z"/>
             </svg>
           </div>
         )}
@@ -385,6 +399,8 @@ function FeedContent() {
     username.charAt(0) + '*'.repeat(Math.min(username.length - 1, 5)) : 
     'p*****';
 
+  const closeFriendIndexes = [1, 4, 6];
+  
   const stories: Story[] = [
     { 
       id: 0, 
@@ -392,11 +408,12 @@ function FeedContent() {
       avatar: profile?.avatar || '', 
       isLocked: false 
     },
-    ...following.slice(0, 10).map((user, index) => ({
+    ...following.slice(0, 17).map((user, index) => ({
       id: index + 1,
       username: censorName(user.username),
       avatar: user.avatar || '',
-      isLocked: true
+      isLocked: true,
+      isCloseFriend: closeFriendIndexes.includes(index)
     }))
   ];
 
