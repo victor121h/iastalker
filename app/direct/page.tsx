@@ -240,6 +240,7 @@ function DirectContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [showLoadMorePopup, setShowLoadMorePopup] = useState(false);
   const { showNotification } = useNotification();
 
   const getProxiedAvatar = useCallback((url: string) => {
@@ -440,7 +441,59 @@ function DirectContent() {
             getProxiedAvatar={getProxiedAvatar}
           />
         ))}
+        
+        <button 
+          onClick={() => setShowLoadMorePopup(true)}
+          className="w-full py-3 text-[#1A73E8] text-[14px] font-medium hover:bg-[#0C0C0C] transition-colors"
+        >
+          Load more messages
+        </button>
       </div>
+
+      {showLoadMorePopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4">
+          <div className="bg-[#1A1A1A] rounded-2xl p-6 max-w-sm w-full shadow-2xl">
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="#E53935">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                </svg>
+              </div>
+            </div>
+            
+            <h2 className="text-white text-center font-bold text-lg mb-2">
+              Access Required
+            </h2>
+            
+            <p className="text-[#A8A8A8] text-center text-sm mb-4">
+              To load more messages, you need to unlock full access to this profile.
+            </p>
+            
+            <div className="flex gap-3">
+              <button 
+                onClick={() => setShowLoadMorePopup(false)}
+                className="flex-1 py-3 rounded-xl border border-[#333] text-white font-medium hover:bg-[#262626] transition-colors"
+              >
+                Cancel
+              </button>
+              <button 
+                onClick={() => {
+                  const params = new URLSearchParams();
+                  const paramsToCopy = ['username', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+                  paramsToCopy.forEach(param => {
+                    const value = searchParams.get(param);
+                    if (value) params.set(param, value);
+                  });
+                  router.push(`/pitch?${params.toString()}`);
+                }}
+                className="flex-1 py-3 rounded-xl bg-[#E53935] text-white font-bold hover:bg-[#C62828] transition-colors"
+              >
+                Unlock
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       <nav className="fixed bottom-0 left-0 right-0 h-[50px] bg-[#000] border-t border-[rgba(255,255,255,0.08)] flex items-center justify-around px-2">
         <button className="p-3" onClick={showNotification}>
