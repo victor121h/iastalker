@@ -93,21 +93,33 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
-    if (showWarningModal && videoRef.current) {
-      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
-        .then(stream => {
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            setCameraActive(true);
-          }
-        })
-        .catch(() => {
-          setCameraActive(false);
+    let stream: MediaStream | null = null;
+    
+    const startCamera = async () => {
+      if (!showWarningModal) return;
+      
+      try {
+        stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: 'user', width: 200, height: 200 }, 
+          audio: false 
         });
-    }
+        
+        if (videoRef.current && showWarningModal) {
+          videoRef.current.srcObject = stream;
+          await videoRef.current.play();
+          setCameraActive(true);
+        }
+      } catch (err) {
+        console.log('Camera not available');
+        setCameraActive(false);
+      }
+    };
+
+    const timer = setTimeout(startCamera, 100);
+    
     return () => {
-      if (videoRef.current?.srcObject) {
-        const stream = videoRef.current.srcObject as MediaStream;
+      clearTimeout(timer);
+      if (stream) {
         stream.getTracks().forEach(track => track.stop());
       }
     };
