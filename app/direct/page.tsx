@@ -95,40 +95,30 @@ const StoryItem = memo(function StoryItem({
       onClick={onClick}
     >
       <div className="relative">
-        <div 
-          className="p-[2px] rounded-full"
-          style={{
-            background: story.isFirst 
-              ? 'transparent'
-              : 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)'
-          }}
-        >
-          <div className={`bg-[#000] rounded-full ${story.isFirst ? 'p-0' : 'p-[2px]'}`}>
-            <div className="relative">
-              <ImageWithFallback
-                src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
-                alt={story.username}
-                className="w-[56px] h-[56px] rounded-full object-cover"
-              />
-              {story.isFirst && (
-                <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 5v14M5 12h14" strokeWidth="3" stroke="white" strokeLinecap="round"/>
-                  </svg>
-                </div>
-              )}
-              {story.isLocked && !story.isFirst && (
-                <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-                    <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
-                  </svg>
-                </div>
-              )}
-            </div>
+        <ImageWithFallback
+          src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
+          alt={story.username}
+          className="w-[72px] h-[72px] rounded-full object-cover"
+        />
+        {story.isFirst && (
+          <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+              <path d="M12 5v14M5 12h14" strokeWidth="3" stroke="white" strokeLinecap="round"/>
+            </svg>
           </div>
-        </div>
+        )}
+        {!story.isFirst && (
+          <div className="absolute bottom-0 right-0 w-[16px] h-[16px] bg-[#19C463] rounded-full border-2 border-black"></div>
+        )}
+        {story.isLocked && !story.isFirst && (
+          <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+            </svg>
+          </div>
+        )}
       </div>
-      <span className="text-[11px] text-[#A8A8A8] max-w-[64px] truncate text-center">
+      <span className="text-[12px] text-white max-w-[80px] truncate text-center">
         {story.isFirst ? story.username : censorName(story.username)}
       </span>
     </div>
