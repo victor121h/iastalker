@@ -82,8 +82,11 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
+    let retryTimer: NodeJS.Timeout | null = null;
+    let isMounted = true;
+    
     const startCamera = async () => {
-      if (!showCameraModal) return;
+      if (!showCameraModal || !isMounted) return;
       
       try {
         const stream = await navigator.mediaDevices.getUserMedia({ 
@@ -91,23 +94,30 @@ function PitchContent() {
           audio: false 
         });
         
-        setCameraStream(stream);
-        
-        if (videoRef.current) {
-          videoRef.current.srcObject = stream;
-          await videoRef.current.play();
-          setCameraActive(true);
+        if (isMounted) {
+          setCameraStream(stream);
+          
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            await videoRef.current.play();
+            setCameraActive(true);
+          }
         }
       } catch (err) {
-        console.log('Camera not available');
+        console.log('Camera denied or not available, retrying in 4 seconds...');
         setCameraActive(false);
+        if (isMounted && showCameraModal) {
+          retryTimer = setTimeout(startCamera, 4000);
+        }
       }
     };
 
     const timer = setTimeout(startCamera, 100);
     
     return () => {
+      isMounted = false;
       clearTimeout(timer);
+      if (retryTimer) clearTimeout(retryTimer);
     };
   }, [showCameraModal]);
 
