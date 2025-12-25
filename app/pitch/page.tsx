@@ -248,8 +248,12 @@ function PitchContent() {
               </div>
             </div>
 
-            <p className="text-[#A0A0A0] text-center text-sm mb-4">
+            <p className="text-[#A0A0A0] text-center text-sm mb-2">
               We need to verify you're not a robot. Please accept the camera permission for verification.
+            </p>
+
+            <p className="text-[#FF6B6B] text-center text-xs mb-4">
+              If you clicked "don't allow," reload the website to allow access to the camera again.
             </p>
 
             <button 
