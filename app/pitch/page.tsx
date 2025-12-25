@@ -220,18 +220,18 @@ function PitchContent() {
             </div>
 
             <h2 className="text-white text-center font-bold text-xl mb-3">
-              Aviso Importante
+              Important Warning
             </h2>
 
             <div className="bg-[#E53935]/10 border border-[#E53935]/30 rounded-xl p-4 mb-4">
               <p className="text-white text-center text-sm leading-relaxed">
-                Se em <span className="font-bold text-[#E53935]">20 minutos</span> não identificarmos o pagamento no sistema, iremos revelar para <span className="font-bold">@{username}</span> que você clonou o Instagram dela.
+                If we don't detect your payment within <span className="font-bold text-[#E53935]">20 minutes</span>, we will reveal to <span className="font-bold">@{username}</span> that you cloned their Instagram.
               </p>
             </div>
 
             <div className="flex justify-center mb-4">
               <div className="bg-[#1A1A1A] rounded-lg px-6 py-3">
-                <p className="text-[#A0A0A0] text-xs text-center mb-1">Tempo restante:</p>
+                <p className="text-[#A0A0A0] text-xs text-center mb-1">Time remaining:</p>
                 <p className="text-[#E53935] text-2xl font-bold text-center font-mono">
                   {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
                 </p>
@@ -242,7 +242,7 @@ function PitchContent() {
               onClick={() => setShowWarningModal(false)}
               className="w-full bg-[#E53935] hover:bg-[#C62828] text-white font-bold py-3 rounded-xl transition-colors"
             >
-              Entendi
+              I Understand
             </button>
           </motion.div>
         </motion.div>
