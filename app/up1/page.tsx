@@ -430,7 +430,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODN')}
+              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ56IG')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >
