@@ -33,7 +33,13 @@ function PitchContent() {
       document.cookie = `pitch_username=${encodeURIComponent(urlUsername)}; path=/; max-age=31536000`;
       setUsername(urlUsername);
     } else {
-      const storedUsername = sessionStorage.getItem('pitch_username');
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        if (key && value) acc[key] = decodeURIComponent(value);
+        return acc;
+      }, {} as Record<string, string>);
+      const cookieUsername = cookies['pitch_username'];
+      const storedUsername = cookieUsername || sessionStorage.getItem('pitch_username');
       if (storedUsername) {
         const params = new URLSearchParams(searchParamsString);
         params.set('username', storedUsername);
