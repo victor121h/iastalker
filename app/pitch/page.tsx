@@ -348,6 +348,29 @@ function PitchContent() {
         </header>
 
         <main className="pt-16 pb-8 px-4 max-w-md mx-auto">
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] border border-[#0f3460]/50 rounded-xl p-4 mb-4 mt-2"
+          >
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-[#00D9FF]/20 flex items-center justify-center flex-shrink-0">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="#00D9FF">
+                  <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+                </svg>
+              </div>
+              <div className="flex-1">
+                <p className="text-[#00D9FF] text-xs font-semibold mb-1 flex items-center gap-1">
+                  <span className="inline-block w-2 h-2 bg-[#00D9FF] rounded-full animate-pulse"></span>
+                  AI SCAN COMPLETE
+                </p>
+                <p className="text-white text-sm leading-relaxed">
+                  Our AI scanned the messages from <span className="font-bold text-[#00D9FF]">@{username}</span> and found <span className="font-bold text-[#FF6B6B]">+18 messages</span>; the content revealed may be sensitive for some people.
+                </p>
+              </div>
+            </div>
+          </motion.div>
+
           <motion.section 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
