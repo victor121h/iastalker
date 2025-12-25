@@ -71,7 +71,22 @@ function PitchContent() {
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
-  }, []);
+    
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      if (key && value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const hasVisitedPitch = cookies['pitch_first_visit'] === 'true';
+    
+    if (hasVisitedPitch) {
+      const params = searchParams.toString();
+      router.replace(params ? `/pitch1?${params}` : '/pitch1');
+    } else {
+      document.cookie = 'pitch_first_visit=true; path=/; max-age=31536000';
+    }
+  }, [router, searchParams]);
 
   useEffect(() => {
     if (username) {
