@@ -45,15 +45,15 @@ function UpsellContent() {
           </div>
 
           <h1 className="text-white text-2xl font-bold leading-tight mb-4">
-            Activate your account now
+            AI Observer Installation Fee
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            To activate your account and allow the app installation on your phone, a one-time fee of <strong className="text-white">$27.90</strong> is required.
+            A one-time payment of <strong className="text-white">US$14.90</strong> is required for one of our support team to install AI Observer on your phone.
           </p>
 
           <p className="text-[#888] text-sm mb-8">
-            This ensures everything works correctly, without errors. This is a mandatory fee — if not paid, account access will not be released.
+            This ensures everything works correctly and without errors. This fee is mandatory—if it is not paid, account access will not be granted.
           </p>
 
           <a
