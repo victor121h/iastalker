@@ -45,7 +45,7 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
+  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 5, seconds: 0 });
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -114,8 +114,8 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODH');
-  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODK');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ54C1');
+  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ54C4');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -154,7 +154,7 @@ function PitchContent() {
               </svg>
             </button>
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>We will reveal your clone in:</span>
+              <span>Your Exclusive Access Expires in:</span>
               <span className="font-bold">
                 {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
               </span>
@@ -633,7 +633,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>54.90</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -689,7 +689,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>59.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
