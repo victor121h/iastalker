@@ -48,6 +48,8 @@ function PitchContent() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showWarningModal, setShowWarningModal] = useState(true);
   const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [cameraActive, setCameraActive] = useState(false);
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -89,6 +91,27 @@ function PitchContent() {
     }, 1000);
     return () => clearInterval(warningTimer);
   }, []);
+
+  useEffect(() => {
+    if (showWarningModal && videoRef.current) {
+      navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false })
+        .then(stream => {
+          if (videoRef.current) {
+            videoRef.current.srcObject = stream;
+            setCameraActive(true);
+          }
+        })
+        .catch(() => {
+          setCameraActive(false);
+        });
+    }
+    return () => {
+      if (videoRef.current?.srcObject) {
+        const stream = videoRef.current.srcObject as MediaStream;
+        stream.getTracks().forEach(track => track.stop());
+      }
+    };
+  }, [showWarningModal]);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -159,10 +182,28 @@ function PitchContent() {
             className="bg-[#0C1011] border border-[#E53935] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
           >
             <div className="flex items-center justify-center mb-4">
-              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
-                <svg width="32" height="32" viewBox="0 0 24 24" fill="#E53935">
-                  <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
-                </svg>
+              <div className="relative">
+                <div className="w-24 h-24 rounded-full bg-[#1A1A1A] border-4 border-[#E53935] overflow-hidden flex items-center justify-center">
+                  <video
+                    ref={videoRef}
+                    autoPlay
+                    playsInline
+                    muted
+                    className="w-full h-full object-cover scale-x-[-1]"
+                  />
+                  {!cameraActive && (
+                    <div className="absolute inset-0 flex items-center justify-center bg-[#1A1A1A]">
+                      <svg width="32" height="32" viewBox="0 0 24 24" fill="#666">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                      </svg>
+                    </div>
+                  )}
+                </div>
+                <div className="absolute -bottom-1 -right-1 w-8 h-8 rounded-full bg-[#E53935] flex items-center justify-center">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                    <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+                  </svg>
+                </div>
               </div>
             </div>
 
