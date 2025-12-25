@@ -54,7 +54,22 @@ function PitchContent() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showCameraModal, setShowCameraModal] = useState(true);
   const [showWarningModal, setShowWarningModal] = useState(false);
-  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
+  const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pitch1_timer_end');
+      if (saved) {
+        const endTime = parseInt(saved);
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        if (remaining > 0) return { minutes, seconds };
+      }
+      const endTime = Date.now() + 20 * 60 * 1000;
+      localStorage.setItem('pitch1_timer_end', endTime.toString());
+    }
+    return { minutes: 20, seconds: 0 };
+  });
   const videoRef = useRef<HTMLVideoElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [cameraActive, setCameraActive] = useState(false);

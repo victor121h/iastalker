@@ -52,7 +52,22 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 5, seconds: 0 });
+  const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pitch_timer_end');
+      if (saved) {
+        const endTime = parseInt(saved);
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        if (remaining > 0) return { minutes, seconds };
+      }
+      const endTime = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem('pitch_timer_end', endTime.toString());
+    }
+    return { minutes: 5, seconds: 0 };
+  });
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
