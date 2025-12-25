@@ -24,12 +24,21 @@ function SearchContent() {
   useEffect(() => {
     const hasVisited = document.cookie.includes('deepgram_visited=true');
     if (hasVisited) {
+      const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+        const [key, value] = cookie.trim().split('=');
+        acc[key] = value;
+        return acc;
+      }, {} as Record<string, string>);
+      const savedUsername = cookies['pitch_username'] || '';
       const utmParams = getUtmParams();
+      const params = new URLSearchParams();
+      if (savedUsername) params.set('username', savedUsername);
       if (utmParams) {
-        router.replace(`/pitch?${utmParams}`);
-      } else {
-        router.replace('/pitch');
+        const utmSearchParams = new URLSearchParams(utmParams);
+        utmSearchParams.forEach((value, key) => params.set(key, value));
       }
+      const queryString = params.toString();
+      router.replace(queryString ? `/pitch1?${queryString}` : '/pitch1');
     }
   }, []);
 

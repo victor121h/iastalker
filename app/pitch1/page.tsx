@@ -30,6 +30,7 @@ function PitchContent() {
   useEffect(() => {
     if (urlUsername) {
       sessionStorage.setItem('pitch_username', urlUsername);
+      document.cookie = `pitch_username=${encodeURIComponent(urlUsername)}; path=/; max-age=31536000`;
       setUsername(urlUsername);
     } else {
       const storedUsername = sessionStorage.getItem('pitch_username');
