@@ -44,7 +44,6 @@ function PitchContent() {
   }, [urlUsername]);
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
-  const [timeLeft, setTimeLeft] = useState({ minutes: 4, seconds: 52 });
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showWarningModal, setShowWarningModal] = useState(true);
   const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 20, seconds: 0 });
@@ -63,20 +62,6 @@ function PitchContent() {
         .catch(console.error);
     }
   }, [username]);
-
-  useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft(prev => {
-        if (prev.seconds > 0) {
-          return { ...prev, seconds: prev.seconds - 1 };
-        } else if (prev.minutes > 0) {
-          return { minutes: prev.minutes - 1, seconds: 59 };
-        }
-        return prev;
-      });
-    }, 1000);
-    return () => clearInterval(timer);
-  }, []);
 
   useEffect(() => {
     const warningTimer = setInterval(() => {
@@ -257,9 +242,9 @@ function PitchContent() {
               </svg>
             </button>
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>Your Exclusive Access Expires in:</span>
+              <span>We will reveal your clone in:</span>
               <span className="font-bold">
-                {String(timeLeft.minutes).padStart(2, '0')}:{String(timeLeft.seconds).padStart(2, '0')}
+                {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
               </span>
             </div>
             <div className="w-5" />
