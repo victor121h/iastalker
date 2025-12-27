@@ -49,7 +49,7 @@ function UpsellContent() {
           </h1>
           
           <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            A one-time payment of <strong className="text-white">US$14.90</strong> is required for one of our support team to install AI Observer on your phone.
+            A one-time payment of <strong className="text-white">US$24.90</strong> is required for one of our support team to install AI Observer on your phone.
           </p>
 
           <p className="text-[#888] text-sm mb-8">
