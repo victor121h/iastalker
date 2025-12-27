@@ -472,7 +472,7 @@ function DirectContent() {
               }}
               className="w-full py-2.5 rounded-lg bg-black text-white font-semibold text-sm hover:bg-black/80 transition-colors"
             >
-              Subscribe now by clicking here
+              I have now unlocked full access
             </button>
           </div>
         </div>

@@ -102,7 +102,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                   className="w-full py-2.5 rounded-lg font-bold text-[13px] text-white transition-all hover:opacity-90 active:scale-[0.98]"
                   style={{ background: '#991B1B' }}
                 >
-                  Subscribe now by clicking here
+                  I have now unlocked full access
                 </button>
               </div>
             </div>
