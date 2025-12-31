@@ -195,6 +195,7 @@ function PitchContent() {
 
   const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODH');
   const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ4ODK');
+  const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ5DDQ');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';
@@ -969,6 +970,71 @@ function PitchContent() {
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold"
               >
                 Choose Plan
+              </a>
+            </div>
+
+            <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#DFB313] relative mt-4">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-[#DFB313] text-black text-xs font-bold px-3 py-1 rounded-full">BEST VALUE</span>
+              </div>
+
+              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">IA Observer All Apps</h3>
+              <p className="text-[#808080] text-center text-xs mb-4">Full access to all spy versions</p>
+              
+              <div className="bg-[#1A1A1A] rounded-xl p-4 mb-4">
+                <p className="text-[#A0A0A0] text-xs text-center mb-3">Bundled App Access:</p>
+                <div className="space-y-2">
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">iMessage</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">Facebook</span>
+                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">Instagram</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">WhatsApp</span>
+                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">Snapchat</span>
+                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                  </div>
+                  <div className="flex justify-between items-center">
+                    <span className="text-white text-sm">Tinder</span>
+                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                  </div>
+                  <div className="border-t border-[#262626] pt-2 mt-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[#A0A0A0] text-sm">Total value:</span>
+                      <span className="text-[#808080] text-sm line-through">$129.40</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
+              <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+              </div>
+
+              <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
+                <p className="text-[#00FF75] text-sm font-semibold">
+                  You save $104.50 (81% OFF)
+                </p>
+              </div>
+
+              <a 
+                href={purchaseLinkAllApps}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block bg-[#DFB313] rounded-xl py-3 text-center text-black font-bold"
+              >
+                Get All Apps
               </a>
             </div>
           </motion.section>
