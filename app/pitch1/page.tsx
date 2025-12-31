@@ -1055,7 +1055,7 @@ function PitchContent() {
                 href={purchaseLinkAllApps}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="block bg-[#DFB313] rounded-xl py-3 text-center text-black font-bold"
+                className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold animate-pulse"
               >
                 Get All Apps
               </a>
