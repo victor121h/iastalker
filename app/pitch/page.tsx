@@ -840,6 +840,29 @@ function PitchContent() {
                 </div>
               </div>
 
+              <div className="border-t border-[#262626] pt-4 mb-4">
+                <div className="space-y-3">
+                  <div className="flex items-start gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#DFB313" className="flex-shrink-0 mt-0.5">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <p className="text-white text-sm font-semibold">All tools are unlimited</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#DFB313" className="flex-shrink-0 mt-0.5">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <p className="text-white text-sm font-semibold">Spy on as many people as you want</p>
+                  </div>
+                  <div className="flex items-start gap-2">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="#DFB313" className="flex-shrink-0 mt-0.5">
+                      <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                    </svg>
+                    <p className="text-white text-sm font-semibold">Lifetime access</p>
+                  </div>
+                </div>
+              </div>
+
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
                 <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>49.90</p>
