@@ -20,11 +20,37 @@ export async function GET(request: NextRequest) {
   try {
     const forwardedFor = request.headers.get('x-forwarded-for');
     const realIp = request.headers.get('x-real-ip');
-    const clientIp = forwardedFor?.split(',')[0].trim() || realIp || '';
+    const cfConnectingIp = request.headers.get('cf-connecting-ip');
+    const trueClientIp = request.headers.get('true-client-ip');
+    
+    let clientIp = cfConnectingIp || trueClientIp || '';
+    
+    if (!clientIp && forwardedFor) {
+      const ips = forwardedFor.split(',').map(ip => ip.trim());
+      clientIp = ips[0] || '';
+    }
+    
+    if (!clientIp) {
+      clientIp = realIp || '';
+    }
     
     let ipData = null;
     
-    if (clientIp && !clientIp.startsWith('127.') && !clientIp.startsWith('10.') && !clientIp.startsWith('192.168.')) {
+    const isPrivateIp = clientIp && (
+      clientIp.startsWith('127.') || 
+      clientIp.startsWith('10.') || 
+      clientIp.startsWith('192.168.') ||
+      clientIp.startsWith('172.16.') ||
+      clientIp.startsWith('172.17.') ||
+      clientIp.startsWith('172.18.') ||
+      clientIp.startsWith('172.19.') ||
+      clientIp.startsWith('172.2') ||
+      clientIp.startsWith('172.30.') ||
+      clientIp.startsWith('172.31.') ||
+      clientIp === '::1'
+    );
+    
+    if (clientIp && !isPrivateIp) {
       ipData = await fetchLocation(clientIp);
     }
     
