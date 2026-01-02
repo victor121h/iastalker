@@ -52,8 +52,12 @@ function UpsellContent() {
             A one-time payment of <strong className="text-white">US$34.90</strong> is required for one of our support team to install AI Observer on your phone.
           </p>
 
-          <p className="text-[#888] text-sm mb-8">
+          <p className="text-[#888] text-sm mb-4">
             This ensures everything works correctly and without errors. This fee is mandatory—if it is not paid, account access will not be granted.
+          </p>
+
+          <p className="text-[#EB1C8F] text-sm font-semibold mb-8">
+            Attention: Payment of this fee is mandatory for the installation of IA Observer. You will only have access after paying this installation fee.
           </p>
 
           <a
