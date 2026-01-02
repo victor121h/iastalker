@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
+import { getProfileCache } from '@/lib/profileCache';
 
 const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
@@ -82,6 +83,12 @@ function PitchContent() {
 
   useEffect(() => {
     if (username) {
+      const cached = getProfileCache(username);
+      if (cached?.profile) {
+        setProfile(cached.profile as ProfileData);
+        return;
+      }
+
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`)
         .then(res => res.json())
         .then(data => setProfile(data))

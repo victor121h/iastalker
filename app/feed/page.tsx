@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, memo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
+import { saveProfileCache, getProfileCache } from '@/lib/profileCache';
 
 function ImageWithFallback({ src, alt, className, fallbackClassName }: { src: string; alt: string; className: string; fallbackClassName?: string }) {
   const [hasError, setHasError] = useState(false);
@@ -367,6 +368,29 @@ function FeedContent() {
   useEffect(() => {
     const controller = new AbortController();
     
+    if (username) {
+      const cached = getProfileCache(username);
+      if (cached) {
+        setLocation(cached.location || 'Hidden location');
+        if (cached.profile) {
+          setProfile(cached.profile as ProfileData);
+        }
+        if (cached.following?.length > 0) {
+          const mappedFollowing = cached.following.map(f => ({
+            pk: f.pk,
+            username: f.username,
+            fullName: f.full_name || '',
+            avatar: f.avatar,
+            isPrivate: false,
+            isVerified: false
+          }));
+          setFollowing(mappedFollowing);
+        }
+        setIsLoading(false);
+        return;
+      }
+    }
+    
     Promise.all([
       fetch('/api/geolocation', { signal: controller.signal })
         .then(res => res.json())
@@ -375,7 +399,8 @@ function FeedContent() {
         .then(res => res.json())
         .catch(() => null) : Promise.resolve(null)
     ]).then(([geoData, profileData]) => {
-      setLocation(geoData.location || 'Hidden location');
+      const locationValue = geoData.location || 'Hidden location';
+      setLocation(locationValue);
       if (profileData) {
         setProfile(profileData);
         if (profileData.pk) {
@@ -384,9 +409,36 @@ function FeedContent() {
             .then(followData => {
               if (followData.following?.length > 0) {
                 setFollowing(followData.following);
+                saveProfileCache({
+                  username,
+                  profile: profileData,
+                  following: followData.following,
+                  location: locationValue
+                });
+              } else {
+                saveProfileCache({
+                  username,
+                  profile: profileData,
+                  following: [],
+                  location: locationValue
+                });
               }
             })
-            .catch(() => {});
+            .catch(() => {
+              saveProfileCache({
+                username,
+                profile: profileData,
+                following: [],
+                location: locationValue
+              });
+            });
+        } else {
+          saveProfileCache({
+            username,
+            profile: profileData,
+            following: [],
+            location: locationValue
+          });
         }
       }
       setIsLoading(false);

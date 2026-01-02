@@ -3,6 +3,7 @@
 import { Suspense, useEffect, useState, memo, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
+import { getProfileCache } from '@/lib/profileCache';
 
 function ImageWithFallback({ src, alt, className, blurred = false }: { src: string; alt: string; className: string; blurred?: boolean }) {
   const [hasError, setHasError] = useState(false);
@@ -244,6 +245,26 @@ function DirectContent() {
     const controller = new AbortController();
 
     if (username) {
+      const cached = getProfileCache(username);
+      if (cached) {
+        if (cached.profile) {
+          setProfile(cached.profile as ProfileData);
+        }
+        if (cached.following?.length > 0) {
+          const mappedFollowing = cached.following.map(f => ({
+            pk: f.pk,
+            username: f.username,
+            fullName: f.full_name || '',
+            avatar: f.avatar,
+            isPrivate: false,
+            isVerified: false
+          }));
+          setFollowing(mappedFollowing);
+        }
+        setIsLoading(false);
+        return;
+      }
+
       fetch(`/api/instagram?username=${encodeURIComponent(username)}`, { signal: controller.signal })
         .then(res => res.json())
         .then(data => {
