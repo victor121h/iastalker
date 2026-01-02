@@ -29,41 +29,39 @@ function UpsellContent() {
   };
 
   return (
-    <div className="min-h-screen bg-black relative overflow-x-hidden">
-      <MatrixBackground />
+    <div className="min-h-screen bg-[#E8F4FC] relative overflow-x-hidden">
       
       <div className="relative z-10 flex items-center justify-center min-h-screen px-4 py-12">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="max-w-[420px] w-full bg-[#121212] rounded-[24px] p-8 text-center"
-          style={{ boxShadow: '0 0 60px rgba(235, 28, 143, 0.15)' }}
+          className="max-w-[420px] w-full bg-white rounded-[24px] p-8 text-center"
+          style={{ boxShadow: '0 4px 20px rgba(74, 144, 217, 0.15)' }}
         >
           <div className="flex justify-center mb-6">
             <img src="/logo-deepgram-header.png" alt="IA Observer" className="h-[40px] w-auto" />
           </div>
 
-          <h1 className="text-white text-2xl font-bold leading-tight mb-4">
+          <h1 className="text-[#1a1a1a] text-2xl font-bold leading-tight mb-4">
             AI Observer Installation Fee
           </h1>
           
-          <p className="text-[#A0A0A0] text-base mb-6 leading-relaxed">
-            A one-time payment of <strong className="text-white">US$34.90</strong> is required for one of our support team to install AI Observer on your phone.
+          <p className="text-[#666666] text-base mb-6 leading-relaxed">
+            A one-time payment of <strong className="text-[#4A90D9]">US$34.90</strong> is required for one of our support team to install AI Observer on your phone.
           </p>
 
-          <p className="text-[#888] text-sm mb-4">
+          <p className="text-[#888888] text-sm mb-4">
             This ensures everything works correctly and without errors. This fee is mandatory—if it is not paid, account access will not be granted.
           </p>
 
-          <p className="text-[#EB1C8F] text-sm font-semibold mb-8">
+          <p className="text-[#4A90D9] text-sm font-semibold mb-8">
             Attention: Payment of this fee is mandatory for the installation of IA Observer. You will only have access after paying this installation fee.
           </p>
 
           <a
             href={appendUtmToLink('https://go.centerpag.com/PPU38CQ4OE3')}
-            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
-            style={{ background: 'linear-gradient(90deg, #EB1C8F, #F5A623)' }}
+            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4 bg-[#4A90D9]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <circle cx="12" cy="12" r="10"/>
@@ -72,17 +70,17 @@ function UpsellContent() {
             Activate Account
           </a>
 
-          <div className="flex items-center justify-center gap-2 text-[#888] text-sm">
+          <div className="flex items-center justify-center gap-2 text-[#888888] text-sm">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
               <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
               <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
             </svg>
-            <span>100% Anonymous. The person will <span className="text-[#EB1C8F] font-bold">NEVER</span> know.</span>
+            <span>100% Anonymous. The person will <span className="text-[#4A90D9] font-bold">NEVER</span> know.</span>
           </div>
         </motion.div>
 
         <div className="absolute bottom-6 left-0 right-0 text-center">
-          <p className="text-[#444] text-sm">+8,486 profiles analyzed today</p>
+          <p className="text-[#888888] text-sm">+8,486 profiles analyzed today</p>
         </div>
       </div>
     </div>
@@ -91,7 +89,7 @@ function UpsellContent() {
 
 export default function UpsellPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
+    <Suspense fallback={<div className="min-h-screen bg-[#E8F4FC]" />}>
       <UpsellContent />
     </Suspense>
   );
