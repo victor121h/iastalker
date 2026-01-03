@@ -74,6 +74,25 @@ interface Message {
   isPrivate: boolean;
 }
 
+const LOCK_AVATAR = '/attached_assets/chat2_1764243660020.png';
+
+const FAKE_USERNAMES = [
+  'user_private1', 'hidden_acc', 'secret_profile', 'locked_user', 
+  'private_insta', 'no_access', 'hidden_story', 'locked_dm',
+  'private_acc', 'secret_user', 'hidden_insta', 'locked_profile'
+];
+
+function generateFakeFollowing(): FollowingUser[] {
+  return FAKE_USERNAMES.map((username, index) => ({
+    pk: `fake_${index}`,
+    username: username,
+    fullName: '',
+    avatar: LOCK_AVATAR,
+    isPrivate: true,
+    isVerified: false
+  }));
+}
+
 function censorName(name: string): string {
   if (name.length <= 1) return name;
   return name[0] + '*****';
@@ -260,6 +279,8 @@ function DirectContent() {
             isVerified: false
           }));
           setFollowing(mappedFollowing);
+        } else {
+          setFollowing(generateFakeFollowing());
         }
         setIsLoading(false);
         return;
@@ -275,15 +296,23 @@ function DirectContent() {
               .then(followData => {
                 if (followData.following?.length > 0) {
                   setFollowing(followData.following);
+                } else {
+                  setFollowing(generateFakeFollowing());
                 }
               })
-              .catch(() => {})
+              .catch(() => {
+                setFollowing(generateFakeFollowing());
+              })
               .finally(() => setIsLoading(false));
           } else {
+            setFollowing(generateFakeFollowing());
             setIsLoading(false);
           }
         })
-        .catch(() => setIsLoading(false));
+        .catch(() => {
+          setFollowing(generateFakeFollowing());
+          setIsLoading(false);
+        });
     } else {
       setIsLoading(false);
     }

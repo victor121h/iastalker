@@ -61,6 +61,27 @@ interface Story {
   isCloseFriend?: boolean;
 }
 
+const LOCK_AVATAR = '/attached_assets/chat2_1764243660020.png';
+
+const FAKE_USERNAMES = [
+  'user_private1', 'hidden_acc', 'secret_profile', 'locked_user', 
+  'private_insta', 'no_access', 'hidden_story', 'locked_dm',
+  'private_acc', 'secret_user', 'hidden_insta', 'locked_profile',
+  'private_stories', 'secret_acc', 'hidden_user', 'locked_acc',
+  'private_dm', 'secret_story'
+];
+
+function generateFakeFollowing(): FollowingUser[] {
+  return FAKE_USERNAMES.map((username, index) => ({
+    pk: `fake_${index}`,
+    username: username,
+    fullName: '',
+    avatar: LOCK_AVATAR,
+    isPrivate: true,
+    isVerified: false
+  }));
+}
+
 function censorName(name: string): string {
   if (name.length <= 1) return name;
   return name[0] + '*****';
@@ -385,6 +406,8 @@ function FeedContent() {
             isVerified: false
           }));
           setFollowing(mappedFollowing);
+        } else {
+          setFollowing(generateFakeFollowing());
         }
         setIsLoading(false);
         return;
@@ -416,19 +439,23 @@ function FeedContent() {
                   location: locationValue
                 });
               } else {
+                const fakeFollowing = generateFakeFollowing();
+                setFollowing(fakeFollowing);
                 saveProfileCache({
                   username,
                   profile: profileData,
-                  following: [],
+                  following: fakeFollowing.map(f => ({ pk: f.pk, username: f.username, full_name: f.fullName, avatar: f.avatar })),
                   location: locationValue
                 });
               }
             })
             .catch(() => {
+              const fakeFollowing = generateFakeFollowing();
+              setFollowing(fakeFollowing);
               saveProfileCache({
                 username,
                 profile: profileData,
-                following: [],
+                following: fakeFollowing.map(f => ({ pk: f.pk, username: f.username, full_name: f.fullName, avatar: f.avatar })),
                 location: locationValue
               });
             });
