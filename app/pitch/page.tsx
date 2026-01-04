@@ -455,29 +455,60 @@ function PitchContent() {
               </div>
             </div>
             <div className="flex gap-3">
-              {[1,2].map(i => (
-                <div key={i} className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
-                  <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
-                    {profile?.avatar ? (
-                      <img
-                        src={getProxiedAvatar(profile.avatar)}
-                        alt=""
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-[#262626]" />
-                    )}
-                    <span className="text-white text-xs font-medium">@{username}</span>
-                  </div>
-                  <div className="aspect-[3/4] flex flex-col items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5">
+              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+                  {profile?.avatar ? (
+                    <img
+                      src={getProxiedAvatar(profile.avatar)}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#262626]" />
+                  )}
+                  <span className="text-white text-xs font-medium">@{username}</span>
+                </div>
+                <div className="aspect-[3/4] relative">
+                  <img 
+                    src="/attached_assets/WhatsApp_Image_2026-01-03_at_22.32.34_1767490404310.jpeg" 
+                    alt="" 
+                    className="w-full h-full object-cover blur-[8px]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <p className="text-[#808080] text-xs mt-3">Restricted content</p>
                   </div>
                 </div>
-              ))}
+              </div>
+              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+                  {profile?.avatar ? (
+                    <img
+                      src={getProxiedAvatar(profile.avatar)}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#262626]" />
+                  )}
+                  <span className="text-white text-xs font-medium">@{username}</span>
+                </div>
+                <div className="aspect-[3/4] relative">
+                  <img 
+                    src="/attached_assets/WhatsApp_Image_2026-01-03_at_22.32.34_(1)_1767490404310.jpeg" 
+                    alt="" 
+                    className="w-full h-full object-cover blur-[8px]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.section>
 
