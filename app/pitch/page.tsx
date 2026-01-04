@@ -820,7 +820,7 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Facebook</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$24.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Instagram</span>
@@ -828,20 +828,20 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">WhatsApp</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Snapchat</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Tinder</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$24.90</span>
                   </div>
                   <div className="border-t border-[#262626] pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A0A0A0] text-sm">Total value:</span>
-                      <span className="text-[#808080] text-sm line-through">$129.40</span>
+                      <span className="text-[#808080] text-sm line-through">$169.40</span>
                     </div>
                   </div>
                 </div>
@@ -877,7 +877,7 @@ function PitchContent() {
 
               <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
                 <p className="text-[#00FF75] text-sm font-semibold">
-                  You save $79.50 (61% OFF)
+                  You save $119.50 (71% OFF)
                 </p>
               </div>
 
