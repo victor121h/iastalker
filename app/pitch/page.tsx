@@ -215,16 +215,16 @@ function PitchContent() {
                 <line x1="12" y1="9" x2="12" y2="13"/>
                 <line x1="12" y1="17" x2="12.01" y2="17"/>
               </svg>
-              <span className="text-[#FFD700] font-bold text-lg">Acao bloqueada</span>
+              <span className="text-[#FFD700] font-bold text-lg">Action blocked</span>
             </div>
             <p className="text-white/80 text-sm mb-6">
-              Seja um membro VIP do Stalkea.ai para ter acesso as midias
+              Become a VIP member to access the media
             </p>
             <button
               onClick={scrollToPlan}
               className="w-full bg-transparent border border-white/30 text-white font-medium py-3 rounded-lg hover:bg-white/10 transition-colors"
             >
-              Adquirir Acesso VIP
+              Get VIP Access
             </button>
           </div>
         </div>
