@@ -232,6 +232,24 @@ function PitchContent() {
             </div>
           </motion.div>
 
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-6"
+          >
+            <div className="rounded-2xl overflow-hidden mb-3">
+              <img 
+                src="/attached_assets/Captura_de_tela_2026-01-03_222714_1767490088206.png" 
+                alt="Deleted photos found" 
+                className="w-full"
+              />
+            </div>
+            <p className="text-[#FF6B6B] text-sm text-center font-medium">
+              Our artificial intelligence found these photos above, which were deleted 3 months ago.
+            </p>
+          </motion.div>
+
           <motion.section 
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
