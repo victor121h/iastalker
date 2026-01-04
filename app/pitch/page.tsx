@@ -630,15 +630,10 @@ function PitchContent() {
               </div>
             </div>
 
-            <a 
-              href={purchaseLink59}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-[#E53935] rounded-xl py-4 px-4 text-center"
-            >
-              <p className="text-white font-bold text-sm mb-1">WITHOUT IA STALKER, YOU SEE NOTHING</p>
+            <div className="bg-[#E53935] rounded-xl py-4 px-4 text-center">
+              <p className="text-white font-bold text-sm mb-1">WITHOUT IA OBSERVER, YOU SEE NOTHING</p>
               <p className="text-white/80 text-xs">It's what unlocks @{username}'s data invisibly</p>
-            </a>
+            </div>
           </motion.section>
 
           <motion.section
