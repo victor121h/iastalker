@@ -470,7 +470,7 @@ function PitchContent() {
                 </div>
                 <div className="aspect-[3/4] relative">
                   <img 
-                    src="/attached_assets/WhatsApp_Image_2026-01-03_at_22.32.34_1767490404310.jpeg" 
+                    src="/attached_assets/hidden-story-1.jpeg" 
                     alt="" 
                     className="w-full h-full object-cover blur-[8px]"
                   />
@@ -497,7 +497,7 @@ function PitchContent() {
                 </div>
                 <div className="aspect-[3/4] relative">
                   <img 
-                    src="/attached_assets/WhatsApp_Image_2026-01-03_at_22.32.34_(1)_1767490404310.jpeg" 
+                    src="/attached_assets/hidden-story-2.jpeg" 
                     alt="" 
                     className="w-full h-full object-cover blur-[8px]"
                   />
