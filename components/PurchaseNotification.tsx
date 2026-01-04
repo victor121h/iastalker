@@ -93,7 +93,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
                     Your current access only allows content viewing.
                   </h3>
                   <p className="text-white/70 text-[12px] leading-snug">
-                    To interact and view content fully, get the AI Stalker tool.
+                    To interact and view content fully, get the AI Observer tool.
                   </p>
                 </div>
 

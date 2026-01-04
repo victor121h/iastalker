@@ -507,7 +507,7 @@ function DirectContent() {
             </h2>
             
             <p className="text-white/90 text-sm mb-3">
-              To interact and view content fully, get the AI Stalker tool.
+              To interact and view content fully, get the AI Observer tool.
             </p>
             
             <button 

@@ -3,7 +3,7 @@ export default function DeepGramLogo() {
     <div className="flex items-center justify-center">
       <img 
         src="/logo-deepgram.png" 
-        alt="IA Stalker" 
+        alt="IA Observer" 
         className="h-[48px] w-auto"
       />
     </div>
