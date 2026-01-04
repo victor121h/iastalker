@@ -53,6 +53,19 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
+  const [showBlockedPopup, setShowBlockedPopup] = useState(false);
+
+  const handleBlockedClick = () => {
+    setShowBlockedPopup(true);
+  };
+
+  const scrollToPlan = () => {
+    setShowBlockedPopup(false);
+    const planSection = document.getElementById('plan-2990');
+    if (planSection) {
+      planSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
   const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pitch_timer_end');
@@ -190,6 +203,33 @@ function PitchContent() {
     <div className="min-h-screen bg-white relative">
       <MatrixBackground />
       
+      {showBlockedPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
+          <div 
+            className="bg-[#2A1A2A] rounded-2xl p-6 max-w-sm w-full text-center border border-[#4A2A4A]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <span className="text-[#FFD700] font-bold text-lg">Acao bloqueada</span>
+            </div>
+            <p className="text-white/80 text-sm mb-6">
+              Seja um membro VIP do Stalkea.ai para ter acesso as midias
+            </p>
+            <button
+              onClick={scrollToPlan}
+              className="w-full bg-transparent border border-white/30 text-white font-medium py-3 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Adquirir Acesso VIP
+            </button>
+          </div>
+        </div>
+      )}
+      
       <div className="relative z-10">
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#E53935] py-2.5 px-4">
           <div className="flex items-center justify-between max-w-md mx-auto">
@@ -238,7 +278,7 @@ function PitchContent() {
             transition={{ delay: 0.3 }}
             className="mb-6"
           >
-            <div className="rounded-2xl overflow-hidden mb-3">
+            <div className="rounded-2xl overflow-hidden mb-3 cursor-pointer" onClick={handleBlockedClick}>
               <img 
                 src="/attached_assets/Captura_de_tela_2026-01-03_222714_1767490088206.png" 
                 alt="Deleted photos found" 
@@ -339,7 +379,7 @@ function PitchContent() {
                 <p className="text-[#808080] text-xs mt-1">Photos, videos and files exchanged in DMs</p>
               </div>
             </div>
-            <div className="rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden cursor-pointer" onClick={handleBlockedClick}>
               <img 
                 src="/midias-bloqueadas.png" 
                 alt="Blocked media" 
@@ -352,7 +392,8 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6"
+            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6 cursor-pointer"
+            onClick={handleBlockedClick}
           >
             <div className="relative h-32">
               <div 
@@ -399,7 +440,8 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="bg-[#0C1011] rounded-[22px] p-5 mb-6 cursor-pointer"
+            onClick={handleBlockedClick}
           >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-[#962FBF]/20 flex items-center justify-center flex-shrink-0">
@@ -742,7 +784,7 @@ function PitchContent() {
               </a>
             </div>
 
-            <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
+            <div id="plan-2990" className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
