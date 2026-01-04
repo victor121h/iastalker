@@ -280,7 +280,7 @@ function PitchContent() {
           >
             <div className="rounded-2xl overflow-hidden mb-3 cursor-pointer" onClick={handleBlockedClick}>
               <img 
-                src="/attached_assets/Captura_de_tela_2026-01-03_222714_1767491006315.png" 
+                src="/attached_assets/deleted-photos-grid.png" 
                 alt="Deleted photos found" 
                 className="w-full"
               />
