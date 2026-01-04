@@ -381,7 +381,7 @@ function PitchContent() {
             </div>
             <div className="rounded-lg overflow-hidden cursor-pointer" onClick={handleBlockedClick}>
               <img 
-                src="/midias-bloqueadas.png" 
+                src="/attached_assets/media-grid.png" 
                 alt="Blocked media" 
                 className="w-full h-auto"
               />
