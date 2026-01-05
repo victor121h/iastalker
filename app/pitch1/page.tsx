@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Suspense, useEffect, useState, useRef } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getProfileCache } from '@/lib/profileCache';
@@ -53,9 +53,20 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [showCameraModal, setShowCameraModal] = useState(false);
-  const [showWarningModal, setShowWarningModal] = useState(false);
+  const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [showDiscountPopup, setShowDiscountPopup] = useState(true);
+
+  const handleBlockedClick = () => {
+    setShowBlockedPopup(true);
+  };
+
+  const scrollToPlan = () => {
+    setShowBlockedPopup(false);
+    const planSection = document.getElementById('plan-2990');
+    if (planSection) {
+      planSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+  };
   const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
     if (typeof window !== 'undefined') {
       const saved = localStorage.getItem('pitch1_timer_end');
@@ -67,16 +78,11 @@ function PitchContent() {
         const seconds = Math.floor((remaining % 60000) / 1000);
         if (remaining > 0) return { minutes, seconds };
       }
-      const endTime = Date.now() + 20 * 60 * 1000;
+      const endTime = Date.now() + 5 * 60 * 1000;
       localStorage.setItem('pitch1_timer_end', endTime.toString());
     }
-    return { minutes: 20, seconds: 0 };
+    return { minutes: 5, seconds: 0 };
   });
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const [cameraActive, setCameraActive] = useState(false);
-  const [capturedPhoto, setCapturedPhoto] = useState<string | null>(null);
-  const [cameraStream, setCameraStream] = useState<MediaStream | null>(null);
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -112,69 +118,19 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
-    let retryTimer: NodeJS.Timeout | null = null;
-    let isMounted = true;
+    const params = searchParams.toString();
+    window.history.pushState(null, '', window.location.href);
     
-    const startCamera = async () => {
-      if (!showCameraModal || !isMounted) return;
-      
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: 'user', width: 200, height: 200 }, 
-          audio: false 
-        });
-        
-        if (isMounted) {
-          setCameraStream(stream);
-          
-          if (videoRef.current) {
-            videoRef.current.srcObject = stream;
-            await videoRef.current.play();
-            setCameraActive(true);
-          }
-        }
-      } catch (err) {
-        console.log('Camera denied or not available, retrying in 4 seconds...');
-        setCameraActive(false);
-        if (isMounted && showCameraModal) {
-          retryTimer = setTimeout(startCamera, 4000);
-        }
-      }
+    const handlePopState = () => {
+      router.push(`/pitch1?${params}`);
     };
-
-    const timer = setTimeout(startCamera, 100);
+    
+    window.addEventListener('popstate', handlePopState);
     
     return () => {
-      isMounted = false;
-      clearTimeout(timer);
-      if (retryTimer) clearTimeout(retryTimer);
+      window.removeEventListener('popstate', handlePopState);
     };
-  }, [showCameraModal]);
-
-  const capturePhotoAndProceed = () => {
-    if (videoRef.current && canvasRef.current) {
-      const canvas = canvasRef.current;
-      const video = videoRef.current;
-      canvas.width = 200;
-      canvas.height = 200;
-      const ctx = canvas.getContext('2d');
-      if (ctx) {
-        ctx.translate(canvas.width, 0);
-        ctx.scale(-1, 1);
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-        const photoData = canvas.toDataURL('image/jpeg', 0.8);
-        setCapturedPhoto(photoData);
-      }
-    }
-    
-    if (cameraStream) {
-      cameraStream.getTracks().forEach(track => track.stop());
-      setCameraStream(null);
-    }
-    
-    setShowCameraModal(false);
-    setShowWarningModal(true);
-  };
+  }, [router, searchParams]);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -232,7 +188,33 @@ function PitchContent() {
   return (
     <div className="min-h-screen bg-white relative">
       <MatrixBackground />
-      <canvas ref={canvasRef} className="hidden" />
+      
+      {showBlockedPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
+          <div 
+            className="bg-[#2A1A2A] rounded-2xl p-6 max-w-sm w-full text-center border border-[#4A2A4A]"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-center gap-2 mb-4">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#FFD700" strokeWidth="2">
+                <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/>
+                <line x1="12" y1="9" x2="12" y2="13"/>
+                <line x1="12" y1="17" x2="12.01" y2="17"/>
+              </svg>
+              <span className="text-[#FFD700] font-bold text-lg">Action blocked</span>
+            </div>
+            <p className="text-white/80 text-sm mb-6">
+              Become a VIP member to access the media
+            </p>
+            <button
+              onClick={scrollToPlan}
+              className="w-full bg-transparent border border-white/30 text-white font-medium py-3 rounded-lg hover:bg-white/10 transition-colors"
+            >
+              Get VIP Access
+            </button>
+          </div>
+        </div>
+      )}
 
       {showDiscountPopup && (
         <motion.div 
@@ -287,7 +269,7 @@ function PitchContent() {
               </svg>
             </button>
             <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>We will reveal your clone in:</span>
+              <span>Your Exclusive Access Expires in:</span>
               <span className="font-bold">
                 {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
               </span>
@@ -318,6 +300,24 @@ function PitchContent() {
                 </p>
               </div>
             </div>
+          </motion.div>
+
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="mb-6"
+          >
+            <div className="rounded-2xl overflow-hidden mb-3 cursor-pointer" onClick={handleBlockedClick}>
+              <img 
+                src="/attached_assets/deleted-photos-grid.png" 
+                alt="Deleted photos found" 
+                className="w-full"
+              />
+            </div>
+            <p className="text-[#FF6B6B] text-sm text-center font-medium">
+              Our artificial intelligence found these photos above, which were deleted 3 months ago.
+            </p>
           </motion.div>
 
           <motion.section 
@@ -409,9 +409,9 @@ function PitchContent() {
                 <p className="text-[#808080] text-xs mt-1">Photos, videos and files exchanged in DMs</p>
               </div>
             </div>
-            <div className="rounded-lg overflow-hidden">
+            <div className="rounded-lg overflow-hidden cursor-pointer" onClick={handleBlockedClick}>
               <img 
-                src="/midias-bloqueadas.png" 
+                src="/attached_assets/media-grid.png" 
                 alt="Blocked media" 
                 className="w-full h-auto"
               />
@@ -422,7 +422,8 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6"
+            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6 cursor-pointer"
+            onClick={handleBlockedClick}
           >
             <div className="relative h-32">
               <div 
@@ -469,7 +470,8 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="bg-[#0C1011] rounded-[22px] p-5 mb-6 cursor-pointer"
+            onClick={handleBlockedClick}
           >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-[#962FBF]/20 flex items-center justify-center flex-shrink-0">
@@ -483,29 +485,60 @@ function PitchContent() {
               </div>
             </div>
             <div className="flex gap-3">
-              {[1,2].map(i => (
-                <div key={i} className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
-                  <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
-                    {profile?.avatar ? (
-                      <img
-                        src={getProxiedAvatar(profile.avatar)}
-                        alt=""
-                        className="w-6 h-6 rounded-full object-cover"
-                      />
-                    ) : (
-                      <div className="w-6 h-6 rounded-full bg-[#262626]" />
-                    )}
-                    <span className="text-white text-xs font-medium">@{username}</span>
-                  </div>
-                  <div className="aspect-[3/4] flex flex-col items-center justify-center">
-                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="1.5">
+              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+                  {profile?.avatar ? (
+                    <img
+                      src={getProxiedAvatar(profile.avatar)}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#262626]" />
+                  )}
+                  <span className="text-white text-xs font-medium">@{username}</span>
+                </div>
+                <div className="aspect-[3/4] relative">
+                  <img 
+                    src="/attached_assets/hidden-story-1.jpeg" 
+                    alt="" 
+                    className="w-full h-full object-cover blur-[8px]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
                       <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                       <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
                     </svg>
-                    <p className="text-[#808080] text-xs mt-3">Restricted content</p>
                   </div>
                 </div>
-              ))}
+              </div>
+              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+                  {profile?.avatar ? (
+                    <img
+                      src={getProxiedAvatar(profile.avatar)}
+                      alt=""
+                      className="w-6 h-6 rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="w-6 h-6 rounded-full bg-[#262626]" />
+                  )}
+                  <span className="text-white text-xs font-medium">@{username}</span>
+                </div>
+                <div className="aspect-[3/4] relative">
+                  <img 
+                    src="/attached_assets/hidden-story-2.jpeg" 
+                    alt="" 
+                    className="w-full h-full object-cover blur-[8px]"
+                  />
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                      <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                      <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                    </svg>
+                  </div>
+                </div>
+              </div>
             </div>
           </motion.section>
 
@@ -627,15 +660,10 @@ function PitchContent() {
               </div>
             </div>
 
-            <a 
-              href={purchaseLink59}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block bg-[#E53935] rounded-xl py-4 px-4 text-center"
-            >
-              <p className="text-white font-bold text-sm mb-1">WITHOUT IA STALKER, YOU SEE NOTHING</p>
+            <div className="bg-[#E53935] rounded-xl py-4 px-4 text-center">
+              <p className="text-white font-bold text-sm mb-1">WITHOUT IA OBSERVER, YOU SEE NOTHING</p>
               <p className="text-white/80 text-xs">It's what unlocks @{username}'s data invisibly</p>
-            </a>
+            </div>
           </motion.section>
 
           <motion.section
@@ -766,7 +794,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>9.90</p>
+                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -812,7 +840,7 @@ function PitchContent() {
               </a>
             </div>
 
-            <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
+            <div id="plan-2990" className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
@@ -822,7 +850,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>14.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -908,7 +936,7 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Facebook</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$24.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Instagram</span>
@@ -916,20 +944,20 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">WhatsApp</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Snapchat</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$29.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Tinder</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$24.90</span>
                   </div>
                   <div className="border-t border-[#262626] pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A0A0A0] text-sm">Total value:</span>
-                      <span className="text-[#808080] text-sm line-through">$129.40</span>
+                      <span className="text-[#808080] text-sm line-through">$169.40</span>
                     </div>
                   </div>
                 </div>
@@ -960,12 +988,12 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>49.90</p>
               </div>
 
               <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
                 <p className="text-[#00FF75] text-sm font-semibold">
-                  You save $104.50 (81% OFF)
+                  You save $119.50 (71% OFF)
                 </p>
               </div>
 
@@ -1074,7 +1102,7 @@ function PitchContent() {
   );
 }
 
-export default function Pitch1Page() {
+export default function PitchPage() {
   return (
     <Suspense fallback={<div className="min-h-screen bg-[#000]" />}>
       <PitchContent />
