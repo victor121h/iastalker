@@ -53,7 +53,7 @@ function PitchContent() {
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
-  const [showCameraModal, setShowCameraModal] = useState(true);
+  const [showCameraModal, setShowCameraModal] = useState(false);
   const [showWarningModal, setShowWarningModal] = useState(false);
   const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
     if (typeof window !== 'undefined') {
