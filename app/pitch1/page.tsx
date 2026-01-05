@@ -794,7 +794,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>9.90</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -850,7 +850,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>14.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -936,7 +936,7 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Facebook</span>
-                    <span className="text-[#808080] text-sm line-through">$24.90</span>
+                    <span className="text-[#808080] text-sm line-through">$14.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Instagram</span>
@@ -944,20 +944,20 @@ function PitchContent() {
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">WhatsApp</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                    <span className="text-[#808080] text-sm line-through">$19.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Snapchat</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                    <span className="text-[#808080] text-sm line-through">$19.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Tinder</span>
-                    <span className="text-[#808080] text-sm line-through">$24.90</span>
+                    <span className="text-[#808080] text-sm line-through">$14.90</span>
                   </div>
                   <div className="border-t border-[#262626] pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A0A0A0] text-sm">Total value:</span>
-                      <span className="text-[#808080] text-sm line-through">$169.40</span>
+                      <span className="text-[#808080] text-sm line-through">$129.40</span>
                     </div>
                   </div>
                 </div>
@@ -988,12 +988,12 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>49.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
               </div>
 
               <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
                 <p className="text-[#00FF75] text-sm font-semibold">
-                  You save $119.50 (71% OFF)
+                  You save $104.50 (81% OFF)
                 </p>
               </div>
 
