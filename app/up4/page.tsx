@@ -51,7 +51,7 @@ function Up4Content() {
           </h1>
           
           <p className="text-[#666666] text-base mb-6 leading-relaxed">
-            Our app is hosted in France, and you live in the United States. A currency exchange fee of <span className="font-bold text-[#4A90D9]">$25.94</span> is required for IA Observer to be allowed to operate in your region.
+            Our app is hosted in France, and you live in the United States. A currency exchange fee of <span className="font-bold text-[#4A90D9]">$9.90</span> is required for IA Observer to be allowed to operate in your region.
           </p>
 
           <p className="text-[#4A90D9] text-sm mb-8 leading-relaxed font-semibold">
@@ -59,7 +59,7 @@ function Up4Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ5G2F')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ5KCU')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4 bg-[#4A90D9]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
