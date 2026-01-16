@@ -54,26 +54,6 @@ function PitchContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
-  const [showContent, setShowContent] = useState(false);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setShowContent(true);
-    }, 4000);
-    return () => clearTimeout(timer);
-  }, []);
-
-  useEffect(() => {
-    const script = document.createElement('script');
-    script.src = 'https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/696022852e6d8eb8b76c6fe3/v4/player.js';
-    script.async = true;
-    document.head.appendChild(script);
-    return () => {
-      if (document.head.contains(script)) {
-        document.head.removeChild(script);
-      }
-    };
-  }, []);
 
   const handleBlockedClick = () => {
     setShowBlockedPopup(true);
@@ -269,27 +249,6 @@ function PitchContent() {
         </header>
 
         <main className="pt-16 pb-8 px-4 max-w-md mx-auto">
-          <div className="mb-6 mt-2">
-            <div 
-              dangerouslySetInnerHTML={{
-                __html: '<vturb-smartplayer id="vid-696022852e6d8eb8b76c6fe3" style="display: block; margin: 0 auto; width: 100%;"></vturb-smartplayer>'
-              }}
-            />
-            
-            {!showContent && (
-              <div className="flex items-center justify-center gap-3 mt-6 py-4">
-                <div className="flex gap-1">
-                  <div className="w-2 h-2 bg-[#00FF75] rounded-full animate-bounce" style={{ animationDelay: '0ms' }}></div>
-                  <div className="w-2 h-2 bg-[#00FF75] rounded-full animate-bounce" style={{ animationDelay: '150ms' }}></div>
-                  <div className="w-2 h-2 bg-[#00FF75] rounded-full animate-bounce" style={{ animationDelay: '300ms' }}></div>
-                </div>
-                <span className="text-black font-medium text-sm">Generating your report...</span>
-              </div>
-            )}
-          </div>
-
-          {showContent && (
-          <>
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
@@ -1106,8 +1065,6 @@ function PitchContent() {
               ))}
             </div>
           </motion.section>
-          </>
-          )}
 
         </main>
       </div>
