@@ -44,6 +44,10 @@ function AccessContent() {
   const [showPopup, setShowPopup] = useState(true);
   const [inputUsername, setInputUsername] = useState('');
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+  const [showSupportMenu, setShowSupportMenu] = useState(false);
+  const [showRefundPopup, setShowRefundPopup] = useState(false);
+  const [refundEmail, setRefundEmail] = useState('');
+  const [refundSubmitted, setRefundSubmitted] = useState(false);
   const [reportData, setReportData] = useState<ReportData>({
     likes: [],
     comments: [],
@@ -602,6 +606,108 @@ function AccessContent() {
           Report generated on {new Date().toLocaleDateString('en-US')} at {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
         </motion.p>
       </div>
+
+      {/* Support Button */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <AnimatePresence>
+          {showSupportMenu && (
+            <motion.button
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 10 }}
+              onClick={() => {
+                setShowSupportMenu(false);
+                setShowRefundPopup(true);
+              }}
+              className="mb-2 w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+            >
+              Request Refund
+            </motion.button>
+          )}
+        </AnimatePresence>
+        <button
+          onClick={() => setShowSupportMenu(!showSupportMenu)}
+          className="w-12 h-12 bg-gray-700 hover:bg-gray-600 rounded-full flex items-center justify-center transition-colors shadow-lg"
+        >
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+            <circle cx="12" cy="12" r="10"/>
+            <path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/>
+            <line x1="12" y1="17" x2="12.01" y2="17"/>
+          </svg>
+        </button>
+      </div>
+
+      {/* Refund Popup */}
+      <AnimatePresence>
+        {showRefundPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => {
+              if (!refundSubmitted) {
+                setShowRefundPopup(false);
+              }
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="max-w-[380px] w-full bg-gray-900 border border-gray-700 rounded-2xl p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {!refundSubmitted ? (
+                <>
+                  <h2 className="text-white text-xl font-bold mb-4">Request Refund</h2>
+                  <p className="text-gray-400 text-sm mb-6">Enter your purchase email address</p>
+                  <input
+                    type="email"
+                    value={refundEmail}
+                    onChange={(e) => setRefundEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 mb-4 focus:outline-none focus:border-purple-500"
+                  />
+                  <button
+                    onClick={() => {
+                      if (refundEmail.includes('@')) {
+                        setRefundSubmitted(true);
+                      }
+                    }}
+                    disabled={!refundEmail.includes('@')}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-all"
+                  >
+                    Submit Request
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-white text-xl font-bold mb-4">Refund Requested</h2>
+                  <p className="text-gray-300 text-sm mb-6">
+                    Your refund has been requested. The money will be deposited into your account within 10 business days.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowRefundPopup(false);
+                      setRefundSubmitted(false);
+                      setRefundEmail('');
+                    }}
+                    className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    Close
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </main>
   );
 }
