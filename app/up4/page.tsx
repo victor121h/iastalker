@@ -51,7 +51,7 @@ function Up4Content() {
           </h1>
           
           <p className="text-[#666666] text-base mb-6 leading-relaxed">
-            Our app is hosted in France, and you live in the United States. A currency exchange fee of <span className="font-bold text-[#4A90D9]">$9.90</span> is required for IA Observer to be allowed to operate in your region.
+            Our app is hosted in France, and you live in the United States. A currency exchange fee of <span className="font-bold text-[#4A90D9]">$19.90</span> is required for IA Observer to be allowed to operate in your region.
           </p>
 
           <p className="text-[#4A90D9] text-sm mb-8 leading-relaxed font-semibold">
