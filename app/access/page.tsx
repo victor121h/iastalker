@@ -358,7 +358,7 @@ function AccessContent() {
             href="/access2"
             className="inline-block mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300"
           >
-            Deseja acessar ainda hoje? Clique aqui
+            Want to access today? Click here
           </a>
         </motion.div>
 
