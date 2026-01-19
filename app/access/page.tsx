@@ -261,8 +261,12 @@ function AccessContent() {
                 Verification Fee: <span className="text-[#4A90D9]">$29.90</span>
               </p>
 
-              <p className="text-[#4A90D9] text-sm mb-8 leading-relaxed font-semibold">
+              <p className="text-[#4A90D9] text-sm mb-4 leading-relaxed font-semibold">
                 But don't worry, this amount will be refunded once your account is confirmed in the system.
+              </p>
+
+              <p className="text-red-500 text-sm mb-8 leading-relaxed font-semibold bg-red-50 p-3 rounded-lg">
+                If we don't identify your payment to verify your account, your access will be lost in the next two hours.
               </p>
 
               <a
