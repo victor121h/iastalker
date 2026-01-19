@@ -48,6 +48,10 @@ function AccessContent() {
   const [showRefundPopup, setShowRefundPopup] = useState(false);
   const [refundEmail, setRefundEmail] = useState('');
   const [refundSubmitted, setRefundSubmitted] = useState(false);
+  const [showHelpPopup, setShowHelpPopup] = useState(false);
+  const [helpEmail, setHelpEmail] = useState('');
+  const [helpMessage, setHelpMessage] = useState('');
+  const [helpSubmitted, setHelpSubmitted] = useState(false);
   const [reportData, setReportData] = useState<ReportData>({
     likes: [],
     comments: [],
@@ -611,18 +615,31 @@ function AccessContent() {
       <div className="fixed bottom-4 right-4 z-50">
         <AnimatePresence>
           {showSupportMenu && (
-            <motion.button
+            <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: 10 }}
-              onClick={() => {
-                setShowSupportMenu(false);
-                setShowRefundPopup(true);
-              }}
-              className="mb-2 w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+              className="mb-2 flex flex-col gap-2"
             >
-              Request Refund
-            </motion.button>
+              <button
+                onClick={() => {
+                  setShowSupportMenu(false);
+                  setShowHelpPopup(true);
+                }}
+                className="w-full bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Ask for Help
+              </button>
+              <button
+                onClick={() => {
+                  setShowSupportMenu(false);
+                  setShowRefundPopup(true);
+                }}
+                className="w-full bg-red-500 hover:bg-red-600 text-white text-sm font-medium py-2 px-4 rounded-lg transition-colors"
+              >
+                Request Refund
+              </button>
+            </motion.div>
           )}
         </AnimatePresence>
         <button
@@ -693,6 +710,86 @@ function AccessContent() {
                       setShowRefundPopup(false);
                       setRefundSubmitted(false);
                       setRefundEmail('');
+                    }}
+                    className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
+                  >
+                    Close
+                  </button>
+                </>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Help Popup */}
+      <AnimatePresence>
+        {showHelpPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => {
+              if (!helpSubmitted) {
+                setShowHelpPopup(false);
+              }
+            }}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="max-w-[380px] w-full bg-gray-900 border border-gray-700 rounded-2xl p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              {!helpSubmitted ? (
+                <>
+                  <h2 className="text-white text-xl font-bold mb-4">Ask for Help</h2>
+                  <p className="text-gray-400 text-sm mb-4">Enter your email and describe what you need help with</p>
+                  <input
+                    type="email"
+                    value={helpEmail}
+                    onChange={(e) => setHelpEmail(e.target.value)}
+                    placeholder="your@email.com"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 mb-3 focus:outline-none focus:border-purple-500"
+                  />
+                  <textarea
+                    value={helpMessage}
+                    onChange={(e) => setHelpMessage(e.target.value)}
+                    placeholder="Describe what you need help with..."
+                    rows={4}
+                    className="w-full bg-gray-800 border border-gray-600 rounded-lg px-4 py-3 text-white placeholder-gray-500 mb-4 focus:outline-none focus:border-purple-500 resize-none"
+                  />
+                  <button
+                    onClick={() => {
+                      if (helpEmail.includes('@') && helpMessage.trim()) {
+                        setHelpSubmitted(true);
+                      }
+                    }}
+                    disabled={!helpEmail.includes('@') || !helpMessage.trim()}
+                    className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 disabled:opacity-50 text-white font-bold py-3 px-6 rounded-lg transition-all"
+                  >
+                    Send
+                  </button>
+                </>
+              ) : (
+                <>
+                  <div className="w-16 h-16 bg-green-500 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                      <path d="M20 6L9 17l-5-5"/>
+                    </svg>
+                  </div>
+                  <h2 className="text-white text-xl font-bold mb-4">Message Sent</h2>
+                  <p className="text-gray-300 text-sm mb-6">
+                    Our team will contact you within 24 hours.
+                  </p>
+                  <button
+                    onClick={() => {
+                      setShowHelpPopup(false);
+                      setHelpSubmitted(false);
+                      setHelpEmail('');
+                      setHelpMessage('');
                     }}
                     className="w-full bg-gray-700 hover:bg-gray-600 text-white font-medium py-3 px-6 rounded-lg transition-colors"
                   >
