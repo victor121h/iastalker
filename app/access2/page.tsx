@@ -48,11 +48,11 @@ function Access2Content() {
         </div>
 
         <h1 className="text-white text-2xl font-bold mb-6">
-          Acesso Prioritário
+          Priority Access
         </h1>
 
         <p className="text-gray-300 text-base mb-8 leading-relaxed">
-          O seu acesso completo estará disponível em 7 dias, porque nosso time configura 1 a 1 manualmente. Se deseja ter prioridade e o seu acesso ser configurado ainda hoje, clique no botão abaixo e solicite a configuração para hoje.
+          Your full access will be available in 7 days, as our team configures each account manually one by one. If you want priority and have your access configured today, click the button below to request same-day setup.
         </p>
 
         <a
@@ -61,11 +61,11 @@ function Access2Content() {
           rel="noopener noreferrer"
           className="inline-block w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-6 rounded-xl transition-all duration-300 transform hover:scale-[1.02]"
         >
-          Solicitar Configuração Hoje
+          Request Setup Today
         </a>
 
         <p className="text-gray-500 text-sm mt-6">
-          Seu acesso será liberado em até 2 horas após a solicitação.
+          Your access will be released within 2 hours after the request.
         </p>
       </motion.div>
     </div>
