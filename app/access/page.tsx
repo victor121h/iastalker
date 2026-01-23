@@ -418,22 +418,31 @@ function AccessContent() {
           className="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 mb-6"
         >
           <div 
-            id="vid_6973f1182e35fe9a17e222b6" 
-            style={{ position: 'relative', width: '100%', padding: '177.78% 0 0' }}
-            dangerouslySetInnerHTML={{
-              __html: `
-                <img id="thumb_6973f1182e35fe9a17e222b6" src="https://images.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block" alt="thumbnail">
-                <div id="backdrop_6973f1182e35fe9a17e222b6" style="-webkit-backdrop-filter:blur(5px);backdrop-filter:blur(5px);position:absolute;top:0;height:100%;width:100%"></div>
-              `
-            }}
-          />
-          <Script id="smartplayer-plt" strategy="lazyOnload">
-            {`!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);`}
-          </Script>
-          <Script 
-            src="https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/player.js" 
-            strategy="lazyOnload"
-          />
+            style={{ position: 'relative', width: '100%', maxWidth: '400px', margin: '0 auto' }}
+          >
+            <div
+              id="vid_6973f1182e35fe9a17e222b6"
+              style={{ position: 'relative', width: '100%', paddingTop: '177.78%' }}
+            >
+              <img 
+                id="thumb_6973f1182e35fe9a17e222b6" 
+                src="https://images.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/thumbnail.jpg" 
+                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+                alt="thumbnail"
+              />
+              <div 
+                id="backdrop_6973f1182e35fe9a17e222b6" 
+                style={{ WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)', position: 'absolute', top: 0, height: '100%', width: '100%' }}
+              />
+            </div>
+            <Script id="smartplayer-plt" strategy="afterInteractive">
+              {`!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);`}
+            </Script>
+            <Script 
+              src="https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/player.js" 
+              strategy="afterInteractive"
+            />
+          </div>
 
           <div className="flex flex-col gap-3 mt-6">
             <a
