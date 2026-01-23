@@ -794,7 +794,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
               <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>9.90</p>
+                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
               </div>
 
               <div className="space-y-3 mb-6">
@@ -850,7 +850,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>14.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -988,7 +988,7 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>39.90</p>
               </div>
 
               <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
