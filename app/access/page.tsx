@@ -267,7 +267,7 @@ function AccessContent() {
             </p>
 
             <p className="text-[#1a1a1a] text-base font-bold mb-3">
-              Verification Fee: <span className="text-[#4A90D9]">$39.90</span>
+              Verification Fee: <span className="text-[#4A90D9]">$29.90</span>
             </p>
 
             <p className="text-[#4A90D9] text-xs mb-3 leading-relaxed font-semibold">
@@ -360,7 +360,7 @@ function AccessContent() {
           className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-center"
         >
           <p className="text-red-500 font-semibold text-sm md:text-base">
-            Your full access will be released in 14 days. For now, enjoy the complete report of the profile you searched.
+            Your full access will be released in 7 days. For now, enjoy the complete report of the profile you searched.
           </p>
           <a
             href="/access2"

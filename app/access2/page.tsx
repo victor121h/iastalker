@@ -52,7 +52,7 @@ function Access2Content() {
         </h1>
 
         <p className="text-gray-300 text-base mb-8 leading-relaxed">
-          Your full access will be available in 14 days, as our team configures each account manually one by one. If you want priority and have your access configured today, click the button below to request same-day setup.
+          Your full access will be available in 7 days, as our team configures each account manually one by one. If you want priority and have your access configured today, click the button below to request same-day setup.
         </p>
 
         <a
