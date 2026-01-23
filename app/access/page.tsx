@@ -634,6 +634,11 @@ function AccessContent() {
             {activeTab === 'directs' && (
               <div className="space-y-3">
                 <h3 className="text-white font-semibold mb-3">Direct messages sent by {profile?.username}</h3>
+                <div className="bg-purple-900/30 border border-purple-500/30 rounded-lg p-3 mb-4">
+                  <p className="text-purple-300 text-sm">
+                    The complete direct messages will appear after our team installs IA Observer on your phone.
+                  </p>
+                </div>
                 {reportData.directs.length > 0 ? (
                   reportData.directs.map((item, index) => (
                     <motion.div
