@@ -419,7 +419,7 @@ function AccessContent() {
         >
           <div 
             id="vid_6973f1182e35fe9a17e222b6" 
-            style={{ position: 'relative', width: '100%', padding: '56.25% 0 0' }}
+            style={{ position: 'relative', width: '100%', padding: '177.78% 0 0' }}
             dangerouslySetInnerHTML={{
               __html: `
                 <img id="thumb_6973f1182e35fe9a17e222b6" src="https://images.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/thumbnail.jpg" style="position:absolute;top:0;left:0;width:100%;height:100%;object-fit:cover;display:block" alt="thumbnail">
