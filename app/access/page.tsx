@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import Script from 'next/script';
 
 interface ProfileData {
   username: string;
@@ -408,6 +409,58 @@ function AccessContent() {
             )}
           </motion.div>
         )}
+
+        {/* Video Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 mb-6"
+        >
+          <Script id="smartplayer-plt" strategy="beforeInteractive">
+            {`!function(i,n){i._plt=i._plt||(n&&n.timeOrigin?n.timeOrigin+n.now():Date.now())}(window,performance);`}
+          </Script>
+          <Script 
+            src="https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/player.js" 
+            strategy="afterInteractive"
+          />
+          
+          <div id="vid_6973f1182e35fe9a17e222b6" style={{ position: 'relative', width: '100%', padding: '56.25% 0 0' }}>
+            <img 
+              id="thumb_6973f1182e35fe9a17e222b6" 
+              src="https://images.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/thumbnail.jpg" 
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
+              alt="Video thumbnail"
+            />
+            <div 
+              id="backdrop_6973f1182e35fe9a17e222b6" 
+              style={{ WebkitBackdropFilter: 'blur(5px)', backdropFilter: 'blur(5px)', position: 'absolute', top: 0, height: '100%', width: '100%' }}
+            />
+          </div>
+
+          <div className="flex flex-col gap-3 mt-6">
+            <a
+              href={appendUtmToLink('/up1')}
+              className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-pink-600"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+              </svg>
+              Activate your plan
+            </a>
+            <a
+              href={appendUtmToLink('/up3')}
+              className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-[#4A90D9]"
+            >
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                <path d="M9 12l2 2 4-4"/>
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+              Verify your account
+            </a>
+          </div>
+        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
