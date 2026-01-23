@@ -372,7 +372,7 @@ function AccessContent() {
           className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-center"
         >
           <p className="text-red-500 font-semibold text-sm md:text-base">
-            Your full access will be released in 7 days. For now, enjoy the complete report of the profile you searched.
+            Your full access will be granted within 14 days. There are 246 people ahead of you waiting for installation. For now, enjoy the complete report of the profile you searched. If you want to skip the queue and get access today, click the button below.
           </p>
           <a
             href="/access2"
