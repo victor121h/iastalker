@@ -382,6 +382,45 @@ function AccessContent() {
           </a>
         </motion.div>
 
+        <motion.a
+          href="/detetive"
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="block mb-6 bg-purple-900/40 border-2 border-purple-500/50 rounded-xl p-4 cursor-pointer hover:bg-purple-900/60 hover:border-purple-400 transition-all duration-300 group"
+          style={{
+            boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
+            animation: 'pulse-glow 2s ease-in-out infinite'
+          }}
+        >
+          <style jsx>{`
+            @keyframes pulse-glow {
+              0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
+              50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.6); }
+            }
+          `}</style>
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 rounded-xl bg-purple-800/50 flex items-center justify-center border border-purple-500/30">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.5">
+                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+                <circle cx="12" cy="7" r="4"/>
+              </svg>
+            </div>
+            <div className="flex-1">
+              <div className="flex items-center gap-2">
+                <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors">Private Investigator</h3>
+                <span className="text-purple-400 group-hover:translate-x-1 transition-transform">→</span>
+              </div>
+              <p className="text-gray-400 text-sm">Complete personalized investigation with a real detective</p>
+            </div>
+          </div>
+          <div className="mt-3">
+            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-purple-600/30 text-purple-300 border border-purple-500/30">
+              Personalized
+            </span>
+          </div>
+        </motion.a>
+
         {profile && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
