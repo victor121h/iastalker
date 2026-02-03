@@ -32,6 +32,8 @@ function CadastroContent() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
+    localStorage.setItem('user_name', name);
+    localStorage.setItem('user_email', email);
     setTimeout(() => {
       router.push(appendUtmToPath('/dashboard'));
     }, 1500);

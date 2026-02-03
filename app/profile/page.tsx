@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function ProfileContent() {
@@ -9,6 +9,15 @@ function ProfileContent() {
   const searchParams = useSearchParams();
   const [shareCount] = useState(1);
   const [isSharing, setIsSharing] = useState(false);
+  const [userName, setUserName] = useState('User');
+  const [userEmail, setUserEmail] = useState('user@email.com');
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('user_name');
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedName) setUserName(storedName);
+    if (storedEmail) setUserEmail(storedEmail);
+  }, []);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -65,8 +74,8 @@ function ProfileContent() {
               </div>
             </div>
             <div className="flex-1">
-              <h2 className="text-white text-xl font-bold">user@email.com</h2>
-              <p className="text-gray-500 text-sm">user@email.com</p>
+              <h2 className="text-white text-xl font-bold">{userEmail}</h2>
+              <p className="text-gray-500 text-sm">{userName}</p>
             </div>
             <button className="text-purple-400 hover:text-purple-300 transition-colors">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
