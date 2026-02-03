@@ -1,11 +1,11 @@
 'use client';
 
-import { Menu, ChevronRight, Plus, Zap, MessageSquare, Phone, Camera, Globe, Check } from "lucide-react";
+import { Menu, Plus, Zap, MessageSquare, Phone, Camera, Globe, Check, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { SiInstagram, SiWhatsapp, SiFacebook, SiGooglepay, SiApplepay } from "react-icons/si";
-import { FaMapMarkerAlt, FaCreditCard, FaCcVisa, FaCcMastercard } from "react-icons/fa";
+import { SiInstagram, SiWhatsapp, SiFacebook } from "react-icons/si";
+import { FaMapMarkerAlt } from "react-icons/fa";
 
 function MatrixBackground() {
   const [chars, setChars] = useState<{ id: number; char: string; left: number; delay: number; duration: number; size: number }[]>([]);
@@ -52,57 +52,58 @@ interface ServiceCardProps {
   icon: JSX.Element;
   name: string;
   description: string;
-  credits: number | string;
+  credits?: number;
   color: string;
   isFree?: boolean;
-  isUpdating?: boolean;
+  isCompleted?: boolean;
   onClick?: () => void;
 }
 
-function ServiceCard({ icon, name, description, credits, color, isFree, isUpdating, onClick }: ServiceCardProps) {
+function ServiceCard({ icon, name, description, credits, color, isFree, isCompleted, onClick }: ServiceCardProps) {
   return (
     <div 
-      className={`p-4 rounded-xl relative transition-transform ${isUpdating ? 'opacity-60 cursor-not-allowed' : 'cursor-pointer hover:scale-105'}`}
+      className={`p-4 rounded-xl relative transition-all cursor-pointer hover:scale-[1.02]`}
       style={{ 
-        backgroundColor: '#1a1a24',
-        border: '1px solid rgba(138, 43, 226, 0.15)'
+        backgroundColor: '#0f0f14',
+        border: isCompleted ? '1px solid rgba(34, 197, 94, 0.3)' : '1px solid rgba(138, 43, 226, 0.15)'
       }}
-      onClick={isUpdating ? undefined : onClick}
+      onClick={onClick}
     >
-      {isUpdating && (
+      {isCompleted && (
         <div 
-          className="absolute top-2 right-2 px-2 py-0.5 rounded text-xs font-semibold"
-          style={{ backgroundColor: 'rgba(251, 191, 36, 0.2)', color: '#fbbf24' }}
+          className="absolute top-2 right-2 w-5 h-5 rounded-full flex items-center justify-center"
+          style={{ backgroundColor: 'rgba(34, 197, 94, 0.2)' }}
         >
-          Updating
+          <Check className="w-3 h-3 text-green-400" />
         </div>
       )}
       <div 
-        className="w-12 h-12 rounded-xl flex items-center justify-center mb-3 relative"
+        className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
         style={{ backgroundColor: color + '20' }}
       >
         <div style={{ color }}>{icon}</div>
       </div>
       <h3 className="text-white font-semibold text-sm mb-1">{name}</h3>
-      <p className="text-gray-400 text-xs mb-3 line-clamp-2">{description}</p>
-      {isUpdating ? (
+      <p className="text-gray-500 text-xs mb-3 line-clamp-2">{description}</p>
+      
+      {isCompleted ? (
         <div 
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold"
-          style={{ backgroundColor: 'rgba(251, 191, 36, 0.2)', color: '#fbbf24' }}
+          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}
         >
-          Available in 24h
+          <Check className="w-3 h-3" /> Completed
         </div>
       ) : isFree ? (
         <div 
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold"
-          style={{ backgroundColor: 'rgba(239, 68, 68, 0.2)', color: '#ef4444' }}
+          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ backgroundColor: 'rgba(239, 68, 68, 0.15)', color: '#ef4444' }}
         >
           Free 🔥
         </div>
       ) : (
         <div 
-          className="inline-flex items-center gap-1 px-3 py-1.5 rounded-full text-xs font-semibold"
-          style={{ backgroundColor: 'rgba(168, 85, 247, 0.2)', color: '#a855f7' }}
+          className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+          style={{ backgroundColor: 'rgba(138, 43, 226, 0.15)', color: '#a855f7' }}
         >
           <Zap className="w-3 h-3" />
           {credits} credits
@@ -114,26 +115,19 @@ function ServiceCard({ icon, name, description, credits, color, isFree, isUpdati
 
 export default function Dashboard() {
   const router = useRouter();
-  const [credits, setCredits] = useState(0);
+  const [credits, setCredits] = useState(200);
   const [user, setUser] = useState<{ nome: string; credits: number } | null>(null);
-  const [showWelcome, setShowWelcome] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const [contractedServices, setContractedServices] = useState<string[]>([]);
   const [xp, setXp] = useState(0);
-  const [level] = useState(1);
-  const targetCredits = user?.credits || 200;
+  const [level, setLevel] = useState(1);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("painelUser");
     if (storedUser) {
       const parsed = JSON.parse(storedUser);
       setUser(parsed);
-      
-      const hasSeenWelcome = localStorage.getItem("hasSeenWelcome");
-      if (hasSeenWelcome) {
-        setShowWelcome(false);
-        setCredits(parsed.credits || 200);
-      }
+      setCredits(parsed.credits || 200);
     } else {
       router.push("/loginpainel");
     }
@@ -145,220 +139,75 @@ export default function Dashboard() {
     
     const storedXp = localStorage.getItem("userXp");
     if (storedXp) {
-      setXp(parseInt(storedXp));
+      const xpValue = parseInt(storedXp);
+      setXp(xpValue);
+      setLevel(Math.floor(xpValue / 100) + 1);
     }
   }, [router]);
-
-  useEffect(() => {
-    if (showWelcome && targetCredits > 0) {
-      const duration = 2000;
-      const steps = 60;
-      const increment = targetCredits / steps;
-      const intervalTime = duration / steps;
-      
-      let current = 0;
-      const timer = setInterval(() => {
-        current += increment;
-        if (current >= targetCredits) {
-          setCredits(targetCredits);
-          clearInterval(timer);
-        } else {
-          setCredits(Math.floor(current));
-        }
-      }, intervalTime);
-
-      return () => clearInterval(timer);
-    }
-  }, [showWelcome, targetCredits]);
-
-  const handleStart = () => {
-    localStorage.setItem("hasSeenWelcome", "true");
-    setShowWelcome(false);
-    setCredits(targetCredits);
-  };
 
   const firstName = user?.nome?.split(' ')[0] || 'User';
 
   const services = [
     {
-      icon: <SiInstagram className="w-6 h-6" />,
+      icon: <SiInstagram className="w-5 h-5" />,
       name: "Instagram",
       description: "See liked photos, forwarded posts and direct conversations",
       credits: 0,
       color: "#E1306C",
       isFree: true,
-      isUpdating: false
     },
     {
-      icon: <SiWhatsapp className="w-6 h-6" />,
+      icon: <SiWhatsapp className="w-5 h-5" />,
       name: "WhatsApp",
       description: "Access full conversations, audio, videos and groups",
       credits: 40,
       color: "#25D366",
-      isFree: false,
-      isUpdating: true
     },
     {
-      icon: <SiFacebook className="w-6 h-6" />,
+      icon: <SiFacebook className="w-5 h-5" />,
       name: "Facebook",
       description: "See all interactions and get full Messenger access",
       credits: 45,
       color: "#1877F2",
-      isFree: false,
-      isUpdating: true
     },
     {
-      icon: <FaMapMarkerAlt className="w-6 h-6" />,
+      icon: <FaMapMarkerAlt className="w-5 h-5" />,
       name: "Location",
       description: "Track in real time and see suspicious locations visited",
       credits: 60,
       color: "#EF4444",
-      isFree: false,
-      isUpdating: true
     },
     {
-      icon: <MessageSquare className="w-6 h-6" />,
+      icon: <MessageSquare className="w-5 h-5" />,
       name: "SMS",
       description: "All sent and received text messages",
       credits: 30,
-      color: "#3B82F6",
-      isFree: false,
-      isUpdating: true
+      color: "#F59E0B",
     },
     {
-      icon: <Phone className="w-6 h-6" />,
+      icon: <Phone className="w-5 h-5" />,
       name: "Calls",
       description: "Complete call log with duration and times",
       credits: 25,
       color: "#22C55E",
-      isFree: false,
-      isUpdating: true
     },
     {
-      icon: <Camera className="w-6 h-6" />,
+      icon: <Camera className="w-5 h-5" />,
       name: "Camera",
       description: "Access photos and videos from gallery, including deleted files",
       credits: 55,
-      color: "#F59E0B",
-      isFree: false,
-      isUpdating: true
+      color: "#F97316",
     },
     {
-      icon: <Globe className="w-6 h-6" />,
+      icon: <Globe className="w-5 h-5" />,
       name: "Other Networks",
       description: "Full search across all social networks (including adult sites)",
       credits: 70,
-      color: "#A855F7",
-      isFree: false,
-      isUpdating: true
+      color: "#EC4899",
     }
   ];
 
   if (!user) return null;
-
-  if (showWelcome) {
-    return (
-      <div className="min-h-screen relative" style={{ backgroundColor: '#0a0a0f' }}>
-        <MatrixBackground />
-        
-        <header 
-          className="fixed top-0 left-0 right-0 z-50 flex items-center justify-between px-4 h-14"
-          style={{ backgroundColor: '#0a0a0f', borderBottom: '1px solid rgba(138, 43, 226, 0.15)' }}
-        >
-          <div className="flex items-center gap-2">
-            <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1))',
-                border: '1px solid rgba(138, 43, 226, 0.4)'
-              }}
-            >
-              <SiInstagram className="w-4 h-4 text-purple-400" />
-            </div>
-            <span className="text-white font-bold text-sm tracking-wide">LOVESEARCH.AI</span>
-          </div>
-          <button className="text-white p-2" data-testid="button-menu">
-            <Menu className="w-6 h-6" />
-          </button>
-        </header>
-
-        <main className="pt-20 px-4 pb-8 relative z-10">
-          <div className="max-w-md mx-auto">
-            <div 
-              className="p-8 rounded-2xl text-center"
-              style={{ 
-                backgroundColor: '#121218',
-                border: '1px solid rgba(138, 43, 226, 0.2)',
-                boxShadow: '0 0 40px rgba(138, 43, 226, 0.1)'
-              }}
-            >
-              <div 
-                className="w-20 h-20 mx-auto mb-6 rounded-2xl flex items-center justify-center"
-                style={{ 
-                  background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.2), rgba(138, 43, 226, 0.05))',
-                  border: '2px solid rgba(138, 43, 226, 0.4)'
-                }}
-              >
-                <SiInstagram className="w-10 h-10 text-purple-400" />
-              </div>
-
-              <h1 className="text-2xl font-bold text-white mb-6">
-                Welcome to{" "}
-                <span style={{ 
-                  background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
-                  WebkitBackgroundClip: 'text',
-                  WebkitTextFillColor: 'transparent',
-                  backgroundClip: 'text'
-                }}>LoveSearch.ai!</span>
-              </h1>
-
-              <div 
-                className="p-6 rounded-xl mb-6"
-                style={{ 
-                  backgroundColor: '#1a1a24',
-                  border: '1px solid rgba(138, 43, 226, 0.15)'
-                }}
-              >
-                <p className="text-gray-300 text-base mb-3">
-                  Your journey has started<br />
-                  with a balance of
-                </p>
-                <p 
-                  className="text-5xl font-bold mb-1"
-                  style={{ 
-                    background: 'linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045)',
-                    WebkitBackgroundClip: 'text',
-                    WebkitTextFillColor: 'transparent',
-                    backgroundClip: 'text'
-                  }}
-                  data-testid="text-credits"
-                >
-                  {credits} credits
-                </p>
-              </div>
-
-              <p className="text-gray-400 text-sm mb-6">
-                You can now start exploring all<br />
-                the platform features!
-              </p>
-
-              <Button
-                onClick={handleStart}
-                className="w-full h-14 text-white font-bold text-lg rounded-xl border-0"
-                style={{ 
-                  background: 'linear-gradient(135deg, #833ab4, #9c27b0)',
-                }}
-                data-testid="button-iniciar"
-              >
-                Start
-                <ChevronRight className="w-5 h-5 ml-2" />
-              </Button>
-            </div>
-          </div>
-        </main>
-      </div>
-    );
-  }
 
   return (
     <div className="min-h-screen relative" style={{ backgroundColor: '#0a0a0f' }}>
@@ -384,7 +233,6 @@ export default function Dashboard() {
         <button
           onClick={() => setMenuOpen(!menuOpen)}
           className="text-white p-2"
-          data-testid="button-menu"
         >
           <Menu className="w-6 h-6" />
         </button>
@@ -441,7 +289,7 @@ export default function Dashboard() {
         </>
       )}
 
-      <main className="pt-16 px-4 pb-24 relative z-10">
+      <main className="pt-16 px-4 md:px-8 pb-24 relative z-10 max-w-6xl mx-auto">
         <div 
           className="p-5 rounded-2xl mb-6 relative overflow-hidden"
           style={{ 
@@ -456,15 +304,17 @@ export default function Dashboard() {
             Nv.{level}
           </div>
 
-          <p className="text-purple-400 text-sm mb-1">Welcome!</p>
+          <p className="text-purple-400 text-sm mb-1 flex items-center gap-1">
+            <Zap className="w-4 h-4" /> Welcome!
+          </p>
           <h1 className="text-2xl font-bold text-white mb-1">
-            Hello, {firstName.toUpperCase()}!
+            Hello, {firstName}! 👋
           </h1>
           <p className="text-gray-400 text-sm mb-4">
             Choose a service and start your investigation
           </p>
 
-          <div className="grid grid-cols-2 gap-3 mb-3">
+          <div className="grid grid-cols-2 gap-3">
             <div 
               className="p-3 rounded-xl"
               style={{ backgroundColor: 'rgba(0,0,0,0.3)' }}
@@ -489,30 +339,18 @@ export default function Dashboard() {
               <p className="text-gray-400 text-xs flex items-center gap-1 mb-1">
                 <Zap className="w-3 h-3" /> XP
               </p>
-              <p className="text-lg font-bold text-white mb-1">{xp}/100</p>
+              <p className="text-lg font-bold text-white mb-1">{xp}/200</p>
               <div className="h-1.5 bg-gray-700 rounded-full overflow-hidden">
                 <div 
                   className="h-full rounded-full"
                   style={{ 
-                    width: `${xp}%`,
+                    width: `${(xp % 200) / 2}%`,
                     background: 'linear-gradient(90deg, #833ab4, #fd1d1d, #fcb045)'
                   }}
                 />
               </div>
             </div>
           </div>
-
-          <Button
-            onClick={() => router.push("/comprar-creditos")}
-            className="w-full h-10 text-white font-semibold text-sm rounded-xl border-0"
-            style={{ 
-              background: 'linear-gradient(135deg, #833ab4, #9c27b0)'
-            }}
-            data-testid="button-comprar-creditos"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Buy more credits
-          </Button>
         </div>
 
         {contractedServices.length > 0 && (
@@ -520,34 +358,36 @@ export default function Dashboard() {
             <h2 className="text-white font-semibold text-base mb-3 flex items-center gap-2">
               <Check className="w-4 h-4 text-green-500" /> Contracted Services
             </h2>
-            {contractedServices.map((service, index) => {
-              const serviceName = service.split(" - ")[0] || "Instagram";
-              const serviceUsername = service.split("@")[1] || "usuario";
-              return (
-                <div 
-                  key={index}
-                  className="p-4 rounded-xl mb-2 flex items-center justify-between"
-                  style={{ 
-                    backgroundColor: '#0f0f14',
-                    border: '1px solid rgba(34, 197, 94, 0.2)'
-                  }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Check className="w-5 h-5 text-green-500" />
-                    <div>
-                      <p className="text-white font-semibold text-sm">{serviceName}</p>
-                      <p className="text-gray-500 text-xs">@{serviceUsername}</p>
-                    </div>
-                  </div>
-                  <span 
-                    className="px-3 py-1 rounded text-xs font-semibold flex items-center gap-1"
-                    style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}
+            <div className="space-y-2">
+              {contractedServices.map((service, index) => {
+                const serviceName = service.split(" - ")[0] || "Instagram";
+                const serviceDetail = service.includes("@") ? service.split("@")[1] : "Target Device";
+                return (
+                  <div 
+                    key={index}
+                    className="p-4 rounded-xl flex items-center justify-between"
+                    style={{ 
+                      backgroundColor: '#0f0f14',
+                      border: '1px solid rgba(34, 197, 94, 0.2)'
+                    }}
                   >
-                    <Check className="w-3 h-3" /> Completed
-                  </span>
-                </div>
-              );
-            })}
+                    <div className="flex items-center gap-3">
+                      <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                      <div>
+                        <p className="text-white font-semibold text-sm">{serviceName}</p>
+                        <p className="text-gray-500 text-xs">{serviceDetail}</p>
+                      </div>
+                    </div>
+                    <span 
+                      className="px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1"
+                      style={{ backgroundColor: 'rgba(34, 197, 94, 0.15)', color: '#22c55e' }}
+                    >
+                      <Check className="w-3 h-3" /> Completed
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </section>
         )}
 
@@ -555,81 +395,47 @@ export default function Dashboard() {
           <h2 className="text-white font-semibold text-base mb-3 flex items-center gap-2">
             <Zap className="w-4 h-4 text-purple-400" /> Available Services
           </h2>
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             {services.map((service) => (
               <ServiceCard 
                 key={service.name} 
-                {...service} 
+                icon={service.icon}
+                name={service.name}
+                description={service.description}
+                credits={service.credits}
+                color={service.color}
+                isFree={service.isFree}
+                isCompleted={contractedServices.some(s => s.toLowerCase().includes(service.name.toLowerCase()))}
                 onClick={service.name === "Instagram" ? () => router.push("/investigar-instagram") : undefined}
               />
             ))}
           </div>
         </section>
 
-        <footer 
-          className="mt-12 pt-8 text-center"
-          style={{ borderTop: '1px solid rgba(138, 43, 226, 0.1)' }}
-        >
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <div 
-              className="w-8 h-8 rounded-lg flex items-center justify-center"
-              style={{ 
-                background: 'linear-gradient(135deg, rgba(138, 43, 226, 0.3), rgba(138, 43, 226, 0.1))',
-                border: '1px solid rgba(138, 43, 226, 0.4)'
-              }}
-            >
-              <SiInstagram className="w-4 h-4 text-purple-400" />
-            </div>
-            <span className="text-white font-bold text-sm">LOVESEARCH.AI</span>
-          </div>
-          
-          <p className="text-gray-500 text-xs mb-4 max-w-xs mx-auto">
-            The largest spy software in Latin America. Discover the truth about anyone.
-          </p>
-
-          <div className="flex items-center justify-center gap-2 mb-3">
-            <FaCreditCard className="w-4 h-4 text-gray-500" />
-            <span className="text-gray-500 text-xs">SSL Certificate - 100% Secure Site</span>
-          </div>
-
-          <p className="text-gray-600 text-xs mb-3">Secure payments with technology</p>
-          
-          <div className="flex items-center justify-center gap-4 mb-6">
-            <FaCcVisa className="w-8 h-8 text-gray-400" />
-            <FaCcMastercard className="w-8 h-8 text-gray-400" />
-            <SiGooglepay className="w-8 h-8 text-gray-400" />
-            <SiApplepay className="w-8 h-8 text-gray-400" />
-          </div>
-
+        <section className="mb-6">
           <div 
-            className="pt-6 grid grid-cols-2 gap-8 text-left"
-            style={{ borderTop: '1px solid rgba(255,255,255,0.05)' }}
+            className="p-5 rounded-xl"
+            style={{ 
+              backgroundColor: '#0f0f14',
+              border: '1px solid rgba(138, 43, 226, 0.15)'
+            }}
           >
-            <div>
-              <h4 className="text-white font-semibold text-sm mb-3">Services</h4>
-              <ul className="space-y-2 text-gray-500 text-xs">
-                <li>Instagram Spy</li>
-                <li>WhatsApp Spy</li>
-                <li>Facebook Spy</li>
-                <li>GPS Location</li>
-                <li>Remote Camera</li>
-              </ul>
+            <div 
+              className="w-10 h-10 rounded-xl flex items-center justify-center mb-3"
+              style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)' }}
+            >
+              <User className="w-5 h-5 text-gray-400" />
             </div>
-            <div>
-              <h4 className="text-white font-semibold text-sm mb-3">Information</h4>
-              <ul className="space-y-2 text-gray-500 text-xs">
-                <li>Help Center</li>
-                <li>Terms of Use</li>
-                <li>Privacy Policy and Cookies</li>
-                <li>GDPR</li>
-              </ul>
+            <h3 className="text-white font-semibold text-base mb-1">Private Detective</h3>
+            <p className="text-gray-500 text-sm mb-3">Complete personalized investigation with a real detective</p>
+            <div 
+              className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold"
+              style={{ backgroundColor: 'rgba(156, 163, 175, 0.15)', color: '#9ca3af' }}
+            >
+              Personalized
             </div>
           </div>
-
-          <p className="text-gray-600 text-xs mt-8">
-            © 2025 LoveSearch.ai. All rights reserved.
-          </p>
-        </footer>
+        </section>
       </main>
     </div>
   );
