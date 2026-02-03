@@ -44,7 +44,7 @@ function ProfileContent() {
   };
 
   const handleCopyLink = () => {
-    navigator.clipboard.writeText('iaobserver.com/');
+    navigator.clipboard.writeText('iaobserver.com/ref=6ja51h');
     setCopied(true);
     setTimeout(() => {
       setCopied(false);
@@ -75,7 +75,7 @@ function ProfileContent() {
             <div className="flex items-center gap-2 bg-[#0a0a0f] border border-[#333] rounded-xl p-3 mb-4">
               <input
                 type="text"
-                value="iaobserver.com/"
+                value="iaobserver.com/ref=6ja51h"
                 readOnly
                 className="flex-1 bg-transparent text-white text-sm outline-none"
               />
