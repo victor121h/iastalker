@@ -5,7 +5,6 @@ import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import dynamic from 'next/dynamic';
 import { getProfileCache } from '@/lib/profileCache';
-import { storeCurrentUTMs } from '@/lib/utmManager';
 
 const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
@@ -30,7 +29,6 @@ function PitchContent() {
   const [username, setUsername] = useState(urlUsername);
   
   useEffect(() => {
-    storeCurrentUTMs();
     if (urlUsername) {
       sessionStorage.setItem('pitch_username', urlUsername);
       document.cookie = `pitch_username=${encodeURIComponent(urlUsername)}; path=/; max-age=31536000`;
