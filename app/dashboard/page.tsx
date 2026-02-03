@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 interface Service {
   id: string;
@@ -16,6 +17,7 @@ interface Service {
 }
 
 export default function DashboardPage() {
+  const router = useRouter();
   const [username] = useState('user123');
   const [credits] = useState(25);
   const [xp] = useState(5);
@@ -238,6 +240,11 @@ export default function DashboardPage() {
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.2 + index * 0.05 }}
+                onClick={() => {
+                  if (service.id === 'instagram') {
+                    router.push('/buscando');
+                  }
+                }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
                   service.status === 'completed' 
                     ? 'border-green-500/30' 
