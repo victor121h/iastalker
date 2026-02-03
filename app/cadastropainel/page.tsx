@@ -118,6 +118,13 @@ export default function CadastroPainel() {
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
 
+  useEffect(() => {
+    const token = localStorage.getItem("painelToken");
+    if (token) {
+      router.push("/dashboard");
+    }
+  }, [router]);
+
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
     
@@ -166,6 +173,7 @@ export default function CadastroPainel() {
       const data = await response.json();
       
       if (response.ok) {
+        sessionStorage.setItem("registrationSuccess", "true");
         router.push("/loginpainel");
       } else if (data.existingUser) {
         setShowExistingUserModal(true);

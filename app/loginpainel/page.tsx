@@ -1,6 +1,6 @@
 'use client';
 
-import { Mail, Lock, Eye, EyeOff, LogIn } from "lucide-react";
+import { Mail, Lock, Eye, EyeOff, LogIn, CheckCircle } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
@@ -62,11 +62,27 @@ export default function LoginPainel() {
   const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [showSuccessMessage, setShowSuccessMessage] = useState(false);
   const [formData, setFormData] = useState({
     email: "",
     senha: "",
   });
   const [errors, setErrors] = useState<{[key: string]: string}>({});
+
+  useEffect(() => {
+    const token = localStorage.getItem("painelToken");
+    if (token) {
+      router.push("/dashboard");
+      return;
+    }
+
+    const registrationSuccess = sessionStorage.getItem("registrationSuccess");
+    if (registrationSuccess) {
+      setShowSuccessMessage(true);
+      sessionStorage.removeItem("registrationSuccess");
+      setTimeout(() => setShowSuccessMessage(false), 5000);
+    }
+  }, [router]);
 
   const validateForm = () => {
     const newErrors: {[key: string]: string} = {};
@@ -121,6 +137,19 @@ export default function LoginPainel() {
   return (
     <div className="min-h-screen flex items-center justify-center p-4 relative" style={{ backgroundColor: '#0a0a0f' }}>
       <MatrixBackground />
+      
+      {showSuccessMessage && (
+        <div 
+          className="fixed top-4 left-1/2 -translate-x-1/2 z-50 px-6 py-3 rounded-xl flex items-center gap-3"
+          style={{ 
+            backgroundColor: 'rgba(34, 197, 94, 0.2)',
+            border: '1px solid rgba(34, 197, 94, 0.4)'
+          }}
+        >
+          <CheckCircle className="w-5 h-5 text-green-400" />
+          <span className="text-green-400 font-medium">Account created successfully! Please sign in.</span>
+        </div>
+      )}
       
       <div className="w-full max-w-md relative z-10">
         <div className="text-center mb-8">
