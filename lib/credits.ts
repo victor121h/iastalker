@@ -1,6 +1,6 @@
 const CREDITS_KEY = 'user_credits';
 const SEARCH_DONE_KEY = 'search_done';
-const DEFAULT_CREDITS = 200;
+const DEFAULT_CREDITS = 25;
 
 export function getCredits(): number {
   if (typeof window === 'undefined') return DEFAULT_CREDITS;
