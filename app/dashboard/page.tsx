@@ -1,9 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getCredits, hasSearched } from '@/lib/credits';
 
 interface Service {
@@ -17,14 +17,33 @@ interface Service {
   status: 'available' | 'completed' | 'free' | 'locked';
 }
 
-export default function DashboardPage() {
+function DashboardContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [username] = useState('user123');
   const [credits, setCredits] = useState(200);
   const [xp] = useState(5);
   const [maxXp] = useState(200);
   const [level] = useState(2);
   const [instagramSearched, setInstagramSearched] = useState(false);
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToPath = (basePath: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${basePath}?${utmParams}`;
+    }
+    return basePath;
+  };
 
   useEffect(() => {
     setCredits(getCredits());
@@ -123,7 +142,7 @@ export default function DashboardPage() {
     <div className="min-h-screen bg-[#0a0a0f]">
       <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
         <Link 
-          href="/access"
+          href={appendUtmToPath('/access')}
           className="flex items-center justify-center gap-2 text-white font-semibold text-sm md:text-base hover:opacity-90 transition-opacity text-center"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
@@ -173,7 +192,7 @@ export default function DashboardPage() {
               </div>
               <p className="text-white text-3xl font-bold mb-3">{credits}</p>
               <Link 
-                href="/buy"
+                href={appendUtmToPath('/buy')}
                 className="block w-full py-2 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-bold text-center transition-all"
               >
                 Buy Credits
@@ -250,9 +269,9 @@ export default function DashboardPage() {
                 onClick={() => {
                   if (service.id === 'instagram') {
                     if (instagramSearched) {
-                      router.push('/buy');
+                      router.push(appendUtmToPath('/buy'));
                     } else {
-                      router.push('/buscando');
+                      router.push(appendUtmToPath('/buscando'));
                     }
                   }
                 }}
@@ -321,5 +340,13 @@ export default function DashboardPage() {
         </motion.footer>
       </div>
     </div>
+  );
+}
+
+export default function DashboardPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f]" />}>
+      <DashboardContent />
+    </Suspense>
   );
 }

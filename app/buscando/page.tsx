@@ -1,14 +1,15 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useEffect, Suspense } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import { getCredits, deductCredits, hasSearched, setSearchDone } from '@/lib/credits';
 
 type Stage = 'input' | 'analyzing' | 'completed';
 
-export default function BuscandoPage() {
+function BuscandoContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [stage, setStage] = useState<Stage>('input');
   const [username, setUsername] = useState('');
   const [progress, setProgress] = useState(0);
@@ -16,6 +17,24 @@ export default function BuscandoPage() {
   const [showNoCreditsPopup, setShowNoCreditsPopup] = useState(false);
   const [currentCredits, setCurrentCredits] = useState(200);
   const [alreadySearched, setAlreadySearched] = useState(false);
+
+  const getUtmParams = () => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const params = new URLSearchParams();
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) params.set(key, value);
+    });
+    return params.toString();
+  };
+
+  const appendUtmToPath = (basePath: string) => {
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      return `${basePath}?${utmParams}`;
+    }
+    return basePath;
+  };
 
   useEffect(() => {
     setCurrentCredits(getCredits());
@@ -80,7 +99,7 @@ export default function BuscandoPage() {
   };
 
   const handleBuyCredits = () => {
-    router.push('/buy');
+    router.push(appendUtmToPath('/buy'));
   };
 
   return (
@@ -248,7 +267,7 @@ export default function BuscandoPage() {
               </div>
 
               <button
-                onClick={() => router.push('/dashboard')}
+                onClick={() => router.push(appendUtmToPath('/dashboard'))}
                 className="w-full py-4 rounded-xl font-bold text-white bg-red-500 hover:bg-red-600 transition-colors mb-3"
               >
                 Cancel Investigation
@@ -360,7 +379,7 @@ export default function BuscandoPage() {
             </div>
 
             <button
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push(appendUtmToPath('/dashboard'))}
               className="w-full py-4 rounded-xl font-bold text-white bg-orange-500 hover:bg-orange-600 transition-colors flex items-center justify-center gap-2"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
@@ -372,5 +391,13 @@ export default function BuscandoPage() {
         )}
       </AnimatePresence>
     </div>
+  );
+}
+
+export default function BuscandoPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-[#0a0a0f]" />}>
+      <BuscandoContent />
+    </Suspense>
   );
 }
