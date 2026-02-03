@@ -1,115 +1,151 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
-  const [formData, setFormData] = useState({
-    email: '',
-    password: ''
-  });
-  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const [progress, setProgress] = useState(0);
+  const [isBreaking, setIsBreaking] = useState(true);
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-    
-    setTimeout(() => {
-      setIsLoading(false);
-      window.location.href = '/dashboard';
-    }, 1500);
-  };
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setProgress(prev => {
+        if (prev >= 100) {
+          clearInterval(interval);
+          setIsBreaking(false);
+          setTimeout(() => {
+            router.push('/feed');
+          }, 500);
+          return 100;
+        }
+        return prev + 2;
+      });
+    }, 150);
+
+    return () => clearInterval(interval);
+  }, [router]);
 
   return (
-    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
-      <div 
-        className="absolute inset-0 opacity-30"
-        style={{
-          background: 'radial-gradient(ellipse at top, rgba(139, 92, 246, 0.2) 0%, transparent 50%)'
-        }}
-      />
-
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="w-full max-w-md relative z-10"
-      >
-        <div className="bg-[#12121a] rounded-3xl border border-gray-800 p-8">
-          <div className="text-center mb-8">
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
-                <polyline points="10 17 15 12 10 7"/>
-                <line x1="15" y1="12" x2="3" y2="12"/>
-              </svg>
+    <div className="min-h-screen bg-[#000000] flex flex-col">
+      {/* Main content */}
+      <div className="flex-1 flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-[350px]"
+        >
+          <div className="bg-[#000000] border border-[#262626] rounded-sm p-10">
+            {/* Instagram Logo */}
+            <div className="text-center mb-6">
+              <h1 
+                className="text-5xl text-white"
+                style={{ fontFamily: "'Billabong', cursive" }}
+              >
+                Instagram
+              </h1>
             </div>
-            <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
-            <p className="text-gray-400 mt-2">Sign in to your account</p>
-          </div>
 
-          <form onSubmit={handleSubmit} className="space-y-5">
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
+            {/* Form fields */}
+            <div className="space-y-2 mb-4">
               <input
-                type="email"
-                value={formData.email}
-                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-[#1a1a2e] border border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none text-white placeholder-gray-500"
-                placeholder="Enter your email"
-                required
+                type="text"
+                value="user"
+                readOnly
+                className="w-full px-3 py-[9px] rounded-[3px] bg-[#121212] border border-[#262626] text-white text-sm placeholder-gray-500 outline-none"
               />
+              <div className="relative">
+                <input
+                  type="password"
+                  value="••••••••••••"
+                  readOnly
+                  className="w-full px-3 py-[9px] rounded-[3px] bg-[#121212] border border-[#262626] text-white text-sm placeholder-gray-500 outline-none pr-10"
+                />
+                <div className="absolute right-3 top-1/2 -translate-y-1/2">
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                    className="text-[#0095f6] text-lg"
+                  >
+                    ↻
+                  </motion.div>
+                </div>
+              </div>
             </div>
 
-            <div>
-              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
-              <input
-                type="password"
-                value={formData.password}
-                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                className="w-full px-4 py-3 rounded-xl bg-[#1a1a2e] border border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none text-white placeholder-gray-500"
-                placeholder="Enter your password"
-                required
-              />
+            {/* Breaking encryption status */}
+            <div className="bg-[#1c1c1c] rounded-lg p-3 mb-4">
+              <div className="flex items-start gap-3">
+                <div className="text-orange-500 text-xl">⚙️</div>
+                <div className="flex-1">
+                  <p className="text-white text-sm font-semibold">Breaking account encryption</p>
+                  <p className="text-gray-400 text-xs">Testing password combinations...</p>
+                </div>
+              </div>
+              {/* Progress bar */}
+              <div className="mt-3 h-1 bg-[#262626] rounded-full overflow-hidden">
+                <motion.div
+                  className="h-full bg-gradient-to-r from-red-500 to-red-600"
+                  initial={{ width: 0 }}
+                  animate={{ width: `${progress}%` }}
+                  transition={{ duration: 0.1 }}
+                />
+              </div>
             </div>
 
-            <div className="flex items-center justify-between">
-              <label className="flex items-center gap-2 cursor-pointer">
-                <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-[#1a1a2e] text-purple-600 focus:ring-purple-500" />
-                <span className="text-gray-400 text-sm">Remember me</span>
-              </label>
-              <a href="#" className="text-purple-400 text-sm hover:underline">Forgot password?</a>
-            </div>
-
+            {/* Login button */}
             <button
-              type="submit"
-              disabled={isLoading}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70"
+              disabled
+              className="w-full bg-[#0095f6] hover:bg-[#1877f2] text-white font-semibold py-2 rounded-lg text-sm transition-colors"
             >
-              {isLoading ? (
-                <>
-                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
-                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
-                  </svg>
-                  Signing in...
-                </>
-              ) : (
-                'Sign In'
-              )}
+              Logging in...
             </button>
-          </form>
 
-          <div className="mt-6 text-center">
-            <p className="text-gray-400">
+            {/* Forgot password */}
+            <div className="text-center mt-4">
+              <a href="#" className="text-[#a8a8a8] text-xs hover:text-white">
+                Forgot password?
+              </a>
+            </div>
+
+            {/* Divider */}
+            <div className="flex items-center my-5">
+              <div className="flex-1 h-px bg-[#262626]"></div>
+              <span className="px-4 text-gray-500 text-sm font-semibold">OR</span>
+              <div className="flex-1 h-px bg-[#262626]"></div>
+            </div>
+
+            {/* Facebook login */}
+            <button className="w-full flex items-center justify-center gap-2 text-[#0095f6] font-semibold text-sm">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/>
+              </svg>
+              Log in with Facebook
+            </button>
+          </div>
+        </motion.div>
+      </div>
+
+      {/* Bottom signup section */}
+      <div className="pb-8">
+        <div className="max-w-[350px] mx-auto">
+          <div className="bg-[#000000] border border-[#262626] rounded-sm p-5 text-center">
+            <p className="text-white text-sm">
               Don't have an account?{' '}
-              <Link href="/cadastro" className="text-purple-400 font-semibold hover:underline">
-                Sign up
+              <Link href="/cadastro" className="text-[#0095f6] font-semibold hover:text-white">
+                Sign up.
               </Link>
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
+
+      {/* Custom font */}
+      <style jsx global>{`
+        @import url('https://fonts.googleapis.com/css2?family=Billabong&display=swap');
+      `}</style>
     </div>
   );
 }
