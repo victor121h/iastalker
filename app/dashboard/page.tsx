@@ -112,6 +112,22 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
+        <Link 
+          href="/access"
+          className="flex items-center justify-center gap-2 text-white font-semibold text-sm md:text-base hover:opacity-90 transition-opacity text-center"
+        >
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+            <circle cx="12" cy="12" r="10"/>
+            <line x1="12" y1="8" x2="12" y2="12"/>
+            <line x1="12" y1="16" x2="12.01" y2="16"/>
+          </svg>
+          <span>If your credits haven&apos;t been applied yet, you haven&apos;t completed all required steps. Click here to complete fee payments</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </Link>
+      </div>
       <div className="max-w-6xl mx-auto px-4 py-6">
         <motion.div
           initial={{ opacity: 0, y: -20 }}
