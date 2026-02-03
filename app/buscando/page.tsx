@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { getCredits, deductCredits, hasSearched, setSearchDone } from '@/lib/credits';
 
 type Stage = 'input' | 'analyzing' | 'completed';
 
@@ -13,6 +14,13 @@ export default function BuscandoPage() {
   const [progress, setProgress] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showNoCreditsPopup, setShowNoCreditsPopup] = useState(false);
+  const [currentCredits, setCurrentCredits] = useState(200);
+  const [alreadySearched, setAlreadySearched] = useState(false);
+
+  useEffect(() => {
+    setCurrentCredits(getCredits());
+    setAlreadySearched(hasSearched());
+  }, []);
 
   const getAnalysisSteps = () => [
     { text: 'Profile found', status: currentStepIndex > 0 ? 'completed' : currentStepIndex === 0 ? 'loading' : 'pending' },
@@ -58,7 +66,13 @@ export default function BuscandoPage() {
   };
 
   const handleAccelerate = () => {
-    setStage('completed');
+    if (deductCredits(25)) {
+      setSearchDone();
+      setCurrentCredits(getCredits());
+      setStage('completed');
+    } else {
+      setShowNoCreditsPopup(true);
+    }
   };
 
   const handleUnlockEmail = () => {

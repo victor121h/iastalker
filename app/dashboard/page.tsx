@@ -1,9 +1,10 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import { getCredits, hasSearched } from '@/lib/credits';
 
 interface Service {
   id: string;
@@ -19,10 +20,16 @@ interface Service {
 export default function DashboardPage() {
   const router = useRouter();
   const [username] = useState('user123');
-  const [credits] = useState(25);
+  const [credits, setCredits] = useState(200);
   const [xp] = useState(5);
   const [maxXp] = useState(200);
   const [level] = useState(2);
+  const [instagramSearched, setInstagramSearched] = useState(false);
+
+  useEffect(() => {
+    setCredits(getCredits());
+    setInstagramSearched(hasSearched());
+  }, []);
 
   const contractedServices = [
     { name: 'Camera', subtitle: 'Target Device', status: 'completed' },
@@ -33,12 +40,12 @@ export default function DashboardPage() {
     {
       id: 'instagram',
       name: 'Instagram',
-      description: 'View liked photos, forwarded posts and direct conversations',
+      description: instagramSearched ? 'Search completed. Buy more credits to search again.' : 'View liked photos, forwarded posts and direct conversations',
       icon: '📷',
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
       credits: null,
-      status: 'free'
+      status: instagramSearched ? 'locked' : 'free'
     },
     {
       id: 'whatsapp',
@@ -242,7 +249,11 @@ export default function DashboardPage() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    router.push('/buscando');
+                    if (instagramSearched) {
+                      router.push('/buy');
+                    } else {
+                      router.push('/buscando');
+                    }
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
