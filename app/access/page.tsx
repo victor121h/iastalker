@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
+import { getUTMsForUsername, hasUTMs, buildUrlWithUTMs, extractUTMsFromUrl } from '@/lib/utmManager';
 
 interface ProfileData {
   username: string;
@@ -96,6 +97,22 @@ function AccessContent() {
       return () => clearTimeout(timer);
     }
   }, [urlUsername]);
+
+  useEffect(() => {
+    const checkAndApplyUTMs = async () => {
+      if (urlUsername) {
+        const currentUtms = extractUTMsFromUrl();
+        if (!hasUTMs(currentUtms)) {
+          const savedUtms = await getUTMsForUsername(urlUsername);
+          if (savedUtms && hasUTMs(savedUtms)) {
+            const newUrl = buildUrlWithUTMs(`/access?username=${encodeURIComponent(urlUsername)}`, savedUtms);
+            router.replace(newUrl);
+          }
+        }
+      }
+    };
+    checkAndApplyUTMs();
+  }, [urlUsername, router]);
 
   const handleSearch = () => {
     const cleanUsername = inputUsername.replace('@', '').trim();

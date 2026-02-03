@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { getCredits, deductCredits, hasSearched, setSearchDone } from '@/lib/credits';
+import { extractUTMsFromUrl, hasUTMs, saveUTMsForUsername, storeCurrentUTMs, getCurrentStoredUTMs } from '@/lib/utmManager';
 
 type Stage = 'input' | 'analyzing' | 'completed';
 
@@ -20,6 +21,7 @@ export default function BuscandoPage() {
   useEffect(() => {
     setCurrentCredits(getCredits());
     setAlreadySearched(hasSearched());
+    storeCurrentUTMs();
   }, []);
 
   const getAnalysisSteps = () => [
@@ -59,8 +61,12 @@ export default function BuscandoPage() {
     }
   }, [stage]);
 
-  const handleStartInvestigation = () => {
+  const handleStartInvestigation = async () => {
     if (username.trim()) {
+      const utms = getCurrentStoredUTMs();
+      if (hasUTMs(utms)) {
+        await saveUTMsForUsername(username.trim(), utms);
+      }
       setStage('analyzing');
     }
   };
