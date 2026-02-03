@@ -20,10 +20,15 @@ interface Service {
 function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [username] = useState('user123');
-  const [credits, setCredits] = useState(200);
+  const [username, setUsername] = useState('User');
+  const [credits, setCredits] = useState(25);
   const [xp] = useState(5);
   const [maxXp] = useState(200);
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('user_name');
+    if (storedName) setUsername(storedName);
+  }, []);
   const [level] = useState(2);
   const [instagramSearched, setInstagramSearched] = useState(false);
 

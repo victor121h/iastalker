@@ -9,6 +9,8 @@ function ProfileContent() {
   const searchParams = useSearchParams();
   const [shareCount] = useState(1);
   const [isSharing, setIsSharing] = useState(false);
+  const [showCopyModal, setShowCopyModal] = useState(false);
+  const [copied, setCopied] = useState(false);
   const [userName, setUserName] = useState('User');
   const [userEmail, setUserEmail] = useState('user@email.com');
 
@@ -38,14 +40,60 @@ function ProfileContent() {
   };
 
   const handleShare = () => {
-    setIsSharing(true);
+    setShowCopyModal(true);
+  };
+
+  const handleCopyLink = () => {
+    navigator.clipboard.writeText('iaobserver.com/');
+    setCopied(true);
     setTimeout(() => {
-      setIsSharing(false);
+      setCopied(false);
     }, 2000);
   };
 
   return (
     <main className="min-h-screen bg-[#0a0a0f] p-4">
+      {showCopyModal && (
+        <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-[#12121a] border border-[#262626] rounded-2xl p-6 w-full max-w-sm"
+          >
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-white font-bold text-lg">Share Link</h3>
+              <button
+                onClick={() => setShowCopyModal(false)}
+                className="text-gray-400 hover:text-white transition-colors"
+              >
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            </div>
+            <p className="text-gray-400 text-sm mb-4">Copy the link below and share with your friends:</p>
+            <div className="flex items-center gap-2 bg-[#0a0a0f] border border-[#333] rounded-xl p-3 mb-4">
+              <input
+                type="text"
+                value="iaobserver.com/"
+                readOnly
+                className="flex-1 bg-transparent text-white text-sm outline-none"
+              />
+              <button
+                onClick={handleCopyLink}
+                className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                  copied
+                    ? 'bg-green-500 text-white'
+                    : 'bg-purple-500 hover:bg-purple-600 text-white'
+                }`}
+              >
+                {copied ? 'Copied!' : 'Copy'}
+              </button>
+            </div>
+            <p className="text-gray-500 text-xs text-center">Share with 20 people to earn 200 credits</p>
+          </motion.div>
+        </div>
+      )}
       <div className="max-w-md mx-auto">
         <button
           onClick={() => router.push(appendUtmToPath('/dashboard'))}
