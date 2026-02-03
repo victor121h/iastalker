@@ -2,6 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useState } from 'react';
+import Link from 'next/link';
 
 interface Service {
   id: string;
@@ -144,11 +145,14 @@ export default function DashboardPage() {
                   <span className="text-yellow-400">⚡</span>
                   <span className="text-gray-400 text-sm">Credits</span>
                 </div>
-                <button className="w-6 h-6 rounded-full bg-purple-600/30 text-purple-400 flex items-center justify-center text-sm hover:bg-purple-600/50 transition-colors">
-                  +
-                </button>
               </div>
-              <p className="text-white text-3xl font-bold">{credits}</p>
+              <p className="text-white text-3xl font-bold mb-3">{credits}</p>
+              <Link 
+                href="/buy"
+                className="block w-full py-2 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-bold text-center transition-all"
+              >
+                Buy Credits
+              </Link>
             </div>
 
             <div className="bg-[#12121a] rounded-xl p-4 border border-gray-800">
