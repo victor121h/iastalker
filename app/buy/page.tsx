@@ -39,7 +39,7 @@ function BuyContent() {
       borderColor: 'border-blue-500/30',
       bgColor: 'bg-blue-500/10',
       buttonColor: 'bg-blue-600 hover:bg-blue-700',
-      link: '#'
+      link: 'https://go.centerpag.com/PPU38CQ7374'
     },
     {
       id: 'pro',
@@ -57,7 +57,7 @@ function BuyContent() {
       bgColor: 'bg-purple-500/10',
       buttonColor: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700',
       popular: true,
-      link: '#'
+      link: 'https://go.centerpag.com/PPU38CQ735R'
     },
     {
       id: 'mega',
@@ -71,7 +71,7 @@ function BuyContent() {
       borderColor: 'border-amber-500/30',
       bgColor: 'bg-amber-500/10',
       buttonColor: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600',
-      link: '#'
+      link: 'https://go.centerpag.com/PPU38CQ735S'
     },
     {
       id: 'unlimited',
@@ -88,7 +88,7 @@ function BuyContent() {
       bgColor: 'bg-emerald-500/10',
       buttonColor: 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600',
       best: true,
-      link: '#'
+      link: 'https://go.centerpag.com/PPU38CQ7360'
     }
   ];
 
