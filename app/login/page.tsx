@@ -1,243 +1,115 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, useEffect, Suspense, useCallback } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { useState } from 'react';
+import Link from 'next/link';
 
-function LoginContent() {
-  const router = useRouter();
-  const searchParams = useSearchParams();
-  const usernameParam = searchParams.get('username') || 'user';
-  
-  const [username, setUsername] = useState(usernameParam);
-  const [password, setPassword] = useState('••••••••••');
-  const [displayPassword, setDisplayPassword] = useState('');
-  const [progress, setProgress] = useState(0);
+export default function LoginPage() {
+  const [formData, setFormData] = useState({
+    email: '',
+    password: ''
+  });
   const [isLoading, setIsLoading] = useState(false);
-  const [statusText, setStatusText] = useState('Verifying authentication...');
 
-  const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
-    const params = new URLSearchParams();
-    utmKeys.forEach(key => {
-      const value = searchParams.get(key);
-      if (value) params.set(key, value);
-    });
-    return params.toString();
-  };
-
-  const generateRandomPassword = () => {
-    const length = Math.floor(Math.random() * 5) + 8;
-    return '*'.repeat(length);
-  };
-
-  useEffect(() => {
-    if (isLoading) {
-      const passwordInterval = setInterval(() => {
-        setDisplayPassword(generateRandomPassword());
-      }, 80);
-      return () => clearInterval(passwordInterval);
-    }
-  }, [isLoading]);
-
-  const startLoading = useCallback(() => {
-    if (isLoading) return;
-    
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
     setIsLoading(true);
-    setProgress(0);
     
-    const statusMessages = [
-      'Verifying authentication...',
-      'Testing password combinations...',
-      'Analyzing security hash...',
-      'Decoding tokens...',
-      'Accessing profile data...',
-      'Almost ready...',
-    ];
-
-    let currentIndex = 0;
-    let currentProgress = 0;
-    
-    const interval = setInterval(() => {
-      currentProgress += Math.random() * 12 + 5;
-      
-      if (currentProgress >= 100) {
-        setProgress(100);
-        clearInterval(interval);
-        setTimeout(() => {
-          const utmParams = getUtmParams();
-          const baseParams = `username=${encodeURIComponent(usernameParam)}`;
-          if (utmParams) {
-            router.push(`/feed?${baseParams}&${utmParams}`);
-          } else {
-            router.push(`/feed?${baseParams}`);
-          }
-        }, 600);
-        return;
-      }
-      
-      setProgress(currentProgress);
-      
-      const messageIndex = Math.min(
-        Math.floor((currentProgress / 100) * statusMessages.length),
-        statusMessages.length - 1
-      );
-      
-      if (messageIndex !== currentIndex) {
-        currentIndex = messageIndex;
-        setStatusText(statusMessages[currentIndex]);
-      }
-    }, 600);
-
-    return () => clearInterval(interval);
-  }, [isLoading, router, usernameParam]);
-
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      startLoading();
-    }, 500);
-    return () => clearTimeout(timer);
-  }, [startLoading]);
+    setTimeout(() => {
+      setIsLoading(false);
+      window.location.href = '/dashboard';
+    }, 1500);
+  };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 bg-black">
+    <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
+      <div 
+        className="absolute inset-0 opacity-30"
+        style={{
+          background: 'radial-gradient(ellipse at top, rgba(139, 92, 246, 0.2) 0%, transparent 50%)'
+        }}
+      />
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.35, ease: 'easeOut' }}
-        className="w-full max-w-sm space-y-8"
+        className="w-full max-w-md relative z-10"
       >
-        <div className="flex flex-col items-center text-center space-y-8 bg-[#121212] border border-[#262626] rounded-[22px] p-10">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.9 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
-          >
-            <img src="/logo-instagram.png" alt="Instagram" className="h-[50px] w-auto" />
-          </motion.div>
+        <div className="bg-[#12121a] rounded-3xl border border-gray-800 p-8">
+          <div className="text-center mb-8">
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"/>
+                <polyline points="10 17 15 12 10 7"/>
+                <line x1="15" y1="12" x2="3" y2="12"/>
+              </svg>
+            </div>
+            <h1 className="text-2xl font-bold text-white">Welcome Back</h1>
+            <p className="text-gray-400 mt-2">Sign in to your account</p>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
-            className="w-full space-y-2"
-          >
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              disabled={isLoading}
-              className="w-full h-[38px] bg-[#262626] border border-[#262626] rounded-sm px-3 text-xs text-white placeholder:text-[#a8a8a8] focus:outline-none focus:ring-1 focus:ring-[#a8a8a8] transition-all disabled:opacity-70"
-            />
-            
-            <div className="relative">
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Email</label>
               <input
-                type={isLoading ? "text" : "password"}
-                value={isLoading ? displayPassword : password}
-                onChange={(e) => setPassword(e.target.value)}
-                disabled={isLoading}
-                className="w-full h-[38px] bg-[#262626] border border-[#262626] rounded-sm px-3 text-xs text-white placeholder:text-[#a8a8a8] focus:outline-none focus:ring-1 focus:ring-[#a8a8a8] transition-all disabled:opacity-70"
+                type="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl bg-[#1a1a2e] border border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none text-white placeholder-gray-500"
+                placeholder="Enter your email"
+                required
               />
-              {isLoading && (
-                <div className="absolute right-2 top-1/2 -translate-y-1/2">
-                  <div className="w-3 h-3 border-2 border-green-400 border-t-transparent rounded-full animate-spin"></div>
-                </div>
-              )}
             </div>
-          </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.3 }}
-            className="w-full space-y-4"
-          >
-            <motion.div
-              initial={{ opacity: 0, y: -10 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.3 }}
+            <div>
+              <label className="block text-sm font-medium text-gray-300 mb-2">Password</label>
+              <input
+                type="password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                className="w-full px-4 py-3 rounded-xl bg-[#1a1a2e] border border-gray-700 focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all outline-none text-white placeholder-gray-500"
+                placeholder="Enter your password"
+                required
+              />
+            </div>
+
+            <div className="flex items-center justify-between">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="w-4 h-4 rounded border-gray-600 bg-[#1a1a2e] text-purple-600 focus:ring-purple-500" />
+                <span className="text-gray-400 text-sm">Remember me</span>
+              </label>
+              <a href="#" className="text-purple-400 text-sm hover:underline">Forgot password?</a>
+            </div>
+
+            <button
+              type="submit"
+              disabled={isLoading}
+              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 rounded-xl transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-70"
             >
-              <div className="flex items-center gap-3 bg-[#262626]/50 rounded-lg p-3 mb-4">
-                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center flex-shrink-0 animate-pulse">
-                  <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
-                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" />
+              {isLoading ? (
+                <>
+                  <svg className="animate-spin h-5 w-5" viewBox="0 0 24 24">
+                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
                   </svg>
-                </div>
-                <div className="flex-1 text-left">
-                  <div className="text-white text-sm font-medium">Breaking account encryption</div>
-                  <div className="text-[#a8a8a8] text-xs">{statusText}</div>
-                </div>
-              </div>
+                  Signing in...
+                </>
+              ) : (
+                'Sign In'
+              )}
+            </button>
+          </form>
 
-              <div className="w-full bg-[#262626] rounded-full h-1.5 overflow-hidden mb-4">
-                <motion.div
-                  className="h-full bg-gradient-to-r from-[#f56040] via-[#f77737] to-[#fcaf45]"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${progress}%` }}
-                  transition={{ duration: 0.3 }}
-                />
-              </div>
-            </motion.div>
-
-            <div className="w-full h-[44px] bg-[#0095f6]/70 text-white rounded-full font-bold text-sm flex items-center justify-center">
-              Logging in...
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.4 }}
-            className="text-[#0095f6] text-xs cursor-pointer hover:text-white transition-colors"
-          >
-            Forgot password?
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.5 }}
-            className="w-full flex items-center gap-4"
-          >
-            <div className="flex-1 h-px bg-[#262626]"></div>
-            <span className="text-[#a8a8a8] text-xs font-semibold">OR</span>
-            <div className="flex-1 h-px bg-[#262626]"></div>
-          </motion.div>
-
-          <motion.button
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: 'easeOut', delay: 0.6 }}
-            whileTap={{ scale: 0.97 }}
-            className="flex items-center gap-2 text-[#0095f6] hover:text-white transition-colors text-sm font-semibold"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
-            </svg>
-            Log in with Facebook
-          </motion.button>
+          <div className="mt-6 text-center">
+            <p className="text-gray-400">
+              Don't have an account?{' '}
+              <Link href="/cadastro" className="text-purple-400 font-semibold hover:underline">
+                Sign up
+              </Link>
+            </p>
+          </div>
         </div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: 'easeOut', delay: 0.7 }}
-          className="text-center bg-[#121212] border border-[#262626] rounded-[22px] p-5 text-sm"
-        >
-          <span className="text-[#e0e0e0]">Don't have an account? </span>
-          <span className="text-[#0095f6] font-semibold cursor-pointer hover:text-white transition-colors">
-            Sign up.
-          </span>
-        </motion.div>
       </motion.div>
-    </main>
-  );
-}
-
-export default function LoginPage() {
-  return (
-    <Suspense fallback={<div className="min-h-screen bg-black" />}>
-      <LoginContent />
-    </Suspense>
+    </div>
   );
 }
