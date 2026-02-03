@@ -1,12 +1,10 @@
-'use client';
-
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { useRouter, useParams } from "next/navigation";
+import { useLocation, useParams } from "wouter";
 
 export default function Erro2FA() {
-  const router = useRouter();
+  const [, setLocation] = useLocation();
   const params = useParams<{ username: string }>();
   const username = params.username || "user";
   const [progress, setProgress] = useState(0);
@@ -26,7 +24,7 @@ export default function Erro2FA() {
   }, []);
 
   const handleValidarEmail = () => {
-    router.push(`/validar-email/${username}`);
+    setLocation(`/validar-email/${username}`);
   };
 
   return (

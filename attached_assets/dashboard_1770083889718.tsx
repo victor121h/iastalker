@@ -1,9 +1,7 @@
-'use client';
-
 import { Menu, ChevronRight, Plus, Zap, MessageSquare, Phone, Camera, Globe, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useLocation } from "wouter";
 import { SiInstagram, SiWhatsapp, SiFacebook, SiGooglepay, SiApplepay } from "react-icons/si";
 import { FaMapMarkerAlt, FaCreditCard, FaCcVisa, FaCcMastercard } from "react-icons/fa";
 
@@ -113,7 +111,7 @@ function ServiceCard({ icon, name, description, credits, color, isFree, isUpdati
 }
 
 export default function Dashboard() {
-  const router = useRouter();
+  const [, setLocation] = useLocation();
   const [credits, setCredits] = useState(0);
   const [user, setUser] = useState<{ nome: string; credits: number } | null>(null);
   const [showWelcome, setShowWelcome] = useState(true);
@@ -134,8 +132,6 @@ export default function Dashboard() {
         setShowWelcome(false);
         setCredits(parsed.credits || 200);
       }
-    } else {
-      router.push("/loginpainel");
     }
     
     const contracted = localStorage.getItem("contractedServices");
@@ -147,7 +143,7 @@ export default function Dashboard() {
     if (storedXp) {
       setXp(parseInt(storedXp));
     }
-  }, [router]);
+  }, []);
 
   useEffect(() => {
     if (showWelcome && targetCredits > 0) {
@@ -254,8 +250,6 @@ export default function Dashboard() {
     }
   ];
 
-  if (!user) return null;
-
   if (showWelcome) {
     return (
       <div className="min-h-screen relative" style={{ backgroundColor: '#0a0a0f' }}>
@@ -310,6 +304,7 @@ export default function Dashboard() {
                   WebkitTextFillColor: 'transparent',
                   backgroundClip: 'text'
                 }}>LoveSearch.ai!</span>
+                {" "}🎉
               </h1>
 
               <div 
@@ -413,13 +408,13 @@ export default function Dashboard() {
                 Dashboard
               </button>
               <button 
-                onClick={() => { setMenuOpen(false); router.push("/investigar-instagram"); }}
+                onClick={() => { setMenuOpen(false); setLocation("/investigar-instagram"); }}
                 className="w-full text-left px-4 py-3 text-white hover:bg-white/5 rounded-lg transition-colors"
               >
                 New Search
               </button>
               <button 
-                onClick={() => { setMenuOpen(false); router.push("/comprar-creditos"); }}
+                onClick={() => { setMenuOpen(false); setLocation("/comprar-creditos"); }}
                 className="w-full text-left px-4 py-3 text-white hover:bg-white/5 rounded-lg transition-colors"
               >
                 Buy Credits
@@ -430,7 +425,7 @@ export default function Dashboard() {
                   localStorage.removeItem("painelUser");
                   localStorage.removeItem("hasSeenWelcome");
                   localStorage.removeItem("contractedServices");
-                  router.push("/loginpainel");
+                  setLocation("/loginpainel");
                 }}
                 className="w-full text-left px-4 py-3 text-red-400 hover:bg-white/5 rounded-lg transition-colors"
               >
@@ -456,9 +451,9 @@ export default function Dashboard() {
             Nv.{level}
           </div>
 
-          <p className="text-purple-400 text-sm mb-1">Welcome!</p>
+          <p className="text-purple-400 text-sm mb-1">✨ Welcome!</p>
           <h1 className="text-2xl font-bold text-white mb-1">
-            Hello, {firstName.toUpperCase()}!
+            Hello, {firstName.toUpperCase()}! 👋
           </h1>
           <p className="text-gray-400 text-sm mb-4">
             Choose a service and start your investigation
@@ -474,7 +469,7 @@ export default function Dashboard() {
                   <Zap className="w-3 h-3" /> Credits
                 </span>
                 <button 
-                  onClick={() => router.push("/comprar-creditos")}
+                  onClick={() => setLocation("/comprar-creditos")}
                   className="w-5 h-5 rounded-full bg-purple-600 flex items-center justify-center"
                 >
                   <Plus className="w-3 h-3 text-white" />
@@ -503,7 +498,7 @@ export default function Dashboard() {
           </div>
 
           <Button
-            onClick={() => router.push("/comprar-creditos")}
+            onClick={() => setLocation("/comprar-creditos")}
             className="w-full h-10 text-white font-semibold text-sm rounded-xl border-0"
             style={{ 
               background: 'linear-gradient(135deg, #833ab4, #9c27b0)'
@@ -560,7 +555,7 @@ export default function Dashboard() {
               <ServiceCard 
                 key={service.name} 
                 {...service} 
-                onClick={service.name === "Instagram" ? () => router.push("/investigar-instagram") : undefined}
+                onClick={service.name === "Instagram" ? () => setLocation("/investigar-instagram") : undefined}
               />
             ))}
           </div>
@@ -608,20 +603,20 @@ export default function Dashboard() {
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Services</h4>
               <ul className="space-y-2 text-gray-500 text-xs">
-                <li>Instagram Spy</li>
-                <li>WhatsApp Spy</li>
-                <li>Facebook Spy</li>
-                <li>GPS Location</li>
-                <li>Remote Camera</li>
+                <li>• Instagram Spy</li>
+                <li>• WhatsApp Spy</li>
+                <li>• Facebook Spy</li>
+                <li>• GPS Location</li>
+                <li>• Remote Camera</li>
               </ul>
             </div>
             <div>
               <h4 className="text-white font-semibold text-sm mb-3">Information</h4>
               <ul className="space-y-2 text-gray-500 text-xs">
-                <li>Help Center</li>
-                <li>Terms of Use</li>
-                <li>Privacy Policy and Cookies</li>
-                <li>GDPR</li>
+                <li>• Help Center</li>
+                <li>• Terms of Use</li>
+                <li>• Privacy Policy and Cookies</li>
+                <li>• GDPR</li>
               </ul>
             </div>
           </div>
