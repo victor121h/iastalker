@@ -157,6 +157,19 @@ function DashboardContent() {
         </Link>
       </div>
       <div className="max-w-6xl mx-auto px-4 py-6">
+        <div className="flex justify-end mb-4">
+          <Link
+            href={appendUtmToPath('/profile')}
+            className="flex items-center gap-2 bg-[#12121a] border border-purple-500/30 rounded-xl px-4 py-2 text-purple-400 hover:text-purple-300 hover:border-purple-500/50 transition-all"
+          >
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+              </svg>
+            </div>
+            <span className="font-semibold text-sm">My Profile</span>
+          </Link>
+        </div>
         <motion.div
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
