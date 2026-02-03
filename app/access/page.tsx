@@ -242,7 +242,19 @@ function AccessContent() {
   }
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 p-4 pb-20">
+    <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 pb-20">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-purple-600 to-pink-600 py-3 px-4">
+        <a 
+          href="/cadastro"
+          className="flex items-center justify-center gap-2 text-white font-semibold text-sm md:text-base hover:opacity-90 transition-opacity"
+        >
+          <span>Click here to create your IA Observer account</span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+            <path d="M5 12h14M12 5l7 7-7 7"/>
+          </svg>
+        </a>
+      </div>
+      <div className="p-4">
       <AnimatePresence>
         {showVerifyPopup && (
           <motion.div
@@ -907,6 +919,7 @@ function AccessContent() {
           </motion.div>
         )}
       </AnimatePresence>
+      </div>
     </main>
   );
 }
