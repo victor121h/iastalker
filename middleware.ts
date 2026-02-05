@@ -3,6 +3,12 @@ import type { NextRequest } from 'next/server';
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  if (pathname === '/') {
+    const url = request.nextUrl.clone();
+    url.pathname = '/search';
+    return NextResponse.redirect(url);
+  }
   
   const visitedPitch = request.cookies.get('visited_pitch')?.value === 'true';
   
