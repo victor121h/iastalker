@@ -30,7 +30,7 @@ function BuyContent() {
       id: 'basic',
       name: 'Basic Plan',
       credits: '25',
-      price: '$29.90',
+      price: '$49.90',
       features: [
         'Credits never expire',
         'Access to all services'
@@ -45,7 +45,7 @@ function BuyContent() {
       id: 'pro',
       name: 'Pro Plan',
       credits: '150',
-      price: '$49.90',
+      price: '$79.90',
       features: [
         'Credits never expire',
         'Access to all services',
@@ -63,7 +63,7 @@ function BuyContent() {
       id: 'mega',
       name: 'Mega Plan',
       credits: '1,000',
-      price: '$97.00',
+      price: '$147.00',
       features: [
         'Unlimited access to all tools'
       ],
