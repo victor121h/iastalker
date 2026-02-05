@@ -15,7 +15,7 @@ function BuscandoContent() {
   const [progress, setProgress] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showNoCreditsPopup, setShowNoCreditsPopup] = useState(false);
-  const [currentCredits, setCurrentCredits] = useState(200);
+  const [currentCredits, setCurrentCredits] = useState(25);
   const [alreadySearched, setAlreadySearched] = useState(false);
 
   const getUtmParams = () => {
@@ -263,7 +263,7 @@ function BuscandoContent() {
                   <span className="text-white font-semibold">Analysis in progress</span>
                 </div>
                 <p className="text-gray-400 text-sm">Progress: {Math.floor(progress)}% • Estimated time: 1 hour</p>
-                <p className="text-yellow-400 text-sm">Your credits: 200</p>
+                <p className="text-yellow-400 text-sm">Your credits: 25</p>
               </div>
 
               <button
