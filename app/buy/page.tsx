@@ -29,12 +29,14 @@ function BuyContent() {
     {
       id: 'basic',
       name: 'Basic Plan',
+      subtitle: 'Basic plan for quick tests',
       credits: '25',
       price: '$49.90',
       features: [
         'Credits never expire',
         'Access to all services'
       ],
+      warning: 'May not be enough for frequent use',
       color: 'from-blue-500 to-blue-600',
       borderColor: 'border-blue-500/30',
       bgColor: 'bg-blue-500/10',
@@ -44,14 +46,17 @@ function BuyContent() {
     {
       id: 'pro',
       name: 'Pro Plan',
+      subtitle: '+125 more credits than Basic for only $30 more',
       credits: '150',
       price: '$79.90',
       features: [
         'Credits never expire',
         'Access to all services',
+        'Cost per credit up to 6x lower than Basic',
         '+100 bonus credits',
         'Save $129.40'
       ],
+      bottomText: 'The ideal choice for those who will use it more than once',
       color: 'from-purple-500 to-pink-500',
       borderColor: 'border-purple-500/50',
       bgColor: 'bg-purple-500/10',
@@ -62,11 +67,15 @@ function BuyContent() {
     {
       id: 'mega',
       name: 'Mega Plan',
+      subtitle: '850 more credits than Pro for a small upgrade',
       credits: '1,000',
       price: '$147.00',
       features: [
-        'Unlimited access to all tools'
+        'Unlimited access to all tools',
+        'One of the lowest cost per credit on the platform'
       ],
+      bottomText: 'Recommended for frequent and continuous use',
+      warning: 'Intensive users may exceed this limit',
       color: 'from-amber-500 to-orange-500',
       borderColor: 'border-amber-500/30',
       bgColor: 'bg-amber-500/10',
@@ -76,13 +85,17 @@ function BuyContent() {
     {
       id: 'unlimited',
       name: 'Unlimited Plan',
+      subtitle: 'Use without limits. No counting. No worries.',
       credits: 'Unlimited',
       price: '$197.00',
       features: [
         'Unlimited access to all tools',
         'Cell phone tracker',
-        'Access to person\'s camera'
+        'Access to person\'s camera',
+        'Cheaper than recharging credits multiple times'
       ],
+      bottomText: 'Never worry about credits again\nFree usage, no blocks',
+      finalText: 'If you plan to use it frequently, this plan pays for itself',
       color: 'from-emerald-500 to-teal-500',
       borderColor: 'border-emerald-500/50',
       bgColor: 'bg-emerald-500/10',
@@ -145,7 +158,10 @@ function BuyContent() {
                 <span className="text-white text-2xl">⚡</span>
               </div>
 
-              <h3 className="text-white font-bold text-xl mb-2">{plan.name}</h3>
+              <h3 className="text-white font-bold text-xl mb-1">{plan.name}</h3>
+              {plan.subtitle && (
+                <p className="text-gray-500 text-xs mb-3">{plan.subtitle}</p>
+              )}
               
               <div className="mb-4">
                 <span className="text-gray-400 text-sm">Credits</span>
@@ -159,7 +175,7 @@ function BuyContent() {
                 <span className="text-gray-500 text-sm">one-time payment</span>
               </div>
 
-              <div className="space-y-3 mb-6 flex-1">
+              <div className="space-y-3 mb-4 flex-1">
                 {plan.features.map((feature, idx) => (
                   <div key={idx} className="flex items-start gap-2">
                     <svg className="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 24 24">
@@ -169,6 +185,22 @@ function BuyContent() {
                   </div>
                 ))}
               </div>
+
+              {plan.warning && (
+                <p className="text-yellow-500/70 text-xs mb-3 italic">⚠ {plan.warning}</p>
+              )}
+
+              {plan.bottomText && (
+                <div className="mb-4">
+                  {plan.bottomText.split('\n').map((line, idx) => (
+                    <p key={idx} className="text-gray-400 text-xs">{line}</p>
+                  ))}
+                </div>
+              )}
+
+              {plan.finalText && (
+                <p className="text-emerald-400 text-xs font-semibold mb-4">{plan.finalText}</p>
+              )}
 
               <a
                 href={appendUtmToLink(plan.link)}

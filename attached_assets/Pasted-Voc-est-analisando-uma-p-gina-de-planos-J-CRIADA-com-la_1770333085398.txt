@@ -1,0 +1,145 @@
+Você está analisando uma página de planos JÁ CRIADA, com layout fechado,
+exatamente como na imagem fornecida (4 cards: Basic, Pro, Mega e Unlimited).
+
+IMPORTANTE:
+- NÃO recriar a página
+- NÃO alterar preços
+- NÃO alterar quantidade de créditos
+- NÃO adicionar novas funcionalidades técnicas
+- APENAS adicionar, ajustar ou remover textos existentes
+- Todas as alterações devem caber dentro dos cards atuais
+
+Seu objetivo é fazer o usuário perceber que cada plano acima
+é claramente mais vantajoso que o anterior, empurrando a decisão
+para o plano Unlimited.
+
+Abaixo estão as instruções exatas de implementação.
+
+--------------------------------
+PLANO BASIC – 25 créditos – $49.90
+--------------------------------
+
+O que JÁ TEM:
+- Quantidade de créditos
+- Preço
+- “Credits never expire”
+- “Access to all services”
+
+O que ADICIONAR:
+1. Uma frase curta logo abaixo de “25 Credits”:
+   - “Plano básico para testes rápidos”
+
+2. Uma observação sutil de limitação no final da lista:
+   - “Pode não ser suficiente para uso frequente”
+
+O que NÃO ADICIONAR:
+- Economia
+- Comparações positivas
+- Qualquer texto que gere desejo
+
+O que AJUSTAR:
+- Manter o botão “Get Started” neutro, sem destaque extra
+
+Objetivo psicológico:
+Este plano deve parecer apenas um ponto de entrada,
+não uma escolha inteligente de longo prazo.
+
+--------------------------------
+PLANO PRO – 150 créditos – $79.90 (MOST POPULAR)
+--------------------------------
+
+O que JÁ TEM:
+- Selo “MOST POPULAR”
+- +100 bonus credits
+- “Save $129.40”
+
+O que ADICIONAR:
+1. Logo abaixo de “150 Credits”, inserir:
+   - “+125 créditos a mais que o Basic por apenas $30 a mais”
+
+2. Inserir um bullet novo:
+   - “Custo por crédito até 6x menor que o plano Basic”
+
+3. Inserir uma frase curta abaixo da lista:
+   - “Escolha ideal para quem vai usar mais de uma vez”
+
+O que AJUSTAR:
+- Manter este plano visualmente destacado
+- Reforçar a leitura de “Save $129.40” como economia real
+
+O que NÃO REMOVER:
+- O selo “MOST POPULAR”
+- O bônus de créditos
+
+Objetivo psicológico:
+O usuário deve sentir que escolher o Basic é perder dinheiro.
+
+--------------------------------
+PLANO MEGA – 1.000 créditos – $147.00
+--------------------------------
+
+O que JÁ TEM:
+- “Unlimited access to all tools”
+
+O que ADICIONAR:
+1. Logo abaixo de “1,000 Credits”, inserir:
+   - “850 créditos a mais que o Pro por um pequeno upgrade”
+
+2. Inserir um novo bullet:
+   - “Um dos menores custos por crédito da plataforma”
+
+3. Inserir uma frase de posicionamento abaixo da lista:
+   - “Recomendado para uso frequente e contínuo”
+
+4. Inserir um micro-aviso estratégico:
+   - “Usuários intensivos podem ultrapassar esse limite”
+
+O que AJUSTAR:
+- Não dar mais destaque visual que o Unlimited
+- Manter este plano forte, mas ainda limitado
+
+Objetivo psicológico:
+Preparar o usuário para perceber que mesmo 1.000 créditos
+ainda pode gerar fricção.
+
+--------------------------------
+PLANO UNLIMITED – $197.00 (BEST VALUE)
+--------------------------------
+
+O que JÁ TEM:
+- Selo “BEST VALUE”
+- “Unlimited access to all tools”
+- Recursos extras listados
+
+O que ADICIONAR:
+1. Uma frase logo abaixo do título “Unlimited Plan”:
+   - “Use sem limites. Sem contagem. Sem preocupação.”
+
+2. Inserir um bullet novo:
+   - “Mais barato do que recarregar créditos várias vezes”
+
+3. Inserir frases de alívio mental abaixo da lista:
+   - “Nunca mais se preocupe com créditos”
+   - “Uso livre, sem bloqueios”
+
+4. Inserir uma frase final antes do botão:
+   - “Se você pretende usar com frequência, este plano se paga sozinho”
+
+O que AJUSTAR:
+- Manter este plano como o mais destacado visualmente
+- Botão deve parecer a decisão final
+
+Objetivo psicológico:
+Eliminar qualquer dúvida.
+Este plano deve parecer o último upgrade necessário.
+
+--------------------------------
+
+RESULTADO FINAL ESPERADO:
+- O Basic ancora preço e gera limitação
+- O Pro parece a escolha óbvia
+- O Mega parece poderoso, mas ainda limitado
+- O Unlimited parece liberdade total e decisão definitiva
+
+Execute apenas ajustes textuais e de microcopy,
+sem alterar estrutura, cores ou layout.
