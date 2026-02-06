@@ -379,44 +379,42 @@ function AccessContent() {
 
       <div className="max-w-2xl mx-auto">
 
-        <motion.a
-          href="/detetive"
+        <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.15 }}
-          className="block mb-6 bg-purple-900/40 border-2 border-purple-500/50 rounded-xl p-4 cursor-pointer hover:bg-purple-900/60 hover:border-purple-400 transition-all duration-300 group"
+          className="mb-8 bg-gradient-to-b from-purple-900/60 to-purple-900/20 border-2 border-purple-500/50 rounded-2xl p-8 text-center"
           style={{
-            boxShadow: '0 0 20px rgba(168, 85, 247, 0.3)',
+            boxShadow: '0 0 30px rgba(168, 85, 247, 0.4)',
             animation: 'pulse-glow 2s ease-in-out infinite'
           }}
         >
           <style jsx>{`
             @keyframes pulse-glow {
-              0%, 100% { box-shadow: 0 0 20px rgba(168, 85, 247, 0.3); }
-              50% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.6); }
+              0%, 100% { box-shadow: 0 0 30px rgba(168, 85, 247, 0.4); }
+              50% { box-shadow: 0 0 50px rgba(168, 85, 247, 0.7); }
             }
           `}</style>
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 rounded-xl bg-purple-800/50 flex items-center justify-center border border-purple-500/30">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.5">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
-                <circle cx="12" cy="7" r="4"/>
-              </svg>
-            </div>
-            <div className="flex-1">
-              <div className="flex items-center gap-2">
-                <h3 className="text-white font-bold text-lg group-hover:text-purple-300 transition-colors">Private Investigator</h3>
-                <span className="text-purple-400 group-hover:translate-x-1 transition-transform">→</span>
-              </div>
-              <p className="text-gray-400 text-sm">Complete personalized investigation with a real detective</p>
-            </div>
+          <div className="w-16 h-16 rounded-2xl bg-purple-800/50 flex items-center justify-center border border-purple-500/30 mx-auto mb-4">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#a855f7" strokeWidth="1.5">
+              <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+              <circle cx="12" cy="7" r="4"/>
+            </svg>
           </div>
-          <div className="mt-3">
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-purple-600/30 text-purple-300 border border-purple-500/30">
+          <h2 className="text-white font-bold text-2xl md:text-3xl mb-3">Private Investigator</h2>
+          <p className="text-gray-300 text-base md:text-lg mb-6">Complete personalized investigation with a real detective</p>
+          <a
+            href="/detetive"
+            className="inline-block bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold py-4 px-10 rounded-xl transition-all duration-300 text-lg"
+          >
+            Start Investigation →
+          </a>
+          <div className="mt-4">
+            <span className="inline-block px-4 py-1.5 rounded-full text-xs font-medium bg-purple-600/30 text-purple-300 border border-purple-500/30">
               Personalized
             </span>
           </div>
-        </motion.a>
+        </motion.div>
 
         {profile && (
           <motion.div
