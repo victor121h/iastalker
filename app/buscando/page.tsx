@@ -141,7 +141,7 @@ function BuscandoContent() {
           const utmParsed = new URLSearchParams(utmParams);
           utmParsed.forEach((value, key) => params.set(key, value));
         }
-        router.push(`/direct2?${params.toString()}`);
+        router.push(`/chat4?${params.toString()}`);
       } else {
         setShowNoCreditsPopup(true);
       }
