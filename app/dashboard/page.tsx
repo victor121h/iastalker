@@ -305,6 +305,8 @@ function DashboardContent() {
                     }
                   } else if (service.id === 'location') {
                     router.push(appendUtmToPath('/location'));
+                  } else if (service.id === 'other-networks') {
+                    router.push(appendUtmToPath('/outros'));
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
