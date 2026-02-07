@@ -32,6 +32,40 @@ interface ReportData {
   directs: { username: string; count: number }[];
 }
 
+function VideoPlayer() {
+  const [videoSrc, setVideoSrc] = useState('');
+  
+  useEffect(() => {
+    const search = window.location.search || '?';
+    const vl = encodeURIComponent(window.location.href);
+    setVideoSrc(`https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/embed.html${search}&vl=${vl}`);
+  }, []);
+
+  if (!videoSrc) return (
+    <div id="ifr_6973f1182e35fe9a17e222b6_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_6973f1182e35fe9a17e222b6_aspect">
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#000', borderRadius: '12px' }} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div id="ifr_6973f1182e35fe9a17e222b6_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_6973f1182e35fe9a17e222b6_aspect">
+        <iframe
+          frameBorder="0"
+          allowFullScreen
+          src={videoSrc}
+          id="ifr_6973f1182e35fe9a17e222b6"
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+          referrerPolicy="origin"
+          allow="autoplay; fullscreen"
+        />
+      </div>
+    </div>
+  );
+}
+
 function AccessContent() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -492,24 +526,7 @@ function AccessContent() {
           transition={{ delay: 0.15 }}
           className="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 mb-6"
         >
-          <div id="ifr_6973f1182e35fe9a17e222b6_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
-            <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_6973f1182e35fe9a17e222b6_aspect">
-              <iframe 
-                frameBorder="0" 
-                allowFullScreen 
-                src="about:blank" 
-                id="ifr_6973f1182e35fe9a17e222b6" 
-                style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
-                referrerPolicy="origin"
-                onLoad={(e) => {
-                  const iframe = e.target as HTMLIFrameElement;
-                  if (iframe.src === 'about:blank') {
-                    iframe.src = 'https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/embed.html' + (window.location.search || '?') + '&vl=' + encodeURIComponent(window.location.href);
-                  }
-                }}
-              />
-            </div>
-          </div>
+          <VideoPlayer />
 
           <div className="flex flex-col gap-3 mt-6">
             <a
