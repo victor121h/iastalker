@@ -97,11 +97,24 @@ function AccessContent() {
     }
   }, [urlUsername]);
 
-  const handleSearch = () => {
+  const handleSearch = async () => {
     const cleanUsername = inputUsername.replace('@', '').trim();
     if (cleanUsername) {
       setShowPopup(false);
-      router.push(`/access?username=${encodeURIComponent(cleanUsername)}`);
+      let utmString = '';
+      try {
+        const res = await fetch(`/api/user-utms?username=${encodeURIComponent(cleanUsername)}`);
+        const data = await res.json();
+        if (data.utms) {
+          const params = new URLSearchParams();
+          Object.entries(data.utms).forEach(([key, value]) => {
+            params.set(key, value as string);
+          });
+          utmString = params.toString();
+        }
+      } catch (e) {}
+      const base = `/access?username=${encodeURIComponent(cleanUsername)}`;
+      router.push(utmString ? `${base}&${utmString}` : base);
     }
   };
 
