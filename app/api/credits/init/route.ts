@@ -8,7 +8,7 @@ const pool = new Pool({
   ssl: isSSL ? { rejectUnauthorized: false } : undefined,
 });
 
-const INITIAL_CREDITS = 75;
+const INITIAL_CREDITS = 125;
 
 export async function POST(request: NextRequest) {
   try {
