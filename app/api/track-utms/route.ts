@@ -1,8 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
+const isSSL = process.env.DATABASE_URL?.includes('neon.tech') || process.env.DATABASE_URL?.includes('sslmode=require');
+
 const pool = new Pool({
   connectionString: process.env.DATABASE_URL,
+  ssl: isSSL ? { rejectUnauthorized: false } : undefined,
 });
 
 const UTM_KEYS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -57,8 +60,8 @@ export async function GET(request: NextRequest) {
 
     console.log('[track-utms] Saved successfully for', username);
     return NextResponse.json({ ok: true });
-  } catch (error) {
-    console.error('[track-utms] Error:', error);
-    return NextResponse.json({ ok: true });
+  } catch (error: any) {
+    console.error('[track-utms] Error:', error?.message || error);
+    return NextResponse.json({ ok: false, error: error?.message || 'Database error' }, { status: 500 });
   }
 }
