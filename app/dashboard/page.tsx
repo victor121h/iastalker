@@ -363,6 +363,8 @@ function DashboardContent() {
                     } else {
                       router.push(appendUtmToPath('/buy'));
                     }
+                  } else if (!unlockedAll) {
+                    router.push(appendUtmToPath('/buy'));
                   } else if (service.id === 'location') {
                     router.push(appendUtmToPath('/location'));
                   } else if (service.id === 'other-networks') {
@@ -371,6 +373,12 @@ function DashboardContent() {
                     router.push(appendUtmToPath('/calls'));
                   } else if (service.id === 'whatsapp') {
                     router.push(appendUtmToPath('/whatsapp'));
+                  } else if (service.id === 'facebook') {
+                    router.push(appendUtmToPath('/buy'));
+                  } else if (service.id === 'sms') {
+                    router.push(appendUtmToPath('/buy'));
+                  } else if (service.id === 'camera') {
+                    router.push(appendUtmToPath('/buy'));
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
