@@ -26,6 +26,7 @@ function DashboardContent() {
   const [maxXp] = useState(200);
   const [level] = useState(2);
   const [instagramSearched, setInstagramSearched] = useState(false);
+  const [unlockedAll, setUnlockedAll] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem('user_name');
@@ -38,6 +39,9 @@ function DashboardContent() {
         .then(data => {
           if (data.available !== undefined) {
             setCredits(data.available);
+          }
+          if (data.unlocked_all) {
+            setUnlockedAll(true);
           }
         })
         .catch(() => {});
@@ -70,8 +74,6 @@ function DashboardContent() {
     { name: 'Other Networks', subtitle: '47 social networks', status: 'completed' }
   ];
 
-  const isUnlimited = credits > 999;
-
   const availableServices: Service[] = [
     {
       id: 'instagram',
@@ -81,7 +83,7 @@ function DashboardContent() {
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
       credits: 25,
-      status: isUnlimited ? 'available' : (credits >= 25 ? 'available' : 'locked')
+      status: credits >= 25 ? 'available' : 'locked'
     },
     {
       id: 'whatsapp',
@@ -91,7 +93,7 @@ function DashboardContent() {
       iconBg: 'bg-green-500',
       iconColor: 'text-white',
       credits: 40,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'facebook',
@@ -101,7 +103,7 @@ function DashboardContent() {
       iconBg: 'bg-blue-600',
       iconColor: 'text-white',
       credits: 45,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'location',
@@ -111,7 +113,7 @@ function DashboardContent() {
       iconBg: 'bg-red-500',
       iconColor: 'text-white',
       credits: 60,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'sms',
@@ -121,7 +123,7 @@ function DashboardContent() {
       iconBg: 'bg-yellow-500',
       iconColor: 'text-white',
       credits: 30,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'calls',
@@ -131,7 +133,7 @@ function DashboardContent() {
       iconBg: 'bg-blue-400',
       iconColor: 'text-white',
       credits: 25,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'camera',
@@ -141,7 +143,7 @@ function DashboardContent() {
       iconBg: 'bg-gray-700',
       iconColor: 'text-white',
       credits: null,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     },
     {
       id: 'other-networks',
@@ -151,7 +153,7 @@ function DashboardContent() {
       iconBg: 'bg-red-600',
       iconColor: 'text-white',
       credits: null,
-      status: isUnlimited ? 'available' : 'locked'
+      status: unlockedAll ? 'available' : 'locked'
     }
   ];
 
@@ -298,7 +300,7 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    if (isUnlimited) {
+                    if (unlockedAll) {
                       router.push(appendUtmToPath('/buscando'));
                     } else if (credits >= 25) {
                       const storedEmail = localStorage.getItem('user_email') || '';

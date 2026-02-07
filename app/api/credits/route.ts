@@ -18,22 +18,32 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await pool.query(
-      'SELECT total_credits, used_credits, name FROM user_credits WHERE email = $1',
+      'SELECT total_credits, used_credits, name, unlocked_all FROM user_credits WHERE email = $1',
       [email]
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json({ credits: 0, used: 0, available: 0 });
+      return NextResponse.json({ credits: 0, used: 0, available: 0, unlocked_all: false });
     }
 
     const row = result.rows[0];
     const available = (row.total_credits || 0) - (row.used_credits || 0);
+    let unlockedAll = row.unlocked_all || false;
+
+    if (!unlockedAll && available >= 999) {
+      await pool.query(
+        'UPDATE user_credits SET unlocked_all = TRUE WHERE email = $1',
+        [email]
+      );
+      unlockedAll = true;
+    }
 
     return NextResponse.json({
       credits: row.total_credits || 0,
       used: row.used_credits || 0,
       available: available,
       name: row.name || '',
+      unlocked_all: unlockedAll,
     });
   } catch (error: any) {
     console.error('[Credits API] Error:', error?.message || error);
