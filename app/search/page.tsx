@@ -70,10 +70,30 @@ function SearchContent() {
     }
   }, []);
 
+  const getUtmsFromCookies = (): Record<string, string> => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const utms: Record<string, string> = {};
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      if (key && value) acc[key.trim()] = decodeURIComponent(value.trim());
+      return acc;
+    }, {} as Record<string, string>);
+    
+    utmKeys.forEach(key => {
+      const cookieValue = cookies[`_utm_${key}`];
+      if (cookieValue) utms[key] = cookieValue;
+    });
+    return utms;
+  };
+
   const handleSubmit = async () => {
     if (username.trim()) {
       const cleanUser = username.trim().toLowerCase();
-      const utmObj = { ...capturedUtmsRef.current };
+
+      const urlUtms = { ...capturedUtmsRef.current };
+      const cookieUtms = getUtmsFromCookies();
+      const utmObj = { ...cookieUtms, ...urlUtms };
+      
       let finalUtmParams = '';
 
       if (Object.keys(utmObj).length > 0) {
@@ -85,19 +105,9 @@ function SearchContent() {
 
         try {
           await fetch(`/api/track-utms?username=${encodeURIComponent(cleanUser)}&${finalUtmParams}`);
-        } catch (e) {}
-      } else {
-        try {
-          const res = await fetch(`/api/user-utms?username=${encodeURIComponent(cleanUser)}`);
-          const data = await res.json();
-          if (data.utms) {
-            const params = new URLSearchParams();
-            Object.entries(data.utms).forEach(([key, value]) => {
-              params.set(key, value as string);
-            });
-            finalUtmParams = params.toString();
-          }
-        } catch (e) {}
+        } catch (e) {
+          console.error('[search] Failed to save UTMs:', e);
+        }
       }
 
       const baseParams = `username=${encodeURIComponent(username)}`;

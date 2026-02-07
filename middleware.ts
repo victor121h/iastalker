@@ -11,28 +11,45 @@ export function middleware(request: NextRequest) {
   const excludedPaths = ['/pitch', '/pitch1', '/up1', '/up2', '/up3', '/up4', '/upsell', '/back-front', '/back-up1', '/backfront', '/chat1', '/chat2', '/chat3', '/direct', '/feed', '/login', '/confirm', '/search', '/access', '/access2', '/api', '/_next', '/favicon.ico', '/logo', '/public', '/dashboard', '/buscando', '/buy', '/cadastro', '/profile', '/detetive'];
   const isExcluded = excludedPaths.some(path => pathname.startsWith(path)) || pathname.includes('.');
 
-  const username = request.nextUrl.searchParams.get('username');
-  const hasUtms = UTM_KEYS.some(key => request.nextUrl.searchParams.get(key));
+  const response = NextResponse.next();
 
-  if (username && hasUtms && !pathname.startsWith('/api')) {
-    const trackParams = new URLSearchParams();
-    trackParams.set('username', username);
+  const utmsFromUrl: Record<string, string> = {};
+  UTM_KEYS.forEach(key => {
+    const value = request.nextUrl.searchParams.get(key);
+    if (value) utmsFromUrl[key] = value;
+  });
+
+  if (Object.keys(utmsFromUrl).length > 0) {
     UTM_KEYS.forEach(key => {
-      const value = request.nextUrl.searchParams.get(key);
-      if (value) trackParams.set(key, value);
+      if (utmsFromUrl[key]) {
+        response.cookies.set(`_utm_${key}`, utmsFromUrl[key], {
+          maxAge: 60 * 60 * 24 * 30,
+          path: '/',
+          httpOnly: false,
+        });
+      }
     });
-    const baseUrl = request.nextUrl.origin;
-    fetch(`${baseUrl}/api/track-utms?${trackParams.toString()}`).catch(() => {});
   }
 
   if (visitedPitch && !isExcluded) {
     const url = request.nextUrl.clone();
     url.pathname = '/pitch';
-    return NextResponse.redirect(url);
+    const redirectResponse = NextResponse.redirect(url);
+    if (Object.keys(utmsFromUrl).length > 0) {
+      UTM_KEYS.forEach(key => {
+        if (utmsFromUrl[key]) {
+          redirectResponse.cookies.set(`_utm_${key}`, utmsFromUrl[key], {
+            maxAge: 60 * 60 * 24 * 30,
+            path: '/',
+            httpOnly: false,
+          });
+        }
+      });
+    }
+    return redirectResponse;
   }
   
   if (pathname === '/pitch') {
-    const response = NextResponse.next();
     response.cookies.set('visited_pitch', 'true', {
       maxAge: 60 * 60 * 24 * 365,
       path: '/',
@@ -40,7 +57,7 @@ export function middleware(request: NextRequest) {
     return response;
   }
   
-  return NextResponse.next();
+  return response;
 }
 
 export const config = {
