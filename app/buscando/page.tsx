@@ -95,7 +95,19 @@ function BuscandoContent() {
   };
 
   const handleUnlockEmail = () => {
-    setShowNoCreditsPopup(true);
+    if (deductCredits(50)) {
+      setCurrentCredits(getCredits());
+      const params = new URLSearchParams();
+      params.set('username', username);
+      const utmParams = getUtmParams();
+      if (utmParams) {
+        const utmParsed = new URLSearchParams(utmParams);
+        utmParsed.forEach((value, key) => params.set(key, value));
+      }
+      router.push(`/direct2?${params.toString()}`);
+    } else {
+      setShowNoCreditsPopup(true);
+    }
   };
 
   const handleBuyCredits = () => {
