@@ -4,8 +4,8 @@ export const dynamic = 'force-dynamic';
 
 async function fetchLocation(ip?: string) {
   const apiUrl = ip 
-    ? `http://ip-api.com/json/${ip}?lang=pt-BR&fields=status,city,regionName,country,lat,lon`
-    : 'http://ip-api.com/json/?lang=pt-BR&fields=status,city,regionName,country,lat,lon';
+    ? `http://ip-api.com/json/${ip}?lang=en&fields=status,city,regionName,country,lat,lon`
+    : 'http://ip-api.com/json/?lang=en&fields=status,city,regionName,country,lat,lon';
   
   const response = await fetch(apiUrl);
   if (!response.ok) return null;
@@ -59,7 +59,7 @@ export async function GET(request: NextRequest) {
     }
     
     if (!ipData) {
-      return NextResponse.json({ location: 'Local oculto' });
+      return NextResponse.json({ location: 'Hidden location' });
     }
 
     let locationName = '';
@@ -70,7 +70,7 @@ export async function GET(request: NextRequest) {
     } else if (ipData.country) {
       locationName = ipData.country;
     } else {
-      locationName = 'Localização detectada';
+      locationName = 'Location detected';
     }
 
     return NextResponse.json({

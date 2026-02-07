@@ -303,6 +303,8 @@ function DashboardContent() {
                     } else {
                       router.push(appendUtmToPath('/buy'));
                     }
+                  } else if (service.id === 'location') {
+                    router.push(appendUtmToPath('/location'));
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
