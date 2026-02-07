@@ -372,7 +372,7 @@ function DetetiveContent() {
           </div>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ6J0O')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ6IMC')}
             className="block w-full py-4 rounded-xl text-center font-bold text-black bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 transition-all"
           >
             Hire Master PRO Investigation
