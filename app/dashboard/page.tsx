@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getCredits, hasSearched } from '@/lib/credits';
+import { hasSearched } from '@/lib/credits';
 
 interface Service {
   id: string;
@@ -21,16 +21,30 @@ function DashboardContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState('User');
-  const [credits, setCredits] = useState(25);
+  const [credits, setCredits] = useState(0);
   const [xp] = useState(5);
   const [maxXp] = useState(200);
+  const [level] = useState(2);
+  const [instagramSearched, setInstagramSearched] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem('user_name');
     if (storedName) setUsername(storedName);
+    
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedEmail) {
+      fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.available !== undefined) {
+            setCredits(data.available);
+          }
+        })
+        .catch(() => {});
+    }
+
+    setInstagramSearched(hasSearched());
   }, []);
-  const [level] = useState(2);
-  const [instagramSearched, setInstagramSearched] = useState(false);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -50,10 +64,6 @@ function DashboardContent() {
     return basePath;
   };
 
-  useEffect(() => {
-    setCredits(getCredits());
-    setInstagramSearched(hasSearched());
-  }, []);
 
   const contractedServices = [
     { name: 'Camera', subtitle: 'Target Device', status: 'completed' },

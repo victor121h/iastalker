@@ -118,14 +118,39 @@ components/
 - **Data Returned**: City, state, country, lat/lng coordinates
 - **Usage**: Displays visitor's real location in /feed page post header
 
+## PerfectPay Webhook Integration
+- **Endpoint**: POST `/api/webhook/perfectpay`
+- **Token**: Validated via `token` field in request body (stored as env var or hardcoded)
+- **Credit Mapping**:
+  - PPLQQOAPS / PPLQQOJH1 = 100 credits
+  - PPLQQOJGQ = 600 credits
+  - PPLQQOJGR / PPLQQOJGT / PPLQQOL0B = 10,000 credits
+- **Duplicate Prevention**: Transaction-based processing with FOR UPDATE row locking
+- **Tables**: `webhook_logs` (all events), `user_credits` (per-email credit balance)
+
+## Admin Panel
+- **URL**: `/admin`
+- **Auth**: POST-based password authentication (no query params for security)
+- **Password**: Set via `ADMIN_PASSWORD` env var (default: iaobserver2024)
+- **Features**: Webhook log viewer, user credit management, transaction details
+
 ## Environment Variables Required
+- `DATABASE_URL`: Neon PostgreSQL connection string (with SSL)
 - `HIKERAPI_ACCESS_KEY`: Your HikerAPI access token for Instagram data
 - `GOOGLE_GEOLOCATION_API_KEY`: Google Geolocation API key for real-time location tracking
-  - Documentation: https://developers.google.com/maps/documentation/geolocation/overview?hl=pt-br
+- `ADMIN_PASSWORD`: Admin panel password (default: iaobserver2024)
+
+## Database (Neon PostgreSQL)
+- **Tables**:
+  - `webhook_logs`: Stores all PerfectPay webhook events with sale details and credit tracking
+  - `user_credits`: Tracks total and used credits per email with upsert on conflict
+- **Connection**: SSL required, configured via DATABASE_URL
+- **Deployment**: Must configure DATABASE_URL in both Replit and Vercel environments
 
 ## Known Issues & Notes
 - Cross-origin dev warnings are expected in Replit environment
 - Framer Motion may show findDOMNode warnings in StrictMode (known issue with version compatibility)
+- Deployed via Vercel (GitHub sync required for changes)
 
 ## Future Enhancements
 - Implement backend rate limiting (1 search per user)

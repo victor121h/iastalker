@@ -38,3 +38,8 @@ build = ["npm", "run", "build"]
 [nix]
 channel = "stable-25_05"
 packages = ["unzip"]
+
+[userenv]
+
+[userenv.shared]
+PERFECTPAY_WEBHOOK_TOKEN = "4bac01af77c825b08316691d457c225d"
