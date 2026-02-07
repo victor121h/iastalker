@@ -138,7 +138,7 @@ function LocationContent() {
       const res = await fetch('/api/credits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: userEmail, amount: 40 }),
+        body: JSON.stringify({ email: userEmail, amount: 2000 }),
       });
       const data = await res.json();
       if (data.success) {
@@ -426,7 +426,7 @@ function LocationContent() {
                   onClick={handleActivateRealTime}
                   className="w-full mt-2 py-3 rounded-xl font-semibold text-white text-sm bg-gradient-to-r from-red-600 to-red-500"
                 >
-                  Activate Tracking for 40 credits
+                  Activate Tracking for 2000 credits
                 </motion.button>
               </motion.div>
 
