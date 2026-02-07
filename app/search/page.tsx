@@ -22,6 +22,18 @@ function SearchContent() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const currentUtms: Record<string, string> = {};
+    utmKeys.forEach(key => {
+      const value = searchParams.get(key);
+      if (value) currentUtms[key] = value;
+    });
+    if (Object.keys(currentUtms).length > 0) {
+      try {
+        localStorage.setItem('pending_utms', JSON.stringify(currentUtms));
+      } catch (e) {}
+    }
+
     const hasVisited = document.cookie.includes('deepgram_visited=true');
     if (hasVisited) {
       const cookies = document.cookie.split(';').reduce((acc, cookie) => {
@@ -54,6 +66,7 @@ function SearchContent() {
 
   const handleSubmit = async () => {
     if (username.trim()) {
+      const cleanUser = username.trim().toLowerCase();
       const currentUtmParams = getUtmParams();
       let finalUtmParams = currentUtmParams;
 
@@ -63,16 +76,21 @@ function SearchContent() {
           utmObj[key] = value;
         });
         try {
-          await fetch('/api/user-utms', {
+          const res = await fetch('/api/user-utms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: username.trim(), utms: utmObj }),
+            body: JSON.stringify({ username: cleanUser, utms: utmObj }),
           });
-        } catch (e) {}
+          const data = await res.json();
+          console.log('UTM save result:', data);
+        } catch (e) {
+          console.error('UTM save error:', e);
+        }
       } else {
         try {
-          const res = await fetch(`/api/user-utms?username=${encodeURIComponent(username.trim())}`);
+          const res = await fetch(`/api/user-utms?username=${encodeURIComponent(cleanUser)}`);
           const data = await res.json();
+          console.log('UTM fetch result:', data);
           if (data.utms) {
             const params = new URLSearchParams();
             Object.entries(data.utms).forEach(([key, value]) => {
@@ -80,7 +98,9 @@ function SearchContent() {
             });
             finalUtmParams = params.toString();
           }
-        } catch (e) {}
+        } catch (e) {
+          console.error('UTM fetch error:', e);
+        }
       }
 
       const baseParams = `username=${encodeURIComponent(username)}`;
