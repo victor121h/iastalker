@@ -70,16 +70,18 @@ function DashboardContent() {
     { name: 'Other Networks', subtitle: '47 social networks', status: 'completed' }
   ];
 
+  const isUnlimited = credits > 999;
+
   const availableServices: Service[] = [
     {
       id: 'instagram',
       name: 'Instagram',
-      description: instagramSearched ? 'Search completed. Buy more credits to search again.' : 'View liked photos, forwarded posts and direct conversations',
+      description: isUnlimited ? 'View liked photos, forwarded posts and direct conversations' : (instagramSearched ? 'Search completed. Buy more credits to search again.' : 'View liked photos, forwarded posts and direct conversations'),
       icon: '📷',
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
       credits: null,
-      status: instagramSearched ? 'locked' : 'free'
+      status: isUnlimited ? 'available' : (instagramSearched ? 'locked' : 'free')
     },
     {
       id: 'whatsapp',
@@ -89,7 +91,7 @@ function DashboardContent() {
       iconBg: 'bg-green-500',
       iconColor: 'text-white',
       credits: 40,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'facebook',
@@ -99,7 +101,7 @@ function DashboardContent() {
       iconBg: 'bg-blue-600',
       iconColor: 'text-white',
       credits: 45,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'location',
@@ -109,7 +111,7 @@ function DashboardContent() {
       iconBg: 'bg-red-500',
       iconColor: 'text-white',
       credits: 60,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'sms',
@@ -119,7 +121,7 @@ function DashboardContent() {
       iconBg: 'bg-yellow-500',
       iconColor: 'text-white',
       credits: 30,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'calls',
@@ -129,7 +131,7 @@ function DashboardContent() {
       iconBg: 'bg-blue-400',
       iconColor: 'text-white',
       credits: 25,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'camera',
@@ -139,7 +141,7 @@ function DashboardContent() {
       iconBg: 'bg-gray-700',
       iconColor: 'text-white',
       credits: null,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     },
     {
       id: 'other-networks',
@@ -149,7 +151,7 @@ function DashboardContent() {
       iconBg: 'bg-red-600',
       iconColor: 'text-white',
       credits: null,
-      status: 'locked'
+      status: isUnlimited ? 'available' : 'locked'
     }
   ];
 
@@ -322,6 +324,13 @@ function DashboardContent() {
                       </svg>
                     </span>
                   )}
+                  {service.status === 'available' && (
+                    <span className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
+                      <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
+                        <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/>
+                      </svg>
+                    </span>
+                  )}
                   {service.status === 'locked' && (
                     <span className="w-5 h-5 rounded-full bg-gray-600 flex items-center justify-center">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
@@ -341,6 +350,10 @@ function DashboardContent() {
                 ) : service.status === 'completed' ? (
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
                     ✓ Completed
+                  </span>
+                ) : service.status === 'available' ? (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30">
+                    🔓 Available
                   </span>
                 ) : service.status === 'locked' ? (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
