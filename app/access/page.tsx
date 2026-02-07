@@ -619,7 +619,7 @@ function AccessContent() {
               </span>
             </button>
             <button
-              onClick={() => setActiveTab('directs')}
+              onClick={() => router.push('/cadastro')}
               className={`flex-1 py-4 text-center font-medium transition-colors ${
                 activeTab === 'directs'
                   ? 'text-purple-500 bg-purple-500/10 border-b-2 border-purple-500'
