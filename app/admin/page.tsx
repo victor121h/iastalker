@@ -53,21 +53,33 @@ const STATUS_MAP: Record<number, { label: string; color: string }> = {
 };
 
 export default function AdminPage() {
+  const [password, setPassword] = useState('');
+  const [authenticated, setAuthenticated] = useState(false);
   const [data, setData] = useState<AdminData | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'webhooks' | 'credits'>('webhooks');
 
-  const fetchData = async () => {
+  const fetchData = async (pwd: string) => {
     setLoading(true);
     setError('');
     try {
-      const res = await fetch('/api/admin');
+      const res = await fetch('/api/admin', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: pwd, action: 'dashboard' }),
+      });
       if (!res.ok) {
+        if (res.status === 401) {
+          setError('Incorrect password');
+          setAuthenticated(false);
+          return;
+        }
         throw new Error('Failed to load data');
       }
       const json = await res.json();
       setData(json);
+      setAuthenticated(true);
     } catch (e: any) {
       setError(e.message || 'Error loading data');
     } finally {
@@ -75,9 +87,14 @@ export default function AdminPage() {
     }
   };
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+  const handleLogin = (e: React.FormEvent) => {
+    e.preventDefault();
+    fetchData(password);
+  };
+
+  const refreshData = () => {
+    fetchData(password);
+  };
 
   const getStatusBadge = (status: number) => {
     const s = STATUS_MAP[status] || { label: `Unknown (${status})`, color: 'gray' };
@@ -97,10 +114,27 @@ export default function AdminPage() {
     );
   };
 
-  if (loading && !data) {
+  if (!authenticated) {
     return (
-      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center">
-        <p className="text-gray-400">Loading...</p>
+      <div className="min-h-screen bg-[#0a0a0f] flex items-center justify-center p-4">
+        <form onSubmit={handleLogin} className="bg-[#121218] border border-gray-800 rounded-2xl p-8 w-full max-w-sm">
+          <h1 className="text-white text-2xl font-bold mb-6 text-center">Admin Panel</h1>
+          {error && <p className="text-red-400 text-sm mb-4 text-center">{error}</p>}
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Enter admin password"
+            className="w-full bg-[#1a1a22] border border-gray-700 rounded-xl px-4 py-3 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 mb-4"
+          />
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 text-white font-bold hover:from-purple-700 hover:to-pink-700 transition-all disabled:opacity-50"
+          >
+            {loading ? 'Loading...' : 'Enter'}
+          </button>
+        </form>
       </div>
     );
   }
@@ -111,15 +145,13 @@ export default function AdminPage() {
         <div className="flex items-center justify-between mb-8">
           <h1 className="text-white text-2xl md:text-3xl font-bold">Admin Panel</h1>
           <button
-            onClick={fetchData}
+            onClick={refreshData}
             disabled={loading}
             className="px-4 py-2 rounded-xl bg-purple-600 text-white text-sm font-medium hover:bg-purple-700 transition-all disabled:opacity-50"
           >
             {loading ? 'Loading...' : 'Refresh'}
           </button>
         </div>
-
-        {error && <p className="text-red-400 text-sm mb-4">{error}</p>}
 
         {data && (
           <>
