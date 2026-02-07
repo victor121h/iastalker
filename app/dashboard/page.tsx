@@ -76,12 +76,12 @@ function DashboardContent() {
     {
       id: 'instagram',
       name: 'Instagram',
-      description: isUnlimited ? 'View liked photos, forwarded posts and direct conversations' : (instagramSearched ? 'Search completed. Buy more credits to search again.' : 'View liked photos, forwarded posts and direct conversations'),
+      description: 'View liked photos, forwarded posts and direct conversations',
       icon: '📷',
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
-      credits: null,
-      status: isUnlimited ? 'available' : (instagramSearched ? 'locked' : 'free')
+      credits: 25,
+      status: isUnlimited ? 'available' : (credits >= 25 ? 'available' : 'locked')
     },
     {
       id: 'whatsapp',
@@ -298,8 +298,26 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    if (isUnlimited || !instagramSearched) {
+                    if (isUnlimited) {
                       router.push(appendUtmToPath('/buscando'));
+                    } else if (credits >= 25) {
+                      const storedEmail = localStorage.getItem('user_email') || '';
+                      if (storedEmail) {
+                        fetch('/api/credits', {
+                          method: 'POST',
+                          headers: { 'Content-Type': 'application/json' },
+                          body: JSON.stringify({ email: storedEmail, amount: 25 }),
+                        }).then(res => {
+                          if (res.ok) {
+                            setCredits(prev => prev - 25);
+                            router.push(appendUtmToPath('/buscando'));
+                          } else {
+                            router.push(appendUtmToPath('/buy'));
+                          }
+                        }).catch(() => router.push(appendUtmToPath('/buy')));
+                      } else {
+                        router.push(appendUtmToPath('/buy'));
+                      }
                     } else {
                       router.push(appendUtmToPath('/buy'));
                     }

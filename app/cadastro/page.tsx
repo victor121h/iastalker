@@ -29,11 +29,20 @@ function CadastroContent() {
     return basePath;
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsLoading(true);
     localStorage.setItem('user_name', name);
     localStorage.setItem('user_email', email);
+
+    try {
+      await fetch('/api/credits/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: email.toLowerCase(), name }),
+      });
+    } catch {}
+
     setTimeout(() => {
       router.push(appendUtmToPath('/dashboard'));
     }, 1500);
