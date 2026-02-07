@@ -1,7 +1,7 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useState, Suspense, useEffect } from 'react';
+import { useState, Suspense, useEffect, useRef } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
 function DeepGramLogo() {
@@ -20,17 +20,29 @@ function SearchContent() {
   const [username, setUsername] = useState('');
   const router = useRouter();
   const searchParams = useSearchParams();
+  const capturedUtmsRef = useRef<Record<string, string>>({});
 
   useEffect(() => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
     const currentUtms: Record<string, string> = {};
+
+    const urlParams = new URLSearchParams(window.location.search);
     utmKeys.forEach(key => {
-      const value = searchParams.get(key);
+      const value = urlParams.get(key);
       if (value) currentUtms[key] = value;
     });
+
     if (Object.keys(currentUtms).length > 0) {
+      capturedUtmsRef.current = currentUtms;
       try {
         localStorage.setItem('pending_utms', JSON.stringify(currentUtms));
+      } catch (e) {}
+    } else {
+      try {
+        const stored = localStorage.getItem('pending_utms');
+        if (stored) {
+          capturedUtmsRef.current = JSON.parse(stored);
+        }
       } catch (e) {}
     }
 
@@ -43,65 +55,37 @@ function SearchContent() {
       }, {} as Record<string, string>);
       const savedUsername = cookies['pitch_username'] || '';
 
-      if (savedUsername && Object.keys(currentUtms).length > 0) {
+      if (savedUsername && Object.keys(capturedUtmsRef.current).length > 0) {
         fetch('/api/user-utms', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: savedUsername.toLowerCase(), utms: currentUtms }),
+          body: JSON.stringify({ username: savedUsername.toLowerCase(), utms: capturedUtmsRef.current }),
         }).catch(() => {});
       }
 
-      const utmParams = getUtmParams();
       const params = new URLSearchParams();
       if (savedUsername) params.set('username', savedUsername);
-      if (utmParams) {
-        const utmSearchParams = new URLSearchParams(utmParams);
-        utmSearchParams.forEach((value, key) => params.set(key, value));
-      }
+      Object.entries(capturedUtmsRef.current).forEach(([key, value]) => {
+        params.set(key, value);
+      });
       const queryString = params.toString();
       router.replace(queryString ? `/pitch?${queryString}` : '/pitch');
     }
   }, []);
 
-  const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
-    const params = new URLSearchParams();
-    utmKeys.forEach(key => {
-      const value = searchParams.get(key);
-      if (value) params.set(key, value);
-    });
-    return params.toString();
-  };
-
   const handleSubmit = async () => {
     if (username.trim()) {
       const cleanUser = username.trim().toLowerCase();
-      const currentUtmParams = getUtmParams();
-      let finalUtmParams = currentUtmParams;
-
-      let utmObj: Record<string, string> = {};
-
-      if (currentUtmParams) {
-        new URLSearchParams(currentUtmParams).forEach((value, key) => {
-          utmObj[key] = value;
-        });
-      }
-
-      if (Object.keys(utmObj).length === 0) {
-        try {
-          const stored = localStorage.getItem('pending_utms');
-          if (stored) {
-            utmObj = JSON.parse(stored);
-            const params = new URLSearchParams();
-            Object.entries(utmObj).forEach(([key, value]) => {
-              params.set(key, value as string);
-            });
-            finalUtmParams = params.toString();
-          }
-        } catch (e) {}
-      }
+      const utmObj = { ...capturedUtmsRef.current };
+      let finalUtmParams = '';
 
       if (Object.keys(utmObj).length > 0) {
+        const params = new URLSearchParams();
+        Object.entries(utmObj).forEach(([key, value]) => {
+          params.set(key, value);
+        });
+        finalUtmParams = params.toString();
+
         try {
           await fetch('/api/user-utms', {
             method: 'POST',

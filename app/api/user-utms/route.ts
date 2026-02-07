@@ -12,14 +12,20 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
     const { username, utms } = body;
 
+    console.log('[UTM API] POST received:', JSON.stringify({ username, utms }));
+
     if (!username) {
+      console.log('[UTM API] No username provided');
       return NextResponse.json({ error: 'Username is required' }, { status: 400 });
     }
 
     const hasUtms = UTM_KEYS.some(key => utms?.[key]);
     if (!hasUtms) {
+      console.log('[UTM API] No UTMs found in payload, keys checked:', UTM_KEYS, 'utms received:', utms);
       return NextResponse.json({ message: 'No UTMs to save' }, { status: 200 });
     }
+
+    console.log('[UTM API] Saving UTMs for', username);
 
     await pool.query(
       `INSERT INTO user_utms (username, utm_source, utm_medium, utm_campaign, utm_term, utm_content, src, sck, xcod, updated_at)
