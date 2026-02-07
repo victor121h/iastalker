@@ -105,11 +105,45 @@ function Chat5Content() {
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
   const [userName, setUserName] = useState('');
+  const [unlocking, setUnlocking] = useState(false);
 
   useEffect(() => {
     const storedName = localStorage.getItem('user_name') || '';
     setUserName(storedName);
   }, []);
+
+  const handleUnlockMessages = async () => {
+    if (unlocking) return;
+    setUnlocking(true);
+    const storedEmail = localStorage.getItem('user_email') || '';
+    if (!storedEmail) {
+      router.push(buildUrlWithParams('/buy'));
+      return;
+    }
+    try {
+      const creditsRes = await fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`);
+      const creditsData = await creditsRes.json();
+      const available = (creditsData.credits?.total || 0) - (creditsData.credits?.used || 0);
+      if (available < 750) {
+        router.push(buildUrlWithParams('/buy'));
+        return;
+      }
+      const deductRes = await fetch('/api/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: storedEmail, credits: 750, action: 'use' }),
+      });
+      if (deductRes.ok) {
+        router.push(buildUrlWithParams('/buy'));
+      } else {
+        router.push(buildUrlWithParams('/buy'));
+      }
+    } catch {
+      router.push(buildUrlWithParams('/buy'));
+    } finally {
+      setUnlocking(false);
+    }
+  };
 
   const buildUrlWithParams = (path: string) => {
     const params = new URLSearchParams();
@@ -176,7 +210,37 @@ function Chat5Content() {
         </div>
       </header>
 
-      <div className="flex-1 pt-[60px] pb-[70px] px-4 overflow-y-auto">
+      <div className="fixed top-[60px] left-0 right-0 z-40">
+        <button
+          onClick={handleUnlockMessages}
+          disabled={unlocking}
+          className="w-full bg-gradient-to-r from-purple-600 to-pink-600 py-4 px-4 flex items-center justify-center gap-3 hover:opacity-90 transition-opacity"
+        >
+          {unlocking ? (
+            <div className="flex items-center gap-2">
+              <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none"/>
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+              </svg>
+              <span className="text-white font-bold text-sm">Processing...</span>
+            </div>
+          ) : (
+            <>
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+                <path d="M7 11V7a5 5 0 0110 0v4"/>
+              </svg>
+              <span className="text-white font-bold text-sm md:text-base text-center">Unlock +354 messages from this conversation & +4 directs about this subject — 750 credits</span>
+              <span className="relative flex h-3 w-3 flex-shrink-0">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+              </span>
+            </>
+          )}
+        </button>
+      </div>
+
+      <div className="flex-1 pt-[116px] pb-[70px] px-4 overflow-y-auto">
         <div className="max-w-3xl mx-auto py-6 space-y-6">
           
           <div className="flex justify-center py-4">
