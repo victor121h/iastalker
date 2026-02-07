@@ -298,10 +298,10 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    if (instagramSearched) {
-                      router.push(appendUtmToPath('/buy'));
-                    } else {
+                    if (isUnlimited || !instagramSearched) {
                       router.push(appendUtmToPath('/buscando'));
+                    } else {
+                      router.push(appendUtmToPath('/buy'));
                     }
                   }
                 }}
