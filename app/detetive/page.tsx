@@ -23,13 +23,13 @@ function DetetiveContent() {
     { id: 2, text: 'How are you?', time: '23:42', isMe: true, delay: 1200 },
     { id: 3, text: 'Hey good evening, better now', time: '23:44', isMe: false, delay: 2500 },
     { id: 4, text: "You're so handsome you know", time: '23:44', isMe: false, delay: 3800 },
-    { id: 5, text: 'Haha thanks \u2764\ufe0f', time: '23:45', isMe: true, delay: 5200 },
+    { id: 5, text: 'Haha thanks ❤️', time: '23:45', isMe: true, delay: 5200 },
     { id: 6, text: "I can't have you at my place", time: '23:46', isMe: false, delay: 6800 },
-    { id: 7, text: 'Wanna go to a hotel?? I\u2019ll pay', time: '23:46', isMe: false, delay: 8200 },
+    { id: 7, text: "Wanna go to a hotel?? I'll pay", time: '23:46', isMe: false, delay: 8200 },
     { id: 8, text: "Well, I'd like to, but there's just one problem...", time: '23:47', isMe: true, delay: 10000 },
-    { id: 9, text: "Actually my name is Miguel, I'm a private investigator from IA Observer \ud83d\udd0d", time: '23:47', isMe: true, delay: 12000 },
+    { id: 9, text: "Actually my name is Miguel, I'm a private investigator from IA Observer 🔍", time: '23:47', isMe: true, delay: 12000 },
     { id: 10, text: 'And I was hired by your partner to test your loyalty', time: '23:48', isMe: true, delay: 14000 },
-    { id: 11, text: 'And you failed \u274c\u274c\u274c', time: '23:48', isMe: true, delay: 16000 },
+    { id: 11, text: 'And you failed ❌❌❌', time: '23:48', isMe: true, delay: 16000 },
   ];
 
   useEffect(() => {
@@ -109,12 +109,12 @@ function DetetiveContent() {
   ];
 
   const features = [
-    { icon: '\ud83d\udc64', title: 'Real Detective', subtitle: 'Experienced professional' },
-    { icon: '\ud83d\udcac', title: 'WhatsApp 24/7', subtitle: 'Direct support' },
-    { icon: '\ud83d\udcc4', title: 'PDF Report', subtitle: 'Complete document' },
-    { icon: '\ud83d\udc41\ufe0f', title: 'Live Updates', subtitle: 'Follow everything' },
-    { icon: '\ud83d\udcf8', title: 'Screenshots & Proof', subtitle: 'Clear evidence' },
-    { icon: '\u2713', title: 'Full Analysis', subtitle: 'Detailed behavior' }
+    { icon: '👤', title: 'Real Detective', subtitle: 'Experienced professional' },
+    { icon: '💬', title: 'WhatsApp 24/7', subtitle: 'Direct support' },
+    { icon: '📄', title: 'PDF Report', subtitle: 'Complete document' },
+    { icon: '👁️', title: 'Live Updates', subtitle: 'Follow everything' },
+    { icon: '📸', title: 'Screenshots & Proof', subtitle: 'Clear evidence' },
+    { icon: '✓', title: 'Full Analysis', subtitle: 'Detailed behavior' }
   ];
 
   const masterProFeatures = [
@@ -161,12 +161,12 @@ function DetetiveContent() {
               ● Real Investigation
             </span>
             <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 border border-gray-600">
-              \ud83d\udd12 100% Confidential
+              🔒 100% Confidential
             </span>
           </div>
 
           <div className="bg-[#1a1a2e] rounded-xl py-3 px-6 inline-flex items-center gap-2 border border-gray-700">
-            <span className="text-purple-400">\ud83d\udc8e</span>
+            <span className="text-purple-400">💎</span>
             <span className="text-white font-medium text-sm">Our Most Complete and Professional Service</span>
           </div>
         </motion.div>
@@ -178,7 +178,7 @@ function DetetiveContent() {
           className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
         >
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-xl">\u26a1</span>
+            <span className="text-xl">⚡</span>
             <h2 className="text-white font-bold text-lg">How the Investigation Works</h2>
           </div>
 
@@ -203,7 +203,7 @@ function DetetiveContent() {
           </div>
 
           <div className="mt-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-3 px-4 flex items-center justify-center gap-2">
-            <span className="text-lg">\ud83d\udcf1</span>
+            <span className="text-lg">📱</span>
             <span className="text-emerald-400 text-sm font-medium">Follow everything via the detective's WhatsApp in real time</span>
           </div>
         </motion.section>
@@ -215,7 +215,7 @@ function DetetiveContent() {
           className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
         >
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-xl">\ud83d\udd0d</span>
+            <span className="text-xl">🔍</span>
             <h2 className="text-white font-bold text-lg">See How It Works in Practice</h2>
           </div>
           <p className="text-gray-400 text-sm text-center mb-6">Real example of professional infiltration</p>
@@ -225,7 +225,7 @@ function DetetiveContent() {
               <div className="bg-[#e5ddd5] rounded-2xl overflow-hidden" style={{ aspectRatio: '9/16' }}>
                 <div className="bg-[#075e54] py-2 px-3 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                    <span className="text-white text-xs">\ud83d\udd0d</span>
+                    <span className="text-white text-xs">🔍</span>
                   </div>
                   <div>
                     <p className="text-white text-xs font-medium">Investigation Tip</p>
@@ -238,7 +238,7 @@ function DetetiveContent() {
                     onClick={() => setShowDemo(true)}
                     className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
                   >
-                    <span>\ud83d\udcf1</span>
+                    <span>📱</span>
                     Click to see the demo
                   </button>
                   <p className="text-gray-600 text-xs mt-3 text-center">See how the detective works in practice</p>
@@ -288,7 +288,7 @@ function DetetiveContent() {
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-xl">\u26a1</span>
+              <span className="text-xl">⚡</span>
               <h2 className="text-white font-bold text-lg">How Does It Work?</h2>
             </div>
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white">
@@ -298,7 +298,7 @@ function DetetiveContent() {
 
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-emerald-400">\u2705</span>
+              <span className="text-emerald-400">✅</span>
               <span className="text-emerald-400 font-bold text-sm">The Investigation Starts NOW</span>
             </div>
             <p className="text-gray-400 text-xs">
@@ -331,7 +331,7 @@ function DetetiveContent() {
           </div>
 
           <div className="mt-4 text-center">
-            <span className="text-red-400 text-xs">\u2191 The investigation lasts until you are 100% satisfied</span>
+            <span className="text-red-400 text-xs">↑ The investigation lasts until you are 100% satisfied</span>
           </div>
         </motion.section>
 
@@ -354,20 +354,20 @@ function DetetiveContent() {
           </div>
 
           <div className="bg-gray-800/50 rounded-xl py-2 px-4 text-center mb-4 border border-gray-700">
-            <span className="text-amber-400 text-sm">\u2726 Everything from Advanced Investigation +</span>
+            <span className="text-amber-400 text-sm">✦ Everything from Advanced Investigation +</span>
           </div>
 
           <div className="space-y-3 mb-6">
             {masterProFeatures.map((feature, index) => (
               <div key={index} className="flex items-start gap-2">
-                <span className="text-amber-400 text-sm">\u2713</span>
+                <span className="text-amber-400 text-sm">✓</span>
                 <span className="text-white text-sm">{feature}</span>
               </div>
             ))}
           </div>
 
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl py-3 px-4 text-center mb-4">
-            <p className="text-amber-400 text-sm font-medium">\ud83c\udfc6 100% online — everything sent directly to you.</p>
+            <p className="text-amber-400 text-sm font-medium">🏆 100% online — everything sent directly to you.</p>
             <p className="text-amber-400 text-xs">A real investigator does all the work for you!</p>
           </div>
 
@@ -386,7 +386,7 @@ function DetetiveContent() {
           className="text-center py-8"
         >
           <p className="text-gray-500 text-xs">
-            \u00a9 2024 IA Observer - All rights reserved
+            © 2024 IA Observer - All rights reserved
           </p>
         </motion.section>
       </div>
@@ -468,7 +468,7 @@ function DetetiveContent() {
                         className="bg-gradient-to-r from-red-500 to-red-600 py-3 px-4"
                       >
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-white text-lg">\u26a0\ufe0f</span>
+                          <span className="text-white text-lg">⚠️</span>
                           <div className="text-center">
                             <p className="text-white font-bold text-sm">INFIDELITY CONFIRMED</p>
                             <p className="text-white/90 text-xs">Evidence sent immediately</p>
