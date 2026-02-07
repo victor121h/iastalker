@@ -8,39 +8,24 @@ const pool = new Pool({
   ssl: isSSL ? { rejectUnauthorized: false } : undefined,
 });
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'iaobserver2024';
-
-export async function POST(request: NextRequest) {
+export async function GET() {
   try {
-    const body = await request.json();
-    const password = body.password;
+    const [webhookCount, creditsCount, recentWebhooks, recentCredits] = await Promise.all([
+      pool.query('SELECT COUNT(*) as total FROM webhook_logs'),
+      pool.query('SELECT COUNT(*) as total, SUM(total_credits) as total_credits FROM user_credits'),
+      pool.query('SELECT id, sale_code, plan_code, plan_name, sale_status, customer_email, customer_name, credits_added, created_at FROM webhook_logs ORDER BY created_at DESC LIMIT 50'),
+      pool.query('SELECT id, email, name, total_credits, used_credits, created_at, updated_at FROM user_credits ORDER BY updated_at DESC LIMIT 50'),
+    ]);
 
-    if (!password || password !== ADMIN_PASSWORD) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const action = body.action || 'dashboard';
-
-    if (action === 'dashboard') {
-      const [webhookCount, creditsCount, recentWebhooks, recentCredits] = await Promise.all([
-        pool.query('SELECT COUNT(*) as total FROM webhook_logs'),
-        pool.query('SELECT COUNT(*) as total, SUM(total_credits) as total_credits FROM user_credits'),
-        pool.query('SELECT id, sale_code, plan_code, plan_name, sale_status, customer_email, customer_name, credits_added, created_at FROM webhook_logs ORDER BY created_at DESC LIMIT 50'),
-        pool.query('SELECT id, email, name, total_credits, used_credits, created_at, updated_at FROM user_credits ORDER BY updated_at DESC LIMIT 50'),
-      ]);
-
-      return NextResponse.json({
-        stats: {
-          total_webhooks: parseInt(webhookCount.rows[0].total),
-          total_users: parseInt(creditsCount.rows[0].total),
-          total_credits_distributed: parseInt(creditsCount.rows[0].total_credits) || 0,
-        },
-        recent_webhooks: recentWebhooks.rows,
-        user_credits: recentCredits.rows,
-      });
-    }
-
-    return NextResponse.json({ error: 'Unknown action' }, { status: 400 });
+    return NextResponse.json({
+      stats: {
+        total_webhooks: parseInt(webhookCount.rows[0].total),
+        total_users: parseInt(creditsCount.rows[0].total),
+        total_credits_distributed: parseInt(creditsCount.rows[0].total_credits) || 0,
+      },
+      recent_webhooks: recentWebhooks.rows,
+      user_credits: recentCredits.rows,
+    });
   } catch (error: any) {
     console.error('[Admin API] Error:', error?.message || error);
     return NextResponse.json({ error: 'Internal server error', details: error?.message }, { status: 500 });
