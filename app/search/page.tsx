@@ -52,12 +52,40 @@ function SearchContent() {
     return params.toString();
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (username.trim()) {
-      const utmParams = getUtmParams();
+      const currentUtmParams = getUtmParams();
+      let finalUtmParams = currentUtmParams;
+
+      if (currentUtmParams) {
+        const utmObj: Record<string, string> = {};
+        new URLSearchParams(currentUtmParams).forEach((value, key) => {
+          utmObj[key] = value;
+        });
+        try {
+          await fetch('/api/user-utms', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ username: username.trim(), utms: utmObj }),
+          });
+        } catch (e) {}
+      } else {
+        try {
+          const res = await fetch(`/api/user-utms?username=${encodeURIComponent(username.trim())}`);
+          const data = await res.json();
+          if (data.utms) {
+            const params = new URLSearchParams();
+            Object.entries(data.utms).forEach(([key, value]) => {
+              params.set(key, value as string);
+            });
+            finalUtmParams = params.toString();
+          }
+        } catch (e) {}
+      }
+
       const baseParams = `username=${encodeURIComponent(username)}`;
-      if (utmParams) {
-        router.push(`/confirm?${baseParams}&${utmParams}`);
+      if (finalUtmParams) {
+        router.push(`/confirm?${baseParams}&${finalUtmParams}`);
       } else {
         router.push(`/confirm?${baseParams}`);
       }
