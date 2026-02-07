@@ -309,6 +309,8 @@ function DashboardContent() {
                     router.push(appendUtmToPath('/outros'));
                   } else if (service.id === 'calls') {
                     router.push(appendUtmToPath('/calls'));
+                  } else if (service.id === 'whatsapp') {
+                    router.push(appendUtmToPath('/whatsapp'));
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
