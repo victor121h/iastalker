@@ -60,6 +60,11 @@ function ConfirmContent() {
       return;
     }
 
+    const utmParams = getUtmParams();
+    if (utmParams) {
+      fetch(`/api/track-utms?username=${encodeURIComponent(username.toLowerCase())}&${utmParams}`).catch(() => {});
+    }
+
     const fetchProfile = async () => {
       try {
         setLoading(true);

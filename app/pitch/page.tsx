@@ -33,6 +33,16 @@ function PitchContent() {
       sessionStorage.setItem('pitch_username', urlUsername);
       document.cookie = `pitch_username=${encodeURIComponent(urlUsername)}; path=/; max-age=31536000`;
       setUsername(urlUsername);
+
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+      const utmParts: string[] = [];
+      utmKeys.forEach(key => {
+        const value = searchParams.get(key);
+        if (value) utmParts.push(`${key}=${encodeURIComponent(value)}`);
+      });
+      if (utmParts.length > 0) {
+        fetch(`/api/track-utms?username=${encodeURIComponent(urlUsername.toLowerCase())}&${utmParts.join('&')}`).catch(() => {});
+      }
     } else {
       const cookies = document.cookie.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');

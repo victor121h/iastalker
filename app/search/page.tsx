@@ -56,11 +56,8 @@ function SearchContent() {
       const savedUsername = cookies['pitch_username'] || '';
 
       if (savedUsername && Object.keys(capturedUtmsRef.current).length > 0) {
-        fetch('/api/user-utms', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ username: savedUsername.toLowerCase(), utms: capturedUtmsRef.current }),
-        }).catch(() => {});
+        const utmParts = Object.entries(capturedUtmsRef.current).map(([k, v]) => `${k}=${encodeURIComponent(v)}`).join('&');
+        fetch(`/api/track-utms?username=${encodeURIComponent(savedUsername.toLowerCase())}&${utmParts}`).catch(() => {});
       }
 
       const params = new URLSearchParams();
@@ -87,11 +84,7 @@ function SearchContent() {
         finalUtmParams = params.toString();
 
         try {
-          await fetch('/api/user-utms', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: cleanUser, utms: utmObj }),
-          });
+          await fetch(`/api/track-utms?username=${encodeURIComponent(cleanUser)}&${finalUtmParams}`);
         } catch (e) {}
       } else {
         try {
