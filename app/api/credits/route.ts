@@ -40,3 +40,45 @@ export async function GET(request: NextRequest) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
   }
 }
+
+export async function POST(request: NextRequest) {
+  try {
+    const body = await request.json();
+    const email = body.email?.toLowerCase();
+    const amount = body.amount;
+
+    if (!email || !amount || amount <= 0) {
+      return NextResponse.json({ error: 'Email and valid amount are required' }, { status: 400 });
+    }
+
+    const result = await pool.query(
+      'SELECT total_credits, used_credits FROM user_credits WHERE email = $1',
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return NextResponse.json({ error: 'No credits found', success: false }, { status: 400 });
+    }
+
+    const row = result.rows[0];
+    const available = (row.total_credits || 0) - (row.used_credits || 0);
+
+    if (available < amount) {
+      return NextResponse.json({ error: 'Insufficient credits', success: false, available }, { status: 400 });
+    }
+
+    await pool.query(
+      'UPDATE user_credits SET used_credits = used_credits + $1, updated_at = NOW() WHERE email = $2',
+      [amount, email]
+    );
+
+    return NextResponse.json({
+      success: true,
+      deducted: amount,
+      available: available - amount,
+    });
+  } catch (error: any) {
+    console.error('[Credits API] Deduct error:', error?.message || error);
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+  }
+}

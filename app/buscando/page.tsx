@@ -3,7 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { getCredits, deductCredits, hasSearched, setSearchDone } from '@/lib/credits';
+import { hasSearched, setSearchDone } from '@/lib/credits';
 
 type Stage = 'input' | 'analyzing' | 'completed';
 
@@ -15,8 +15,9 @@ function BuscandoContent() {
   const [progress, setProgress] = useState(0);
   const [currentStepIndex, setCurrentStepIndex] = useState(0);
   const [showNoCreditsPopup, setShowNoCreditsPopup] = useState(false);
-  const [currentCredits, setCurrentCredits] = useState(25);
+  const [currentCredits, setCurrentCredits] = useState(0);
   const [alreadySearched, setAlreadySearched] = useState(false);
+  const [userEmail, setUserEmail] = useState('');
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -37,8 +38,19 @@ function BuscandoContent() {
   };
 
   useEffect(() => {
-    setCurrentCredits(getCredits());
     setAlreadySearched(hasSearched());
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedEmail) {
+      setUserEmail(storedEmail);
+      fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.available !== undefined) {
+            setCurrentCredits(data.available);
+          }
+        })
+        .catch(() => {});
+    }
   }, []);
 
   const getAnalysisSteps = () => [
@@ -84,28 +96,56 @@ function BuscandoContent() {
     }
   };
 
-  const handleAccelerate = () => {
-    if (deductCredits(25)) {
-      setSearchDone();
-      setCurrentCredits(getCredits());
-      setStage('completed');
-    } else {
+  const handleAccelerate = async () => {
+    if (!userEmail) {
+      setShowNoCreditsPopup(true);
+      return;
+    }
+    try {
+      const res = await fetch('/api/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, amount: 25 }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSearchDone();
+        setCurrentCredits(data.available);
+        setStage('completed');
+      } else {
+        setShowNoCreditsPopup(true);
+      }
+    } catch {
       setShowNoCreditsPopup(true);
     }
   };
 
-  const handleUnlockEmail = () => {
-    if (deductCredits(50)) {
-      setCurrentCredits(getCredits());
-      const params = new URLSearchParams();
-      params.set('username', username);
-      const utmParams = getUtmParams();
-      if (utmParams) {
-        const utmParsed = new URLSearchParams(utmParams);
-        utmParsed.forEach((value, key) => params.set(key, value));
+  const handleUnlockEmail = async () => {
+    if (!userEmail) {
+      setShowNoCreditsPopup(true);
+      return;
+    }
+    try {
+      const res = await fetch('/api/credits', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: userEmail, amount: 50 }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setCurrentCredits(data.available);
+        const params = new URLSearchParams();
+        params.set('username', username);
+        const utmParams = getUtmParams();
+        if (utmParams) {
+          const utmParsed = new URLSearchParams(utmParams);
+          utmParsed.forEach((value, key) => params.set(key, value));
+        }
+        router.push(`/direct2?${params.toString()}`);
+      } else {
+        setShowNoCreditsPopup(true);
       }
-      router.push(`/direct2?${params.toString()}`);
-    } else {
+    } catch {
       setShowNoCreditsPopup(true);
     }
   };
@@ -275,7 +315,7 @@ function BuscandoContent() {
                   <span className="text-white font-semibold">Analysis in progress</span>
                 </div>
                 <p className="text-gray-400 text-sm">Progress: {Math.floor(progress)}% • Estimated time: 1 hour</p>
-                <p className="text-yellow-400 text-sm">Your credits: 25</p>
+                <p className="text-yellow-400 text-sm">Your credits: {currentCredits}</p>
               </div>
 
               <button
