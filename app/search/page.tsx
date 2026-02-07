@@ -50,7 +50,7 @@ function SearchContent() {
         utmSearchParams.forEach((value, key) => params.set(key, value));
       }
       const queryString = params.toString();
-      router.replace(queryString ? `/pitch1?${queryString}` : '/pitch1');
+      router.replace(queryString ? `/pitch?${queryString}` : '/pitch');
     }
   }, []);
 
