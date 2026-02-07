@@ -425,22 +425,6 @@ function AccessContent() {
       </AnimatePresence>
 
       <div className="max-w-2xl mx-auto">
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-red-500/10 border border-red-500/30 rounded-xl p-4 mb-6 text-center"
-        >
-          <p className="text-red-500 font-semibold text-sm md:text-base">
-            Your full access will be granted within 14 days. There are 246 people ahead of you waiting for installation. For now, enjoy the complete report of the profile you searched. If you want to skip the queue and get access today, click the button below.
-          </p>
-          <a
-            href="/access2"
-            className="inline-block mt-4 bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 px-6 rounded-xl transition-all duration-300"
-          >
-            Want to access today? Click here
-          </a>
-        </motion.div>
-
         <motion.a
           href="/detetive"
           initial={{ opacity: 0, y: -10 }}
