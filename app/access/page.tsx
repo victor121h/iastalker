@@ -290,15 +290,16 @@ function AccessContent() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 pb-20">
-      <div className="sticky top-0 z-50 bg-gradient-to-r from-purple-600 to-pink-600 py-3 px-4">
+      <div className="sticky top-0 z-50 bg-gradient-to-r from-purple-600 to-pink-600 py-5 px-4">
         <a 
           href="/cadastro"
-          className="flex items-center justify-center gap-2 text-white font-semibold text-sm md:text-base hover:opacity-90 transition-opacity"
+          className="flex items-center justify-center gap-3 text-white font-bold text-base md:text-lg hover:opacity-90 transition-opacity animate-pulse"
         >
           <span>Click here to create your IA Observer account</span>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-            <path d="M5 12h14M12 5l7 7-7 7"/>
-          </svg>
+          <span className="relative flex h-3 w-3">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-3 w-3 bg-white"></span>
+          </span>
         </a>
       </div>
       <div className="p-4">
