@@ -118,13 +118,13 @@ function DetetiveContent() {
   ];
 
   const masterProFeatures = [
-    'Actor/Actress from a nearby city for an in-person meeting',
-    'Real-world loyalty test with a physical encounter',
-    'Discreet video recording of the meeting as definitive proof',
-    'Trained and experienced professionals in in-person investigation',
-    'Detailed report with photos, videos, and complete behavioral analysis',
-    'Real-time monitoring and updates via WhatsApp',
-    'Maximum success guarantee and irrefutable proof'
+    'Fully online loyalty test — no need to leave your home',
+    'A real investigator will approach and test your partner online',
+    'The investigator creates realistic scenarios to test fidelity',
+    'You receive all screenshots, conversations, and evidence directly',
+    'Complete PDF report with detailed behavioral analysis sent to you',
+    'Real-time updates via WhatsApp throughout the investigation',
+    'Absolute discretion — your partner will never know'
   ];
 
   return (
@@ -345,7 +345,7 @@ function DetetiveContent() {
           <div className="flex justify-between items-start mb-4">
             <div>
               <h3 className="text-white font-bold text-xl mb-1">Master PRO Investigation</h3>
-              <p className="text-gray-400 text-sm">Real Encounter in Your City</p>
+              <p className="text-gray-400 text-sm">100% Online Investigation</p>
             </div>
             <div className="text-right">
               <span className="text-amber-400 text-xs font-bold bg-amber-500/20 px-2 py-1 rounded">VIP</span>
@@ -367,8 +367,8 @@ function DetetiveContent() {
           </div>
 
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl py-3 px-4 text-center mb-4">
-            <p className="text-amber-400 text-sm font-medium">\ud83c\udfc6 The most complete investigation.</p>
-            <p className="text-amber-400 text-xs">For absolute certainty!</p>
+            <p className="text-amber-400 text-sm font-medium">\ud83c\udfc6 100% online — everything sent directly to you.</p>
+            <p className="text-amber-400 text-xs">A real investigator does all the work for you!</p>
           </div>
 
           <a
