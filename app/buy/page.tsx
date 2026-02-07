@@ -95,7 +95,7 @@ function BuyContent() {
       name: 'Unlimited Plan',
       subtitle: 'Use without limits. No counting. No worries.',
       credits: 'Unlimited',
-      price: '$197.00',
+      price: '$297.00',
       features: [
         'Unlimited access to all tools',
         'Cell phone tracker',
@@ -290,12 +290,12 @@ function BuyContent() {
                   <span className="text-red-400 text-xs font-bold uppercase tracking-wide">Limited Time Offer</span>
                 </div>
                 <h2 className="text-white text-2xl font-bold mb-2">Unlimited Plan</h2>
-                <p className="text-emerald-400 text-lg font-bold">50% OFF - Special Deal</p>
+                <p className="text-emerald-400 text-lg font-bold">$200 OFF - Special Deal</p>
               </div>
 
               <div className="bg-[#0a0a0f] rounded-xl p-5 mb-6 border border-emerald-500/20">
                 <div className="flex items-center justify-center gap-3 mb-3">
-                  <span className="text-gray-500 text-2xl line-through">$197.00</span>
+                  <span className="text-gray-500 text-2xl line-through">$297.00</span>
                   <span className="text-white text-4xl font-bold">$97.00</span>
                 </div>
                 <p className="text-gray-400 text-sm text-center">one-time payment</p>
