@@ -18,12 +18,12 @@ export async function GET(request: NextRequest) {
     }
 
     const result = await pool.query(
-      'SELECT total_credits, used_credits, name, unlocked_all FROM user_credits WHERE email = $1',
+      'SELECT total_credits, used_credits, name, unlocked_all, show_bonus_popup FROM user_credits WHERE email = $1',
       [email]
     );
 
     if (result.rows.length === 0) {
-      return NextResponse.json({ credits: 0, used: 0, available: 0, unlocked_all: false });
+      return NextResponse.json({ credits: 0, used: 0, available: 0, unlocked_all: false, show_bonus_popup: false });
     }
 
     const row = result.rows[0];
@@ -44,6 +44,7 @@ export async function GET(request: NextRequest) {
       available: available,
       name: row.name || '',
       unlocked_all: unlockedAll,
+      show_bonus_popup: row.show_bonus_popup || false,
     });
   } catch (error: any) {
     console.error('[Credits API] Error:', error?.message || error);

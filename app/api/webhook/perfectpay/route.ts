@@ -55,6 +55,7 @@ export async function POST(request: NextRequest) {
       creditsToAdd = PLAN_CREDITS[planCode];
     }
 
+    let bonusCredits = 0;
     const client = await pool.connect();
     try {
       await client.query('BEGIN');
@@ -88,19 +89,32 @@ export async function POST(request: NextRequest) {
           JSON.stringify(body),
         ]
       );
-
       if (creditsToAdd > 0 && customerEmail) {
+        if (creditsToAdd === 600) {
+          const userRow = await client.query(
+            'SELECT first_recharge_done FROM user_credits WHERE email = $1',
+            [customerEmail]
+          );
+          const isFirstRecharge = userRow.rows.length === 0 || !userRow.rows[0].first_recharge_done;
+          if (isFirstRecharge) {
+            bonusCredits = 200;
+          }
+        }
+
+        const totalToAdd = creditsToAdd + bonusCredits;
         await client.query(
-          `INSERT INTO user_credits (email, name, total_credits, updated_at)
-           VALUES ($1, $2, $3, NOW())
+          `INSERT INTO user_credits (email, name, total_credits, first_recharge_done, show_bonus_popup, updated_at)
+           VALUES ($1, $2, $3, $4, $5, NOW())
            ON CONFLICT (email) DO UPDATE SET
              total_credits = user_credits.total_credits + $3,
+             first_recharge_done = CASE WHEN $4 THEN TRUE ELSE user_credits.first_recharge_done END,
+             show_bonus_popup = CASE WHEN $5 THEN TRUE ELSE user_credits.show_bonus_popup END,
              name = COALESCE(NULLIF($2, ''), user_credits.name),
              updated_at = NOW()`,
-          [customerEmail, customerName, creditsToAdd]
+          [customerEmail, customerName, totalToAdd, bonusCredits > 0, bonusCredits > 0]
         );
 
-        console.log('[PerfectPay Webhook] Added', creditsToAdd, 'credits for', customerEmail);
+        console.log('[PerfectPay Webhook] Added', totalToAdd, 'credits (bonus:', bonusCredits, ') for', customerEmail);
       }
 
       await client.query('COMMIT');
@@ -119,7 +133,7 @@ export async function POST(request: NextRequest) {
       email: customerEmail,
     });
 
-    return NextResponse.json({ success: true, credits_added: creditsToAdd });
+    return NextResponse.json({ success: true, credits_added: creditsToAdd + bonusCredits, bonus: bonusCredits });
   } catch (error: any) {
     console.error('[PerfectPay Webhook] Error:', error?.message || error);
     return NextResponse.json({ error: 'Internal server error', details: error?.message }, { status: 500 });

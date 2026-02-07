@@ -27,6 +27,19 @@ function DashboardContent() {
   const [level] = useState(2);
   const [instagramSearched, setInstagramSearched] = useState(false);
   const [unlockedAll, setUnlockedAll] = useState(false);
+  const [showBonusPopup, setShowBonusPopup] = useState(false);
+
+  const dismissBonusPopup = () => {
+    setShowBonusPopup(false);
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedEmail) {
+      fetch('/api/credits/dismiss-bonus', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email: storedEmail.toLowerCase() }),
+      }).catch(() => {});
+    }
+  };
 
   useEffect(() => {
     const storedName = localStorage.getItem('user_name');
@@ -42,6 +55,9 @@ function DashboardContent() {
           }
           if (data.unlocked_all) {
             setUnlockedAll(true);
+          }
+          if (data.show_bonus_popup) {
+            setShowBonusPopup(true);
           }
         })
         .catch(() => {});
@@ -159,6 +175,30 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
+      {showBonusPopup && (
+        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.8, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            transition={{ duration: 0.4, ease: 'easeOut' }}
+            className="bg-gradient-to-br from-[#1a1a2e] to-[#16162a] border border-purple-500/40 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl shadow-purple-500/20"
+          >
+            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-3xl">
+              🎁
+            </div>
+            <h3 className="text-white text-xl font-bold mb-3">Bonus Credits!</h3>
+            <p className="text-gray-300 text-sm leading-relaxed mb-6">
+              You earned <span className="text-yellow-400 font-bold">200 extra credits</span> for your first top-up. On your second top-up, you&apos;ll earn <span className="text-yellow-400 font-bold">2x more</span> bonus credits.
+            </p>
+            <button
+              onClick={dismissBonusPopup}
+              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-sm transition-all"
+            >
+              Awesome!
+            </button>
+          </motion.div>
+        </div>
+      )}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
         <Link 
           href={appendUtmToPath('/access')}
