@@ -42,6 +42,15 @@ function SearchContent() {
         return acc;
       }, {} as Record<string, string>);
       const savedUsername = cookies['pitch_username'] || '';
+
+      if (savedUsername && Object.keys(currentUtms).length > 0) {
+        fetch('/api/user-utms', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ username: savedUsername.toLowerCase(), utms: currentUtms }),
+        }).catch(() => {});
+      }
+
       const utmParams = getUtmParams();
       const params = new URLSearchParams();
       if (savedUsername) params.set('username', savedUsername);
@@ -70,27 +79,40 @@ function SearchContent() {
       const currentUtmParams = getUtmParams();
       let finalUtmParams = currentUtmParams;
 
+      let utmObj: Record<string, string> = {};
+
       if (currentUtmParams) {
-        const utmObj: Record<string, string> = {};
         new URLSearchParams(currentUtmParams).forEach((value, key) => {
           utmObj[key] = value;
         });
+      }
+
+      if (Object.keys(utmObj).length === 0) {
         try {
-          const res = await fetch('/api/user-utms', {
+          const stored = localStorage.getItem('pending_utms');
+          if (stored) {
+            utmObj = JSON.parse(stored);
+            const params = new URLSearchParams();
+            Object.entries(utmObj).forEach(([key, value]) => {
+              params.set(key, value as string);
+            });
+            finalUtmParams = params.toString();
+          }
+        } catch (e) {}
+      }
+
+      if (Object.keys(utmObj).length > 0) {
+        try {
+          await fetch('/api/user-utms', {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ username: cleanUser, utms: utmObj }),
           });
-          const data = await res.json();
-          console.log('UTM save result:', data);
-        } catch (e) {
-          console.error('UTM save error:', e);
-        }
+        } catch (e) {}
       } else {
         try {
           const res = await fetch(`/api/user-utms?username=${encodeURIComponent(cleanUser)}`);
           const data = await res.json();
-          console.log('UTM fetch result:', data);
           if (data.utms) {
             const params = new URLSearchParams();
             Object.entries(data.utms).forEach(([key, value]) => {
@@ -98,9 +120,7 @@ function SearchContent() {
             });
             finalUtmParams = params.toString();
           }
-        } catch (e) {
-          console.error('UTM fetch error:', e);
-        }
+        } catch (e) {}
       }
 
       const baseParams = `username=${encodeURIComponent(username)}`;
