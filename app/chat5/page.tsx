@@ -123,7 +123,7 @@ function Chat5Content() {
     try {
       const creditsRes = await fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`);
       const creditsData = await creditsRes.json();
-      const available = (creditsData.credits?.total || 0) - (creditsData.credits?.used || 0);
+      const available = creditsData.available ?? ((creditsData.credits || 0) - (creditsData.used || 0));
       if (available < 750) {
         router.push(buildUrlWithParams('/buy'));
         return;
@@ -131,7 +131,7 @@ function Chat5Content() {
       const deductRes = await fetch('/api/credits', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: storedEmail, credits: 750, action: 'use' }),
+        body: JSON.stringify({ email: storedEmail, amount: 750 }),
       });
       if (deductRes.ok) {
         router.push(buildUrlWithParams('/buy'));
