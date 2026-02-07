@@ -67,12 +67,14 @@ function BuyContent() {
     {
       id: 'mega',
       name: 'Mega Plan',
-      subtitle: '850 more credits than Pro for a small upgrade',
+      subtitle: '+850 more credits than Pro for only $67 more',
       credits: '1,000',
       price: '$147.00',
       features: [
         'Unlimited access to all tools',
-        'One of the lowest cost per credit on the platform'
+        'One of the lowest cost per credit on the platform',
+        'Save hundreds of dollars compared to buying smaller credit packs',
+        'Much more worth it than multiple Pro plan upgrades'
       ],
       bottomText: 'Recommended for frequent and continuous use',
       warning: 'Intensive users may exceed this limit',
@@ -85,17 +87,19 @@ function BuyContent() {
     {
       id: 'unlimited',
       name: 'Unlimited Plan',
-      subtitle: 'Use without limits. No counting. No worries.',
+      subtitle: 'Unlimited usage for only $50 more than the Mega plan',
       credits: 'Unlimited',
       price: '$197.00',
       features: [
         'Unlimited access to all tools',
         'Cell phone tracker',
         'Access to person\'s camera',
-        'Cheaper than recharging credits multiple times'
+        'Cheaper than recharging credits multiple times',
+        'Avoid recurring spending on credit recharges',
+        'More economical than exceeding the Mega plan limit'
       ],
       bottomText: 'Never worry about credits again\nFree usage, no blocks',
-      finalText: 'If you plan to use it frequently, this plan pays for itself',
+      finalText: 'The more you use it, the lower the real cost',
       color: 'from-emerald-500 to-teal-500',
       borderColor: 'border-emerald-500/50',
       bgColor: 'bg-emerald-500/10',

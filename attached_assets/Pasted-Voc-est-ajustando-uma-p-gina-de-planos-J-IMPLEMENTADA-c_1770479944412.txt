@@ -1,0 +1,78 @@
+Você está ajustando uma página de planos JÁ IMPLEMENTADA,
+com layout, textos e hierarquia praticamente finalizados
+(exatamente como na imagem fornecida).
+
+IMPORTANTE:
+- NÃO alterar layout
+- NÃO alterar preços
+- NÃO alterar quantidade de créditos
+- NÃO mexer nos planos Basic e Pro
+- APENAS complementar os planos Mega e Unlimited
+- Somente adicionar microcopy e bullets de vantagem comparativa
+
+Seu objetivo é deixar EXPLÍCITO:
+1. Quantos créditos extras o usuário ganha em relação ao plano anterior
+2. Qual é a economia financeira real ao escolher esse plano
+3. Por que subir de plano é matematicamente mais inteligente
+
+--------------------------------
+AJUSTES NO PLANO MEGA (1.000 créditos – $147.00)
+--------------------------------
+
+O que JÁ EXISTE:
+- Comparação de custo por crédito
+- Posicionamento como uso frequente
+- Aviso de possível limitação
+
+O que ADICIONAR (OBRIGATÓRIO):
+
+1. Logo abaixo de “1,000 Credits”, adicionar uma linha clara:
+   - “+850 créditos a mais que o Pro por apenas $67 a mais”
+
+2. Adicionar um bullet novo focado em economia:
+   - “Economize centenas de dólares comparado à compra de créditos menores”
+
+3. Adicionar um bullet comparativo direto:
+   - “Muito mais vantajoso do que múltiplos upgrades do plano Pro”
+
+Objetivo psicológico:
+Fazer o usuário perceber que subir do Pro para o Mega
+é uma decisão lógica de volume e economia.
+
+--------------------------------
+AJUSTES NO PLANO UNLIMITED ($197.00)
+--------------------------------
+
+O que JÁ EXISTE:
+- Posicionamento emocional
+- Comparação implícita com recarga
+- Frases de tranquilidade
+
+O que ADICIONAR (OBRIGATÓRIO):
+
+1. Logo abaixo de “Unlimited”, adicionar uma frase comparativa clara:
+   - “Uso ilimitado por apenas $50 a mais que o plano Mega”
+
+2. Adicionar um bullet de economia direta:
+   - “Evita gastos recorrentes com recarga de créditos”
+
+3. Adicionar um bullet de comparação lógica:
+   - “Mais econômico do que ultrapassar o limite do plano Mega”
+
+4. Adicionar uma frase curta de fechamento racional:
+   - “Quanto mais você usa, menor é o custo real”
+
+Objetivo psicológico:
+Eliminar a objeção de preço.
+Fazer o Unlimited parecer um pequeno passo final,
+não um salto caro.
+
+--------------------------------
+
+RESULTADO FINAL ESPERADO:
+- O Pro vence o Basic
+- O Mega vence o Pro com matemática clara
+- O Unlimited vence todos com lógica + tranquilidade
+
+Execute apenas essas adições,
+sem alterar textos já existentes.
