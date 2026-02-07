@@ -307,6 +307,8 @@ function DashboardContent() {
                     router.push(appendUtmToPath('/location'));
                   } else if (service.id === 'other-networks') {
                     router.push(appendUtmToPath('/outros'));
+                  } else if (service.id === 'calls') {
+                    router.push(appendUtmToPath('/calls'));
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
