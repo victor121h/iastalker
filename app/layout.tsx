@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ClientProviders } from "@/components/ClientProviders";
 
@@ -47,6 +48,7 @@ export default function RootLayout({
         <ClientProviders>
           {children}
         </ClientProviders>
+        <Analytics />
       </body>
     </html>
   );
