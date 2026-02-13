@@ -59,7 +59,7 @@ function Up4Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ7JUS')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ5KCU')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4 bg-[#4A90D9]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
