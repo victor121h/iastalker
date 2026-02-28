@@ -3,6 +3,8 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
+import { useTranslation } from '@/lib/useTranslation';
+import { getCheckoutUrl } from '@/lib/checkoutLinks';
 
 interface ChatMessage {
   id: number;
@@ -14,22 +16,23 @@ interface ChatMessage {
 
 function DetetiveContent() {
   const searchParams = useSearchParams();
+  const { t, lang } = useTranslation();
   const [showDemo, setShowDemo] = useState(false);
   const [visibleMessages, setVisibleMessages] = useState<number[]>([]);
   const [showFinalBanner, setShowFinalBanner] = useState(false);
 
   const chatMessages: ChatMessage[] = [
-    { id: 1, text: 'Hey, we matched on Tinder', time: '23:42', isMe: true, delay: 500 },
-    { id: 2, text: 'How are you?', time: '23:42', isMe: true, delay: 1200 },
-    { id: 3, text: 'Hey good evening, better now', time: '23:44', isMe: false, delay: 2500 },
-    { id: 4, text: "You're so handsome you know", time: '23:44', isMe: false, delay: 3800 },
-    { id: 5, text: 'Haha thanks ❤️', time: '23:45', isMe: true, delay: 5200 },
-    { id: 6, text: "I can't have you at my place", time: '23:46', isMe: false, delay: 6800 },
-    { id: 7, text: "Wanna go to a hotel?? I'll pay", time: '23:46', isMe: false, delay: 8200 },
-    { id: 8, text: "Well, I'd like to, but there's just one problem...", time: '23:47', isMe: true, delay: 10000 },
-    { id: 9, text: "Actually my name is Miguel, I'm a private investigator from IA Observer 🔍", time: '23:47', isMe: true, delay: 12000 },
-    { id: 10, text: 'And I was hired by your partner to test your loyalty', time: '23:48', isMe: true, delay: 14000 },
-    { id: 11, text: 'And you failed ❌❌❌', time: '23:48', isMe: true, delay: 16000 },
+    { id: 1, text: t('det.chat_1'), time: '23:42', isMe: true, delay: 500 },
+    { id: 2, text: t('det.chat_2'), time: '23:42', isMe: true, delay: 1200 },
+    { id: 3, text: t('det.chat_3'), time: '23:44', isMe: false, delay: 2500 },
+    { id: 4, text: t('det.chat_4'), time: '23:44', isMe: false, delay: 3800 },
+    { id: 5, text: t('det.chat_5'), time: '23:45', isMe: true, delay: 5200 },
+    { id: 6, text: t('det.chat_6'), time: '23:46', isMe: false, delay: 6800 },
+    { id: 7, text: t('det.chat_7'), time: '23:46', isMe: false, delay: 8200 },
+    { id: 8, text: t('det.chat_8'), time: '23:47', isMe: true, delay: 10000 },
+    { id: 9, text: t('det.chat_9'), time: '23:47', isMe: true, delay: 12000 },
+    { id: 10, text: t('det.chat_10'), time: '23:48', isMe: true, delay: 14000 },
+    { id: 11, text: t('det.chat_11'), time: '23:48', isMe: true, delay: 16000 },
   ];
 
   useEffect(() => {
@@ -53,7 +56,7 @@ function DetetiveContent() {
   }, [showDemo]);
 
   const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang'];
     const params = new URLSearchParams();
     utmKeys.forEach(key => {
       const value = searchParams.get(key);
@@ -73,58 +76,58 @@ function DetetiveContent() {
   const steps = [
     {
       number: 1,
-      title: 'Initial Report',
-      description: "You provide all the target's information: full name, social media, phone number, habits, schedules. The more details, the better the investigation."
+      title: t('det.step1_title'),
+      description: t('det.step1_desc')
     },
     {
       number: 2,
-      title: 'Immediate Start',
-      description: 'The investigation begins IMMEDIATELY after hiring. The detective analyzes the profile, builds the strategy, and initiates contact right away.'
+      title: t('det.step2_title'),
+      description: t('det.step2_desc')
     },
     {
       number: 3,
-      title: 'Infiltration and Approach',
-      description: "The detective creates a convincing fake profile and adds the target on social media, getting close to their social circle."
+      title: t('det.step3_title'),
+      description: t('det.step3_desc')
     },
     {
       number: 4,
-      title: 'Building Trust',
-      description: 'They maintain natural conversations, comment on photos, and use persuasion techniques to gain trust.'
+      title: t('det.step4_title'),
+      description: t('det.step4_desc')
     },
     {
       number: 5,
-      title: 'Loyalty Test',
-      description: 'With trust established, the detective applies subtle tests to measure loyalty.'
+      title: t('det.step5_title'),
+      description: t('det.step5_desc')
     },
     {
       number: 6,
-      title: 'Evidence Collection',
-      description: 'All relevant interactions are recorded with screenshots, audio, and video.'
+      title: t('det.step6_title'),
+      description: t('det.step6_desc')
     },
     {
       number: 7,
-      title: 'Complete Final Report',
-      description: 'You receive a PDF report with all evidence and a complete behavioral analysis.'
+      title: t('det.step7_title'),
+      description: t('det.step7_desc')
     }
   ];
 
   const features = [
-    { icon: '👤', title: 'Real Detective', subtitle: 'Experienced professional' },
-    { icon: '💬', title: 'WhatsApp 24/7', subtitle: 'Direct support' },
-    { icon: '📄', title: 'PDF Report', subtitle: 'Complete document' },
-    { icon: '👁️', title: 'Live Updates', subtitle: 'Follow everything' },
-    { icon: '📸', title: 'Screenshots & Proof', subtitle: 'Clear evidence' },
-    { icon: '✓', title: 'Full Analysis', subtitle: 'Detailed behavior' }
+    { icon: '\ud83d\udc64', title: t('det.feat_detective'), subtitle: t('det.feat_detective_sub') },
+    { icon: '\ud83d\udcac', title: t('det.feat_whatsapp'), subtitle: t('det.feat_whatsapp_sub') },
+    { icon: '\ud83d\udcc4', title: t('det.feat_pdf'), subtitle: t('det.feat_pdf_sub') },
+    { icon: '\ud83d\udc41\ufe0f', title: t('det.feat_live'), subtitle: t('det.feat_live_sub') },
+    { icon: '\ud83d\udcf8', title: t('det.feat_screenshots'), subtitle: t('det.feat_screenshots_sub') },
+    { icon: '\u2713', title: t('det.feat_analysis'), subtitle: t('det.feat_analysis_sub') }
   ];
 
   const masterProFeatures = [
-    'Fully online loyalty test — no need to leave your home',
-    'A real investigator will approach and test your partner online',
-    'The investigator creates realistic scenarios to test fidelity',
-    'You receive all screenshots, conversations, and evidence directly',
-    'Complete PDF report with detailed behavioral analysis sent to you',
-    'Real-time updates via WhatsApp throughout the investigation',
-    'Absolute discretion — your partner will never know'
+    t('det.master_feat_1'),
+    t('det.master_feat_2'),
+    t('det.master_feat_3'),
+    t('det.master_feat_4'),
+    t('det.master_feat_5'),
+    t('det.master_feat_6'),
+    t('det.master_feat_7')
   ];
 
   return (
@@ -150,24 +153,24 @@ function DetetiveContent() {
           </div>
 
           <h1 className="text-white text-2xl font-bold mb-2">
-            Professional Private Investigator
+            {t('det.title')}
           </h1>
           <p className="text-gray-400 text-sm mb-6">
-            Real Investigation with Real People
+            {t('det.subtitle')}
           </p>
 
           <div className="flex justify-center gap-3 mb-6">
             <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
-              ● Real Investigation
+              {t('det.real_investigation')}
             </span>
             <span className="px-4 py-1.5 rounded-full text-xs font-medium bg-gray-700/50 text-gray-300 border border-gray-600">
-              🔒 100% Confidential
+              {t('det.confidential')}
             </span>
           </div>
 
           <div className="bg-[#1a1a2e] rounded-xl py-3 px-6 inline-flex items-center gap-2 border border-gray-700">
-            <span className="text-purple-400">💎</span>
-            <span className="text-white font-medium text-sm">Our Most Complete and Professional Service</span>
+            <span className="text-purple-400">{'\ud83d\udc8e'}</span>
+            <span className="text-white font-medium text-sm">{t('det.most_complete')}</span>
           </div>
         </motion.div>
 
@@ -178,8 +181,8 @@ function DetetiveContent() {
           className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
         >
           <div className="flex items-center gap-2 mb-6">
-            <span className="text-xl">⚡</span>
-            <h2 className="text-white font-bold text-lg">How the Investigation Works</h2>
+            <span className="text-xl">{'\u26a1'}</span>
+            <h2 className="text-white font-bold text-lg">{t('det.how_works')}</h2>
           </div>
 
           <div className="space-y-4">
@@ -203,8 +206,8 @@ function DetetiveContent() {
           </div>
 
           <div className="mt-6 bg-emerald-500/10 border border-emerald-500/30 rounded-xl py-3 px-4 flex items-center justify-center gap-2">
-            <span className="text-lg">📱</span>
-            <span className="text-emerald-400 text-sm font-medium">Follow everything via the detective's WhatsApp in real time</span>
+            <span className="text-lg">{'\ud83d\udcf1'}</span>
+            <span className="text-emerald-400 text-sm font-medium">{t('det.follow_whatsapp')}</span>
           </div>
         </motion.section>
 
@@ -215,20 +218,20 @@ function DetetiveContent() {
           className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
         >
           <div className="flex items-center justify-center gap-2 mb-2">
-            <span className="text-xl">🔍</span>
-            <h2 className="text-white font-bold text-lg">See How It Works in Practice</h2>
+            <span className="text-xl">{'\ud83d\udd0d'}</span>
+            <h2 className="text-white font-bold text-lg">{t('det.see_practice')}</h2>
           </div>
-          <p className="text-gray-400 text-sm text-center mb-6">Real example of professional infiltration</p>
+          <p className="text-gray-400 text-sm text-center mb-6">{t('det.real_example')}</p>
 
           <div className="relative mx-auto" style={{ maxWidth: '280px' }}>
             <div className="bg-[#1a1a2e] rounded-[32px] p-3 border-4 border-gray-700">
               <div className="bg-[#e5ddd5] rounded-2xl overflow-hidden" style={{ aspectRatio: '9/16' }}>
                 <div className="bg-[#075e54] py-2 px-3 flex items-center gap-2">
                   <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center">
-                    <span className="text-white text-xs">🔍</span>
+                    <span className="text-white text-xs">{'\ud83d\udd0d'}</span>
                   </div>
                   <div>
-                    <p className="text-white text-xs font-medium">Investigation Tip</p>
+                    <p className="text-white text-xs font-medium">{t('det.investigation_tip')}</p>
                     <p className="text-white/70 text-[10px]">online</p>
                   </div>
                 </div>
@@ -238,10 +241,10 @@ function DetetiveContent() {
                     onClick={() => setShowDemo(true)}
                     className="bg-orange-500 hover:bg-orange-600 text-white font-bold py-3 px-6 rounded-xl flex items-center gap-2 transition-all"
                   >
-                    <span>📱</span>
-                    Click to see the demo
+                    <span>{'\ud83d\udcf1'}</span>
+                    {t('det.click_demo')}
                   </button>
-                  <p className="text-gray-600 text-xs mt-3 text-center">See how the detective works in practice</p>
+                  <p className="text-gray-600 text-xs mt-3 text-center">{t('det.see_detective')}</p>
                 </div>
               </div>
             </div>
@@ -249,7 +252,7 @@ function DetetiveContent() {
 
           <div className="mt-6 bg-purple-500/10 border border-purple-500/30 rounded-xl py-3 px-4 text-center">
             <span className="text-purple-400 text-sm">
-              <strong>Professional technique:</strong> The detective uses a convincing fake profile and applies psychology to test the target's loyalty
+              {t('det.pro_technique')}
             </span>
           </div>
         </motion.section>
@@ -260,8 +263,8 @@ function DetetiveContent() {
           transition={{ delay: 0.3 }}
           className="mb-6"
         >
-          <h2 className="text-white font-bold text-xl text-center mb-2">What's Included</h2>
-          <p className="text-gray-400 text-sm text-center mb-6">Everything you need to discover the truth</p>
+          <h2 className="text-white font-bold text-xl text-center mb-2">{t('det.whats_included')}</h2>
+          <p className="text-gray-400 text-sm text-center mb-6">{t('det.discover_truth')}</p>
 
           <div className="grid grid-cols-3 gap-3">
             {features.map((feature, index) => (
@@ -288,21 +291,21 @@ function DetetiveContent() {
         >
           <div className="flex items-center justify-between mb-4">
             <div className="flex items-center gap-2">
-              <span className="text-xl">⚡</span>
-              <h2 className="text-white font-bold text-lg">How Does It Work?</h2>
+              <span className="text-xl">{'\u26a1'}</span>
+              <h2 className="text-white font-bold text-lg">{t('det.how_does_work')}</h2>
             </div>
             <span className="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500 text-white">
-              IMMEDIATE START
+              {t('det.immediate_start')}
             </span>
           </div>
 
           <div className="bg-emerald-500/10 border border-emerald-500/30 rounded-xl p-4 mb-4">
             <div className="flex items-center gap-2 mb-2">
-              <span className="text-emerald-400">✅</span>
-              <span className="text-emerald-400 font-bold text-sm">The Investigation Starts NOW</span>
+              <span className="text-emerald-400">{'\u2705'}</span>
+              <span className="text-emerald-400 font-bold text-sm">{t('det.starts_now')}</span>
             </div>
             <p className="text-gray-400 text-xs">
-              As soon as you hire, the detective contacts you to collect information about your partner and <strong className="text-white">starts immediately</strong>
+              {t('det.starts_now_desc')}
             </p>
           </div>
 
@@ -310,28 +313,28 @@ function DetetiveContent() {
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-emerald-500 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">1</div>
               <div>
-                <h3 className="text-white font-semibold text-sm">Purchased? The detective calls you NOW</h3>
-                <p className="text-gray-500 text-xs">Collects partner data and starts</p>
+                <h3 className="text-white font-semibold text-sm">{t('det.how_step1_title')}</h3>
+                <p className="text-gray-500 text-xs">{t('det.how_step1_desc')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">2</div>
               <div>
-                <h3 className="text-white font-semibold text-sm">You receive constant updates</h3>
-                <p className="text-gray-500 text-xs">Direct WhatsApp with detective 24/7</p>
+                <h3 className="text-white font-semibold text-sm">{t('det.how_step2_title')}</h3>
+                <p className="text-gray-500 text-xs">{t('det.how_step2_desc')}</p>
               </div>
             </div>
             <div className="flex items-start gap-3">
               <div className="w-6 h-6 rounded-full bg-gray-700 flex items-center justify-center text-white text-xs font-bold flex-shrink-0">3</div>
               <div>
-                <h3 className="text-white font-semibold text-sm">You decide when to stop</h3>
-                <p className="text-gray-500 text-xs">Continue until you have ALL the answers</p>
+                <h3 className="text-white font-semibold text-sm">{t('det.how_step3_title')}</h3>
+                <p className="text-gray-500 text-xs">{t('det.how_step3_desc')}</p>
               </div>
             </div>
           </div>
 
           <div className="mt-4 text-center">
-            <span className="text-red-400 text-xs">↑ The investigation lasts until you are 100% satisfied</span>
+            <span className="text-red-400 text-xs">{t('det.investigation_lasts')}</span>
           </div>
         </motion.section>
 
@@ -344,38 +347,38 @@ function DetetiveContent() {
         >
           <div className="flex justify-between items-start mb-4">
             <div>
-              <h3 className="text-white font-bold text-xl mb-1">Master PRO Investigation</h3>
-              <p className="text-gray-400 text-sm">100% Online Investigation</p>
+              <h3 className="text-white font-bold text-xl mb-1">{t('det.master_pro')}</h3>
+              <p className="text-gray-400 text-sm">{t('det.real_encounter')}</p>
             </div>
             <div className="text-right">
               <span className="text-amber-400 text-xs font-bold bg-amber-500/20 px-2 py-1 rounded">VIP</span>
-              <p className="text-amber-400 text-3xl font-bold mt-1"><span className="text-xl">$</span>47</p>
+              <p className="text-amber-400 text-3xl font-bold mt-1"><span className="text-xl">$</span>147</p>
             </div>
           </div>
 
           <div className="bg-gray-800/50 rounded-xl py-2 px-4 text-center mb-4 border border-gray-700">
-            <span className="text-amber-400 text-sm">✦ Everything from Advanced Investigation +</span>
+            <span className="text-amber-400 text-sm">{t('det.everything_advanced')}</span>
           </div>
 
           <div className="space-y-3 mb-6">
             {masterProFeatures.map((feature, index) => (
               <div key={index} className="flex items-start gap-2">
-                <span className="text-amber-400 text-sm">✓</span>
+                <span className="text-amber-400 text-sm">{'\u2713'}</span>
                 <span className="text-white text-sm">{feature}</span>
               </div>
             ))}
           </div>
 
           <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl py-3 px-4 text-center mb-4">
-            <p className="text-amber-400 text-sm font-medium">🏆 100% online — everything sent directly to you.</p>
-            <p className="text-amber-400 text-xs">A real investigator does all the work for you!</p>
+            <p className="text-amber-400 text-sm font-medium">{'\ud83c\udfc6'} {t('det.most_complete_inv')}</p>
+            <p className="text-amber-400 text-xs">{t('det.absolute_certainty')}</p>
           </div>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ6IMC')}
+            href={appendUtmToLink(getCheckoutUrl('https://go.centerpag.com/PPU38CQ7G40', lang))}
             className="block w-full py-4 rounded-xl text-center font-bold text-black bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 transition-all"
           >
-            Hire Master PRO Investigation
+            {t('det.hire_master')}
           </a>
         </motion.section>
 
@@ -386,7 +389,7 @@ function DetetiveContent() {
           className="text-center py-8"
         >
           <p className="text-gray-500 text-xs">
-            © 2024 IA Observer - All rights reserved
+            {t('det.copyright')}
           </p>
         </motion.section>
       </div>
@@ -421,7 +424,7 @@ function DetetiveContent() {
                       </svg>
                     </div>
                     <div className="flex-1">
-                      <p className="text-white font-semibold text-sm">Investigation Target</p>
+                      <p className="text-white font-semibold text-sm">{t('det.investigation_target')}</p>
                       <p className="text-white/70 text-xs">online</p>
                     </div>
                   </div>
@@ -468,10 +471,10 @@ function DetetiveContent() {
                         className="bg-gradient-to-r from-red-500 to-red-600 py-3 px-4"
                       >
                         <div className="flex items-center justify-center gap-2">
-                          <span className="text-white text-lg">⚠️</span>
+                          <span className="text-white text-lg">{'\u26a0\ufe0f'}</span>
                           <div className="text-center">
-                            <p className="text-white font-bold text-sm">INFIDELITY CONFIRMED</p>
-                            <p className="text-white/90 text-xs">Evidence sent immediately</p>
+                            <p className="text-white font-bold text-sm">{t('det.infidelity_confirmed')}</p>
+                            <p className="text-white/90 text-xs">{t('det.evidence_sent')}</p>
                           </div>
                         </div>
                       </motion.div>
@@ -487,7 +490,7 @@ function DetetiveContent() {
                 onClick={() => setShowDemo(false)}
                 className="w-full mt-4 py-3 rounded-xl bg-emerald-500 text-white font-bold"
               >
-                Close demo
+                {t('det.close_demo')}
               </motion.button>
             </motion.div>
           </motion.div>
