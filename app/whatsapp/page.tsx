@@ -380,13 +380,13 @@ function WhatsAppContent() {
                                 <span className="text-red-400 font-bold text-xs">{t('whatsapp.access_blocked')}</span>
                               </div>
                               <p className="text-red-300 text-xs">
-                                {t('whatsapp.blocked_desc')}
+                                {t('whatsapp.blocked_desc_meta')}
                               </p>
                             </div>
 
                             <div className="bg-yellow-500/10 border border-yellow-500/30 rounded-xl p-3">
                               <p className="text-yellow-300 text-xs">
-                                {t('whatsapp.proxy_required')}
+                                {t('whatsapp.proxy_required_meta')}
                               </p>
                             </div>
 
@@ -394,9 +394,9 @@ function WhatsAppContent() {
                               href="https://go.centerpag.com/PPU38CQ8AE0"
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="block w-full py-3 rounded-xl font-bold text-white text-center text-sm bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 transition-opacity"
+                              className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white text-center text-sm bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 transition-opacity"
                             >
-                              {t('whatsapp.unlock_proxy')}
+                              <span>🔓</span> {t('whatsapp.unlock_proxy_access')}
                             </a>
                           </motion.div>
                         )}

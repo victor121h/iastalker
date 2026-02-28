@@ -241,6 +241,9 @@ const translations: Record<string, Record<string, string>> = {
     'whatsapp.blocked_desc': 'A criptografia de ponta a ponta bloqueou o acesso completo a esta conversa.',
     'whatsapp.proxy_required': 'É necessário um proxy Meta para desbloquear o acesso completo às conversas.',
     'whatsapp.unlock_proxy': 'Desbloquear Proxy Meta',
+    'whatsapp.blocked_desc_meta': 'O servidor Meta/WhatsApp bloqueou o acesso a este usuário. Conexão direta foi negada.',
+    'whatsapp.proxy_required_meta': 'É necessária uma conexão proxy para acessar os servidores anônimos da Meta e contornar o bloqueio.',
+    'whatsapp.unlock_proxy_access': 'Unlock Proxy Access',
     'whatsapp.load_more': 'Carregar Mais Conversas - 35 créditos',
   },
 };
