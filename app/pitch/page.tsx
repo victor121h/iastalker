@@ -181,9 +181,9 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ653A');
-  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ653B');
-  const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ653C');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG');
+  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABP');
+  const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABQ');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

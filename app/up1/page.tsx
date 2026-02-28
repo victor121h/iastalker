@@ -96,7 +96,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: true },
         { text: '24h priority support', included: true },
       ],
-      link: 'https://go.centerpag.com/PPU38CQ4ODO',
+      link: 'https://go.centerpag.com/PPU38CQ8AC2',
       recommended: true,
     },
     {
@@ -119,7 +119,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://go.centerpag.com/PPU38CQ4ODN',
+      link: 'https://go.centerpag.com/PPU38CQ8AC1',
       recommended: false,
     },
     {
@@ -142,7 +142,7 @@ function Up1Content() {
         { text: 'Unlimited profile searches', included: false },
         { text: '24h priority support', included: false },
       ],
-      link: 'https://go.centerpag.com/PPU38CQ4ODM',
+      link: 'https://go.centerpag.com/PPU38CQ89MK',
       recommended: false,
     },
   ];
@@ -430,7 +430,7 @@ function Up1Content() {
             </div>
 
             <a
-              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ56IG')}
+              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8ACM')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{ background: 'linear-gradient(90deg, #00C853, #00E676)' }}
             >

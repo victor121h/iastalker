@@ -66,7 +66,7 @@ function UpsellContent() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ4OE3')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ89MS')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4 bg-[#DC2626]"
           >
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
