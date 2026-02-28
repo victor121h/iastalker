@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/lib/useTranslation';
 import { getCheckoutUrl } from '@/lib/checkoutLinks';
+import SupportChat from '@/components/SupportChat';
 
 interface ChatMessage {
   id: number;
@@ -131,6 +132,7 @@ function DetetiveContent() {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-[#0a0a0f] relative overflow-x-hidden">
       <div 
         className="absolute inset-0 opacity-30"
@@ -496,7 +498,9 @@ function DetetiveContent() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+</div>
+      <SupportChat />
+    </>
   );
 }
 

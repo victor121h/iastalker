@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { hasSearched } from '@/lib/credits';
 import { useTranslation } from '@/lib/useTranslation';
+import SupportChat from '@/components/SupportChat';
 
 interface Service {
   id: string;
@@ -170,6 +171,7 @@ function DashboardContent() {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-[#0a0a0f]">
       <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
         <Link 
@@ -491,7 +493,9 @@ function DashboardContent() {
           </motion.div>
         )}
       </AnimatePresence>
-    </div>
+</div>
+      <SupportChat />
+    </>
   );
 }
 

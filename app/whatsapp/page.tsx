@@ -4,6 +4,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useTranslation } from '@/lib/useTranslation';
+import SupportChat from '@/components/SupportChat';
 
 type Stage = 'input' | 'results';
 type ChatStatus = 'idle' | 'loading' | 'error';
@@ -177,6 +178,7 @@ function WhatsAppContent() {
   };
 
   return (
+    <>
     <div className="min-h-screen bg-black text-white p-4 pb-20">
       <div className="w-full max-w-md mx-auto space-y-4">
         <AnimatePresence mode="wait">
@@ -475,6 +477,8 @@ function WhatsAppContent() {
         )}
       </AnimatePresence>
     </div>
+      <SupportChat />
+    </>
   );
 }
 
@@ -483,7 +487,7 @@ export default function WhatsAppPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
-      </div>
+</div>
     }>
       <WhatsAppContent />
     </Suspense>

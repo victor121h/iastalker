@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import SupportChat from '@/components/SupportChat';
 
 function OutrosContent() {
   const router = useRouter();
@@ -80,6 +81,7 @@ function OutrosContent() {
   ];
 
   return (
+    <>
     <div className="min-h-screen bg-black text-white p-4 pb-20">
       <div className="w-full max-w-md mx-auto space-y-5">
         <motion.div
@@ -270,6 +272,8 @@ function OutrosContent() {
         )}
       </AnimatePresence>
     </div>
+      <SupportChat />
+    </>
   );
 }
 
@@ -278,7 +282,7 @@ export default function OutrosPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-      </div>
+</div>
     }>
       <OutrosContent />
     </Suspense>

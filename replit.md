@@ -1,161 +1,102 @@
-# DeepGram Instagram Profile Viewer
+# AI Tracker - Surveillance/Monitoring SaaS Platform
 
 ## Project Overview
-A Next.js 14 web application that mimics Instagram's design to create an engaging profile discovery experience. Built with pixel-perfect Instagram dark mode styling and smooth animations.
+A Next.js 14 Brazilian surveillance/monitoring SaaS platform with service pages (WhatsApp monitor, camera access, SMS monitoring, detective investigation), user authentication, a credits system, and centerpag.com payment integration. Pages are in English.
 
 ## Tech Stack
 - **Framework**: Next.js 14 (App Router)
 - **Language**: TypeScript
-- **Styling**: Tailwind CSS with custom Instagram color palette
+- **Styling**: Tailwind CSS
 - **Animations**: Framer Motion
-- **Font**: Inter/Roboto
+- **Database**: Neon PostgreSQL (raw SQL via `pg` Pool)
+- **Payments**: CenterPag checkout links
 
-## Features Implemented
-1. **Landing Page** - Hero screen with DeepGram branding, gradient CTA button, and animated Matrix background
-2. **Search Screen** - Username input with Instagram-style field, @ icon, and warning message
-3. **Confirmation Screen** - Profile preview with avatar, stats (posts/followers/following), bio, and action buttons
-4. **Fake Login Screen** - Authentic Instagram login UI with password breaking animation
-5. **Feed Screen** - Instagram header, Stories bar with gradient borders, and placeholder feed
-6. **Matrix Background** - Animated letter-falling effect using canvas
-7. **Reusable Components** - Instagram-style buttons, gradient utilities, logos
+## Key Features
+1. **Dashboard** (`/dashboard`) - Central hub with services, credits, XP system
+2. **Camera** (`/camera`) - Device camera media recovery (photos/videos)
+3. **WhatsApp Monitor** (`/whatsapp`) - WhatsApp conversation monitoring
+4. **SMS Monitor** (`/sms`, `/investigator`) - SMS message interception
+5. **Detective** (`/detetive`) - Private detective investigation service
+6. **Location** (`/location`) - Real-time GPS tracking
+7. **Calls** (`/calls`) - Call log monitoring
+8. **Other Networks** (`/outros`) - Facebook, TikTok, Telegram monitoring
+9. **Credits System** - Buy/spend credits to unlock services
+10. **Support Chat** - AI support chatbot widget on all service pages
 
-## Instagram Design Specifications
-- **Colors**:
-  - Background: #000000
-  - Cards: #121212, #1c1c1c
-  - Borders: #262626
-  - Instagram Blue: #0095f6
-  - Gradient: #f56040 → #f77737 → #fcaf45 → #ffdc80
-  - Text: #ffffff, #e0e0e0, #a8a8a8
-
-- **Component Styling**:
-  - Card border radius: 22px
-  - Button height: 44px
-  - Input height: 42px
-  - Stories avatar: 68px
-  - Header height: 44px
-
-- **Animations**:
-  - Duration: 0.35s
-  - Easing: easeOut
-  - Tap scale: 0.97
-
-## Navigation Flow
-1. `/` - Landing page with "Espionar Agora" CTA
-2. `/search` - Enter Instagram username
-3. `/confirm?username=X` - Confirm profile to spy on
-4. `/login` - Fake Instagram login with password breaking
-5. `/feed` - Instagram feed with Stories bar
-6. `/direct` - Instagram Direct Messages (DM) screen
-7. `/pitch?username=X` - Sales pitch page with pricing plans
-8. `/backfront` - Security alert page with session info and payment CTA
-9. `/location` - Location tracking page (3 stages: intro, tracking with progress, results with map)
-
-## Development
-```bash
-npm install
-npm run dev
-```
-
-Server runs on port 5000 at http://0.0.0.0:5000
+## Support Chat Widget
+- **Component**: `components/SupportChat.tsx`
+- **API**: `app/api/support/route.ts`
+- **Database table**: `support_interactions` (email, interaction_type, tool_name, created_at)
+- **Features**:
+  - Floating button (bottom-right) on dashboard, profile, and all service pages
+  - Three main flows: Buy Credits, Tool Not Working, Request Refund
+  - Instagram tool → maintenance message + Camera Spy redirect
+  - Location tool → checking + no errors found + email contact
+  - Other tools → 30-sec loading + critical error + 8-day resolution + 10K free credits promise
+  - Refund flow → unsatisfied → 60-sec loading + success + 8-day refund promise
+  - Tracks interactions per user email in database
+  - Returns remaining days (8 - days since interaction) for repeat visits
+  - Chat persists state during session
 
 ## Project Structure
 ```
 app/
-  page.tsx          # Landing page
-  search/page.tsx   # Username search
-  confirm/page.tsx  # Profile confirmation
-  login/page.tsx    # Fake Instagram login
-  feed/page.tsx     # Feed with stories
-  direct/page.tsx   # Instagram Direct Messages
-  layout.tsx        # Root layout
-  globals.css       # Global styles
+  page.tsx              # Landing page
+  dashboard/page.tsx    # Main hub
+  profile/page.tsx      # User profile/stats
+  cadastro/page.tsx     # Registration/login
+  camera/page.tsx       # Camera media recovery
+  whatsapp/page.tsx     # WhatsApp monitor
+  sms/page.tsx          # SMS monitor (English)
+  investigator/page.tsx # SMS monitor (uses sms.* translation keys)
+  detetive/page.tsx     # Detective service
+  location/page.tsx     # GPS tracking
+  calls/page.tsx        # Call logs
+  outros/page.tsx       # Other networks
+  buy/page.tsx          # Credits purchase
+  pitch/page.tsx        # Sales landing
+  api/
+    credits/            # Credits GET/POST
+    support/            # Support interactions GET/POST
+    webhook/perfectpay/ # Payment webhooks
 
 components/
-  MatrixBackground.tsx       # Animated canvas background
-  DeepGramLogo.tsx          # Logo component
-  InstagramButton.tsx       # Reusable gradient button
-  StoriesBar.tsx            # Instagram stories bar
-  InstagramHeader.tsx       # Instagram-style header
-  PurchaseNotification.tsx  # Purchase notification with payment redirect
-  ClientProviders.tsx       # Client-side context providers
+  SupportChat.tsx       # Support chat widget
+  ClientProviders.tsx   # Client-side providers
+  PurchaseNotification.tsx
+
+lib/
+  useTranslation.ts     # Translation system (all English strings under 'pt' key)
+  checkoutLinks.ts      # CenterPag checkout URLs
+  credits.ts            # Credit utilities
 ```
 
-## Recent Changes (Nov 26, 2025)
-- ✅ Initialized Next.js 14 project with TypeScript
-- ✅ Configured Tailwind CSS with Instagram color palette
-- ✅ Installed and configured Framer Motion
-- ✅ Built all 5 main screens with pixel-perfect Instagram styling
-- ✅ Implemented Matrix background animation
-- ✅ Created reusable Instagram-style components
-- ✅ Set up complete navigation flow
-- ✅ Fixed React hydration warnings with suppressHydrationWarning
-- ✅ Enabled login button and fixed design specs (22px radius, 44px height)
-- ✅ Configured workflow for port 5000 webview
-- ✅ Added /direct page - Instagram Direct Messages clone with:
-  - Header with username and settings/compose icons
-  - Meta AI search bar
-  - Stories carousel with Instagram gradient borders and blur effects
-  - Messages list with censored usernames, online indicators, unread badges
-  - Camera icons, timestamps, and bottom navigation
-  - Smooth Framer Motion animations
-- ✅ Added Purchase Notification Component:
-  - Red gradient card (top-center, border-radius: 14px)
-  - Title: "No momento o seu acesso só permite visualização do conteúdo."
-  - Subtitle: "Para poder mexer e ver de forma completa adquira a ferramenta do DeepGram."
-  - Purchase button redirects to: https://go.perfectpay.com.br/PPU38CQ3TAS
-  - Close button (X) in top-right corner
-  - 6-second auto-dismiss with fade-out animation
-  - Triggers: locked stories, like button, all bottom nav buttons
-  - Timer resets if another trigger action occurs
+## Translation System
+- `lib/useTranslation.ts` contains all UI strings in English
+- Keys are organized by page: `dash.*`, `auth.*`, `camera.*`, `sms.*`, `whatsapp.*`, `det.*`, `common.*`
+- Language is hardcoded to 'pt' (key name) but all values are in English
 
-## API Integration
-- **HikerAPI Integration**: Real Instagram profile data via HikerAPI
-- **Endpoint**: `/api/instagram?username=<username>`
-- **Data Returned**: Username, name, avatar, bio, posts count, followers, following, verified status, private account status
+## Database Tables
+- `user_credits` - email, name, total_credits, used_credits, unlocked_all
+- `user_utms` - UTM tracking per user
+- `webhook_logs` - Payment webhook event logs
+- `support_interactions` - Support chat interaction tracking
 
-- **Geolocation API**: IP-based location detection for visitors
-- **Endpoint**: `/api/geolocation`
-- **Data Returned**: City, state, country, lat/lng coordinates
-- **Usage**: Displays visitor's real location in /feed page post header
+## Environment Variables
+- `DATABASE_URL`: Neon PostgreSQL connection string
+- `HIKERAPI_ACCESS_KEY`: HikerAPI token
+- `GOOGLE_GEOLOCATION_API_KEY`: Google Geolocation API key
+- `ADMIN_PASSWORD`: Admin panel password
 
-## PerfectPay Webhook Integration
-- **Endpoint**: POST `/api/webhook/perfectpay`
-- **Token**: Validated via `token` field in request body (stored as env var or hardcoded)
-- **Credit Mapping**:
-  - PPLQQOAPS / PPLQQOJH1 = 100 credits
-  - PPLQQOJGQ = 600 credits
-  - PPLQQOJGR / PPLQQOJGT / PPLQQOL0B = 10,000 credits
-- **Duplicate Prevention**: Transaction-based processing with FOR UPDATE row locking
-- **Tables**: `webhook_logs` (all events), `user_credits` (per-email credit balance)
+## UTM Tracking
+- 4 UTM pixels loaded via `app/layout.tsx`
+- UTM params preserved across pages via `appendUtmToPath()` / `appendUtmToLink()`
 
-## Admin Panel
-- **URL**: `/admin`
-- **Auth**: POST-based password authentication (no query params for security)
-- **Password**: Set via `ADMIN_PASSWORD` env var (default: iaobserver2024)
-- **Features**: Webhook log viewer, user credit management, transaction details
+## Payment Links
+- All checkout links use CenterPag: `https://go.centerpag.com/PPU38CQ*`
+- Links managed in `lib/checkoutLinks.ts` and inline in pages
 
-## Environment Variables Required
-- `DATABASE_URL`: Neon PostgreSQL connection string (with SSL)
-- `HIKERAPI_ACCESS_KEY`: Your HikerAPI access token for Instagram data
-- `GOOGLE_GEOLOCATION_API_KEY`: Google Geolocation API key for real-time location tracking
-- `ADMIN_PASSWORD`: Admin panel password (default: iaobserver2024)
-
-## Database (Neon PostgreSQL)
-- **Tables**:
-  - `webhook_logs`: Stores all PerfectPay webhook events with sale details and credit tracking
-  - `user_credits`: Tracks total and used credits per email with upsert on conflict
-- **Connection**: SSL required, configured via DATABASE_URL
-- **Deployment**: Must configure DATABASE_URL in both Replit and Vercel environments
-
-## Known Issues & Notes
-- Cross-origin dev warnings are expected in Replit environment
-- Framer Motion may show findDOMNode warnings in StrictMode (known issue with version compatibility)
-- Deployed via Vercel (GitHub sync required for changes)
-
-## Future Enhancements
-- Implement backend rate limiting (1 search per user)
-- Add session/cookie tracking
-- Create database for search history
-- Add multi-language support (PT/EN toggle)
-- Implement real Stories data display
+## Development
+```bash
+npm run dev  # Runs on port 5000
+```

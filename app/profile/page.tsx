@@ -3,6 +3,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import SupportChat from '@/components/SupportChat';
 
 function ProfileContent() {
   const router = useRouter();
@@ -52,6 +53,7 @@ function ProfileContent() {
   };
 
   return (
+    <>
     <main className="min-h-screen bg-[#0a0a0f] p-4">
       {showCopyModal && (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
@@ -253,8 +255,10 @@ function ProfileContent() {
             </div>
           </div>
         </motion.div>
-      </div>
+</div>
     </main>
+      <SupportChat />
+    </>
   );
 }
 

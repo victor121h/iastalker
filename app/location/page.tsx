@@ -3,6 +3,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, Suspense } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
+import SupportChat from '@/components/SupportChat';
 
 type Stage = 'intro' | 'tracking' | 'results';
 
@@ -164,6 +165,7 @@ function LocationContent() {
   const locationDisplay = locationData?.location || 'Detecting...';
 
   return (
+    <>
     <div className="min-h-screen bg-black text-white">
       <AnimatePresence mode="wait">
         {stage === 'intro' && (
@@ -542,6 +544,8 @@ function LocationContent() {
         )}
       </AnimatePresence>
     </div>
+      <SupportChat />
+    </>
   );
 }
 
@@ -550,7 +554,7 @@ export default function LocationPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-      </div>
+</div>
     }>
       <LocationContent />
     </Suspense>

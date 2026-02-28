@@ -5,6 +5,7 @@ import { useState, useEffect, Suspense, useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 import { useTranslation } from '@/lib/useTranslation';
+import SupportChat from '@/components/SupportChat';
 
 type FileStatus = 'idle' | 'loading' | 'revealed' | 'error_loading' | 'error' | 'tracker_eye' | 'tracker_phone';
 
@@ -237,6 +238,7 @@ function CameraContent() {
   const deletedCount = mediaFiles.filter(f => f.deleted).length;
 
   return (
+    <>
     <div className="min-h-screen bg-black text-white p-4 pb-20">
       <div className="w-full max-w-md mx-auto space-y-3">
         <motion.div
@@ -586,6 +588,8 @@ function CameraContent() {
         )}
       </AnimatePresence>
     </div>
+      <SupportChat />
+    </>
   );
 }
 
@@ -594,7 +598,7 @@ export default function CameraPage() {
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
         <div className="w-8 h-8 border-2 border-purple-500 border-t-transparent rounded-full animate-spin" />
-      </div>
+</div>
     }>
       <CameraContent />
     </Suspense>
