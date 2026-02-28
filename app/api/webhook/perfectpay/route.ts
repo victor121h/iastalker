@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
 
-const PERFECTPAY_TOKEN = process.env.PERFECTPAY_WEBHOOK_TOKEN || '4bac01af77c825b08316691d457c225d';
+const PERFECTPAY_TOKEN = process.env.PERFECTPAY_WEBHOOK_TOKEN || 'f71e05f3f70c465c7c01fb8ce2b327b7';
 
 const PLAN_CREDITS: Record<string, number> = {
   'PPLQQOAPS': 100,
