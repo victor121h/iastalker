@@ -1,0 +1,60 @@
+Agora quero que voce coloque em todas as pagians de servicos, e tambem na pagian de dashboard e na de profile, um botaozinho no cantinho redondo de um balaozinho, de suporte com o icone de suprote (aquele de fone de ouvido)
+ao clicar, aparece um balaozinho de chat padrao de suporte. o user tera o fundo branco da imagem redonda com essa iamgem que mandei de atendente. no chat , animacao de chat digitando ai aparece a mensagem em ingles:
+Olá, suporte Digital do Ai Tracker, em que posso ajudar?
+Ai aparecem tres botoes:
+"Quero comprar mais creditos" e o atendente depois de carregar de novo a animacao de digitando, responde, "Ótimo, clique nesse botão abaixo e recarregue seus creditos", ai um botaozinho roxinho degrade padrao com o botao "Comprar creditos" que leva para a pagina Buy
+O outro botao que aparece é:
+"A ferramenta não está funcionando"
+Ai depois de digitar, o atendente fala "Entendi, isso é uma pena, mas vou te ajudar, qual ferramenta não está funcionando?"
+Ai aparece a lisa das76 ferramentas, Instagram, Whatsapp, Facebook, Location, SMS, Calls e Camera
+
+Se clicar no facebook o atendente depois d digitgar, responde que sabemos que esta com esse problema e que a manutenção ja esta ocorrendo, mas que em breve voltará a funcionar. Ai ele indica a pessao testar a ferramenta de Camera Spy, com botao que leva para a pagian camera.
+Se ele clicar em Location, voce vai ter uma barra de loading de "verificando ferramenta, Verificando API do GPS,, Verificando Conexão", e uma mensagem em verde "Nenhum erro encontrado"
+Ai o atendente fala, não encontramos nenhum erro em nossa ferramenta de Localizacao, Se possível, grave um video explciando e mande para customer@aitracker.com.
+
+Ai o atendente digita novemente e pergunta se pode ajudar em mais algo, e ai aparece sim ou nao como botao.
+
+Se ele clicar sim, o fluxo recomeça. Se clicar em não, o chat fecha.
+
+Voltando para a parte de as ferramentas nao funcionan, Se ele clicar em qualquer outro botao de ferramenta que nao seja location ou facebook, Aparece o atendente digitando e ele responde, vou verificar agora para voce, um momento, ai aparece uma barra de carregamento, que pode demorar uns 30 segundos, e ai mensagens aparecendo de "verificando ferramenta", "conferindo Webhook", Verificando API", "Checando Créditos do usuario", Verificando Conexão", Ai aparece em destaque "Problema encontrado", se possivel com um check verde, e ai o atendente digita novamente falando, "Encontrei o problema e já acionei nossos técnicos."
+em outra mensagem enviada por ele em seguida ele diz "O prazo para a resolução é de até 8 dias"
+"Infelizmente é um problema crítico, mas não se preocupe. Assim que as ferramentas voltarem, vamos te disponibilizar 10 MIL CRÉDITOS de forma totalmente gratuita."
+
+Ai ele digita de novo e manda:
+Tem mais algo que posso te ajudar?
+
+ai aparece o botão, "Não obrigado" e fecha o chat" e "Sim"
+Ai o chat reinicia com "Certinho, escolha uma das opções" e ai aparecem as opcoes de novo.
+
+o terceiro botao das opcoes, será
+"Pedir Reembolso"
+
+O atendente vai digitar e responder:
+
+Entendo, pode nos dizer o motivo do reembolso?
+Ai aparecem as pcoes
+"Não funcionam as ferramentas" Ai se ele seleicoanr isso, vai para o mesmo fluxo do botao 2 de ferramenta nao funciona.
+
+A outra opção é "Estou insatisfeito com o produto"
+Ai o atendente digita e diz, entendo, não tem problema, vou processar para você o seu reembolso, isso pode levar algum tempo.
+Ai aparece um loading bar de u0 minuto, com 3 mensagens divididas em ordem aparecendo, de "Acessando cadastro do usuário", "Comunicando com adquirente", Solicitando reembolso da plataforma" e finaliza com "Sucesso" em verde
+
+Ai o atendente digita:
+"Finalizamos sua solicitação de reembolso com sucesso."
+ai na proxima mensagem dele "Seu valor será integralmente devolvido à mesma forma de pagamento escolhida em até no máximo 8 dias"
+"Nossos servidores estão muito ocupados, então pedimos um pouco de paciência. Em até 8 dias, seu valor será estornado"
+
+Ai ele pergutna "algo mais que eu posso te ajudar?"
+
+Ai o botao sim e nao, se sim, reocmeca o fluxo, se não, o chat fecha.
+
+Agora o pulo do gato importantissimo (voce vai me dizer se é possivel), o usuario que falar com o chat, ao estar logado com o email fica registrado que ele JA CLICOU e fe o fluxo de manutencao da quela ferramenta X, se isso for identificado, e ele tnetar novamente, o atendente vai responder ao selecioanr a opcao de novo "Já estamos cientes, mas não se preocupe, em até X dias as nossas ferramentas estarão funcionando novamente"
+
+Se ele clicar no reembolso, vai aparecer "Voce já solicitou o seureembolso e ele ja esta sendo processado. Seu valor será estornado em X dias
+
+esse "X" sera equivalente à, do dia X que ele falcou com o atendente no fluxo, até o dia total, contabilizando 8
+exemplo, se dia 20 ele fez o fluxo, e chamou no dia 22, entao vai ser X=6
+se for dia 24, sera X=4
+Se ja tiver passado 8 dias, vai responder que as ferramentas ja estao funcionando ou se for reembolso, que o valor ja foi estornado
+
+"
