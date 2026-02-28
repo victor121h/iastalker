@@ -28,7 +28,7 @@ const mediaFiles: MediaFile[] = [
     tags: ['Recent'],
     filename: 'IMG_20260224_173012.jpg',
     image: '/camimage1.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OJ',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE5',
   },
   {
     type: 'photo',
@@ -38,7 +38,7 @@ const mediaFiles: MediaFile[] = [
     tags: ['Recent', 'Selfie'],
     filename: 'IMG_20260224_154522.jpg',
     image: '/camimage2.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OJ',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE5',
   },
   {
     type: 'video',
@@ -48,7 +48,7 @@ const mediaFiles: MediaFile[] = [
     tags: ['Video', 'Night'],
     filename: 'VID_20260224_141003.mp4',
     image: '/camvid1.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OL',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE6',
   },
   {
     type: 'photo',
@@ -58,7 +58,7 @@ const mediaFiles: MediaFile[] = [
     tags: ['Deleted', 'Night'],
     filename: 'IMG_20260223_235044_DEL.jpg',
     image: '/camimage3.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OJ',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE5',
   },
   {
     type: 'video',
@@ -68,7 +68,7 @@ const mediaFiles: MediaFile[] = [
     tags: ['Deleted', 'Video'],
     filename: 'VID_20260223_221530_DEL.mp4',
     image: '/camvid2.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OL',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE6',
   },
   {
     type: 'photo',
@@ -78,7 +78,7 @@ const mediaFiles: MediaFile[] = [
     tags: [],
     filename: 'IMG_20260222_190015.jpg',
     image: '/camimage4.png',
-    trackerLink: 'https://go.centerpag.com/PPU38CQ83OJ',
+    trackerLink: 'https://go.centerpag.com/PPU38CQ8AE5',
   },
 ];
 

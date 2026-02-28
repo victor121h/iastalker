@@ -510,7 +510,7 @@ function CadastroContent() {
                       </div>
                       <motion.button
                         whileTap={{ scale: 0.97 }}
-                        onClick={() => window.open(getCheckoutUrl('https://checkout.centerpag.com/pay/PPU38CQ7BNP', lang), '_blank')}
+                        onClick={() => window.open(getCheckoutUrl('https://go.centerpag.com/PPU38CQ8ABP', lang), '_blank')}
                         className="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 rounded-xl text-white font-bold"
                       >
                         {t('auth.buy_new_access')}
