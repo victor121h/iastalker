@@ -55,6 +55,16 @@ export default function RootLayout({
             document.head.appendChild(a);
           `}
         </Script>
+        <Script id="utmify-pixel-4" strategy="lazyOnload">
+          {`
+            window.pixelId = "69a34ad13f6aeb7c9e1250bd";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
         <ClientProviders>
           {children}
         </ClientProviders>
