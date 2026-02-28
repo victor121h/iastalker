@@ -4,12 +4,11 @@ import { Pool } from 'pg';
 const PERFECTPAY_TOKEN = process.env.PERFECTPAY_WEBHOOK_TOKEN || 'f71e05f3f70c465c7c01fb8ce2b327b7';
 
 const PLAN_CREDITS: Record<string, number> = {
-  'PPLQQOAPS': 100,
-  'PPLQQOJH1': 100,
-  'PPLQQOJGQ': 600,
-  'PPLQQOJGR': 10000,
-  'PPLQQOJGT': 10000,
-  'PPLQQOL0B': 10000,
+  'PPLQQOQML': 100,
+  'PPLQQOQQ8': 100,
+  'PPLQQOQQ9': 600,
+  'PPLQQOQQA': 10000,
+  'PPLQQOQQB': 10000,
 };
 
 const isSSL = process.env.DATABASE_URL?.includes('neon.tech') || process.env.DATABASE_URL?.includes('sslmode=require');
