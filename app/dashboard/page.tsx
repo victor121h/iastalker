@@ -1,10 +1,11 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { hasSearched } from '@/lib/credits';
+import { useTranslation } from '@/lib/useTranslation';
 
 interface Service {
   id: string;
@@ -18,56 +19,22 @@ interface Service {
 }
 
 function DashboardContent() {
+  const { t } = useTranslation();
   const router = useRouter();
   const searchParams = useSearchParams();
   const [username, setUsername] = useState('User');
   const [credits, setCredits] = useState(0);
+  const [totalCredits, setTotalCredits] = useState(0);
   const [xp] = useState(5);
   const [maxXp] = useState(200);
   const [level] = useState(2);
   const [instagramSearched, setInstagramSearched] = useState(false);
   const [unlockedAll, setUnlockedAll] = useState(false);
-  const [showBonusPopup, setShowBonusPopup] = useState(false);
-
-  const dismissBonusPopup = () => {
-    setShowBonusPopup(false);
-    const storedEmail = localStorage.getItem('user_email');
-    if (storedEmail) {
-      fetch('/api/credits/dismiss-bonus', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email: storedEmail.toLowerCase() }),
-      }).catch(() => {});
-    }
-  };
-
-  useEffect(() => {
-    const storedName = localStorage.getItem('user_name');
-    if (storedName) setUsername(storedName);
-    
-    const storedEmail = localStorage.getItem('user_email');
-    if (storedEmail) {
-      fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`)
-        .then(res => res.json())
-        .then(data => {
-          if (data.available !== undefined) {
-            setCredits(data.available);
-          }
-          if (data.unlocked_all) {
-            setUnlockedAll(true);
-          }
-          if (data.show_bonus_popup) {
-            setShowBonusPopup(true);
-          }
-        })
-        .catch(() => {});
-    }
-
-    setInstagramSearched(hasSearched());
-  }, []);
+  const [showFacebookPopup, setShowFacebookPopup] = useState(false); // kept for backward compat
+  const [navigating, setNavigating] = useState(false);
 
   const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang'];
     const params = new URLSearchParams();
     utmKeys.forEach(key => {
       const value = searchParams.get(key);
@@ -84,27 +51,56 @@ function DashboardContent() {
     return basePath;
   };
 
+  const navigateTo = (path: string) => {
+    setNavigating(true);
+    router.push(appendUtmToPath(path));
+  };
+
+  useEffect(() => {
+    const storedName = localStorage.getItem('user_name');
+    if (storedName) setUsername(storedName);
+
+    setInstagramSearched(hasSearched());
+
+    const storedEmail = localStorage.getItem('user_email');
+    if (storedEmail) {
+      fetch(`/api/credits?email=${encodeURIComponent(storedEmail)}`)
+        .then(res => res.json())
+        .then(data => {
+          if (data.available !== undefined) {
+            setCredits(data.available);
+          }
+          if (data.credits !== undefined) {
+            setTotalCredits(data.credits);
+          }
+          if (data.unlocked_all) {
+            setUnlockedAll(true);
+          }
+        })
+        .catch(() => {});
+    }
+  }, []);
 
   const contractedServices = [
-    { name: 'Camera', subtitle: 'Target Device', status: 'completed' },
-    { name: 'Other Networks', subtitle: '47 social networks', status: 'completed' }
+    { name: t('dash.camera'), subtitle: t('dash.target_device'), status: 'completed' },
+    { name: t('dash.other_networks'), subtitle: t('dash.social_networks'), status: 'completed' }
   ];
 
   const availableServices: Service[] = [
     {
       id: 'instagram',
       name: 'Instagram',
-      description: 'View liked photos, forwarded posts and direct conversations',
+      description: t('dash.desc_instagram'),
       icon: '📷',
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
       credits: 25,
-      status: credits >= 25 ? 'available' : 'locked'
+      status: totalCredits > 0 ? 'available' : 'locked'
     },
     {
       id: 'whatsapp',
       name: 'WhatsApp',
-      description: 'Access complete conversations, audio, videos and groups',
+      description: t('dash.desc_whatsapp'),
       icon: '💬',
       iconBg: 'bg-green-500',
       iconColor: 'text-white',
@@ -112,11 +108,11 @@ function DashboardContent() {
       status: unlockedAll ? 'available' : 'locked'
     },
     {
-      id: 'facebook',
-      name: 'Facebook',
-      description: 'View all interactions and full Messenger access',
-      icon: '👤',
-      iconBg: 'bg-blue-600',
+      id: 'investigator',
+      name: t('dash.investigator_name'),
+      description: t('dash.desc_investigator'),
+      icon: '🕵️',
+      iconBg: 'bg-amber-600',
       iconColor: 'text-white',
       credits: 45,
       status: unlockedAll ? 'available' : 'locked'
@@ -124,7 +120,7 @@ function DashboardContent() {
     {
       id: 'location',
       name: 'Location',
-      description: 'Track in real time and see visited suspicious places',
+      description: t('dash.desc_location'),
       icon: '📍',
       iconBg: 'bg-red-500',
       iconColor: 'text-white',
@@ -134,7 +130,7 @@ function DashboardContent() {
     {
       id: 'sms',
       name: 'SMS',
-      description: 'All text messages sent and received',
+      description: t('dash.desc_sms'),
       icon: '💭',
       iconBg: 'bg-yellow-500',
       iconColor: 'text-white',
@@ -144,7 +140,7 @@ function DashboardContent() {
     {
       id: 'calls',
       name: 'Calls',
-      description: 'Complete call log with duration and times',
+      description: t('dash.desc_calls'),
       icon: '📞',
       iconBg: 'bg-blue-400',
       iconColor: 'text-white',
@@ -154,7 +150,7 @@ function DashboardContent() {
     {
       id: 'camera',
       name: 'Camera',
-      description: 'Access photos and videos from the gallery, including deleted files',
+      description: t('dash.desc_camera'),
       icon: '📸',
       iconBg: 'bg-gray-700',
       iconColor: 'text-white',
@@ -164,7 +160,7 @@ function DashboardContent() {
     {
       id: 'other-networks',
       name: 'Other Networks',
-      description: 'Full search on all social networks (including adult sites)',
+      description: t('dash.desc_other'),
       icon: '🔗',
       iconBg: 'bg-red-600',
       iconColor: 'text-white',
@@ -175,30 +171,6 @@ function DashboardContent() {
 
   return (
     <div className="min-h-screen bg-[#0a0a0f]">
-      {showBonusPopup && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 backdrop-blur-sm px-4">
-          <motion.div
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            transition={{ duration: 0.4, ease: 'easeOut' }}
-            className="bg-gradient-to-br from-[#1a1a2e] to-[#16162a] border border-purple-500/40 rounded-2xl p-6 max-w-sm w-full text-center shadow-2xl shadow-purple-500/20"
-          >
-            <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center text-3xl">
-              🎁
-            </div>
-            <h3 className="text-white text-xl font-bold mb-3">Bonus Credits!</h3>
-            <p className="text-gray-300 text-sm leading-relaxed mb-6">
-              You earned <span className="text-yellow-400 font-bold">200 extra credits</span> for your first top-up. On your second top-up, you&apos;ll earn <span className="text-yellow-400 font-bold">2x more</span> bonus credits.
-            </p>
-            <button
-              onClick={dismissBonusPopup}
-              className="w-full py-3 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-bold text-sm transition-all"
-            >
-              Awesome!
-            </button>
-          </motion.div>
-        </div>
-      )}
       <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
         <Link 
           href={appendUtmToPath('/access')}
@@ -209,7 +181,7 @@ function DashboardContent() {
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <span>If your credits haven&apos;t been applied yet, you haven&apos;t completed all required steps. Click here to complete fee payments</span>
+          <span>{t('dash.credits_banner')}</span>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">
             <path d="M5 12h14M12 5l7 7-7 7"/>
           </svg>
@@ -226,7 +198,7 @@ function DashboardContent() {
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
             </div>
-            <span className="font-semibold text-sm">My Profile</span>
+            <span className="font-semibold text-sm">{t('dash.my_profile')}</span>
           </Link>
         </div>
         <motion.div
@@ -238,17 +210,17 @@ function DashboardContent() {
             <div>
               <div className="flex items-center gap-2 text-purple-400 text-sm mb-1">
                 <span>✨</span>
-                <span>Welcome!</span>
+                <span>{t('dash.welcome')}</span>
               </div>
               <h1 className="text-white text-2xl md:text-3xl font-bold">
-                Hello, {username}! 👋
+                {t('dash.hello')} {username}! 👋
               </h1>
-              <p className="text-gray-400 mt-1">Choose a service and start your investigation</p>
+              <p className="text-gray-400 mt-1">{t('dash.choose_service')}</p>
             </div>
 
             <div className="flex items-center gap-2">
               <div className="bg-purple-600/30 border border-purple-500/50 rounded-xl px-4 py-2 text-center">
-                <span className="text-purple-300 text-xs">Level</span>
+                <span className="text-purple-300 text-xs">{t('dash.level')}</span>
                 <p className="text-white font-bold text-lg">Nv.{level}</p>
               </div>
             </div>
@@ -259,7 +231,7 @@ function DashboardContent() {
               <div className="flex items-center justify-between mb-2">
                 <div className="flex items-center gap-2">
                   <span className="text-yellow-400">⚡</span>
-                  <span className="text-gray-400 text-sm">Credits</span>
+                  <span className="text-gray-400 text-sm">{t('dash.credits')}</span>
                 </div>
               </div>
               <p className="text-white text-3xl font-bold mb-3">{credits}</p>
@@ -267,7 +239,7 @@ function DashboardContent() {
                 href={appendUtmToPath('/buy')}
                 className="block w-full py-2 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-bold text-center transition-all"
               >
-                Buy Credits
+                {t('dash.buy_credits')}
               </Link>
             </div>
 
@@ -295,7 +267,7 @@ function DashboardContent() {
         >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-green-400">✓</span>
-            <h2 className="text-white font-bold text-lg">Contracted Services</h2>
+            <h2 className="text-white font-bold text-lg">{t('dash.contracted_services')}</h2>
           </div>
 
           <div className="space-y-3">
@@ -314,7 +286,7 @@ function DashboardContent() {
                   </div>
                 </div>
                 <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                  ✓ Completed
+                  ✓ {t('dash.completed')}
                 </span>
               </div>
             ))}
@@ -328,7 +300,7 @@ function DashboardContent() {
         >
           <div className="flex items-center gap-2 mb-4">
             <span className="text-yellow-400">⚡</span>
-            <h2 className="text-white font-bold text-lg">Available Services</h2>
+            <h2 className="text-white font-bold text-lg">{t('dash.available_services')}</h2>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
@@ -341,10 +313,11 @@ function DashboardContent() {
                 onClick={() => {
                   if (service.id === 'instagram') {
                     if (unlockedAll) {
-                      router.push(appendUtmToPath('/buscando'));
+                      navigateTo('/buscando');
                     } else if (credits >= 25) {
                       const storedEmail = localStorage.getItem('user_email') || '';
                       if (storedEmail) {
+                        setNavigating(true);
                         fetch('/api/credits', {
                           method: 'POST',
                           headers: { 'Content-Type': 'application/json' },
@@ -352,33 +325,33 @@ function DashboardContent() {
                         }).then(res => {
                           if (res.ok) {
                             setCredits(prev => prev - 25);
-                            router.push(appendUtmToPath('/buscando'));
+                            navigateTo('/buscando');
                           } else {
-                            router.push(appendUtmToPath('/buy'));
+                            navigateTo('/buy');
                           }
-                        }).catch(() => router.push(appendUtmToPath('/buy')));
+                        }).catch(() => navigateTo('/buy'));
                       } else {
-                        router.push(appendUtmToPath('/buy'));
+                        navigateTo('/buy');
                       }
                     } else {
-                      router.push(appendUtmToPath('/buy'));
+                      navigateTo('/buy');
                     }
                   } else if (!unlockedAll) {
-                    router.push(appendUtmToPath('/buy'));
+                    navigateTo('/buy');
                   } else if (service.id === 'location') {
-                    router.push(appendUtmToPath('/location'));
+                    navigateTo('/location');
                   } else if (service.id === 'other-networks') {
-                    router.push(appendUtmToPath('/outros'));
+                    navigateTo('/outros');
                   } else if (service.id === 'calls') {
-                    router.push(appendUtmToPath('/calls'));
+                    navigateTo('/calls');
                   } else if (service.id === 'whatsapp') {
-                    router.push(appendUtmToPath('/whatsapp'));
-                  } else if (service.id === 'facebook') {
-                    router.push(appendUtmToPath('/buy'));
+                    navigateTo('/whatsapp');
+                  } else if (service.id === 'investigator') {
+                    navigateTo('/investigator');
                   } else if (service.id === 'sms') {
-                    router.push(appendUtmToPath('/buy'));
+                    navigateTo('/sms');
                   } else if (service.id === 'camera') {
-                    router.push(appendUtmToPath('/buy'));
+                    navigateTo('/camera');
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
@@ -421,23 +394,27 @@ function DashboardContent() {
 
                 {service.status === 'free' ? (
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                    Free 🎁
+                    {t('dash.free')} 🎁
                   </span>
                 ) : service.status === 'completed' ? (
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                    ✓ Completed
+                    ✓ {t('dash.completed')}
+                  </span>
+                ) : service.status === 'available' && service.id === 'investigator' ? (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-amber-500/20 text-amber-400 border border-amber-500/30">
+                    ⭐ {t('dash.exclusive_offer')}
                   </span>
                 ) : service.status === 'available' ? (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30">
-                    🔓 Available
+                    🔓 {t('dash.available')}
                   </span>
                 ) : service.status === 'locked' ? (
                   <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-gray-500/20 text-gray-400 border border-gray-500/30">
-                    🔒 Available in unlimited plan
+                    {service.id === 'instagram' ? `🔒 ${t('dash.purchase_credits_unlock')}` : `🔒 ${t('dash.locked')}`}
                   </span>
                 ) : (
                   <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-yellow-500/20 text-yellow-400 border border-yellow-500/30">
-                    ⚡ {service.credits} credits
+                    ⚡ {service.credits} {t('dash.credits_suffix')}
                   </span>
                 )}
               </motion.div>
@@ -452,10 +429,68 @@ function DashboardContent() {
           className="text-center py-8 mt-8"
         >
           <p className="text-gray-600 text-sm">
-            © 2024 IA Observer - All rights reserved
+            {t('dash.all_rights')}
           </p>
         </motion.footer>
       </div>
+
+      <AnimatePresence>
+        {navigating && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]"
+          >
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
+              <p className="text-gray-300 text-sm">Loading...</p>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <AnimatePresence>
+        {showFacebookPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4"
+            onClick={() => setShowFacebookPopup(false)}
+          >
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="bg-[#1c1c2e] border border-gray-700 rounded-2xl p-6 max-w-sm w-full text-center"
+            >
+              <div className="text-4xl mb-3">🔧</div>
+              <h3 className="text-white font-bold text-lg mb-2">{t('dash.under_maintenance')}</h3>
+              <p className="text-gray-400 text-sm mb-4">
+                {t('dash.maintenance_msg')}
+              </p>
+              <p className="text-gray-500 text-xs mb-4">
+                {t('dash.try_camera')}
+              </p>
+              <motion.button
+                whileTap={{ scale: 0.97 }}
+                onClick={() => router.push(appendUtmToPath('/camera'))}
+                className="w-full py-3 rounded-xl font-bold text-white mb-3"
+                style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
+              >
+                {t('dash.open_camera')}
+              </motion.button>
+              <button
+                onClick={() => setShowFacebookPopup(false)}
+                className="text-gray-400 text-sm hover:text-white transition-colors"
+              >
+                {t('dash.close')}
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
