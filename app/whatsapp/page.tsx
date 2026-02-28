@@ -241,7 +241,7 @@ function WhatsAppContent() {
                 onClick={() => router.push(appendUtmToPath('/dashboard'))}
                 className="w-full py-3 rounded-xl font-semibold text-gray-400 bg-[#0d0d14] border border-gray-800 text-sm mt-4"
               >
-                {t('common.back_dashboard')}
+                Back to Dashboard
               </motion.button>
             </motion.div>
           )}
@@ -347,7 +347,7 @@ function WhatsAppContent() {
                             <div className="flex items-center gap-2 mb-2">
                               <div className="w-4 h-4 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
                               <span className="text-green-400 text-sm font-semibold">
-                                {loadingSteps[loadingStep[index]] || t('common.processing')}
+                                {loadingSteps[loadingStep[index]] || 'Processing...'}
                               </span>
                             </div>
                             <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
@@ -425,7 +425,7 @@ function WhatsAppContent() {
                 onClick={() => router.push(appendUtmToPath('/dashboard'))}
                 className="w-full py-3 rounded-xl font-semibold text-gray-400 bg-[#0d0d14] border border-gray-800 text-sm"
               >
-                {t('common.back_dashboard')}
+                Back to Dashboard
               </motion.button>
             </motion.div>
           )}
@@ -449,12 +449,12 @@ function WhatsAppContent() {
               className="bg-[#1c1c2e] border border-gray-700 rounded-2xl p-6 max-w-sm w-full text-center"
             >
               <div className="text-4xl mb-3">💳</div>
-              <h3 className="text-white font-bold text-lg mb-2">{t('common.insufficient_credits')}</h3>
+              <h3 className="text-white font-bold text-lg mb-2">Insufficient Credits</h3>
               <p className="text-gray-400 text-sm mb-2">
-                {t('common.not_enough_credits')}
+                You don't have enough credits for this action.
               </p>
               <p className="text-yellow-400 text-sm mb-4">
-                {t('common.your_balance')} {currentCredits} credits
+                Your balance: {currentCredits} credits
               </p>
               <motion.button
                 whileTap={{ scale: 0.97 }}
@@ -462,13 +462,13 @@ function WhatsAppContent() {
                 className="w-full py-3 rounded-xl font-bold text-white mb-2"
                 style={{ background: 'linear-gradient(135deg, #7c3aed, #a855f7)' }}
               >
-                {t('common.buy_credits')}
+                Buy Credits
               </motion.button>
               <button
                 onClick={() => setShowNoCreditsPopup(false)}
                 className="text-gray-400 text-sm hover:text-white transition-colors"
               >
-                {t('common.close')}
+                Close
               </button>
             </motion.div>
           </motion.div>
