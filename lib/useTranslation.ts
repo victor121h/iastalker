@@ -36,6 +36,42 @@ const translations: Record<string, Record<string, string>> = {
     'dash.try_camera': 'Experimente o acesso à câmera enquanto aguarda.',
     'dash.open_camera': 'Abrir Câmera',
     'dash.close': 'Fechar',
+    'auth.register': 'Cadastrar',
+    'auth.login': 'Entrar',
+    'auth.create_account_title': 'Criar Conta',
+    'auth.welcome_back': 'Bem-vindo de volta',
+    'auth.register_subtitle': 'Preencha os dados para criar sua conta',
+    'auth.login_subtitle': 'Entre com suas credenciais',
+    'auth.full_name': 'Nome completo',
+    'auth.enter_name': 'Digite seu nome',
+    'auth.email': 'E-mail',
+    'auth.enter_purchase_email': 'Digite o e-mail da compra',
+    'auth.enter_email': 'Digite seu e-mail',
+    'auth.password': 'Senha',
+    'auth.create_password': 'Crie uma senha',
+    'auth.enter_password': 'Digite sua senha',
+    'auth.confirm_password': 'Confirmar senha',
+    'auth.confirm_password_placeholder': 'Confirme sua senha',
+    'auth.passwords_mismatch': 'As senhas não coincidem.',
+    'auth.password_min': 'A senha deve ter no mínimo 4 caracteres.',
+    'auth.connection_error': 'Erro de conexão. Tente novamente.',
+    'auth.buy_now': 'Comprar Agora',
+    'auth.already_registered': 'Esta conta já está registrada.',
+    'auth.logging_in_link': 'Faça login',
+    'auth.instead': 'em vez disso.',
+    'auth.creating_account': 'Criando conta...',
+    'auth.create_account_btn': 'Criar Conta',
+    'auth.logging_in': 'Entrando...',
+    'auth.login_btn': 'Entrar',
+    'auth.click_register': 'Clique para se cadastrar',
+    'auth.forgot_password': 'Esqueceu a senha?',
+    'auth.checking_user': 'Verificando...',
+    'auth.verify': 'Verificar',
+    'auth.no_purchase_found': 'Nenhuma compra encontrada para este e-mail.',
+    'auth.security_message': 'Por motivos de segurança, não é possível recuperar a senha. Você pode adquirir um novo acesso.',
+    'auth.buy_new_access': 'Comprar Novo Acesso',
+    'auth.back_to_login': 'Voltar ao login',
+    'auth.terms': 'Ao continuar, você concorda com nossos Termos de Uso e Política de Privacidade.',
   },
 };
 
@@ -46,5 +82,5 @@ export function useTranslation() {
     return translations[lang]?.[key] || key;
   };
 
-  return { t };
+  return { t, lang };
 }
