@@ -433,7 +433,7 @@ function SmsContent() {
   );
 }
 
-export default function InvestigatorPage() {
+export default function SmsPage() {
   return (
     <Suspense fallback={
       <div className="min-h-screen bg-black flex items-center justify-center">
