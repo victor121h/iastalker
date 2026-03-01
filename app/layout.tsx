@@ -65,6 +65,46 @@ export default function RootLayout({
             document.head.appendChild(a);
           `}
         </Script>
+        <Script id="utmify-pixel-5" strategy="lazyOnload">
+          {`
+            window.pixelId = "69a46d239efe25e1d4312256";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
+        <Script id="utmify-pixel-6" strategy="lazyOnload">
+          {`
+            window.pixelId = "69a46d4ff7459b702231d28f";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
+        <Script id="utmify-pixel-7" strategy="lazyOnload">
+          {`
+            window.pixelId = "69a46d6a9efe25e1d433ddd0";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
+        <Script id="utmify-pixel-8" strategy="lazyOnload">
+          {`
+            window.pixelId = "69a46d8295236f10252b64a6";
+            var a = document.createElement("script");
+            a.setAttribute("async", "");
+            a.setAttribute("defer", "");
+            a.setAttribute("src", "https://cdn.utmify.com.br/scripts/pixel/pixel.js");
+            document.head.appendChild(a);
+          `}
+        </Script>
         <ClientProviders>
           {children}
         </ClientProviders>
