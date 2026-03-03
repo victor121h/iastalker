@@ -13,7 +13,7 @@ async function sendPurchaseEmail(customerEmail: string, customerName: string) {
     const greeting = firstName ? `Hello ${firstName}, and welcome` : 'Hello and welcome';
 
     await client.emails.send({
-      from: fromEmail || 'IA Observer <noreply@resend.dev>',
+      from: 'IA Observer <noreply@iastalker.com>',
       to: customerEmail,
       subject: '🎉 Access Granted Successfully!',
       html: `
