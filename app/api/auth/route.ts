@@ -71,6 +71,12 @@ export async function POST(request: NextRequest) {
         );
       }
 
+      await pool.query(
+        `INSERT INTO pending_emails (email, name, email_type, send_at)
+         VALUES ($1, $2, 'registration_followup', NOW() + INTERVAL '10 minutes')`,
+        [normalizedEmail, name || '']
+      );
+
       return NextResponse.json({ success: true, message: 'Account created successfully' });
     }
 

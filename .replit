@@ -15,6 +15,10 @@ author = "agent"
 task = "workflow.run"
 args = "Next.js Dev Server"
 
+[[workflows.workflow.tasks]]
+task = "workflow.run"
+args = "Email Cron"
+
 [[workflows.workflow]]
 name = "Next.js Dev Server"
 author = "agent"
@@ -27,13 +31,24 @@ task = "shell.exec"
 args = "npm run dev"
 waitForPort = 5000
 
+[[workflows.workflow]]
+name = "Email Cron"
+author = "agent"
+
+[[workflows.workflow.tasks]]
+task = "shell.exec"
+args = "node scripts/email-cron.js"
+
+[workflows.workflow.metadata]
+outputType = "console"
+
 [[ports]]
 localPort = 5000
 externalPort = 80
 
 [deployment]
 deploymentTarget = "autoscale"
-run = ["npm", "run", "start"]
+run = ["bash", "-c", "node scripts/email-cron.js & npm run start"]
 build = ["npm", "run", "build"]
 publicDir = "public"
 
