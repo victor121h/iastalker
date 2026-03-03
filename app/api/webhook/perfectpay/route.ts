@@ -15,24 +15,37 @@ async function sendPurchaseEmail(customerEmail: string, customerName: string) {
     await client.emails.send({
       from: 'IA Observer <noreply@iastalker.com>',
       to: customerEmail,
-      subject: '🎉 Access Granted Successfully!',
+      subject: 'Your Access Has Been Granted',
       html: `
-        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0f; color: #ffffff; padding: 40px 30px; border-radius: 12px;">
-          <h1 style="color: #10b981; font-size: 28px; margin-bottom: 20px;">🎉 Access Granted Successfully!</h1>
-          
-          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">${greeting} 👋</p>
-          
-          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">Congratulations on your purchase! Your access to <strong style="color: #a78bfa;">IA Observer</strong> has been successfully activated, and you can now start using all the features available on the platform.</p>
-          
-          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">This product was designed to deliver a complete, secure, and intuitive experience, allowing you to explore advanced observation, analysis, and monitoring tools powered by artificial intelligence in a simple and efficient way.</p>
-          
-          <div style="background-color: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 24px; margin: 30px 0; text-align: center;">
-            <p style="font-size: 16px; color: #d1d5db; margin-bottom: 16px;">🔐 <strong>How to Access IA Observer</strong></p>
-            <p style="font-size: 14px; color: #9ca3af; margin-bottom: 20px;">To get started right now, simply click the link below:</p>
-            <a href="https://aiobserver.replit.app/access" style="display: inline-block; background: linear-gradient(to right, #10b981, #14b8a6); color: #ffffff; font-weight: bold; font-size: 16px; padding: 14px 32px; border-radius: 10px; text-decoration: none;">👉 Access IA Observer Now</a>
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #333333; padding: 40px 30px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #333333; font-size: 24px; margin-bottom: 8px;">Access Granted Successfully</h1>
+            <p style="color: #666666; font-size: 14px;">Your IA Observer account is ready</p>
           </div>
           
-          <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 30px;">© 2024 IA Observer - All rights reserved</p>
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">${greeting},</p>
+          
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">Thank you for your purchase. Your access to <strong>IA Observer</strong> has been successfully activated. You can now use all the features available on the platform.</p>
+          
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">IA Observer provides a complete and intuitive experience with advanced observation, analysis, and monitoring tools to help you get the information you need.</p>
+          
+          <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
+            <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>How to Access IA Observer</strong></p>
+            <p style="font-size: 14px; color: #666666; margin-bottom: 20px;">Use the link below to get started:</p>
+            <a href="https://aiobserver.replit.app/access" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Access IA Observer</a>
+          </div>
+
+          <p style="font-size: 14px; line-height: 1.6; color: #666666;">If you have any questions or need help, reply to this email and our team will assist you.</p>
+          
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
+          
+          <div style="text-align: center;">
+            <p style="font-size: 12px; color: #999999; margin-bottom: 8px;">IA Observer - All rights reserved</p>
+            <p style="font-size: 11px; color: #999999;">You are receiving this email because you made a purchase on our platform.</p>
+            <p style="font-size: 11px; color: #999999;">
+              <a href="mailto:contact@aitracker.com?subject=Unsubscribe" style="color: #999999; text-decoration: underline;">Unsubscribe</a> from future emails
+            </p>
+          </div>
         </div>
       `,
     });
