@@ -73,7 +73,8 @@ export async function POST(request: NextRequest) {
 
       await pool.query(
         `INSERT INTO pending_emails (email, name, email_type, send_at)
-         VALUES ($1, $2, 'registration_followup', NOW() + INTERVAL '10 minutes')`,
+         VALUES ($1, $2, 'registration_followup', NOW() + INTERVAL '10 minutes'),
+                ($1, $2, 'support_followup', NOW() + INTERVAL '20 minutes')`,
         [normalizedEmail, name || '']
       );
 
