@@ -1,7 +1,47 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { Pool } from 'pg';
+import { getUncachableResendClient } from '@/lib/resendClient';
 
 const PERFECTPAY_TOKEN = process.env.PERFECTPAY_WEBHOOK_TOKEN || 'f71e05f3f70c465c7c01fb8ce2b327b7';
+
+const EMAIL_PRODUCT_CODE = 'PPPBEB3B';
+
+async function sendPurchaseEmail(customerEmail: string, customerName: string) {
+  try {
+    const { client, fromEmail } = await getUncachableResendClient();
+    const firstName = customerName ? customerName.split(' ')[0] : '';
+    const greeting = firstName ? `Hello ${firstName}, and welcome` : 'Hello and welcome';
+
+    await client.emails.send({
+      from: fromEmail || 'IA Observer <noreply@resend.dev>',
+      to: customerEmail,
+      subject: '🎉 Access Granted Successfully!',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #0a0a0f; color: #ffffff; padding: 40px 30px; border-radius: 12px;">
+          <h1 style="color: #10b981; font-size: 28px; margin-bottom: 20px;">🎉 Access Granted Successfully!</h1>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">${greeting} 👋</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">Congratulations on your purchase! Your access to <strong style="color: #a78bfa;">IA Observer</strong> has been successfully activated, and you can now start using all the features available on the platform.</p>
+          
+          <p style="font-size: 16px; line-height: 1.6; color: #d1d5db;">This product was designed to deliver a complete, secure, and intuitive experience, allowing you to explore advanced observation, analysis, and monitoring tools powered by artificial intelligence in a simple and efficient way.</p>
+          
+          <div style="background-color: #1a1a2e; border: 1px solid #333; border-radius: 12px; padding: 24px; margin: 30px 0; text-align: center;">
+            <p style="font-size: 16px; color: #d1d5db; margin-bottom: 16px;">🔐 <strong>How to Access IA Observer</strong></p>
+            <p style="font-size: 14px; color: #9ca3af; margin-bottom: 20px;">To get started right now, simply click the link below:</p>
+            <a href="https://aiobserver.replit.app/access" style="display: inline-block; background: linear-gradient(to right, #10b981, #14b8a6); color: #ffffff; font-weight: bold; font-size: 16px; padding: 14px 32px; border-radius: 10px; text-decoration: none;">👉 Access IA Observer Now</a>
+          </div>
+          
+          <p style="font-size: 12px; color: #6b7280; text-align: center; margin-top: 30px;">© 2024 IA Observer - All rights reserved</p>
+        </div>
+      `,
+    });
+
+    console.log('[PerfectPay Webhook] Purchase email sent to:', customerEmail);
+  } catch (emailError: any) {
+    console.error('[PerfectPay Webhook] Failed to send email:', emailError?.message || emailError);
+  }
+}
 
 const PLAN_CREDITS: Record<string, number> = {
   'PPLQQOQML': 100,
@@ -124,9 +164,15 @@ export async function POST(request: NextRequest) {
       client.release();
     }
 
+    const productCode = body.product?.code || '';
+    if (isApproved && productCode === EMAIL_PRODUCT_CODE && customerEmail) {
+      sendPurchaseEmail(customerEmail, customerName);
+    }
+
     console.log('[PerfectPay Webhook] Processed successfully:', {
       saleCode,
       planCode,
+      productCode,
       status: saleStatus,
       creditsAdded: creditsToAdd,
       email: customerEmail,
