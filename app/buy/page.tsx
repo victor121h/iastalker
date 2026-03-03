@@ -329,7 +329,7 @@ function BuyContent() {
               </div>
 
               <a
-                href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8AD0')}
+                href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8AD1')}
                 className="block w-full py-4 rounded-xl text-center font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 text-lg"
               >
                 Grab This Deal Now
