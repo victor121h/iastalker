@@ -1,11 +1,19 @@
 'use client';
 
-import { motion } from 'framer-motion';
-import { Suspense } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams } from 'next/navigation';
 
 function BuyContent() {
   const searchParams = useSearchParams();
+  const [showPopup, setShowPopup] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowPopup(true);
+    }, 5000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -252,6 +260,88 @@ function BuyContent() {
         </motion.footer>
       </div>
 
+      <AnimatePresence>
+        {showPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4"
+            onClick={() => setShowPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+              className="relative bg-[#12121a] rounded-2xl border border-emerald-500/50 p-8 max-w-sm w-full"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <button
+                onClick={() => setShowPopup(false)}
+                className="absolute top-4 right-4 text-gray-400 hover:text-white transition-colors text-xl"
+              >
+                &times;
+              </button>
+
+              <div className="text-center mb-6">
+                <span className="inline-flex items-center gap-2 bg-red-500/20 text-red-400 text-xs font-bold px-4 py-1.5 rounded-full border border-red-500/30 mb-4">
+                  <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+                  LIMITED TIME OFFER
+                </span>
+                <h3 className="text-white text-2xl font-bold mt-3">Unlimited Plan</h3>
+                <p className="text-emerald-400 font-bold text-lg mt-1">50% OFF - Special Deal</p>
+              </div>
+
+              <div className="bg-[#0a0a0f] border border-[#333] rounded-xl p-5 text-center mb-6">
+                <div className="flex items-center justify-center gap-3">
+                  <span className="text-gray-500 line-through text-xl">$197.00</span>
+                  <span className="text-white text-4xl font-bold">$97.00</span>
+                </div>
+                <p className="text-gray-400 text-sm mt-1">one-time payment</p>
+              </div>
+
+              <div className="space-y-3 mb-6">
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <span className="text-gray-300 text-sm">Unlimited credits forever</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <span className="text-gray-300 text-sm">Unlimited access to all tools</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <span className="text-gray-300 text-sm">Cell phone tracker</span>
+                </div>
+                <div className="flex items-center gap-3">
+                  <svg className="w-5 h-5 text-emerald-400 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <span className="text-gray-300 text-sm">Access to person's camera</span>
+                </div>
+              </div>
+
+              <a
+                href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8AD0')}
+                className="block w-full py-4 rounded-xl text-center font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 text-lg"
+              >
+                Grab This Deal Now
+              </a>
+
+              <p className="text-gray-500 text-xs text-center mt-3">
+                You save $100.00 with this exclusive offer
+              </p>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 }
