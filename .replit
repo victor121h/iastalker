@@ -44,4 +44,4 @@ packages = ["unzip"]
 [userenv]
 
 [userenv.shared]
-PERFECTPAY_WEBHOOK_TOKEN = "4bac01af77c825b08316691d457c225d"
+PERFECTPAY_WEBHOOK_TOKEN = "f71e05f3f70c465c7c01fb8ce2b327b7"
