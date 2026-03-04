@@ -175,7 +175,7 @@ function DashboardContent() {
     <div className="min-h-screen bg-[#0a0a0f]">
       <div className="sticky top-0 z-50 bg-gradient-to-r from-amber-500 to-orange-500 py-3 px-4">
         <Link 
-          href={appendUtmToPath('/access')}
+          href={appendUtmToPath('/Access')}
           className="flex items-center justify-center gap-2 text-white font-semibold text-sm md:text-base hover:opacity-90 transition-opacity text-center"
         >
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="flex-shrink-0">

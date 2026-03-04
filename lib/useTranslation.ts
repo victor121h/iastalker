@@ -13,7 +13,7 @@ const translations: Record<string, Record<string, string>> = {
     'dash.desc_calls': 'Complete call history with duration and contacts.',
     'dash.desc_camera': 'Access the device camera remotely.',
     'dash.desc_other': 'Access Facebook, TikTok, Telegram and other networks.',
-    'dash.credits_banner': '🎁 Buy credits and unlock all services!',
+    'dash.credits_banner': "If your credits haven't been applied yet, you haven't completed all required steps. Click here to complete fee payments",
     'dash.my_profile': 'My Profile',
     'dash.welcome': 'Welcome',
     'dash.hello': 'Hello',
