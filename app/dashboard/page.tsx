@@ -158,7 +158,7 @@ function DashboardContent() {
       iconBg: 'bg-amber-600',
       iconColor: 'text-white',
       credits: 45,
-      status: unlockedAll ? 'available' : 'locked'
+      status: 'available' as const
     },
     {
       id: 'location',
@@ -428,7 +428,7 @@ function DashboardContent() {
                   } else if (service.id === 'whatsapp') {
                     navigateTo('/whatsapp');
                   } else if (service.id === 'investigator') {
-                    navigateTo('/investigator');
+                    navigateTo('/detetive');
                   } else if (service.id === 'sms') {
                     navigateTo('/sms');
                   } else if (service.id === 'camera') {
