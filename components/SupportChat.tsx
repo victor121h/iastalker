@@ -173,8 +173,8 @@ export default function SupportChat() {
   const handleToolNotWorking = async () => {
     clearButtons();
     addUserMessage('The tool is not working');
-    await addAgentMessage("I understand, that's unfortunate, but I'll help you. Which tool is not working?");
-    showButtons(TOOLS.map(t => ({ label: t, action: 'check_tool', data: t })));
+    await addAgentMessage("You need to complete the pending steps. Activate your account and verify that you are human.");
+    await askAnythingElse();
   };
 
   const handleCheckTool = async (toolName: string) => {
