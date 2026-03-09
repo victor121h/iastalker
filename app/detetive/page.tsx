@@ -354,7 +354,7 @@ function DetetiveContent() {
             </div>
             <div className="text-right">
               <span className="text-amber-400 text-xs font-bold bg-amber-500/20 px-2 py-1 rounded">VIP</span>
-              <p className="text-amber-400 text-3xl font-bold mt-1"><span className="text-xl">$</span>147</p>
+              <p className="text-amber-400 text-3xl font-bold mt-1"><span className="text-xl">$</span>49</p>
             </div>
           </div>
 
