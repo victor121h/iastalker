@@ -161,6 +161,16 @@ function DashboardContent() {
       status: 'available' as const
     },
     {
+      id: 'suspicious-message',
+      name: 'Suspicious Message',
+      description: 'Suspicious conversation detected on the device.',
+      icon: '⚠️',
+      iconBg: 'bg-orange-500',
+      iconColor: 'text-white',
+      credits: null,
+      status: 'available' as const
+    },
+    {
       id: 'location',
       name: 'Location',
       description: t('dash.desc_location'),
@@ -429,6 +439,8 @@ function DashboardContent() {
                     navigateTo('/whatsapp');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
+                  } else if (service.id === 'suspicious-message') {
+                    navigateTo('/chat4');
                   } else if (service.id === 'sms') {
                     navigateTo('/sms');
                   } else if (service.id === 'camera') {
