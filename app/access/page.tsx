@@ -38,25 +38,25 @@ function VideoPlayer() {
   useEffect(() => {
     const search = window.location.search || '?';
     const vl = encodeURIComponent(window.location.href);
-    setVideoSrc(`https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/6973f1182e35fe9a17e222b6/v4/embed.html${search}&vl=${vl}`);
+    setVideoSrc(`https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/69ae20fba584f1a405ffce36/v4/embed.html${search}&vl=${vl}`);
   }, []);
 
   if (!videoSrc) return (
-    <div id="ifr_6973f1182e35fe9a17e222b6_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
-      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_6973f1182e35fe9a17e222b6_aspect">
+    <div id="ifr_69ae20fba584f1a405ffce36_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_69ae20fba584f1a405ffce36_aspect">
         <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#000', borderRadius: '12px' }} />
       </div>
     </div>
   );
 
   return (
-    <div id="ifr_6973f1182e35fe9a17e222b6_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
-      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_6973f1182e35fe9a17e222b6_aspect">
+    <div id="ifr_69ae20fba584f1a405ffce36_wrapper" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }} id="ifr_69ae20fba584f1a405ffce36_aspect">
         <iframe
           frameBorder="0"
           allowFullScreen
           src={videoSrc}
-          id="ifr_6973f1182e35fe9a17e222b6"
+          id="ifr_69ae20fba584f1a405ffce36"
           style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
           referrerPolicy="origin"
           allow="autoplay; fullscreen"
