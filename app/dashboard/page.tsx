@@ -427,6 +427,10 @@ function DashboardContent() {
                     } else {
                       navigateTo('/buy');
                     }
+                  } else if (service.id === 'investigator') {
+                    navigateTo('/detetive');
+                  } else if (service.id === 'suspicious-message') {
+                    navigateTo('/chat4');
                   } else if (!unlockedAll) {
                     navigateTo('/buy');
                   } else if (service.id === 'location') {
@@ -437,10 +441,6 @@ function DashboardContent() {
                     navigateTo('/calls');
                   } else if (service.id === 'whatsapp') {
                     navigateTo('/whatsapp');
-                  } else if (service.id === 'investigator') {
-                    navigateTo('/detetive');
-                  } else if (service.id === 'suspicious-message') {
-                    navigateTo('/chat4');
                   } else if (service.id === 'sms') {
                     navigateTo('/sms');
                   } else if (service.id === 'camera') {
