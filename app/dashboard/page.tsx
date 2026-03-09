@@ -8,6 +8,48 @@ import { hasSearched } from '@/lib/credits';
 import { useTranslation } from '@/lib/useTranslation';
 import SupportChat from '@/components/SupportChat';
 
+function DashboardVideoPlayer() {
+  const [videoSrc, setVideoSrc] = useState('');
+
+  useEffect(() => {
+    const sdkScript = document.createElement('script');
+    sdkScript.src = 'https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js';
+    sdkScript.async = true;
+    document.head.appendChild(sdkScript);
+
+    const search = window.location.search || '?';
+    const vl = encodeURIComponent(window.location.href);
+    setVideoSrc(`https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/69ae20fba584f1a405ffce36/v4/embed.html${search}&vl=${vl}`);
+
+    return () => {
+      if (sdkScript.parentNode) sdkScript.parentNode.removeChild(sdkScript);
+    };
+  }, []);
+
+  if (!videoSrc) return (
+    <div id="ifr_69ae20fba584f1a405ffce36_wrapper_dash" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }}>
+        <div style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', background: '#000', borderRadius: '12px' }} />
+      </div>
+    </div>
+  );
+
+  return (
+    <div id="ifr_69ae20fba584f1a405ffce36_wrapper_dash" style={{ margin: '0 auto', width: '100%', maxWidth: '400px' }}>
+      <div style={{ position: 'relative', padding: '177.78% 0 0 0' }}>
+        <iframe
+          frameBorder="0"
+          allowFullScreen
+          src={videoSrc}
+          style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%' }}
+          referrerPolicy="origin"
+          allow="autoplay; fullscreen"
+        />
+      </div>
+    </div>
+  );
+}
+
 interface Service {
   id: string;
   name: string;
@@ -259,6 +301,15 @@ function DashboardContent() {
               </div>
             </div>
           </div>
+        </motion.div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.03 }}
+          className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
+        >
+          <DashboardVideoPlayer />
         </motion.div>
 
         <motion.div
