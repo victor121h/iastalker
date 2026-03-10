@@ -340,16 +340,6 @@ function DashboardContent() {
             </svg>
             Activate your plan
           </Link>
-          <Link
-            href={appendUtmToPath('/up3')}
-            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-[#4A90D9]"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 12l2 2 4-4"/>
-              <circle cx="12" cy="12" r="10"/>
-            </svg>
-            Verify your account
-          </Link>
         </motion.div>
 
         <motion.section
