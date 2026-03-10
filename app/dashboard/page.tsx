@@ -1,29 +1,32 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useRef, useMemo, memo, Suspense } from 'react';
 import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { hasSearched } from '@/lib/credits';
 import { useTranslation } from '@/lib/useTranslation';
 import SupportChat from '@/components/SupportChat';
 
-function DashboardVideoPlayer() {
+const DashboardVideoPlayer = memo(function DashboardVideoPlayer() {
+  const sdkLoaded = useRef(false);
   const [videoSrc, setVideoSrc] = useState('');
 
   useEffect(() => {
-    const sdkScript = document.createElement('script');
-    sdkScript.src = 'https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js';
-    sdkScript.async = true;
-    document.head.appendChild(sdkScript);
+    if (sdkLoaded.current) return;
+    sdkLoaded.current = true;
+
+    const existing = document.querySelector('script[src*="smartplayer-wc"]');
+    if (!existing) {
+      const sdkScript = document.createElement('script');
+      sdkScript.src = 'https://scripts.converteai.net/lib/js/smartplayer-wc/v4/sdk.js';
+      sdkScript.async = true;
+      document.head.appendChild(sdkScript);
+    }
 
     const search = window.location.search || '?';
     const vl = encodeURIComponent(window.location.href);
     setVideoSrc(`https://scripts.converteai.net/0bf1bdff-cfdb-4cfd-bf84-db4df0db7bb2/players/69ae20fba584f1a405ffce36/v4/embed.html${search}&vl=${vl}`);
-
-    return () => {
-      if (sdkScript.parentNode) sdkScript.parentNode.removeChild(sdkScript);
-    };
   }, []);
 
   if (!videoSrc) return (
@@ -48,7 +51,7 @@ function DashboardVideoPlayer() {
       </div>
     </div>
   );
-}
+});
 
 interface Service {
   id: string;
