@@ -149,7 +149,7 @@ function DashboardContent() {
       icon: '💬',
       iconBg: 'bg-green-500',
       iconColor: 'text-white',
-      credits: 40,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     },
     {
@@ -179,7 +179,7 @@ function DashboardContent() {
       icon: '📍',
       iconBg: 'bg-red-500',
       iconColor: 'text-white',
-      credits: 60,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     },
     {
@@ -189,7 +189,7 @@ function DashboardContent() {
       icon: '💭',
       iconBg: 'bg-yellow-500',
       iconColor: 'text-white',
-      credits: 30,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     },
     {
@@ -199,7 +199,7 @@ function DashboardContent() {
       icon: '📞',
       iconBg: 'bg-blue-400',
       iconColor: 'text-white',
-      credits: 25,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     },
     {
@@ -209,7 +209,7 @@ function DashboardContent() {
       icon: '📸',
       iconBg: 'bg-gray-700',
       iconColor: 'text-white',
-      credits: null,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     },
     {
@@ -219,7 +219,7 @@ function DashboardContent() {
       icon: '🔗',
       iconBg: 'bg-red-600',
       iconColor: 'text-white',
-      credits: null,
+      credits: 120,
       status: unlockedAll ? 'available' : 'locked'
     }
   ];
