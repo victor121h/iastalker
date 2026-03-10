@@ -76,6 +76,8 @@ function DashboardContent() {
   const [showFacebookPopup, setShowFacebookPopup] = useState(false); // kept for backward compat
   const [navigating, setNavigating] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+  const [canCloseVerify, setCanCloseVerify] = useState(false);
+  const [verifyShownOnce, setVerifyShownOnce] = useState(false);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang'];
@@ -135,7 +137,10 @@ function DashboardContent() {
 
     const verifyTimer = setTimeout(() => {
       setShowVerifyPopup(true);
-    }, 15000);
+      setCanCloseVerify(false);
+      setTimeout(() => setCanCloseVerify(true), 5000);
+      setVerifyShownOnce(true);
+    }, 7000);
     return () => clearTimeout(verifyTimer);
   }, []);
 
@@ -599,14 +604,22 @@ function DashboardContent() {
             className="fixed bottom-4 left-4 right-4 z-[100] max-w-[420px] mx-auto bg-white rounded-[24px] p-6 text-center"
             style={{ boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.3)' }}
           >
-            <button
-              onClick={() => setShowVerifyPopup(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
+            {canCloseVerify && (
+              <button
+                onClick={() => {
+                  setShowVerifyPopup(false);
+                  setTimeout(() => {
+                    setShowVerifyPopup(true);
+                    setCanCloseVerify(true);
+                  }, 10000);
+                }}
+                className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
+                  <path d="M18 6L6 18M6 6l12 12"/>
+                </svg>
+              </button>
+            )}
 
             <div className="flex justify-center mb-4">
               <div className="w-[50px] h-[50px] bg-[#4A90D9] rounded-xl flex items-center justify-center">
