@@ -3,6 +3,7 @@ import Script from "next/script";
 import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { ClientProviders } from "@/components/ClientProviders";
+import VisitorTracker from "@/components/VisitorTracker";
 
 export const metadata: Metadata = {
   title: "IA Observer",
@@ -127,6 +128,7 @@ export default function RootLayout({
         <ClientProviders>
           {children}
         </ClientProviders>
+        <VisitorTracker />
         <Analytics />
       </body>
     </html>
