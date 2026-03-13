@@ -886,6 +886,7 @@ function PitchContent() {
               >
                 Choose Plan
               </a>
+              <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
 
             <div id="plan-2990" className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
@@ -971,6 +972,7 @@ function PitchContent() {
               >
                 Choose Plan
               </a>
+              <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
 
             <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#DFB313] relative mt-4">
@@ -1059,11 +1061,8 @@ function PitchContent() {
               >
                 Get All Apps
               </a>
+              <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
-
-            <p className="text-center text-white/50 text-xs mt-5">
-              🔒 One-time payment. No subscription. No hidden fees. Instant access.
-            </p>
           </motion.section>
 
           <motion.section
