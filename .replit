@@ -50,7 +50,6 @@ externalPort = 80
 deploymentTarget = "autoscale"
 run = ["bash", "-c", "node scripts/email-cron.js & npm run start"]
 build = ["npm", "run", "build"]
-publicDir = "public"
 
 [nix]
 channel = "stable-25_05"
