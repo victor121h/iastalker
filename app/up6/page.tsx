@@ -40,77 +40,26 @@ function Up6Content() {
     return () => clearInterval(timer);
   }, []);
 
-  const plans = [
-    {
-      id: 'ultra',
-      name: 'Ultra Plan – Eye of God',
-      badge: 'DISCOUNT: 90% off',
-      badgeColor: 'bg-green-500',
-      borderColor: 'border-[#00FF75]',
-      price: '79.90',
-      oldPrice: '230.00',
-      savings: '150.10',
-      access: 7,
-      features: [
-        { text: 'Access all data from the searched profile', included: true },
-        { text: 'Real-time location', included: true },
-        { text: 'Location history', included: true },
-        { text: 'Messages (sent and received) in real time', included: true },
-        { text: 'Message history (up to 18 months)', included: true },
-        { text: 'Lifetime access to IA Observer', included: true },
-        { text: 'Unlimited profile searches', included: true },
-        { text: '24h priority support', included: true },
-      ],
-      link: 'https://go.centerpag.com/PPU38CQ8AC2',
-      recommended: true,
-    },
-    {
-      id: 'premium',
-      name: 'Premium Plan',
-      badge: 'Discount: 80% off',
-      badgeColor: 'bg-orange-500',
-      borderColor: 'border-orange-500',
-      price: '59.90',
-      oldPrice: '120.00',
-      savings: '60.10',
-      access: 5,
-      features: [
-        { text: 'Access all data from the searched profile', included: true },
-        { text: 'Real-time location', included: true },
-        { text: 'Location history', included: true },
-        { text: 'Messages (sent and received) in real time', included: true },
-        { text: 'Message history (up to 18 months)', included: false },
-        { text: 'Lifetime access to IA Observer', included: false },
-        { text: 'Unlimited profile searches', included: false },
-        { text: '24h priority support', included: false },
-      ],
-      link: 'https://go.centerpag.com/PPU38CQ8AC1',
-      recommended: false,
-    },
-    {
-      id: 'basic',
-      name: 'Basic Plan',
-      badge: 'Discount: 90% off',
-      badgeColor: 'bg-gray-500',
-      borderColor: 'border-gray-500',
-      price: '49.90',
-      oldPrice: '90.00',
-      savings: '40.10',
-      access: 3,
-      features: [
-        { text: 'Access all data from the searched profile', included: true },
-        { text: 'Real-time location', included: true },
-        { text: 'Location history', included: false },
-        { text: 'Messages (sent and received) in real time', included: false },
-        { text: 'Message history (up to 18 months)', included: false },
-        { text: 'Lifetime access to IA Observer', included: false },
-        { text: 'Unlimited profile searches', included: false },
-        { text: '24h priority support', included: false },
-      ],
-      link: 'https://go.centerpag.com/PPU38CQ89MK',
-      recommended: false,
-    },
-  ];
+  const plan = {
+    id: 'ultra',
+    name: 'Ultra Plan – Eye of God',
+    badge: 'DISCOUNT: 90% off',
+    price: '79.90',
+    oldPrice: '230.00',
+    savings: '150.10',
+    access: 7,
+    features: [
+      { text: 'Access all data from the searched profile', included: true },
+      { text: 'Real-time location', included: true },
+      { text: 'Location history', included: true },
+      { text: 'Messages (sent and received) in real time', included: true },
+      { text: 'Message history (up to 18 months)', included: true },
+      { text: 'Lifetime access to IA Observer', included: true },
+      { text: 'Unlimited profile searches', included: true },
+      { text: '24h priority support', included: true },
+    ],
+    link: 'https://go.centerpag.com/PPU38CQ8AC2',
+  };
 
   return (
     <div className="min-h-screen bg-white relative">
@@ -187,68 +136,56 @@ function Up6Content() {
             </h2>
           </motion.div>
 
-          <div className="space-y-5">
-            {plans.map((plan, index) => (
-              <motion.div
-                key={plan.id}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
-                className={`bg-[#0C1011] rounded-[22px] p-5 border-2 ${plan.borderColor} relative overflow-hidden`}
-              >
-                <div className={`absolute top-3 right-3 ${plan.badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full`}>
-                  {plan.badge}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.4, delay: 0.2 }}
+            className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative overflow-hidden"
+          >
+            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
+              {plan.badge}
+            </div>
+
+            <h3 className="text-white font-bold text-lg mb-2 pr-24">{plan.name}</h3>
+
+            <div className="flex items-center gap-2 mb-5">
+              <span className="text-2xl">📱</span>
+              <span className="text-[#00FF75] font-extrabold text-xl uppercase tracking-wide">Mobile Plan</span>
+            </div>
+
+            <div className="space-y-2.5 mb-5">
+              {plan.features.map((feature, i) => (
+                <div key={i} className="flex items-start gap-2">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
+                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
+                  </svg>
+                  <p className="text-white text-sm">{feature.text}</p>
                 </div>
+              ))}
+            </div>
 
-                <h3 className="text-white font-bold text-lg mb-4 pr-24">{plan.name}</h3>
+            <div className="text-center mb-4">
+              <p className="text-[#666] text-sm line-through mb-1">From: ${plan.oldPrice}</p>
+              <p className="text-white text-3xl font-bold">
+                ${plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}</span>
+              </p>
+              <p className="text-[#962FBF] text-sm font-medium mt-1">You save ${plan.savings}</p>
+            </div>
 
-                <div className="space-y-2.5 mb-5">
-                  {plan.features.map((feature, i) => (
-                    <div key={i} className="flex items-start gap-2">
-                      {feature.included ? (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                          <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                        </svg>
-                      ) : (
-                        <svg width="16" height="16" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0 mt-0.5">
-                          <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41z"/>
-                        </svg>
-                      )}
-                      <p className={`text-sm ${feature.included ? 'text-white' : 'text-[#666]'}`}>{feature.text}</p>
-                    </div>
-                  ))}
-                </div>
+            <a
+              href={appendUtmToLink(plan.link)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block w-full py-3.5 rounded-xl text-center font-bold text-white"
+              style={{ background: 'linear-gradient(90deg, #EB1C8F, #FA7E1E)' }}
+            >
+              SELECT PLAN
+            </a>
 
-                <div className="text-center mb-4">
-                  <p className="text-[#666] text-sm line-through mb-1">From: ${plan.oldPrice}</p>
-                  <p className="text-white text-3xl font-bold">
-                    ${plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}</span>
-                  </p>
-                  <p className="text-[#962FBF] text-sm font-medium mt-1">You save ${plan.savings}</p>
-                </div>
-
-                <a
-                  href={appendUtmToLink(plan.link)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block w-full py-3.5 rounded-xl text-center font-bold text-white"
-                  style={{
-                    background: plan.recommended
-                      ? 'linear-gradient(90deg, #EB1C8F, #FA7E1E)'
-                      : plan.id === 'premium'
-                        ? 'linear-gradient(90deg, #F97316, #EA580C)'
-                        : '#4B5563'
-                  }}
-                >
-                  SELECT PLAN
-                </a>
-
-                <p className="text-[#A0A0A0] text-xs text-center mt-3 leading-relaxed">
-                  The $30 from your desktop plan will be refunded after you purchase the mobile plan.
-                </p>
-              </motion.div>
-            ))}
-          </div>
+            <p className="text-[#A0A0A0] text-xs text-center mt-3 leading-relaxed">
+              The $30 from your desktop plan will be refunded after you purchase the mobile plan.
+            </p>
+          </motion.div>
 
           <motion.div
             initial={{ opacity: 0 }}
