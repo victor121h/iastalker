@@ -60,4 +60,3 @@ packages = ["unzip"]
 
 [userenv.shared]
 PERFECTPAY_WEBHOOK_TOKEN = "f71e05f3f70c465c7c01fb8ce2b327b7"
-ADMIN_MONITOR_PASSWORD = "admin2024obs"

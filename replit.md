@@ -76,28 +76,11 @@ lib/
 - Keys are organized by page: `dash.*`, `auth.*`, `camera.*`, `sms.*`, `whatsapp.*`, `det.*`, `common.*`
 - Language is hardcoded to 'pt' (key name) but all values are in English
 
-## Real-Time Visitor Monitor
-- **Route**: `/useronline` (password-protected: `admin2024obs`)
-- **Tracker Component**: `components/VisitorTracker.tsx` (added to layout.tsx)
-- **API**: `app/api/tracking/route.ts` (POST for tracking, GET for admin data)
-- **Database table**: `visitor_tracking`
-- **Features**:
-  - Real-time visitor tracking across all pages
-  - Visitor IDs based on Brasília time (DD/MM-H:MM format)
-  - Auto-replaces ID with real name after registration
-  - Color-coded status: green (online), red (left early), yellow (left advanced)
-  - Funnel visualization bar chart
-  - Page-by-page breakdown with expandable visitor lists
-  - Device, browser, referrer detection
-  - 24h active / 7-day history lifecycle
-  - Auto-polls every 5 seconds, heartbeat every 30 seconds
-
 ## Database Tables
 - `user_credits` - email, name, total_credits, used_credits, unlocked_all
 - `user_utms` - UTM tracking per user
 - `webhook_logs` - Payment webhook event logs
 - `support_interactions` - Support chat interaction tracking
-- `visitor_tracking` - Real-time visitor tracking (id, visitor_id, session_id, display_name, current_page, entry_page, page_history, is_online, device, browser, referrer, timestamps)
 
 ## Environment Variables
 - `DATABASE_URL`: Neon PostgreSQL connection string
