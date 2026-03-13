@@ -136,7 +136,7 @@ function PitchContent() {
         } else if (prev.minutes > 0) {
           return { minutes: prev.minutes - 1, seconds: 59 };
         }
-        if (!sessionStorage.getItem('pitch_timer_popup_shown')) {
+        if (!localStorage.getItem('pitch_timer_popup_shown')) {
           setShowTimerPopup(true);
         }
         return prev;
@@ -249,7 +249,7 @@ function PitchContent() {
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 px-4">
           <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a] relative">
             <button
-              onClick={() => { sessionStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); }}
+              onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); }}
               className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-white/50 hover:text-white transition-colors"
             >
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
@@ -269,7 +269,7 @@ function PitchContent() {
               The data collected from <span className="font-semibold text-white">@{username}</span> is about to be permanently deleted. This is your last chance to see what they&apos;re hiding from you.
             </p>
             <button
-              onClick={() => { sessionStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); scrollToPlan(); }}
+              onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); scrollToPlan(); }}
               className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
             >
               See the truth now
