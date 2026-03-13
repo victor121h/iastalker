@@ -1,8 +1,8 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { useEffect, useState, useCallback, createContext, useContext } from 'react';
-import { useRouter, useSearchParams } from 'next/navigation';
+import { motion, useAnimation } from 'framer-motion';
+import { useCallback, createContext, useContext } from 'react';
+import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface NotificationContextType {
   showNotification: () => void;
@@ -18,97 +18,47 @@ export function useNotification() {
   return context;
 }
 
+const BAR_PAGES = ['/feed', '/direct', '/chat1', '/chat2', '/chat3'];
+
 export function NotificationProvider({ children }: { children: React.ReactNode }) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [isVisible, setIsVisible] = useState(false);
-  const [timerId, setTimerId] = useState<NodeJS.Timeout | null>(null);
+  const pathname = usePathname();
+  const controls = useAnimation();
 
-  const hideNotification = useCallback(() => {
-    setIsVisible(false);
-  }, []);
+  const showOnThisPage = BAR_PAGES.some(p => pathname === p || pathname.startsWith(p + '?'));
 
-  const showNotification = useCallback(() => {
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-    setIsVisible(true);
-    const newTimerId = setTimeout(() => {
-      setIsVisible(false);
-    }, 6000);
-    setTimerId(newTimerId);
-  }, [timerId]);
-
-  const handleClose = useCallback(() => {
-    if (timerId) {
-      clearTimeout(timerId);
-    }
-    setIsVisible(false);
-  }, [timerId]);
+  const showNotification = useCallback(async () => {
+    if (!showOnThisPage) return;
+    await controls.start({
+      x: [0, -10, 10, -10, 10, -6, 6, -3, 3, 0],
+      transition: { duration: 0.5, ease: 'easeInOut' },
+    });
+  }, [controls, showOnThisPage]);
 
   const handlePurchase = useCallback(() => {
     const params = new URLSearchParams(searchParams.toString());
     router.push(`/pitch?${params.toString()}`);
   }, [router, searchParams]);
 
-  useEffect(() => {
-    return () => {
-      if (timerId) {
-        clearTimeout(timerId);
-      }
-    };
-  }, [timerId]);
-
   return (
     <NotificationContext.Provider value={{ showNotification }}>
+      {showOnThisPage && (
+        <motion.div
+          animate={controls}
+          className="fixed top-0 left-0 right-0 z-[10000] bg-[#C62828] px-4 py-2.5 text-center cursor-pointer select-none"
+          onClick={handlePurchase}
+          style={{ boxShadow: '0 2px 12px rgba(198,40,40,0.6)' }}
+        >
+          <p className="text-white text-xs font-medium leading-snug">
+            In the free trial we limit your access. To get full access to everything, get the IA Observer tool.
+          </p>
+          <p className="text-white font-bold text-xs mt-0.5 underline underline-offset-2">
+            Click here to unlock everything
+          </p>
+        </motion.div>
+      )}
       {children}
-      <AnimatePresence>
-        {isVisible && (
-          <motion.div
-            initial={{ opacity: 0, y: -100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -100 }}
-            transition={{ duration: 0.35, ease: 'easeOut' }}
-            className="fixed top-4 inset-x-0 mx-auto z-[9999] max-w-[380px]"
-            style={{ width: 'calc(100% - 32px)' }}
-          >
-            <div 
-              className="relative rounded-[14px] p-4 pr-14 shadow-2xl"
-              style={{
-                background: 'linear-gradient(135deg, #DC2626 0%, #B91C1C 100%)',
-              }}
-            >
-              <button
-                onClick={handleClose}
-                className="absolute top-3 right-3 w-6 h-6 flex items-center justify-center text-white/80 hover:text-white transition-colors"
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
-                  <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
-                </svg>
-              </button>
-
-              <div>
-                <div className="flex-1 mb-3">
-                  <h3 className="text-white font-bold text-[14px] leading-tight mb-1">
-                    Your current access only allows content viewing.
-                  </h3>
-                  <p className="text-white/70 text-[12px] leading-snug">
-                    To interact and view content fully, get the AI Observer tool.
-                  </p>
-                </div>
-
-                <button
-                  onClick={handlePurchase}
-                  className="w-full py-2.5 rounded-lg font-bold text-[13px] text-white transition-all hover:opacity-90 active:scale-[0.98]"
-                  style={{ background: '#991B1B' }}
-                >
-                  I have now unlocked full access
-                </button>
-              </div>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
     </NotificationContext.Provider>
   );
 }

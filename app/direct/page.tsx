@@ -207,8 +207,8 @@ const MessageItem = memo(function MessageItem({
 
 function DirectSkeleton() {
   return (
-    <div className="min-h-screen bg-[#000000]">
-      <header className="sticky top-0 z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
+    <div className="min-h-screen bg-[#000000] pt-[48px]">
+      <header className="sticky top-[48px] z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
         <div className="flex items-center justify-between px-4 h-[52px]">
           <div className="h-7 w-28 bg-[#262626] rounded animate-pulse" />
           <div className="flex gap-4">
@@ -397,8 +397,8 @@ function DirectContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000000]">
-      <header className="sticky top-0 z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
+    <div className="min-h-screen bg-[#000000] pt-[48px]">
+      <header className="sticky top-[48px] z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
         <div className="flex items-center justify-between px-4 h-[52px]">
           <div className="flex items-center gap-3">
             <button 

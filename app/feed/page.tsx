@@ -333,8 +333,8 @@ const BottomNav = memo(function BottomNav({
 
 function FeedSkeleton() {
   return (
-    <div className="min-h-screen bg-[#000]">
-      <header className="sticky top-0 z-50 bg-[#000] border-b border-[#262626]">
+    <div className="min-h-screen bg-[#000] pt-[48px]">
+      <header className="sticky top-[48px] z-50 bg-[#000] border-b border-[#262626]">
         <div className="flex items-center justify-between px-4 h-[44px]">
           <div className="h-8 w-24 bg-[#262626] rounded animate-pulse" />
           <div className="flex gap-4">
@@ -508,8 +508,8 @@ function FeedContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000]">
-      <header className="sticky top-0 z-50 bg-[#000] border-b border-[#262626]">
+    <div className="min-h-screen bg-[#000] pt-[48px]">
+      <header className="sticky top-[48px] z-50 bg-[#000] border-b border-[#262626]">
         <div className="flex items-center justify-between px-4 h-[44px]">
           <div className="flex items-center gap-2">
             <button className="p-1">
