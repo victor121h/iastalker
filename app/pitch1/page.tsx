@@ -112,7 +112,9 @@ function PitchContent() {
         } else if (prev.minutes > 0) {
           return { minutes: prev.minutes - 1, seconds: 59 };
         }
-        setShowTimerPopup(true);
+        if (!localStorage.getItem('pitch_timer_popup_shown')) {
+          setShowTimerPopup(true);
+        }
         return prev;
       });
     }, 1000);
@@ -235,7 +237,7 @@ function PitchContent() {
               The data collected from <span className="font-semibold text-white">@{username}</span> is about to be permanently deleted. This is your last chance to see what they&apos;re hiding from you.
             </p>
             <button
-              onClick={() => { setShowTimerPopup(false); scrollToPlan(); }}
+              onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); scrollToPlan(); }}
               className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
             >
               See the truth now
