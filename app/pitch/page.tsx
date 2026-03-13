@@ -757,13 +757,7 @@ function PitchContent() {
             className="mb-6"
           >
             <div className="flex justify-center mb-4">
-              <div 
-                className="px-4 py-1.5 rounded-full text-sm font-bold"
-                style={{ background: 'linear-gradient(90deg, #EB1C8F, #DFB313)' }}
-              >
-                <span className="text-white">LIMITED BLACK FRIDAY</span>
               </div>
-            </div>
 
             <h2 className="text-black text-center font-bold text-2xl mb-1">CHOOSE YOUR PLAN</h2>
             <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
