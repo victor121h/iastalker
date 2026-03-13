@@ -62,6 +62,7 @@ function PitchContent() {
   }, [urlUsername]);
   
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [location, setLocation] = useState('');
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
@@ -118,6 +119,7 @@ function PitchContent() {
       const cached = getProfileCache(username);
       if (cached?.profile) {
         setProfile(cached.profile as ProfileData);
+        if (cached.location) setLocation(cached.location);
         return;
       }
 
@@ -307,7 +309,7 @@ function PitchContent() {
               </div>
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">2 meetups</span> scheduled near: <span className="blur-sm select-none">██████████</span></p>
+                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">2 meetups</span> scheduled near: <span className="font-semibold text-white">{location || 'nearby location'}</span></p>
               </div>
               <div className="flex items-center gap-2">
                 <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
