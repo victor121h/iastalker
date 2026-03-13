@@ -191,11 +191,16 @@ const PostItem = memo(function PostItem({
             </div>
           </div>
           <div className="flex flex-col">
-            <span className="text-white text-[13px] font-semibold">{postUsername}</span>
+            <div className="flex items-center gap-1">
+              <span className="text-white text-[13px] font-semibold">{postUsername}</span>
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="#3897F0">
+                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
+              </svg>
+            </div>
             <span className="text-[#A0A0A0] text-[11px]">{location}</span>
           </div>
         </div>
-        <button className="p-2">
+        <button className="p-2" onClick={showNotification}>
           <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
             <circle cx="12" cy="5" r="2"/>
             <circle cx="12" cy="12" r="2"/>
@@ -204,48 +209,51 @@ const PostItem = memo(function PostItem({
         </button>
       </div>
 
-      <div className="bg-[#0C1011] aspect-square flex flex-col items-center justify-center">
-        <div className="flex flex-col items-center gap-3">
-          <svg width="48" height="48" viewBox="0 0 24 24" fill="#666" className="opacity-80">
-            <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
-          </svg>
-          <span className="text-[#B0B0B0] text-[15px]">Restricted content</span>
-          <span className="text-[#666] text-[12px]">{post.date.split(' of ')[0]}/11/2024 - {post.time}</span>
+      <div className="bg-[#000] aspect-square flex flex-col items-center justify-center cursor-pointer" onClick={showNotification}>
+        <div className="flex flex-col items-center gap-4">
+          <div className="w-[72px] h-[72px] rounded-full bg-[#363636] flex items-center justify-center">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="#8E8E8E">
+              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
+            </svg>
+          </div>
+          <div className="text-center">
+            <p className="text-white text-[16px] font-bold mb-1.5">Restricted Content</p>
+            <p className="text-[#8E8E8E] text-[13px]">This post contains private content. Unlock to view.</p>
+          </div>
+          <span className="text-[#E53935] text-[11px] font-medium tracking-wider uppercase">{post.date} • {post.time}</span>
         </div>
       </div>
 
       <div className="px-3 py-2.5">
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
-            <button className="flex items-center gap-1" onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="#FF3B30">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+            <button onClick={showNotification}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
-            </button>
-            <button className="flex items-center gap-1.5" onClick={showNotification}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="text-white text-[13px]">{post.comments}</span>
-            </button>
-            <button className="flex items-center gap-1.5" onClick={showNotification}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M17 1l4 4-4 4" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M3 11V9a4 4 0 0 1 4-4h14" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M7 23l-4-4 4-4" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M21 13v2a4 4 0 0 1-4 4H3" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-              <span className="text-white text-[13px]">{post.shares}</span>
             </button>
             <button onClick={showNotification}>
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M22 2L11 13" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M22 2l-7 20-4-9-9-4 20-7z" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round"/>
+              </svg>
+            </button>
+            <button onClick={showNotification}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M17 1l4 4-4 4"/>
+                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
+                <path d="M7 23l-4-4 4-4"/>
+                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
+              </svg>
+            </button>
+            <button onClick={showNotification}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
               </svg>
             </button>
           </div>
           <button onClick={showNotification}>
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
               <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
           </button>
@@ -256,7 +264,7 @@ const PostItem = memo(function PostItem({
         </div>
         
         <div className="space-y-1.5 mb-2">
-          <div className="flex items-center gap-2" onClick={showNotification}>
+          <div className="flex items-center gap-2 cursor-pointer" onClick={showNotification}>
             <span className="text-white text-[13px] font-semibold">{targetUsername}</span>
             <span 
               className="text-[#A8A8A8] text-[13px]"
@@ -275,7 +283,7 @@ const PostItem = memo(function PostItem({
           )}
         </div>
 
-        <div className="text-[#A0A0A0] text-[11px]">
+        <div className="text-[#A0A0A0] text-[11px] uppercase tracking-wide">
           {post.date}
         </div>
       </div>
@@ -378,6 +386,29 @@ function FeedContent() {
   const [location, setLocation] = useState<string>('Loading...');
   const [isLoading, setIsLoading] = useState(true);
   const { showNotification, barHeight } = useNotification();
+  const [igNotifications, setIgNotifications] = useState<{ id: number; username: string; visible: boolean }[]>([]);
+
+  useEffect(() => {
+    const notifNames = ['s*****', 'i*****', 'm*****', 'l*****', 'r*****', 'a*****', 'j*****', 'c*****'];
+    let count = 0;
+    const firstDelay = setTimeout(() => {
+      const name = notifNames[count % notifNames.length];
+      setIgNotifications(prev => [...prev, { id: count, username: name, visible: true }]);
+      const dismissId = count;
+      setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
+      count++;
+    }, 3000);
+
+    const interval = setInterval(() => {
+      const name = notifNames[count % notifNames.length];
+      setIgNotifications(prev => [...prev, { id: count, username: name, visible: true }]);
+      const dismissId = count;
+      setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
+      count++;
+    }, 12000);
+
+    return () => { clearTimeout(firstDelay); clearInterval(interval); };
+  }, []);
 
   const getProxiedAvatar = useCallback((url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -510,25 +541,24 @@ function FeedContent() {
   return (
     <div className="min-h-screen bg-[#000]" style={{ paddingTop: barHeight }}>
       <header className="sticky z-50 bg-[#000] border-b border-[#262626]" style={{ top: barHeight }}>
-        <div className="flex items-center justify-between px-4 h-[44px]">
-          <div className="flex items-center gap-2">
-            <button className="p-1">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <img src="/logo-instagram.png" alt="Instagram" className="h-[32px] w-auto" />
-          </div>
+        <div className="flex items-center justify-between px-4 h-[44px] relative">
+          <button className="p-1" onClick={showNotification}>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
+              <line x1="12" y1="5" x2="12" y2="19"/>
+              <line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <img src="/logo-instagram.png" alt="Instagram" className="h-[29px] w-auto absolute left-1/2 -translate-x-1/2" />
           <div className="flex items-center gap-5">
-            <button className="relative">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" fill="white"/>
+            <button className="relative" onClick={showNotification}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
             <button className="relative" onClick={() => router.push(`/direct?${searchParams.toString()}`)}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-                <path d="M22 2L11 13" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                <path d="M22 2L15 22L11 13L2 9L22 2Z" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M22 2L11 13"/>
+                <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
               </svg>
               <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
                 18
@@ -571,6 +601,49 @@ function FeedContent() {
         showNotification={showNotification}
         getProxiedAvatar={getProxiedAvatar}
       />
+
+      <div className="fixed left-0 right-0 z-[9999] flex flex-col gap-2 px-3 pointer-events-none" style={{ top: barHeight + 8 }}>
+        {igNotifications.map(notif => (
+          <div
+            key={notif.id}
+            className="pointer-events-auto bg-[#2C2C2E]/95 backdrop-blur-xl rounded-2xl px-3.5 py-3 flex items-center gap-3 shadow-lg animate-[slideDown_0.3s_ease-out]"
+            style={{ animation: 'slideDown 0.3s ease-out' }}
+          >
+            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] flex items-center justify-center">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
+                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/>
+                <path d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/>
+                <circle cx="18.406" cy="5.594" r="1.44"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <span className="text-white text-[13px] font-bold">Instagram</span>
+                <span className="text-[#8E8E8E] text-[12px]">now</span>
+              </div>
+              <p className="text-[#A0A0A0] text-[13px] truncate">{notif.username} Sent you a photo</p>
+            </div>
+            <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0 bg-[#333]" style={{ filter: 'blur(4px)' }}>
+              <div className="w-full h-full bg-gradient-to-br from-[#667] to-[#445]" />
+            </div>
+            <button
+              className="flex-shrink-0 text-[#8E8E8E] ml-1"
+              onClick={() => setIgNotifications(prev => prev.filter(n => n.id !== notif.id))}
+            >
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+          </div>
+        ))}
+      </div>
+
+      <style jsx global>{`
+        @keyframes slideDown {
+          from { transform: translateY(-100%); opacity: 0; }
+          to { transform: translateY(0); opacity: 1; }
+        }
+      `}</style>
     </div>
   );
 }
