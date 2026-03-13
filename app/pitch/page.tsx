@@ -1060,6 +1060,10 @@ function PitchContent() {
                 Get All Apps
               </a>
             </div>
+
+            <p className="text-center text-white/50 text-xs mt-5">
+              🔒 One-time payment. No subscription. No hidden fees. Instant access.
+            </p>
           </motion.section>
 
           <motion.section
