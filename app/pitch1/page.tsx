@@ -67,8 +67,22 @@ function PitchContent() {
       planSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
   };
-  const [warningTimeLeft, setWarningTimeLeft] = useState({ minutes: 5, seconds: 0 });
-  const [timerMounted, setTimerMounted] = useState(false);
+  const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
+    if (typeof window !== 'undefined') {
+      const saved = localStorage.getItem('pitch1_timer_end');
+      if (saved) {
+        const endTime = parseInt(saved);
+        const now = Date.now();
+        const remaining = Math.max(0, endTime - now);
+        const minutes = Math.floor(remaining / 60000);
+        const seconds = Math.floor((remaining % 60000) / 1000);
+        if (remaining > 0) return { minutes, seconds };
+      }
+      const endTime = Date.now() + 5 * 60 * 1000;
+      localStorage.setItem('pitch1_timer_end', endTime.toString());
+    }
+    return { minutes: 5, seconds: 0 };
+  });
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
@@ -88,24 +102,6 @@ function PitchContent() {
         .catch(console.error);
     }
   }, [username]);
-
-  useEffect(() => {
-    const saved = localStorage.getItem('pitch1_timer_end');
-    if (saved) {
-      const endTime = parseInt(saved);
-      const remaining = Math.max(0, endTime - Date.now());
-      if (remaining > 0) {
-        setWarningTimeLeft({
-          minutes: Math.floor(remaining / 60000),
-          seconds: Math.floor((remaining % 60000) / 1000),
-        });
-      }
-    } else {
-      const endTime = Date.now() + 5 * 60 * 1000;
-      localStorage.setItem('pitch1_timer_end', endTime.toString());
-    }
-    setTimerMounted(true);
-  }, []);
 
   useEffect(() => {
     const warningTimer = setInterval(() => {
@@ -249,8 +245,8 @@ function PitchContent() {
             </p>
 
             <div className="bg-[#00FF75]/10 border border-[#00FF75]/30 rounded-xl p-4 mb-4">
-              <p className="text-white text-center text-sm" suppressHydrationWarning>
-                This offer expires in <span className="font-bold text-[#00FF75]" suppressHydrationWarning>{timerMounted ? `${String(warningTimeLeft.minutes).padStart(2, '0')}:${String(warningTimeLeft.seconds).padStart(2, '0')}` : '05:00'}</span>
+              <p className="text-white text-center text-sm">
+                This offer expires in <span className="font-bold text-[#00FF75]">{String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}</span>
               </p>
             </div>
 
@@ -272,10 +268,10 @@ function PitchContent() {
                 <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
               </svg>
             </button>
-            <div className="flex items-center gap-2 text-white text-sm font-medium" suppressHydrationWarning>
+            <div className="flex items-center gap-2 text-white text-sm font-medium">
               <span>Your Exclusive Access Expires in:</span>
-              <span className="font-bold" suppressHydrationWarning>
-                {timerMounted ? `${String(warningTimeLeft.minutes).padStart(2, '0')}:${String(warningTimeLeft.seconds).padStart(2, '0')}` : '05:00'}
+              <span className="font-bold">
+                {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
               </span>
             </div>
             <div className="w-5" />

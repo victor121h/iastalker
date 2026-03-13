@@ -1,0 +1,122 @@
+Entendi tudo! Vou montar um prompt super detalhado e organizado pra você, reunindo todas as suas ideias e expandindo com detalhes técnicos importantes.
+Aqui está o prompt completo e refinado:
+
+Prompt para Painel Admin de Monitoramento em Tempo Real
+
+CONTEXTO
+Tenho um site com várias páginas de funil (pitch, pitch1, up1, etc.) e preciso de um painel administrativo acessível apenas por mim na rota /useronline. Esse painel deve monitorar em tempo real todos os visitantes do site, mostrando em quais páginas estão, para onde navegaram, e o status de cada um. Nada pode interferir no funcionamento atual do funil.
+
+1. ACESSO E SEGURANÇA
+
+O painel fica na rota /useronline e deve ser protegido por senha (ou outro mecanismo simples de autenticação) para que somente eu tenha acesso.
+Visitantes normais do site não devem saber que essa página existe.
+O sistema de rastreamento deve rodar de forma invisível e leve, sem impactar performance nem comportamento do funil atual.
+
+
+2. IDENTIFICAÇÃO DOS VISITANTES
+Cada visitante recebe automaticamente um ID temporário baseado na data e hora de entrada (horário de Brasília), no formato:
+DD/MM-H:MM
+Exemplo: 11/03-1:22
+Regras de ID:
+
+Se dois visitantes entrarem no mesmo minuto, o segundo recebe 11/03-1:22(2), o terceiro 11/03-1:22(3), e assim por diante.
+O ID aparece em cor amarela para indicar que é um identificador gerado automaticamente.
+Quando o visitante se cadastra e fornece um nome, o ID é substituído pelo nome real.
+O nome real aparece em cor branca (padrão).
+Ao passar o mouse (hover) sobre o nome real, aparece um tooltip tipo: (anterior: 11/03-1:22) mostrando o ID original.
+
+
+3. VISÃO GERAL DO PAINEL (Tela Principal)
+A tela principal mostra uma lista de todas as páginas do site, cada uma com:
+
+Nome da página (ex: /pitch, /pitch1, /up1, etc.)
+Número de pessoas atualmente naquela página (contador em tempo real)
+Ao clicar em uma página, abre uma lista expansível (dropdown ou accordion) mostrando todos os visitantes que estão ou estiveram naquela página.
+
+
+4. DETALHES POR VISITANTE (Lista Expandida)
+Ao expandir uma página, cada visitante mostra:
+
+Nome ou ID (com as cores conforme a seção 2)
+Página de entrada — em qual página ele chegou primeiro
+Histórico de navegação — lista ordenada de todas as páginas que ele visitou, na ordem cronológica (ex: pitch → pitch1 → up1)
+Página atual — onde ele está agora (se ainda estiver online)
+Tempo na página atual — há quanto tempo ele está parado naquela página
+Tempo total no site — desde a primeira entrada
+
+
+5. SISTEMA DE CORES (Status do Visitante)
+Cada nome/ID de visitante recebe uma cor de fundo ou de texto baseada no seu status:
+CorSignificado🟢 VerdeVisitante está online em alguma página neste momento🔴 VermelhoVisitante saiu do site sem avançar das páginas pitch ou pitch1 para up1 (ou seja, desistiu no início do funil)🟡 AmareloVisitante saiu do site, mas já tinha avançado pelo menos uma página no funil (saiu em estágio mais avançado)
+Observação: A cor amarela de ID gerado automaticamente (seção 2) é diferente da cor amarela de status. O ID amarelo se refere apenas ao texto do nome. O status amarelo pode ser aplicado como fundo, badge ou indicador separado, para não haver confusão visual.
+
+6. CICLO DE VIDA DOS REGISTROS
+
+Primeiras 24h: O visitante aparece na lista principal (seção ativa do painel).
+Após 24h: O registro desce automaticamente para uma seção de "Histórico" mais abaixo na página.
+Após 7 dias: O registro é deletado permanentemente para liberar espaço.
+
+
+7. COMPORTAMENTO DA LISTA / DROPDOWN
+
+Sem limite de exibição: se houver 500 visitantes, todos aparecem na lista.
+Se a lista for muito longa, ela aparece por completo (não truncada).
+Um botão de "Fechar" acompanha a lista e desce junto com o scroll, ficando sempre visível (sticky/fixo no final da lista ou flutuante).
+A lista pode ser implementada como dropdown, accordion, ou modal lateral — o importante é que o botão de fechar esteja sempre acessível.
+
+
+8. ATUALIZAÇÃO EM TEMPO REAL
+
+O painel deve atualizar automaticamente (via WebSocket, SSE, ou polling a cada poucos segundos).
+Quando um visitante muda de página, isso reflete imediatamente no painel:
+
+O contador da página anterior diminui.
+O contador da página nova aumenta.
+O histórico do visitante é atualizado.
+A cor muda se necessário (ex: de verde para amarelo/vermelho quando sai).
+
+
+
+
+9. INFORMAÇÕES EXTRAS DESEJÁVEIS (se possível)
+
+Dispositivo: se o visitante está em mobile ou desktop.
+Origem do tráfego: de onde veio (direct, Google, redes sociais, link de referência).
+Localização aproximada: cidade/estado (via IP, sem precisar ser exato).
+Navegador: Chrome, Safari, Firefox, etc.
+Número total de visitantes ativos no site (somatório geral no topo do painel).
+Gráfico simples com o fluxo do funil: quantos entraram em cada etapa e quantos avançaram (tipo funil visual).
+
+
+10. REQUISITOS TÉCNICOS
+
+Não interferir em NADA no funil atual — nenhum redirecionamento, delay, popup ou alteração visual para o visitante.
+O script de rastreamento deve ser leve e assíncrono.
+Compatível com o stack atual do site (especificar aqui: Next.js, HTML puro, WordPress, etc.).
+Armazenamento dos dados pode ser em banco de dados leve (SQLite, Firebase, Supabase, etc.) ou em memória com persistência.
+A limpeza automática dos registros após 7 dias deve ser feita via cron job ou lógica no backend.
+
+
+RESUMO VISUAL DO PAINEL
+┌─────────────────────────────────────────────┐
+│  🟢 Visitantes Online: 47                   │
+├─────────────────────────────────────────────┤
+│                                             │
+│  📄 /pitch .................... 🔵 23       │
+│     ▼ [expandir]                            │
+│     🟢 João Silva (anterior: 11/03-1:22)    │
+│        pitch → pitch1        │ 3min na pág  │
+│     🟢 11/03-1:25                           │
+│        pitch                 │ 1min na pág  │
+│     🔴 11/03-1:18                           │
+│        pitch (saiu)          │ -            │
+│                              [Fechar ▲]     │
+│                                             │
+│  📄 /pitch1 .................. 🔵 12        │
+│  📄 /up1 ..................... 🔵 8         │
+│  📄 /up2 ..................... 🔵 4         │
+│                                             │
+├─────────────────────────────────────────────┤
+│  📜 HISTÓRICO (últimos 7 dias)              │
+│  ... registros antigos (>24h) ...           │
+└─────────────────────────────────────────────┘
