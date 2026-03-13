@@ -54,6 +54,7 @@ function PitchContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
+  const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [showDiscountPopup, setShowDiscountPopup] = useState(true);
 
   const handleBlockedClick = () => {
@@ -78,10 +79,10 @@ function PitchContent() {
         const seconds = Math.floor((remaining % 60000) / 1000);
         if (remaining > 0) return { minutes, seconds };
       }
-      const endTime = Date.now() + 5 * 60 * 1000;
+      const endTime = Date.now() + 3 * 60 * 1000;
       localStorage.setItem('pitch1_timer_end', endTime.toString());
     }
-    return { minutes: 5, seconds: 0 };
+    return { minutes: 3, seconds: 0 };
   });
 
   useEffect(() => {
@@ -111,6 +112,7 @@ function PitchContent() {
         } else if (prev.minutes > 0) {
           return { minutes: prev.minutes - 1, seconds: 59 };
         }
+        setShowTimerPopup(true);
         return prev;
       });
     }, 1000);
@@ -211,6 +213,31 @@ function PitchContent() {
               className="w-full bg-transparent border border-white/30 text-white font-medium py-3 rounded-lg hover:bg-white/10 transition-colors"
             >
               Get VIP Access
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showTimerPopup && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 px-4">
+          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a]">
+            <div className="flex items-center justify-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-[#E53935] font-bold text-2xl mb-3">Time is up.</h2>
+            <p className="text-white/80 text-sm mb-6 leading-relaxed">
+              The data collected from <span className="font-semibold text-white">@{username}</span> is about to be permanently deleted. This is your last chance to see what they&apos;re hiding from you.
+            </p>
+            <button
+              onClick={() => { setShowTimerPopup(false); scrollToPlan(); }}
+              className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
+            >
+              See the truth now
             </button>
           </div>
         </div>
