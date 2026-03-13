@@ -222,8 +222,8 @@ function PitchContent() {
       )}
 
       {showTimerPopup && (
-        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 px-4">
-          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a] relative">
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 px-4" onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); }}>
+          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a] relative" onClick={e => e.stopPropagation()}>
             <button
               onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); }}
               className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-white/50 hover:text-white transition-colors"
