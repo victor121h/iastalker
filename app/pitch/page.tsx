@@ -247,7 +247,15 @@ function PitchContent() {
 
       {showTimerPopup && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/75 px-4">
-          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a]">
+          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#2a2a2a] relative">
+            <button
+              onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); }}
+              className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
             <div className="flex items-center justify-center mb-5">
               <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
