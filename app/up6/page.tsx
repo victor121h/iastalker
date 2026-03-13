@@ -58,7 +58,7 @@ function Up6Content() {
       { text: 'Unlimited profile searches', included: true },
       { text: '24h priority support', included: true },
     ],
-    link: 'https://go.centerpag.com/PPU38CQ8AC2',
+    link: 'https://go.centerpag.com/PPU38CQ8U5G',
   };
 
   return (
