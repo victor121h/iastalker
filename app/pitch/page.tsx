@@ -194,12 +194,12 @@ function PitchContent() {
   };
 
   const testimonials = [
-    { id: 1, avatar: '', name: 'Maria****', time: '3h', text: 'I had suspicions, but I wasn\'t sure... When I paid for the full version I saw the DMs and hidden stories, I was floored. But at least I knew the truth.' },
-    { id: 2, avatar: '', name: 'Carlos****', time: '5h', text: 'I used it on the insta of a girl I was dating and saw she had been with someone else for months. The tool gave me peace.', hasLock: true },
-    { id: 3, avatar: '', name: 'Amanda****', time: '1d', text: 'I thought it was fake at first. In the full version I tried my boyfriend\'s @ and saw a lot of things lol. Location, hidden photos, even deleted conversations.' },
-    { id: 4, avatar: '', name: 'Pedro****', time: '5d', text: 'the real-time location feature is really good lol', hasLock: true },
-    { id: 5, avatar: '', name: 'Julia****', time: '3 wks', text: 'I can\'t live without this tool, I discovered it a few months ago on tiktok and I still use it on some suspicious profiles' },
-    { id: 6, avatar: '', name: 'Lucas****', time: '2 wks', text: 'I don\'t recommend it for those who don\'t want to see the truth.' },
+    { id: 1, avatar: '', name: 'Maria****', time: '3h', text: 'I had suspicions for weeks... When I used the full version I saw deleted DMs with someone I didn\'t know. My hands were shaking but at least now I know the truth.' },
+    { id: 2, avatar: '', name: 'Carlos****', time: '5h', text: 'I checked my girlfriend\'s profile and found out she was talking to her ex for 4 months. The worst part? She was deleting the conversations daily. AI Tracker recovered everything.', hasLock: true },
+    { id: 3, avatar: '', name: 'Amanda****', time: '1d', text: 'I thought it was fake until I tried it. Location, photos he said didn\'t exist, conversations he swore he never had. Everything was there. I\'m speechless.' },
+    { id: 4, avatar: '', name: 'Pedro****', time: '5d', text: 'I used the GPS tracker on my husband and found out he wasn\'t going where he said he was. He told me he was at a friend\'s house but the location showed something very different.', hasLock: true },
+    { id: 5, avatar: '', name: 'Julia****', time: '3 wks', text: 'I found this 3 months ago and I still use it. I monitor suspicious profiles every week. Once you know the truth, you can\'t go back to ignoring the signs.' },
+    { id: 6, avatar: '', name: 'Lucas****', time: '2 wks', text: 'Warning: only use this if you\'re truly ready to see the truth. What I found changed my life. No regrets, but it\'s not for the faint of heart.' },
   ];
 
   const faqs = [
