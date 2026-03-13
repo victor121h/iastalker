@@ -678,37 +678,37 @@ function PitchContent() {
 
             <div className="space-y-4 mb-6">
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Discover an infidelity before you get played</p>
+                <p className="text-white text-sm">Imagine finding out they&apos;re talking to someone else... and you had no idea. IA Observer shows everything in real time.</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#EB1C8F" strokeWidth="2">
                     <circle cx="11" cy="11" r="8"/>
                     <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Spy on someone you love in silence</p>
+                <p className="text-white text-sm">What if they&apos;re deleting messages before you see them? With IA Observer, nothing gets deleted. You see everything, even what they tried to hide.</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#DFB313">
                     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">See if someone is talking bad about you behind your back</p>
+                <p className="text-white text-sm">Think about it: right now, someone could be talking about you in a DM and you have no way of knowing. IA Observer changes that.</p>
               </div>
               <div className="flex items-start gap-3">
-                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
+                <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#00FF75">
                     <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Protect your family, your relationship, your peace</p>
+                <p className="text-white text-sm">Your peace of mind has a price. And it&apos;s much less than finding out too late. Protect what matters most to you.</p>
               </div>
             </div>
 
