@@ -315,6 +315,30 @@ function PitchContent() {
             </p>
           </div>
 
+          <div className="bg-[#0C1011] border border-[#E53935] rounded-xl p-4 mb-4">
+            <div className="flex items-center gap-2 mb-3">
+              <span className="w-2 h-2 rounded-full bg-[#E53935] animate-pulse inline-block"></span>
+              <p className="text-[#E53935] font-bold text-sm uppercase tracking-wide">Our AI found:</p>
+            </div>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">14 deleted DMs</span> in the last 40 days</p>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">2 meetups</span> scheduled near: <span className="blur-sm select-none">██████████</span></p>
+              </div>
+              <div className="flex items-center gap-2">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
+                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">+23 photos +18</span> found in private archive</p>
+              </div>
+            </div>
+            <div className="mt-3 pt-3 border-t border-[#E53935]/30 text-center">
+              <p className="text-white font-bold text-sm">Infidelity chance: <span className="text-[#E53935] text-base">100%</span></p>
+            </div>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
