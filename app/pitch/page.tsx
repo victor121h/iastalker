@@ -326,7 +326,7 @@ function PitchContent() {
               </div>
             </div>
             <div className="mt-3 pt-3 border-t border-[#E53935]/30 text-center">
-              <p className="text-white font-bold text-sm">Infidelity chance: <span className="text-[#E53935] text-base">100%</span></p>
+              <p className="text-white font-bold text-sm">Infidelity chance: <span className="text-[#E53935] text-base">98.9%</span></p>
             </div>
           </div>
 
