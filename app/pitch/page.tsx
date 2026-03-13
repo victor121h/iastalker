@@ -756,16 +756,7 @@ function PitchContent() {
             transition={{ delay: 0.55 }}
             className="mb-6"
           >
-            <div className="flex justify-center mb-4">
-              <div 
-                className="px-4 py-1.5 rounded-full text-sm font-bold"
-                style={{ background: 'linear-gradient(90deg, #EB1C8F, #DFB313)' }}
-              >
-                <span className="text-white">LIMITED BLACK FRIDAY</span>
-              </div>
-            </div>
-
-            <h2 className="text-black text-center font-bold text-2xl mb-1">CHOOSE YOUR PLAN</h2>
+            <h2 className="text-black text-center font-bold text-2xl mb-1 mt-4">CHOOSE YOUR PLAN</h2>
             <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
 
             <div className="bg-[#0C1011] rounded-[22px] p-5 mb-4">
