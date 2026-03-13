@@ -55,6 +55,7 @@ app/
   outros/page.tsx       # Other networks
   buy/page.tsx          # Credits purchase
   pitch/page.tsx        # Sales landing
+  perfil/page.tsx       # Instagram-style profile page (fetches real data via API)
   api/
     credits/            # Credits GET/POST
     support/            # Support interactions GET/POST

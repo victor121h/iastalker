@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useRef } from 'react';
+import { Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
@@ -27,31 +27,10 @@ function ChatSkeleton() {
   );
 }
 
-function ReelShare({ title, onClick }: { title: string; onClick: () => void }) {
-  return (
-    <div className="w-[170px] rounded-xl overflow-hidden cursor-pointer" onClick={onClick}>
-      <div className="relative h-[200px] bg-gradient-to-b from-[#1a2a3a] to-[#0a1520]" style={{ filter: 'blur(3px)' }}>
-        <div className="absolute inset-0 bg-gradient-to-br from-[#4a6080]/40 to-[#2a4060]/60" />
-      </div>
-      <div className="absolute top-2 left-2 text-white text-[11px] truncate max-w-[140px]" style={{ position: 'relative', marginTop: '-195px', marginLeft: '8px', filter: 'none' }}>
-        {title}
-      </div>
-      <div className="flex items-center justify-center" style={{ position: 'relative', marginTop: '60px' }}>
-        <div className="w-10 h-10 rounded-full bg-black/40 flex items-center justify-center">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-            <path d="M5 3l14 9-14 9V3z"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function Chat3Content() {
   const searchParams = useSearchParams();
   const router = useRouter();
   const { showNotification, barHeight } = useNotification();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
   
   const username = searchParams.get('username') || 'kadualef';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
@@ -283,7 +262,7 @@ function Chat3Content() {
             </div>
           </div>
 
-          <div ref={messagesEndRef} />
+          <div className="h-4" />
         </div>
       </div>
 
