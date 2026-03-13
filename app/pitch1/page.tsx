@@ -176,6 +176,7 @@ function PitchContent() {
     { id: 4, avatar: '', name: 'Pedro****', time: '5d', text: 'I used the GPS tracker on my husband and found out he wasn\'t going where he said he was. He told me he was at a friend\'s house but the location showed something very different.', hasLock: true },
     { id: 5, avatar: '', name: 'Julia****', time: '3 wks', text: 'I found this 3 months ago and I still use it. I monitor suspicious profiles every week. Once you know the truth, you can\'t go back to ignoring the signs.' },
     { id: 6, avatar: '', name: 'Lucas****', time: '2 wks', text: 'Warning: only use this if you\'re truly ready to see the truth. What I found changed my life. No regrets, but it\'s not for the faint of heart.' },
+    { id: 7, avatar: '', name: 'Marcos, 34', time: '1d', text: 'I almost didn\'t pay because I thought $24 was too much. I was spending $300/month taking her out to dinner while she was with someone else. Best $24 I ever spent.' },
   ];
 
   const faqs = [
