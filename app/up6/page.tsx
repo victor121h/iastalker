@@ -182,8 +182,8 @@ function Up6Content() {
               SELECT PLAN
             </a>
 
-            <p className="text-[#A0A0A0] text-xs text-center mt-3 leading-relaxed">
-              The $30 from your desktop plan will be refunded after you purchase the mobile plan.
+            <p className="text-white text-sm font-semibold text-center mt-4 leading-relaxed bg-[#1A2A1A] border border-[#00FF75]/40 rounded-xl px-4 py-3">
+              💰 The <span className="text-[#00FF75]">$29.90</span> from your desktop plan will be refunded after you purchase the mobile plan.
             </p>
           </motion.div>
 
