@@ -286,6 +286,15 @@ function PitchContent() {
         </header>
 
         <main className="pt-16 pb-8 px-4 max-w-md mx-auto">
+          <div className="bg-[#1a0a0a] border border-[#E53935]/60 rounded-xl p-4 mb-4 mt-2 text-center">
+            <p className="text-white text-sm font-medium leading-snug">
+              After this time, the collected data from <span className="font-bold text-[#E53935]">@{username}</span> will be deleted from our system for security.
+            </p>
+            <p className="text-white/60 text-xs mt-2 leading-snug">
+              If you let this chance pass, you won&apos;t be able to check again and will lose the chance to know the truth.
+            </p>
+          </div>
+
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
