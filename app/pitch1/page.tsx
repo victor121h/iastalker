@@ -365,7 +365,7 @@ function PitchContent() {
               <img src="/logo-deepgram-header.png" alt="IA Observer" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-black text-xl font-bold leading-tight">
-              The ultimate profile spying tool
+              See everything @{username} hides from you
             </h1>
           </motion.section>
 
