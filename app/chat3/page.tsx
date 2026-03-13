@@ -98,7 +98,7 @@ function ChatSkeleton() {
 function Chat3Content() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { showNotification } = useNotification();
+  const { showNotification, barHeight } = useNotification();
   
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
@@ -128,7 +128,7 @@ function Chat3Content() {
 
   return (
     <div className="min-h-screen bg-[#0F1215] flex flex-col">
-      <header className="fixed top-[48px] left-0 right-0 z-50 h-[60px] bg-[#0F1215] border-b border-white/10 flex items-center justify-between px-4">
+      <header className="fixed left-0 right-0 z-50 h-[60px] bg-[#0F1215] border-b border-white/10 flex items-center justify-between px-4" style={{ top: barHeight }}>
         <div className="flex items-center gap-3">
           <button onClick={handleBack} className="p-2 -ml-2">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -174,7 +174,7 @@ function Chat3Content() {
         </div>
       </header>
 
-      <div className="flex-1 pt-[108px] pb-[70px] px-4 overflow-y-auto">
+      <div className="flex-1 pb-[70px] px-4 overflow-y-auto" style={{ paddingTop: barHeight + 60 }}>
         <div className="max-w-3xl mx-auto py-6 space-y-5">
           
           <div className="flex justify-center py-4">

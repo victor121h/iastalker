@@ -1,11 +1,12 @@
 'use client';
 
 import { motion, useAnimation } from 'framer-motion';
-import { useCallback, createContext, useContext } from 'react';
+import { useCallback, createContext, useContext, useRef, useState, useEffect } from 'react';
 import { useRouter, useSearchParams, usePathname } from 'next/navigation';
 
 interface NotificationContextType {
   showNotification: () => void;
+  barHeight: number;
 }
 
 const NotificationContext = createContext<NotificationContextType | null>(null);
@@ -25,8 +26,25 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const controls = useAnimation();
+  const barRef = useRef<HTMLDivElement>(null);
+  const [barHeight, setBarHeight] = useState(0);
 
   const showOnThisPage = BAR_PAGES.some(p => pathname === p || pathname.startsWith(p + '?'));
+
+  useEffect(() => {
+    if (!showOnThisPage) {
+      setBarHeight(0);
+      return;
+    }
+    const el = barRef.current;
+    if (!el) return;
+    const observer = new ResizeObserver(() => {
+      setBarHeight(el.offsetHeight);
+    });
+    observer.observe(el);
+    setBarHeight(el.offsetHeight);
+    return () => observer.disconnect();
+  }, [showOnThisPage, pathname]);
 
   const showNotification = useCallback(async () => {
     if (!showOnThisPage) return;
@@ -42,9 +60,10 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
   }, [router, searchParams]);
 
   return (
-    <NotificationContext.Provider value={{ showNotification }}>
+    <NotificationContext.Provider value={{ showNotification, barHeight }}>
       {showOnThisPage && (
         <motion.div
+          ref={barRef}
           animate={controls}
           className="fixed top-0 left-0 right-0 z-[10000] bg-[#C62828] px-4 py-2.5 text-center cursor-pointer select-none"
           onClick={handlePurchase}

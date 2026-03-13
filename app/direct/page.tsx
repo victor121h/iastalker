@@ -251,7 +251,7 @@ function DirectContent() {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [showLoadMorePopup, setShowLoadMorePopup] = useState(false);
-  const { showNotification } = useNotification();
+  const { showNotification, barHeight } = useNotification();
 
   const getProxiedAvatar = useCallback((url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -397,8 +397,8 @@ function DirectContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000000] pt-[48px]">
-      <header className="sticky top-[48px] z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]">
+    <div className="min-h-screen bg-[#000000]" style={{ paddingTop: barHeight }}>
+      <header className="sticky z-50 bg-[#0A0C0D] border-b border-[rgba(255,255,255,0.08)]" style={{ top: barHeight }}>
         <div className="flex items-center justify-between px-4 h-[52px]">
           <div className="flex items-center gap-3">
             <button 

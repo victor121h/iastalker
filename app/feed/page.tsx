@@ -377,7 +377,7 @@ function FeedContent() {
   const [following, setFollowing] = useState<FollowingUser[]>([]);
   const [location, setLocation] = useState<string>('Loading...');
   const [isLoading, setIsLoading] = useState(true);
-  const { showNotification } = useNotification();
+  const { showNotification, barHeight } = useNotification();
 
   const getProxiedAvatar = useCallback((url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -508,8 +508,8 @@ function FeedContent() {
   }
 
   return (
-    <div className="min-h-screen bg-[#000] pt-[48px]">
-      <header className="sticky top-[48px] z-50 bg-[#000] border-b border-[#262626]">
+    <div className="min-h-screen bg-[#000]" style={{ paddingTop: barHeight }}>
+      <header className="sticky z-50 bg-[#000] border-b border-[#262626]" style={{ top: barHeight }}>
         <div className="flex items-center justify-between px-4 h-[44px]">
           <div className="flex items-center gap-2">
             <button className="p-1">
