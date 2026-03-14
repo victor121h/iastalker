@@ -577,7 +577,9 @@ function FeedContent() {
               </p>
               <p className="text-[#8E8E8E] text-[11px]">Just now</p>
             </div>
-            <div className="w-10 h-10 rounded bg-[#363636] flex-shrink-0" />
+            <div className="w-10 h-10 rounded bg-[#363636] flex-shrink-0 overflow-hidden">
+              <img src="/icons/notif-preview.jpg" alt="" className="w-full h-full object-cover blur-[6px]" />
+            </div>
           </div>
         </div>
       ))}
