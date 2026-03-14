@@ -870,7 +870,7 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#2A3A4A] rounded-xl py-3 text-center text-white font-bold"
               >
-                Choose Plan
+                See everything about @{username}
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
               </div>
@@ -957,7 +957,7 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold"
               >
-                Choose Plan
+                See everything about @{username}
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
@@ -1046,7 +1046,7 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold animate-pulse"
               >
-                Get All Apps
+                See everything about @{username}
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
