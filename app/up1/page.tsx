@@ -176,7 +176,7 @@ function Up1Content() {
           >
             <div className="flex items-center justify-center mb-6">
               <img 
-                src="/logo-stalker.png" 
+                src="/ghost-logo.png" 
                 alt="AI Ghost Logo" 
                 className="w-20 h-20 rounded-xl"
               />

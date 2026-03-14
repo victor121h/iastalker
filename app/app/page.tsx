@@ -49,7 +49,7 @@ function AppContent() {
         <header className="fixed top-0 left-0 right-0 z-50 bg-[#1A1A1A] border-b border-gray-800 py-3 px-4">
           <div className="flex items-center justify-between max-w-md mx-auto">
             <div className="flex items-center gap-2">
-              <img src="/logo-stalker.png" alt="AI Ghost" className="w-8 h-8 rounded-lg" />
+              <img src="/ghost-logo.png" alt="AI Ghost" className="w-8 h-8 rounded-lg" />
               <span className="text-white font-semibold">AI Ghost</span>
             </div>
             <button
@@ -192,7 +192,7 @@ function AppContent() {
       >
         <div className="flex justify-center mb-6">
           <img 
-            src="/logo-stalker.png" 
+            src="/ghost-logo.png" 
             alt="AI Ghost Logo" 
             className="w-20 h-20 rounded-xl"
           />

@@ -397,7 +397,7 @@ function PitchContent() {
             className="text-center py-8"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="AI Ghost" className="h-[48px] w-auto" />
+              <img src="/ghost-logo.png" alt="AI Ghost" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-black text-xl font-bold leading-tight">
               See everything @{username} hides from you
@@ -684,7 +684,7 @@ function PitchContent() {
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="AI Ghost" className="h-[36px] w-auto" />
+              <img src="/ghost-logo.png" alt="AI Ghost" className="h-[36px] w-auto" />
             </div>
 
             <h2 className="text-white text-center font-bold text-lg mb-2">

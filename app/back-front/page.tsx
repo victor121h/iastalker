@@ -48,7 +48,7 @@ function BackFrontContent() {
         }}
       >
         <div className="flex items-center justify-center mb-6">
-          <img src="/logo-deepgram.png" alt="AI Ghost" className="h-[48px] w-auto" />
+          <img src="/ghost-logo.png" alt="AI Ghost" className="h-[48px] w-auto" />
         </div>
 
         <div className="text-center mb-4">
