@@ -398,16 +398,16 @@ function Chat1Content() {
           
           <div className="flex items-center gap-0.5">
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_5_mic.png" alt="" width="24" height="24" />
+              <img src="/icons/imgi_5_mic.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_6_gallery.png" alt="" width="24" height="24" />
+              <img src="/icons/imgi_6_gallery.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_7_emoji.png" alt="" width="24" height="24" />
+              <img src="/icons/imgi_7_emoji.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_8_heart.png" alt="" width="24" height="24" />
+              <img src="/icons/imgi_8_heart.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
             </button>
           </div>
         </div>
