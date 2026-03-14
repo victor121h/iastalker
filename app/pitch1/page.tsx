@@ -121,20 +121,6 @@ function PitchContent() {
     return () => clearInterval(warningTimer);
   }, []);
 
-  useEffect(() => {
-    const params = searchParams.toString();
-    window.history.pushState(null, '', window.location.href);
-    
-    const handlePopState = () => {
-      router.push(`/pitch1?${params}`);
-    };
-    
-    window.addEventListener('popstate', handlePopState);
-    
-    return () => {
-      window.removeEventListener('popstate', handlePopState);
-    };
-  }, [router, searchParams]);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
