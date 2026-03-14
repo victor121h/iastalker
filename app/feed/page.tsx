@@ -529,9 +529,6 @@ function FeedContent() {
           <div className="flex items-center gap-5">
             <button className="relative" onClick={showNotification}>
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
-            </button>
-            <button className="relative" onClick={() => router.push(`/direct?${searchParams.toString()}`)}>
-              <img src="/icons/enviar.png" alt="" width="24" height="24" />
               <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
                 18
               </span>
