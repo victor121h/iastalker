@@ -58,19 +58,20 @@ export async function GET(request: NextRequest) {
     }
 
     const data = await response.json();
+    const user = data.user || data;
     
     const profileData = {
-      username: data.username || username,
-      name: data.full_name || data.username || username,
-      avatar: data.profile_pic_url || data.profile_pic_url_hd || '',
-      bio: data.biography || '',
-      posts: data.media_count || 0,
-      followers: data.follower_count || 0,
-      following: data.following_count || 0,
-      isPrivate: data.is_private || false,
-      isVerified: data.is_verified || false,
-      externalUrl: data.external_url || '',
-      pk: data.pk || data.id || '',
+      username: user.username || username,
+      name: user.full_name || user.username || username,
+      avatar: user.profile_pic_url || user.profile_pic_url_hd || '',
+      bio: user.biography || '',
+      posts: user.media_count || 0,
+      followers: user.follower_count || 0,
+      following: user.following_count || 0,
+      isPrivate: user.is_private || false,
+      isVerified: user.is_verified || false,
+      externalUrl: user.external_url || '',
+      pk: user.pk || user.id || '',
     };
 
     return NextResponse.json(profileData);

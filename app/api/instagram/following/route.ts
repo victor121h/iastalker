@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   const makeRequest = async (key: string): Promise<Response> => {
     return fetch(
-      `https://api.hikerapi.com/v2/user/following/chunk?user_id=${encodeURIComponent(userId)}`,
+      `https://api.hikerapi.com/v2/user/following?user_id=${encodeURIComponent(userId)}`,
       {
         headers: {
           'accept': 'application/json',
@@ -64,7 +64,9 @@ export async function GET(request: NextRequest) {
     
     let users: any[] = [];
     
-    if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
+    if (data && data.response && data.response.users && Array.isArray(data.response.users)) {
+      users = data.response.users;
+    } else if (Array.isArray(data) && data.length > 0 && Array.isArray(data[0])) {
       users = data[0];
     } else if (Array.isArray(data)) {
       users = data;
