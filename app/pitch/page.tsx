@@ -62,6 +62,7 @@ function PitchContent() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
+  const [showBackPopup, setShowBackPopup] = useState(false);
 
   const handleBlockedClick = () => {
     setShowBlockedPopup(true);
@@ -147,7 +148,8 @@ function PitchContent() {
     window.history.pushState(null, '', window.location.href);
     
     const handlePopState = () => {
-      router.push(`/pitch1?${params}`);
+      window.history.pushState(null, '', window.location.href);
+      setShowBackPopup(true);
     };
     
     window.addEventListener('popstate', handlePopState);
@@ -282,6 +284,31 @@ function PitchContent() {
             </p>
             <button
               onClick={() => { localStorage.setItem('pitch_timer_popup_shown', 'true'); setShowTimerPopup(false); scrollToPlan(); }}
+              className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
+            >
+              See the truth now
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showBackPopup && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/75 px-4" onClick={() => setShowBackPopup(false)}>
+          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#E53935]/30 relative" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-[#E53935] font-bold text-2xl mb-3">Time is up.</h2>
+            <p className="text-white/80 text-[15px] mb-6 leading-relaxed">
+              The data collected from <span className="font-semibold text-white">@{username}</span> is about to be permanently deleted. This is your last chance to see what they&apos;re hiding from you.
+            </p>
+            <button
+              onClick={() => { setShowBackPopup(false); scrollToPlan(); }}
               className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
             >
               See the truth now
