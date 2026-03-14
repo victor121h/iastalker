@@ -59,20 +59,60 @@ function CadastroContent() {
     }
   };
 
-  const inputClasses = "w-full bg-[#1a1a1a] border border-[#333] rounded-xl px-4 py-3.5 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 transition-colors text-base";
+  const particles = [
+    { width: 8, height: 8, left: '10%', top: '25%', duration: 4, delay: 0 },
+    { width: 12, height: 12, left: '85%', top: '10%', duration: 6, delay: 1 },
+    { width: 6, height: 6, left: '65%', top: '75%', duration: 5, delay: 2 },
+    { width: 10, height: 10, left: '20%', top: '80%', duration: 7, delay: 0.5 },
+    { width: 7, height: 7, left: '92%', top: '55%', duration: 4.5, delay: 1.5 },
+  ];
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 flex items-center justify-center p-4">
+    <main
+      className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
+      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #0d0518 50%, #1a0a2e 100%)' }}
+    >
+      <div className="absolute inset-0 pointer-events-none">
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(138,43,226,0.15) 0%, transparent 60%)' }} />
+        <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 80% 20%, rgba(252,175,69,0.08) 0%, transparent 50%)' }} />
+        {particles.map((p, i) => (
+          <motion.div
+            key={i}
+            className="absolute rounded-full"
+            style={{
+              width: p.width,
+              height: p.height,
+              left: p.left,
+              top: p.top,
+              background: 'linear-gradient(135deg, #8B2FC9, #FCAF45)',
+              opacity: 0.4,
+            }}
+            animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
+            transition={{ duration: p.duration, repeat: Infinity, delay: p.delay }}
+          />
+        ))}
+      </div>
+
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
-        className="w-full max-w-md"
+        className="w-full max-w-md relative z-10"
       >
-        <div className="bg-[#121212] border border-[#262626] rounded-2xl overflow-hidden">
+        <div
+          className="rounded-2xl overflow-hidden"
+          style={{
+            background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+            border: '1px solid rgba(138, 43, 226, 0.25)',
+            boxShadow: '0 0 60px rgba(138, 43, 226, 0.15), 0 30px 60px rgba(0,0,0,0.4)',
+          }}
+        >
           <div className="p-8">
             <div className="text-center mb-8">
-              <div className="w-16 h-16 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center mx-auto mb-4">
+              <div
+                className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
+                style={{ background: 'linear-gradient(135deg, #8B2FC9, #E1306C, #FCAF45)' }}
+              >
                 <svg width="32" height="32" viewBox="0 0 24 24" fill="white">
                   <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                 </svg>
@@ -80,19 +120,31 @@ function CadastroContent() {
               <h1 className="text-white text-2xl font-bold mb-2">
                 Create your account
               </h1>
-              <p className="text-gray-400 text-sm">
+              <p className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.7)' }}>
                 Fill in your details to access AI Ghost
               </p>
             </div>
 
             <form onSubmit={handleSubmit} className="space-y-5" autoComplete="off">
               <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">Full Name</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(200, 180, 220, 0.8)' }}>Full Name</label>
                 <input
                   type="text"
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  className={inputClasses}
+                  className="w-full rounded-xl px-4 py-3.5 text-white placeholder-[rgba(200,180,220,0.3)] focus:outline-none transition-all text-base"
+                  style={{
+                    background: 'rgba(138, 43, 226, 0.08)',
+                    border: '1px solid rgba(138, 43, 226, 0.3)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.7)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(138, 43, 226, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.3)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                   required
                   autoComplete="off"
                   data-lpignore="true"
@@ -100,13 +152,25 @@ function CadastroContent() {
               </div>
 
               <div>
-                <label className="block text-gray-300 text-sm font-medium mb-2">Email</label>
+                <label className="block text-sm font-medium mb-2" style={{ color: 'rgba(200, 180, 220, 0.8)' }}>Email</label>
                 <input
                   type="email"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="Enter your email"
-                  className={inputClasses}
+                  className="w-full rounded-xl px-4 py-3.5 text-white placeholder-[rgba(200,180,220,0.3)] focus:outline-none transition-all text-base"
+                  style={{
+                    background: 'rgba(138, 43, 226, 0.08)',
+                    border: '1px solid rgba(138, 43, 226, 0.3)',
+                  }}
+                  onFocus={(e) => {
+                    e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.7)';
+                    e.currentTarget.style.boxShadow = '0 0 0 3px rgba(138, 43, 226, 0.15)';
+                  }}
+                  onBlur={(e) => {
+                    e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.3)';
+                    e.currentTarget.style.boxShadow = 'none';
+                  }}
                   required
                   autoComplete="off"
                   data-lpignore="true"
@@ -117,7 +181,8 @@ function CadastroContent() {
                 <motion.div
                   initial={{ opacity: 0, y: -5 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="bg-red-500/10 border border-red-500/30 rounded-xl p-3 text-center"
+                  className="rounded-xl p-3 text-center"
+                  style={{ background: 'rgba(229, 57, 53, 0.1)', border: '1px solid rgba(229, 57, 53, 0.3)' }}
                 >
                   <p className="text-red-400 text-sm">{error}</p>
                 </motion.div>
@@ -127,11 +192,14 @@ function CadastroContent() {
                 type="submit"
                 disabled={isLoading}
                 whileTap={{ scale: 0.98 }}
-                className={`w-full py-4 rounded-xl font-bold text-white text-base transition-all ${
-                  isLoading
-                    ? 'bg-gray-600 cursor-not-allowed'
-                    : 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700'
-                }`}
+                className="w-full py-4 rounded-xl font-bold text-white text-base transition-all"
+                style={{
+                  background: isLoading
+                    ? 'rgba(100, 60, 140, 0.4)'
+                    : 'linear-gradient(90deg, #8B2FC9, #E1306C, #FCAF45)',
+                  boxShadow: isLoading ? 'none' : '0 4px 20px rgba(138, 43, 226, 0.4)',
+                  cursor: isLoading ? 'not-allowed' : 'pointer',
+                }}
               >
                 {isLoading ? (
                   <div className="flex items-center justify-center gap-2">
@@ -147,7 +215,7 @@ function CadastroContent() {
               </motion.button>
             </form>
 
-            <p className="text-center text-gray-500 text-xs mt-6">
+            <p className="text-center text-xs mt-6" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>
               By registering, you agree to our Terms of Service and Privacy Policy
             </p>
           </div>
@@ -159,7 +227,7 @@ function CadastroContent() {
 
 export default function CadastroPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950" />}>
+    <Suspense fallback={<div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #0d0518 50%, #1a0a2e 100%)' }} />}>
       <CadastroContent />
     </Suspense>
   );
