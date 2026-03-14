@@ -282,13 +282,14 @@ const BottomNav = memo(function BottomNav({
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1V10.5z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
       </button>
       <button className="p-3" onClick={showNotification}>
-        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35" strokeLinecap="round"></path></svg>
-      </button>
-      <button className="p-3" onClick={showNotification}>
-        <img src="/icons/imgi_3_adicionar_conteudo.png" alt="" width="26" height="26" />
-      </button>
-      <button className="p-3" onClick={showNotification}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" strokeLinecap="round" strokeLinejoin="round"></rect><path d="M9.5 8l5 4-5 4V8z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+      </button>
+      <a href="/direct" className="p-3 relative">
+        <img src="/icons/enviar.png" alt="DM" width="26" height="26" style={{ filter: 'brightness(0) invert(1)' }} />
+        <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">18</span>
+      </a>
+      <button className="p-3" onClick={showNotification}>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35" strokeLinecap="round"></path></svg>
       </button>
       <button className="p-3" onClick={showNotification}>
         <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
