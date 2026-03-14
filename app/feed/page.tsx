@@ -1,6 +1,6 @@
 'use client';
 
-import { Suspense, useEffect, useState, memo, useCallback } from 'react';
+import { Suspense, useEffect, useState, memo, useCallback, useRef } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 import { saveProfileCache, getProfileCache } from '@/lib/profileCache';
@@ -350,22 +350,37 @@ function FeedContent() {
   const [location, setLocation] = useState<string>('Loading...');
   const [isLoading, setIsLoading] = useState(true);
   const { showNotification, barHeight } = useNotification();
-  const [igNotifications, setIgNotifications] = useState<{ id: number; username: string; visible: boolean }[]>([]);
+  const [igNotifications, setIgNotifications] = useState<{ id: number; username: string; avatar: string; visible: boolean }[]>([]);
+  const followingRef = useRef<FollowingUser[]>([]);
 
   useEffect(() => {
-    const notifNames = ['s*****', 'i*****', 'm*****', 'l*****', 'r*****', 'a*****', 'j*****', 'c*****'];
+    followingRef.current = following;
+  }, [following]);
+
+  useEffect(() => {
+    const fallbackNames = ['s*****', 'i*****', 'm*****', 'l*****', 'r*****', 'a*****', 'j*****', 'c*****'];
     let count = 0;
+
+    const getNotifData = () => {
+      const users = followingRef.current;
+      if (users.length > 0) {
+        const user = users[count % users.length];
+        return { username: censorName(user.username), avatar: user.avatar || '' };
+      }
+      return { username: fallbackNames[count % fallbackNames.length], avatar: '' };
+    };
+
     const firstDelay = setTimeout(() => {
-      const name = notifNames[count % notifNames.length];
-      setIgNotifications(prev => [...prev, { id: count, username: name, visible: true }]);
+      const data = getNotifData();
+      setIgNotifications(prev => [...prev, { id: count, username: data.username, avatar: data.avatar, visible: true }]);
       const dismissId = count;
       setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
       count++;
     }, 3000);
 
     const interval = setInterval(() => {
-      const name = notifNames[count % notifNames.length];
-      setIgNotifications(prev => [...prev, { id: count, username: name, visible: true }]);
+      const data = getNotifData();
+      setIgNotifications(prev => [...prev, { id: count, username: data.username, avatar: data.avatar, visible: true }]);
       const dismissId = count;
       setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
       count++;
@@ -559,10 +574,16 @@ function FeedContent() {
           style={{ top: barHeight + 50 }}
         >
           <div className="bg-[#262626] border border-[#363636] rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
-            <div className="w-9 h-9 rounded-full bg-[#363636] flex items-center justify-center flex-shrink-0">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-              </svg>
+            <div className="w-9 h-9 rounded-full bg-[#363636] flex-shrink-0 overflow-hidden">
+              {notif.avatar ? (
+                <img src={getProxiedAvatar(notif.avatar)} alt="" className="w-full h-full object-cover rounded-full" />
+              ) : (
+                <div className="w-full h-full flex items-center justify-center">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+                  </svg>
+                </div>
+              )}
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-[13px]">
