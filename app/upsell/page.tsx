@@ -73,7 +73,7 @@ function UpsellContent() {
         </div>
 
         <h1 className="text-white text-2xl font-bold leading-tight mb-4">
-          AI Observer Installation Fee
+          AI Ghost
         </h1>
 
         <p className="text-base mb-6 leading-relaxed" style={{ color: 'rgba(200, 180, 220, 0.7)' }}>
