@@ -28,7 +28,7 @@ export async function GET(request: NextRequest) {
 
   const makeRequest = async (key: string): Promise<Response> => {
     return fetch(
-      `https://api.hikerapi.com/v1/user/following/chunk?user_id=${encodeURIComponent(userId)}`,
+      `https://api.hikerapi.com/v2/user/following/chunk?user_id=${encodeURIComponent(userId)}`,
       {
         headers: {
           'accept': 'application/json',
