@@ -302,10 +302,10 @@ function Chat2Content() {
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#000] border-t border-white/10 px-4 py-2.5">
-        <div className="max-w-lg mx-auto flex items-center gap-3">
-          <button onClick={showNotification} className="flex-shrink-0">
-            <img src="/icons/imgi_4_camera.png" alt="" width="32" height="32" className="rounded-full" />
+      <div className="fixed bottom-0 left-0 right-0 bg-[#000] border-t border-white/10 px-3 py-2">
+        <div className="max-w-lg mx-auto flex items-center gap-2">
+          <button onClick={showNotification} className="flex-shrink-0 w-[36px] h-[36px] rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" xmlns="http://www.w3.org/2000/svg"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="13" r="4"/></svg>
           </button>
           
           <div 
@@ -315,18 +315,18 @@ function Chat2Content() {
             <span className="text-white/40 text-[14px]">Mensagem...</span>
           </div>
           
-          <div className="flex items-center gap-1">
+          <div className="flex items-center gap-0.5">
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_5_mic.png" alt="" width="22" height="22" />
+              <img src="/icons/imgi_5_mic.png" alt="" width="24" height="24" />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_6_gallery.png" alt="" width="22" height="22" />
+              <img src="/icons/imgi_6_gallery.png" alt="" width="24" height="24" />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_7_emoji.png" alt="" width="22" height="22" />
+              <img src="/icons/imgi_7_emoji.png" alt="" width="24" height="24" />
             </button>
             <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_8_heart.png" alt="" width="22" height="22" />
+              <img src="/icons/imgi_8_heart.png" alt="" width="24" height="24" />
             </button>
           </div>
         </div>
