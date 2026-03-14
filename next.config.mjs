@@ -9,6 +9,7 @@ const nextConfig = {
     '*.janeway.replit.dev',
     '*.sisko.replit.dev',
     '*.spock.replit.dev',
+    '*.riker.replit.dev',
     'localhost',
     '127.0.0.1',
   ],
