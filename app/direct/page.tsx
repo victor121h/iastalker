@@ -118,7 +118,7 @@ const StoryItem = memo(function StoryItem({
         <ImageWithFallback
           src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
           alt={story.username}
-          className="w-[72px] h-[72px] rounded-full object-cover"
+          className={`w-[72px] h-[72px] rounded-full object-cover${!story.isFirst ? ' blur-[6px]' : ''}`}
         />
         {story.isFirst && (
           <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
@@ -163,7 +163,7 @@ const MessageItem = memo(function MessageItem({
             src={msg.avatar ? getProxiedAvatar(msg.avatar) : ''}
             alt={msg.username}
             className="w-[56px] h-[56px] rounded-full object-cover"
-            blurred={msg.isBlurred}
+            blurred={true}
           />
           {msg.isPrivate && !msg.isBlurred && (
             <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">

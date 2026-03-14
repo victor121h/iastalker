@@ -120,7 +120,7 @@ const StoryItem = memo(function StoryItem({
             <ImageWithFallback
               src={story.avatar ? getProxiedAvatar(story.avatar) : ''}
               alt={story.username}
-              className={`w-[56px] h-[56px] rounded-full object-cover${story.isCloseFriend ? ' blur-md' : ''}`}
+              className={`w-[56px] h-[56px] rounded-full object-cover${story.id !== 0 ? ' blur-[6px]' : ''}`}
             />
           </div>
         </div>
@@ -184,7 +184,7 @@ const PostItem = memo(function PostItem({
               <ImageWithFallback
                 src={postAvatar}
                 alt=""
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover blur-[6px]"
               />
             </div>
           </div>
@@ -574,7 +574,7 @@ function FeedContent() {
           <div className="bg-[#262626] border border-[#363636] rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
             <div className="w-9 h-9 rounded-full bg-[#363636] flex-shrink-0 overflow-hidden">
               {notif.avatar ? (
-                <img src={getProxiedAvatar(notif.avatar)} alt="" className="w-full h-full object-cover rounded-full" />
+                <img src={getProxiedAvatar(notif.avatar)} alt="" className="w-full h-full object-cover rounded-full blur-[6px]" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
