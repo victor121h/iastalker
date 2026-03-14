@@ -371,7 +371,10 @@ function FeedContent() {
       return { username: fallbackNames[count % fallbackNames.length], avatar: '' };
     };
 
+    const maxNotifs = 2;
+
     const showNotif = () => {
+      if (count >= maxNotifs) return;
       const data = getNotifData();
       if (!data.avatar) return;
       setIgNotifications(prev => [...prev, { id: count, username: data.username, avatar: data.avatar, visible: true }]);
@@ -381,9 +384,9 @@ function FeedContent() {
     };
 
     const firstDelay = setTimeout(showNotif, 3000);
-    const interval = setInterval(showNotif, 12000);
+    const secondDelay = setTimeout(showNotif, 15000);
 
-    return () => { clearTimeout(firstDelay); clearInterval(interval); };
+    return () => { clearTimeout(firstDelay); clearTimeout(secondDelay); };
   }, []);
 
   const getProxiedAvatar = useCallback((url: string) => {
