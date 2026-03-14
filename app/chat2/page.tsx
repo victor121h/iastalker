@@ -73,10 +73,10 @@ function Chat2Content() {
         
         <div className="flex items-center gap-4">
           <button onClick={showNotification} className="p-2">
-            <img src="/icons/imgi_2_phone.png" alt="" width="24" height="24" />
+            <img src="/icons/imgi_2_phone.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
           </button>
           <button onClick={showNotification} className="p-2">
-            <img src="/icons/imgi_3_videocam.png" alt="" width="24" height="24" />
+            <img src="/icons/imgi_3_videocam.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
           </button>
         </div>
       </header>
