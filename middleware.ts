@@ -17,7 +17,7 @@ export function middleware(request: NextRequest) {
     }
 
     const excludedPrefixes = [
-      '/pitch', '/up1', '/up2', '/up3', '/up4', '/upsell',
+      '/pitch', '/up1', '/up2', '/up3', '/up4', '/up5', '/up6', '/upsell',
       '/back-front', '/back-up1', '/backfront',
       '/chat1', '/chat2', '/chat3', '/chat4', '/chat5',
       '/direct', '/feed', '/login', '/confirm', '/search',
