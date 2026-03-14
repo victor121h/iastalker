@@ -21,8 +21,8 @@ export default function InstagramButton({
   const baseStyles = 'h-[44px] px-6 rounded-full font-bold text-[15px] flex items-center justify-center gap-2 transition-all duration-200';
   
   const variantStyles = {
-    gradient: 'bg-gradient-to-r from-sky-500 to-blue-500 text-white hover:opacity-90 relative overflow-hidden',
-    outline: 'border border-sky-300 text-slate-700 hover:bg-sky-50',
+    gradient: 'text-white hover:opacity-90 relative overflow-hidden',
+    outline: 'border border-purple-400/30 text-purple-200 hover:bg-purple-500/10',
   };
 
   return (
@@ -30,6 +30,10 @@ export default function InstagramButton({
       whileTap={{ scale: 0.97 }}
       onClick={onClick}
       className={`${baseStyles} ${variantStyles[variant]} ${className}`}
+      style={variant === 'gradient' ? {
+        background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)',
+        boxShadow: '0 4px 20px rgba(193, 53, 132, 0.4)',
+      } : undefined}
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}

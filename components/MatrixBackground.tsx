@@ -31,7 +31,7 @@ function MatrixBackgroundComponent() {
 
     resize();
 
-    const letters = 'DEEPGRAM01';
+    const letters = 'OBSERVER01';
     const fontSize = 16;
     let lastTime = 0;
     const fps = 20;
@@ -44,10 +44,9 @@ function MatrixBackgroundComponent() {
       }
       lastTime = timestamp;
 
-      ctx.fillStyle = 'rgba(240, 247, 255, 0.08)';
+      ctx.fillStyle = 'rgba(26, 10, 46, 0.08)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-      ctx.fillStyle = '#0ea5e9';
       ctx.font = `${fontSize}px monospace`;
 
       const drops = dropsRef.current;
@@ -56,7 +55,14 @@ function MatrixBackgroundComponent() {
         const x = i * fontSize;
         const y = drops[i] * fontSize;
 
-        ctx.fillStyle = `rgba(14, 165, 233, 0.3)`;
+        const hue = (i * 3 + Date.now() * 0.01) % 360;
+        if (hue > 270 || hue < 30) {
+          ctx.fillStyle = `rgba(193, 53, 132, 0.25)`;
+        } else if (hue < 120) {
+          ctx.fillStyle = `rgba(138, 43, 226, 0.25)`;
+        } else {
+          ctx.fillStyle = `rgba(247, 119, 55, 0.2)`;
+        }
         ctx.fillText(text, x, y);
 
         if (y > canvas.height && Math.random() > 0.95) {
