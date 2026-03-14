@@ -807,7 +807,16 @@ function PitchContent() {
             <h2 className="text-black text-center font-bold text-2xl mb-1 mt-4">CHOOSE YOUR PLAN</h2>
             <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
 
-            <div className="bg-[#0C1011] rounded-[22px] p-5 mb-4">
+            <div className="bg-[#0C1011] rounded-[22px] p-5 mb-4 relative overflow-hidden">
+              <div className="absolute inset-0 z-10 pointer-events-none flex items-center justify-center">
+                <div
+                  className="bg-[#E53935] text-white font-black text-3xl tracking-widest px-16 py-3 shadow-2xl"
+                  style={{ transform: 'rotate(-20deg)', letterSpacing: '0.15em', boxShadow: '0 4px 20px rgba(0,0,0,0.5)' }}
+                >
+                  SOLD OUT
+                </div>
+              </div>
+              <div className="opacity-50">
               <h3 className="text-white text-center font-bold text-lg mb-1">Profile Access</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access to @{username}'s profile</p>
               
@@ -864,6 +873,7 @@ function PitchContent() {
                 Choose Plan
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
+              </div>
             </div>
 
             <div id="plan-2990" className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
