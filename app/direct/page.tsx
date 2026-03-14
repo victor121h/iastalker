@@ -318,7 +318,7 @@ function DirectContent() {
   const stories: Story[] = [
     { 
       id: 0, 
-      username: 'Share updates', 
+      username: 'Compartilhar...', 
       avatar: profileAvatar, 
       isBlurred: false,
       isFirst: true,
@@ -335,33 +335,29 @@ function DirectContent() {
   ];
 
   const mockMessages = [
-    'hey, are you there? 🔥',
-    'I need to talk to you about something serious',
-    'Hi, did you arrive?',
-    'Want to go out tomorrow? 🎉',
-    'Look at this 👀',
-    'That\'s crazy bro',
-    'Sent you a message',
-    'Replied to your story',
+    'Ei, linda, adivinha o que você esqueceu ...',
+    'Reagi com um 🔥 à sua mensagem.',
+    '4 novas mensagens',
+    'Mito, adivinha o que está fazendo de...',
+    'Eu compartilhei um video de uma...',
+    'Mito, precisamos sair mais...',
+    'Te enviei uma mensagem',
+    'Respondeu ao seu story',
   ];
 
-  const mockTimes = ['8 h', '9 min', '59 min', '1 h', '42 min', '2 h', '3 h', '5 h'];
+  const mockTimes = ['8 h', '10 h', '22 h', 'agora', '30 min', '2h', '3h', '5h'];
 
-  const chat1Avatar = '/attached_assets/chat2_1764243660020.png';
-  const chat2Avatar = '/attached_assets/chat2_1764243660020.png';
-  const chat3Avatar = '/attached_assets/chat2_1764243660020.png';
-  
   const messages: Message[] = following.length > 0 
     ? following.slice(0, 7).map((user, index) => ({
         id: index + 1,
-        username: index === 0 ? 'A****' : index === 1 ? 'L*****' : index === 2 ? 'A****' : user.username,
-        avatar: index === 0 ? chat1Avatar : index === 1 ? chat2Avatar : index === 2 ? chat3Avatar : (user.avatar || ''),
+        username: user.username,
+        avatar: user.avatar || '',
         message: mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
-        hasUnread: index % 2 === 0,
+        hasUnread: index < 3,
         isBlurred: index >= 3,
-        isPrivate: user.isPrivate
+        isPrivate: index < 3
       }))
     : [];
 
@@ -430,7 +426,7 @@ function DirectContent() {
           </div>
           <input
             type="text"
-            placeholder="Ask Meta AI or search"
+            placeholder="Pergunte à Meta AI ou pesquise"
             className="w-full bg-[#1A1D20] text-white placeholder-[#A8A8A8] rounded-xl py-2.5 pl-11 pr-4 text-[15px] outline-none border-none"
           />
         </div>
@@ -452,8 +448,8 @@ function DirectContent() {
 
       <div className="px-4 py-3">
         <div className="flex items-center justify-between">
-          <span className="text-white text-[15px] font-semibold">Messages</span>
-          <span className="text-[#1A73E8] text-[14px]">Requests (1)</span>
+          <span className="text-white text-[15px] font-semibold">Mensagens</span>
+          <span className="text-[#1A73E8] text-[14px]">Pedidos (1)</span>
         </div>
       </div>
 
@@ -471,7 +467,7 @@ function DirectContent() {
           onClick={() => setShowLoadMorePopup(true)}
           className="w-full py-3 text-[#1A73E8] text-[14px] font-medium hover:bg-[#0C0C0C] transition-colors"
         >
-          Load more messages
+          Carregar mais mensagens
         </button>
       </div>
 
