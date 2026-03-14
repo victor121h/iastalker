@@ -126,9 +126,7 @@ const StoryItem = memo(function StoryItem({
         </div>
         {story.isLocked && (
           <div className="absolute inset-[2px] bg-black/70 rounded-full flex items-center justify-center">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="white">
-              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
-            </svg>
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"></path></svg>
           </div>
         )}
         {story.isCloseFriend && (
@@ -193,28 +191,20 @@ const PostItem = memo(function PostItem({
           <div className="flex flex-col">
             <div className="flex items-center gap-1">
               <span className="text-white text-[13px] font-semibold">{postUsername}</span>
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="#3897F0">
-                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-              </svg>
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="#3897F0" xmlns="http://www.w3.org/2000/svg"><path d="M22.5 12.5c0-1.58-.875-2.95-2.148-3.6.154-.435.238-.905.238-1.4 0-2.21-1.71-3.998-3.818-3.998-.47 0-.92.084-1.336.25C14.818 2.415 13.51 1.5 12 1.5s-2.816.917-3.437 2.25c-.415-.165-.866-.25-1.336-.25-2.11 0-3.818 1.79-3.818 4 0 .494.083.964.237 1.4-1.272.65-2.147 2.018-2.147 3.6 0 1.495.782 2.798 1.942 3.486-.02.17-.032.34-.032.514 0 2.21 1.708 4 3.818 4 .47 0 .92-.086 1.335-.25.62 1.334 1.926 2.25 3.437 2.25 1.512 0 2.818-.916 3.437-2.25.415.163.865.248 1.336.248 2.11 0 3.818-1.79 3.818-4 0-.174-.012-.344-.033-.513 1.158-.687 1.943-1.99 1.943-3.484zm-6.616-3.334l-4.334 6.5c-.145.217-.382.334-.625.334-.143 0-.288-.04-.416-.126l-.115-.094-2.415-2.415c-.293-.293-.293-.768 0-1.06s.768-.294 1.06 0l1.77 1.767 3.825-5.74c.23-.345.696-.436 1.04-.207.346.23.44.696.21 1.04z"></path></svg>
             </div>
             <span className="text-[#A0A0A0] text-[11px]">{location}</span>
           </div>
         </div>
         <button className="p-2" onClick={showNotification}>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
-            <circle cx="12" cy="5" r="2"/>
-            <circle cx="12" cy="12" r="2"/>
-            <circle cx="12" cy="19" r="2"/>
-          </svg>
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><circle cx="12" cy="5" r="2"></circle><circle cx="12" cy="12" r="2"></circle><circle cx="12" cy="19" r="2"></circle></svg>
         </button>
       </div>
 
       <div className="bg-[#000] aspect-square flex flex-col items-center justify-center cursor-pointer" onClick={showNotification}>
         <div className="flex flex-col items-center gap-4">
           <div className="w-[72px] h-[72px] rounded-full bg-[#363636] flex items-center justify-center">
-            <svg width="32" height="32" viewBox="0 0 24 24" fill="#8E8E8E">
-              <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"/>
-            </svg>
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="white" className="opacity-90" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6zm9 14H6V10h12v10zm-6-3c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2z"></path></svg>
           </div>
           <div className="text-center">
             <p className="text-white text-[16px] font-bold mb-1.5">Restricted Content</p>
@@ -228,34 +218,20 @@ const PostItem = memo(function PostItem({
         <div className="flex items-center justify-between mb-2">
           <div className="flex items-center gap-4">
             <button onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
             </button>
             <button onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-                <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <img src="/icons/imgi_21_comentario.png" alt="" width="24" height="24" className="invert-0" />
             </button>
             <button onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M17 1l4 4-4 4"/>
-                <path d="M3 11V9a4 4 0 0 1 4-4h14"/>
-                <path d="M7 23l-4-4 4-4"/>
-                <path d="M21 13v2a4 4 0 0 1-4 4H3"/>
-              </svg>
+              <img src="/icons/imgi_22_repost.png" alt="" width="24" height="24" />
             </button>
             <button onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 2L11 13"/>
-                <path d="M22 2l-7 20-4-9-9-4 20-7z"/>
-              </svg>
+              <img src="/icons/enviar.png" alt="" width="24" height="24" />
             </button>
           </div>
           <button onClick={showNotification}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-              <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/>
-            </svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
           </button>
         </div>
 
@@ -303,28 +279,16 @@ const BottomNav = memo(function BottomNav({
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-[50px] bg-[#000] border-t border-[#262626] flex items-center justify-around px-2">
       <button className="p-3" onClick={showNotification}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="white">
-          <path d="M9.005 16.545a2.997 2.997 0 0 1 2.997-2.997A2.997 2.997 0 0 1 15 16.545V22h7V11.543L12 2 2 11.543V22h7.005Z"/>
-        </svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M3 10.5L12 3l9 7.5V21a1 1 0 01-1 1h-5v-6h-6v6H4a1 1 0 01-1-1V10.5z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
       </button>
       <button className="p-3" onClick={showNotification}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-          <circle cx="11" cy="11" r="8"/>
-          <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
-        </svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><circle cx="11" cy="11" r="7"></circle><path d="M21 21l-4.35-4.35" strokeLinecap="round"></path></svg>
       </button>
       <button className="p-3" onClick={showNotification}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-          <rect x="3" y="3" width="18" height="18" rx="2"/>
-          <line x1="12" y1="8" x2="12" y2="16"/>
-          <line x1="8" y1="12" x2="16" y2="12"/>
-        </svg>
+        <img src="/icons/imgi_3_adicionar_conteudo.png" alt="" width="26" height="26" />
       </button>
       <button className="p-3" onClick={showNotification}>
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
-          <rect x="2" y="2" width="20" height="20" rx="5" strokeLinecap="round" strokeLinejoin="round"/>
-          <path d="M10 8l6 4-6 4V8z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
+        <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" strokeLinecap="round" strokeLinejoin="round"></rect><path d="M9.5 8l5 4-5 4V8z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"></path></svg>
       </button>
       <button className="p-3" onClick={showNotification}>
         <div className="w-6 h-6 rounded-full border-2 border-white overflow-hidden">
@@ -543,23 +507,15 @@ function FeedContent() {
       <header className="sticky z-50 bg-[#000] border-b border-[#262626]" style={{ top: barHeight }}>
         <div className="flex items-center justify-between px-4 h-[44px] relative">
           <button className="p-1" onClick={showNotification}>
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round">
-              <line x1="12" y1="5" x2="12" y2="19"/>
-              <line x1="5" y1="12" x2="19" y2="12"/>
-            </svg>
+            <img src="/icons/imgi_3_adicionar_conteudo.png" alt="" width="24" height="24" />
           </button>
           <img src="/logo-instagram.png" alt="Instagram" className="h-[29px] w-auto absolute left-1/2 -translate-x-1/2" />
           <div className="flex items-center gap-5">
             <button className="relative" onClick={showNotification}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z" strokeLinecap="round" strokeLinejoin="round"></path></svg>
             </button>
             <button className="relative" onClick={() => router.push(`/direct?${searchParams.toString()}`)}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M22 2L11 13"/>
-                <path d="M22 2L15 22L11 13L2 9L22 2Z"/>
-              </svg>
+              <img src="/icons/enviar.png" alt="" width="24" height="24" />
               <span className="absolute -top-1 -right-1 bg-[#FF3B30] text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center px-1">
                 18
               </span>
@@ -591,59 +547,39 @@ function FeedContent() {
             location={location}
             showNotification={showNotification}
             getProxiedAvatar={getProxiedAvatar}
-            targetUsername={username}
+            targetUsername={username || maskedUsername}
           />
         ))}
       </div>
+
+      {igNotifications.map(notif => (
+        <div
+          key={notif.id}
+          className="fixed left-4 right-4 z-[200] transition-all duration-500"
+          style={{ top: barHeight + 50 }}
+        >
+          <div className="bg-[#262626] border border-[#363636] rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
+            <div className="w-9 h-9 rounded-full bg-[#363636] flex items-center justify-center flex-shrink-0">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
+                <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+              </svg>
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-white text-[13px]">
+                <span className="font-semibold">{notif.username}</span> liked your photo
+              </p>
+              <p className="text-[#8E8E8E] text-[11px]">Just now</p>
+            </div>
+            <div className="w-10 h-10 rounded bg-[#363636] flex-shrink-0" />
+          </div>
+        </div>
+      ))}
 
       <BottomNav 
         profileAvatar={profile?.avatar} 
         showNotification={showNotification}
         getProxiedAvatar={getProxiedAvatar}
       />
-
-      <div className="fixed left-0 right-0 z-[9999] flex flex-col gap-2 px-3 pointer-events-none" style={{ top: barHeight + 8 }}>
-        {igNotifications.map(notif => (
-          <div
-            key={notif.id}
-            className="pointer-events-auto bg-[#2C2C2E]/95 backdrop-blur-xl rounded-2xl px-3.5 py-3 flex items-center gap-3 shadow-lg animate-[slideDown_0.3s_ease-out]"
-            style={{ animation: 'slideDown 0.3s ease-out' }}
-          >
-            <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-br from-[#833AB4] via-[#E1306C] to-[#F77737] flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white">
-                <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0z"/>
-                <path d="M12 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8z"/>
-                <circle cx="18.406" cy="5.594" r="1.44"/>
-              </svg>
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="flex items-center gap-1.5">
-                <span className="text-white text-[13px] font-bold">Instagram</span>
-                <span className="text-[#8E8E8E] text-[12px]">now</span>
-              </div>
-              <p className="text-[#A0A0A0] text-[13px] truncate">{notif.username} Sent you a photo</p>
-            </div>
-            <div className="w-9 h-9 rounded-md overflow-hidden flex-shrink-0 bg-[#333]" style={{ filter: 'blur(4px)' }}>
-              <div className="w-full h-full bg-gradient-to-br from-[#667] to-[#445]" />
-            </div>
-            <button
-              className="flex-shrink-0 text-[#8E8E8E] ml-1"
-              onClick={() => setIgNotifications(prev => prev.filter(n => n.id !== notif.id))}
-            >
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-          </div>
-        ))}
-      </div>
-
-      <style jsx global>{`
-        @keyframes slideDown {
-          from { transform: translateY(-100%); opacity: 0; }
-          to { transform: translateY(0); opacity: 1; }
-        }
-      `}</style>
     </div>
   );
 }
