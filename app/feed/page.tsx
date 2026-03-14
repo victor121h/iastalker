@@ -145,14 +145,14 @@ const StoryItem = memo(function StoryItem({
 });
 
 const blurredComments = [
-  "What a beautiful photo! 😍",
-  "You killed it!",
-  "Perfect 🔥",
-  "I miss you...",
-  "I love you ❤️",
-  "Wonderful!",
-  "What an amazing place!",
-  "Beautiful 💕",
+  "😍🔥❤️😈",
+  "🔥😍😈❤️",
+  "❤️😈🔥😍",
+  "😈❤️😍🔥",
+  "🔥❤️😈😍",
+  "😍😈🔥❤️",
+  "❤️🔥😍😈",
+  "😈🔥❤️😍",
 ];
 
 const PostItem = memo(function PostItem({
@@ -508,10 +508,10 @@ function FeedContent() {
   ];
 
   const posts = [
-    { id: 1, likes: 12, comments: 5, shares: 3, date: 'November 24', time: '22:47', userIndex: 0 },
-    { id: 2, likes: 47, comments: 12, shares: 8, date: 'November 23', time: '18:32', userIndex: 1 },
-    { id: 3, likes: 89, comments: 23, shares: 15, date: 'November 22', time: '14:15', userIndex: 2 },
-    { id: 4, likes: 156, comments: 34, shares: 21, date: 'November 21', time: '09:28', userIndex: 3 },
+    { id: 1, likes: 12, comments: 5, shares: 3, date: 'March 14', time: '22:47', userIndex: 0 },
+    { id: 2, likes: 47, comments: 12, shares: 8, date: 'March 14', time: '18:32', userIndex: 1 },
+    { id: 3, likes: 89, comments: 23, shares: 15, date: 'March 14', time: '14:15', userIndex: 2 },
+    { id: 4, likes: 156, comments: 34, shares: 21, date: 'March 14', time: '09:28', userIndex: 3 },
   ];
 
   if (isLoading) {
