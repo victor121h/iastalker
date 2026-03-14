@@ -270,11 +270,13 @@ const PostItem = memo(function PostItem({
 const BottomNav = memo(function BottomNav({ 
   profileAvatar, 
   showNotification,
-  getProxiedAvatar
+  getProxiedAvatar,
+  queryString
 }: { 
   profileAvatar: string | undefined; 
   showNotification: () => void;
   getProxiedAvatar: (url: string) => string;
+  queryString: string;
 }) {
   return (
     <nav className="fixed bottom-0 left-0 right-0 h-[50px] bg-[#000] border-t border-[#262626] flex items-center justify-around px-2">
@@ -284,7 +286,7 @@ const BottomNav = memo(function BottomNav({
       <button className="p-3" onClick={showNotification}>
         <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8" xmlns="http://www.w3.org/2000/svg"><rect x="3" y="3" width="18" height="18" rx="4" strokeLinecap="round" strokeLinejoin="round"></rect><path d="M9.5 8l5 4-5 4V8z" fill="white" stroke="white" strokeLinecap="round" strokeLinejoin="round"></path></svg>
       </button>
-      <a href="/direct" className="p-3 relative">
+      <a href={queryString ? `/direct?${queryString}` : '/direct'} className="p-3 relative">
         <img src="/icons/enviar.png" alt="DM" width="26" height="26" style={{ filter: 'brightness(0) invert(1)' }} />
         <span className="absolute -top-0.5 -right-0.5 bg-red-500 text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center px-1">18</span>
       </a>
@@ -591,6 +593,7 @@ function FeedContent() {
         profileAvatar={profile?.avatar} 
         showNotification={showNotification}
         getProxiedAvatar={getProxiedAvatar}
+        queryString={searchParams.toString()}
       />
     </div>
   );
