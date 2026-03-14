@@ -143,7 +143,7 @@ function SearchContent() {
             transition={{ duration: 0.35, ease: 'easeOut' }}
           >
             <div className="w-[56px] h-[56px] rounded-xl overflow-hidden" style={{ boxShadow: '0 0 25px rgba(138, 43, 226, 0.3)' }}>
-              <img src="/ghost-logo.png" alt="IA Observer" className="w-full h-full object-cover" />
+              <img src="/ghost-logo.png" alt="AI Ghost" className="w-full h-full object-cover" />
             </div>
           </motion.div>
           

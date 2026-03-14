@@ -56,11 +56,11 @@ function Up4Content() {
           </h1>
           
           <p className="text-base mb-6 leading-relaxed" style={{ color: 'rgba(200, 180, 220, 0.7)' }}>
-            Our app is hosted in France, and you live in another country. A currency exchange fee of <span className="font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>$67.90</span> is required for IA Observer to be allowed to operate in your region.
+            Our app is hosted in France, and you live in another country. A currency exchange fee of <span className="font-bold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>$67.90</span> is required for AI Ghost to be allowed to operate in your region.
           </p>
 
           <p className="text-sm mb-8 leading-relaxed font-semibold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>
-            This fee does not go to IA Observer; it is a mandatory fee in your region for installing apps from abroad.
+            This fee does not go to AI Ghost; it is a mandatory fee in your region for installing apps from abroad.
           </p>
 
           <a

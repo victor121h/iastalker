@@ -70,7 +70,7 @@ export function NotificationProvider({ children }: { children: React.ReactNode }
           style={{ boxShadow: '0 2px 12px rgba(198,40,40,0.6)' }}
         >
           <p className="text-white text-xs font-medium leading-snug">
-            In the free trial we limit your access. To get full access to everything, get the IA Observer tool.
+            In the free trial we limit your access. To get full access to everything, get the AI Ghost tool.
           </p>
           <p className="text-white font-bold text-xs mt-0.5 underline underline-offset-2">
             Click here to unlock everything

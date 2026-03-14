@@ -64,7 +64,7 @@ function HomeContent() {
             transition={{ duration: 0.4, ease: 'easeOut' }}
           >
             <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(138, 43, 226, 0.3)' }}>
-              <img src="/ghost-logo.png" alt="IA Observer" className="w-full h-full object-cover" />
+              <img src="/ghost-logo.png" alt="AI Ghost" className="w-full h-full object-cover" />
             </div>
           </motion.div>
           

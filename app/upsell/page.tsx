@@ -62,7 +62,7 @@ function UpsellContent() {
           </p>
 
           <p className="text-[#DC2626] text-sm font-semibold mb-8">
-            Attention: Payment of this fee is mandatory for the installation of IA Observer. You will only have access after paying this installation fee.
+            Attention: Payment of this fee is mandatory for the installation of AI Ghost. You will only have access after paying this installation fee.
           </p>
 
           <a

@@ -81,7 +81,7 @@ function CadastroContent() {
                 Create your account
               </h1>
               <p className="text-gray-400 text-sm">
-                Fill in your details to access IA Observer
+                Fill in your details to access AI Ghost
               </p>
             </div>
 

@@ -1,7 +1,7 @@
-# AI Tracker - Surveillance/Monitoring SaaS Platform
+# AI Ghost - Instagram Spy/Observer Platform
 
 ## Project Overview
-A Next.js 14 Brazilian surveillance/monitoring SaaS platform with service pages (WhatsApp monitor, camera access, SMS monitoring, detective investigation), user authentication, a credits system, and centerpag.com payment integration. Pages are in English.
+A Next.js 14 Instagram spy/observer product called "AI Ghost" with persuasive pitch pages (/pitch, /pitch1), simulated Instagram-like pages (/feed, /direct, /chat1, /chat2, /chat3), a real profile viewer (/perfil), and a ghost-themed funnel with dark purple/gradient identity across all onboarding pages. Pages are in English. Payments via centerpag.com.
 
 ## Tech Stack
 - **Framework**: Next.js 14 (App Router)

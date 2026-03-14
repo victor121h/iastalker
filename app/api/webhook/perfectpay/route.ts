@@ -13,26 +13,26 @@ async function sendPurchaseEmail(customerEmail: string, customerName: string) {
     const greeting = firstName ? `Hello ${firstName}, and welcome` : 'Hello and welcome';
 
     await client.emails.send({
-      from: 'IA Observer <noreply@iastalker.com>',
+      from: 'AI Ghost <noreply@iastalker.com>',
       to: customerEmail,
       subject: 'Your Access Has Been Granted',
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #333333; padding: 40px 30px;">
           <div style="text-align: center; margin-bottom: 30px;">
             <h1 style="color: #333333; font-size: 24px; margin-bottom: 8px;">Access Granted Successfully</h1>
-            <p style="color: #666666; font-size: 14px;">Your IA Observer account is ready</p>
+            <p style="color: #666666; font-size: 14px;">Your AI Ghost account is ready</p>
           </div>
           
           <p style="font-size: 15px; line-height: 1.8; color: #444444;">${greeting},</p>
           
-          <p style="font-size: 15px; line-height: 1.8; color: #444444;">Thank you for your purchase. Your access to <strong>IA Observer</strong> has been successfully activated. You can now use all the features available on the platform.</p>
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">Thank you for your purchase. Your access to <strong>AI Ghost</strong> has been successfully activated. You can now use all the features available on the platform.</p>
           
-          <p style="font-size: 15px; line-height: 1.8; color: #444444;">IA Observer provides a complete and intuitive experience with advanced observation, analysis, and monitoring tools to help you get the information you need.</p>
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">AI Ghost provides a complete and intuitive experience with advanced observation, analysis, and monitoring tools to help you get the information you need.</p>
           
           <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
-            <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>How to Access IA Observer</strong></p>
+            <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>How to Access AI Ghost</strong></p>
             <p style="font-size: 14px; color: #666666; margin-bottom: 20px;">Use the link below to get started:</p>
-            <a href="https://aiobserver.replit.app/access" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Access IA Observer</a>
+            <a href="https://aiobserver.replit.app/access" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Access AI Ghost</a>
           </div>
 
           <p style="font-size: 14px; line-height: 1.6; color: #666666;">If you have any questions or need help, reply to this email and our team will assist you.</p>
@@ -40,7 +40,7 @@ async function sendPurchaseEmail(customerEmail: string, customerName: string) {
           <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
           
           <div style="text-align: center;">
-            <p style="font-size: 12px; color: #999999; margin-bottom: 8px;">IA Observer - All rights reserved</p>
+            <p style="font-size: 12px; color: #999999; margin-bottom: 8px;">AI Ghost - All rights reserved</p>
             <p style="font-size: 11px; color: #999999;">You are receiving this email because you made a purchase on our platform.</p>
             <p style="font-size: 11px; color: #999999;">
               <a href="mailto:contact@aitracker.com?subject=Unsubscribe" style="color: #999999; text-decoration: underline;">Unsubscribe</a> from future emails

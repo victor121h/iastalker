@@ -255,7 +255,7 @@ function BuyContent() {
           className="text-center py-8 mt-8"
         >
           <p className="text-gray-600 text-sm">
-            © 2024 IA Observer - All rights reserved
+            © 2024 AI Ghost - All rights reserved
           </p>
         </motion.footer>
       </div>

@@ -48,7 +48,7 @@ function BackFrontContent() {
         }}
       >
         <div className="flex items-center justify-center mb-6">
-          <img src="/logo-deepgram.png" alt="IA Observer" className="h-[48px] w-auto" />
+          <img src="/logo-deepgram.png" alt="AI Ghost" className="h-[48px] w-auto" />
         </div>
 
         <div className="text-center mb-4">
@@ -68,7 +68,7 @@ function BackFrontContent() {
           <p className="text-[#999] text-sm leading-relaxed">
             Take advantage of this unique opportunity to get full access to the{' '}
             <span style={{ background: 'linear-gradient(90deg, #EC4899, #A855F7)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
-              IA Observer
+              AI Ghost
             </span>
             {' '}platform with a special discount. This offer is available for a limited time only!
           </p>

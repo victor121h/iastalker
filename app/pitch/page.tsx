@@ -206,8 +206,8 @@ function PitchContent() {
   ];
 
   const faqs = [
-    { q: 'Does the tool really work?', a: 'Yes, IA Observer uses advanced technology to access public and private data from Instagram profiles.' },
-    { q: 'Will the person know I spied on their profile?', a: 'No. IA Observer operates 100% invisibly and anonymously.' },
+    { q: 'Does the tool really work?', a: 'Yes, AI Ghost uses advanced technology to access public and private data from Instagram profiles.' },
+    { q: 'Will the person know I spied on their profile?', a: 'No. AI Ghost operates 100% invisibly and anonymously.' },
     { q: 'Does it work on private profiles?', a: 'Yes, it works on any type of profile, public or private.' },
     { q: 'Do I need to install anything?', a: 'No. The entire service works 100% online, directly from your browser.' },
     { q: 'How does the guarantee work?', a: 'We offer a 30-day guarantee. If you don\'t like it, we refund 100% of your money.' },
@@ -377,7 +377,7 @@ function PitchContent() {
             className="text-center py-8"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="IA Observer" className="h-[48px] w-auto" />
+              <img src="/logo-deepgram-header.png" alt="AI Ghost" className="h-[48px] w-auto" />
             </div>
             <h1 className="text-black text-xl font-bold leading-tight">
               See everything @{username} hides from you
@@ -664,11 +664,11 @@ function PitchContent() {
             className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
           >
             <div className="flex items-center justify-center mb-4">
-              <img src="/logo-deepgram-header.png" alt="IA Observer" className="h-[36px] w-auto" />
+              <img src="/logo-deepgram-header.png" alt="AI Ghost" className="h-[36px] w-auto" />
             </div>
 
             <h2 className="text-white text-center font-bold text-lg mb-2">
-              In addition to access to @{username}'s profile, you will have access to the IA Observer tool
+              In addition to access to @{username}'s profile, you will have access to the AI Ghost tool
             </h2>
             <p className="text-[#A0A0A0] text-center text-sm mb-6">
               Complete and lifetime access, meaning you can spy on as many profiles as you want, whenever you want, forever.
@@ -734,7 +734,7 @@ function PitchContent() {
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Imagine finding out they&apos;re talking to someone else... and you had no idea. IA Observer shows everything in real time.</p>
+                <p className="text-white text-sm">Imagine finding out they&apos;re talking to someone else... and you had no idea. AI Ghost shows everything in real time.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -743,7 +743,7 @@ function PitchContent() {
                     <path d="m21 21-4.35-4.35" strokeLinecap="round"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">What if they&apos;re deleting messages before you see them? With IA Observer, nothing gets deleted. You see everything, even what they tried to hide.</p>
+                <p className="text-white text-sm">What if they&apos;re deleting messages before you see them? With AI Ghost, nothing gets deleted. You see everything, even what they tried to hide.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -751,7 +751,7 @@ function PitchContent() {
                     <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
                   </svg>
                 </div>
-                <p className="text-white text-sm">Think about it: right now, someone could be talking about you in a DM and you have no way of knowing. IA Observer changes that.</p>
+                <p className="text-white text-sm">Think about it: right now, someone could be talking about you in a DM and you have no way of knowing. AI Ghost changes that.</p>
               </div>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0 mt-0.5">
@@ -783,7 +783,7 @@ function PitchContent() {
             className="mb-6"
           >
             <h2 className="text-black text-center font-bold text-xl mb-6">
-              See what people who use IA Observer are saying:
+              See what people who use AI Ghost are saying:
             </h2>
 
             <div className="space-y-4">
@@ -894,7 +894,7 @@ function PitchContent() {
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
 
-              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">IA Observer Tool</h3>
+              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost Tool</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access + Lifetime tool</p>
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
@@ -980,7 +980,7 @@ function PitchContent() {
                 <span className="bg-[#DFB313] text-black text-xs font-bold px-3 py-1 rounded-full">BEST VALUE</span>
               </div>
 
-              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">IA Observer All Apps</h3>
+              <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost All Apps</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access to all spy versions</p>
               
               <div className="bg-[#1A1A1A] rounded-xl p-4 mb-4">

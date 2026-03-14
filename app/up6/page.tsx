@@ -54,7 +54,7 @@ function Up6Content() {
       { text: 'Location history', included: true },
       { text: 'Messages (sent and received) in real time', included: true },
       { text: 'Message history (up to 18 months)', included: true },
-      { text: 'Lifetime access to IA Observer', included: true },
+      { text: 'Lifetime access to AI Ghost', included: true },
       { text: 'Unlimited profile searches', included: true },
       { text: '24h priority support', included: true },
     ],
@@ -90,7 +90,7 @@ function Up6Content() {
             <div className="flex items-center justify-center mb-6">
               <img
                 src="/logo-stalker.png"
-                alt="IA Observer Logo"
+                alt="AI Ghost Logo"
                 className="w-20 h-20 rounded-xl"
               />
             </div>
@@ -102,10 +102,10 @@ function Up6Content() {
 
             <div className="bg-[#1A1A1A] border border-white/10 rounded-xl p-4 mb-5">
               <p className="text-[#A0A0A0] text-sm leading-relaxed">
-                You purchased IA Observer for <span className="text-white font-semibold">desktop</span> and we detected that you are accessing via <span className="text-white font-semibold">mobile</span>.
+                You purchased AI Ghost for <span className="text-white font-semibold">desktop</span> and we detected that you are accessing via <span className="text-white font-semibold">mobile</span>.
               </p>
               <p className="text-[#A0A0A0] text-sm leading-relaxed mt-3">
-                It is <span className="text-white font-semibold">mandatory</span> that you choose one of the plans below to activate your account on mobile. If you do not complete the activation, <span className="text-white font-semibold">you will not be able to access IA Observer</span>.
+                It is <span className="text-white font-semibold">mandatory</span> that you choose one of the plans below to activate your account on mobile. If you do not complete the activation, <span className="text-white font-semibold">you will not be able to access AI Ghost</span>.
               </p>
             </div>
 

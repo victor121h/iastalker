@@ -6,7 +6,7 @@ import { ClientProviders } from "@/components/ClientProviders";
 import VisitorTracker from "@/components/VisitorTracker";
 
 export const metadata: Metadata = {
-  title: "IA Observer",
+  title: "AI Ghost",
   description: "Descubra a verdade sobre qualquer pessoa do Instagram. Só com o @.",
 };
 
