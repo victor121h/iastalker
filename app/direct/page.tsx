@@ -335,9 +335,9 @@ function DirectContent() {
   ];
 
   const mockMessages = [
-    'Ei, linda, adivinha o que você esqueceu ...',
-    'Reagi com um 🔥 à sua mensagem.',
-    '4 novas mensagens',
+    'Hey gorgeous, guess what you forgot here? haha',
+    'Reacted with 👍 to your message.',
+    '4 new messages',
     'Mito, adivinha o que está fazendo de...',
     'Eu compartilhei um video de uma...',
     'Mito, precisamos sair mais...',
