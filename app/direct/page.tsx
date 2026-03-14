@@ -14,14 +14,14 @@ function ImageWithFallback({ src, alt, className, blurred = false }: { src: stri
   }
 
   return (
-    <div className="relative">
+    <div className={`relative ${blurred ? 'overflow-hidden rounded-full' : ''}`}>
       {!isLoaded && (
-        <div className={`absolute inset-0 ${className} animate-pulse ${blurred ? 'blur-[6px]' : ''}`} style={{ backgroundColor: '#262626' }} />
+        <div className={`absolute inset-0 ${className} animate-pulse ${blurred ? 'blur-[6px] scale-110' : ''}`} style={{ backgroundColor: '#262626' }} />
       )}
       <img
         src={src}
         alt={alt}
-        className={`${className} ${blurred ? 'blur-[6px]' : ''}`}
+        className={`${className} ${blurred ? 'blur-[6px] scale-110' : ''}`}
         loading="eager"
         decoding="async"
         onLoad={() => setIsLoaded(true)}
@@ -115,11 +115,13 @@ const StoryItem = memo(function StoryItem({
       onClick={onClick}
     >
       <div className="relative">
-        <ImageWithFallback
-          src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
-          alt={story.username}
-          className={`w-[72px] h-[72px] rounded-full object-cover${!story.isFirst ? ' blur-[6px]' : ''}`}
-        />
+        <div className={`w-[72px] h-[72px] rounded-full overflow-hidden${!story.isFirst ? '' : ''}`}>
+          <ImageWithFallback
+            src={story.isFirst ? profileAvatar : (story.avatar ? getProxiedAvatar(story.avatar) : '')}
+            alt={story.username}
+            className={`w-full h-full rounded-full object-cover${!story.isFirst ? ' blur-[6px] scale-110' : ''}`}
+          />
+        </div>
         {story.isFirst && (
           <div className="absolute bottom-0 right-0 w-[20px] h-[20px] bg-[#1A73E8] rounded-full flex items-center justify-center border-2 border-black">
             <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
@@ -158,19 +160,19 @@ const MessageItem = memo(function MessageItem({
       onClick={onClick}
     >
       <div className="relative mr-3">
-        <div className="relative">
-          <ImageWithFallback
+        <div className="w-[56px] h-[56px] rounded-full overflow-hidden">
+          <img
             src={msg.avatar ? getProxiedAvatar(msg.avatar) : ''}
             alt={msg.username}
-            className="w-[56px] h-[56px] rounded-full object-cover"
-            blurred={true}
+            className="w-full h-full object-cover blur-[6px] scale-110"
+            loading="eager"
           />
-          {msg.isPrivate && !msg.isBlurred && (
-            <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"></path></svg>
-            </div>
-          )}
         </div>
+        {msg.isPrivate && !msg.isBlurred && (
+          <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"></path></svg>
+          </div>
+        )}
         {msg.isOnline && (
           <div className="absolute bottom-0 right-0 w-[14px] h-[14px] bg-[#19C463] rounded-full border-2 border-black"></div>
         )}
