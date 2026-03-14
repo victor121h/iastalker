@@ -371,21 +371,17 @@ function FeedContent() {
       return { username: fallbackNames[count % fallbackNames.length], avatar: '' };
     };
 
-    const firstDelay = setTimeout(() => {
+    const showNotif = () => {
       const data = getNotifData();
+      if (!data.avatar) return;
       setIgNotifications(prev => [...prev, { id: count, username: data.username, avatar: data.avatar, visible: true }]);
       const dismissId = count;
       setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
       count++;
-    }, 3000);
+    };
 
-    const interval = setInterval(() => {
-      const data = getNotifData();
-      setIgNotifications(prev => [...prev, { id: count, username: data.username, avatar: data.avatar, visible: true }]);
-      const dismissId = count;
-      setTimeout(() => setIgNotifications(prev => prev.filter(n => n.id !== dismissId)), 4500);
-      count++;
-    }, 12000);
+    const firstDelay = setTimeout(showNotif, 3000);
+    const interval = setInterval(showNotif, 12000);
 
     return () => { clearTimeout(firstDelay); clearInterval(interval); };
   }, []);
@@ -573,15 +569,7 @@ function FeedContent() {
         >
           <div className="bg-[#262626] border border-[#363636] rounded-2xl px-4 py-3 flex items-center gap-3 shadow-2xl">
             <div className="w-9 h-9 rounded-full bg-[#363636] flex-shrink-0 overflow-hidden">
-              {notif.avatar ? (
-                <img src={getProxiedAvatar(notif.avatar)} alt="" className="w-full h-full object-cover rounded-full blur-[6px]" />
-              ) : (
-                <div className="w-full h-full flex items-center justify-center">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935">
-                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
-                  </svg>
-                </div>
-              )}
+              <img src={getProxiedAvatar(notif.avatar)} alt="" className="w-full h-full object-cover rounded-full blur-[6px]" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="text-white text-[13px]">
