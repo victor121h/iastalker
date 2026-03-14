@@ -283,8 +283,8 @@ function Chat1Content() {
             </div>
           </div>
 
-          <div className="flex justify-center py-2">
-            <span className="text-[40px]">💕</span>
+          <div className="flex justify-start py-4 pl-10">
+            <span className="text-[64px] drop-shadow-[0_0_20px_rgba(255,50,80,0.6)]">❤️</span>
           </div>
 
           <div className="flex justify-end">
@@ -356,8 +356,8 @@ function Chat1Content() {
             </div>
           </div>
 
-          <div className="flex justify-center py-2">
-            <span className="text-[40px]">💕</span>
+          <div className="flex justify-start py-4 pl-10">
+            <span className="text-[64px] drop-shadow-[0_0_20px_rgba(255,50,80,0.6)]">❤️</span>
           </div>
 
           <div className="flex items-center gap-3 py-3">
