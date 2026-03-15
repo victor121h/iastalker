@@ -927,6 +927,12 @@ function PitchContent() {
                   </svg>
                   <p className="text-white text-sm">Access to all deleted conversations</p>
                 </div>
+                <div className="flex items-center gap-2 bg-[#00FF75]/10 border border-[#00FF75]/30 rounded-lg px-3 py-2.5 mt-1">
+                  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2" className="flex-shrink-0">
+                    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                  <p className="text-[#00FF75] text-sm font-bold">30-day money-back guarantee</p>
+                </div>
               </div>
 
               <a 
@@ -1013,6 +1019,12 @@ function PitchContent() {
                     </svg>
                     <p className="text-white text-sm font-semibold">No monthly fees</p>
                   </div>
+                  <div className="flex items-center gap-2 bg-[#00FF75]/10 border border-[#00FF75]/30 rounded-lg px-3 py-2.5 mt-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2" className="flex-shrink-0">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="text-[#00FF75] text-sm font-bold">30-day money-back guarantee</p>
+                  </div>
                 </div>
               </div>
 
@@ -1090,6 +1102,12 @@ function PitchContent() {
                       <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
                     </svg>
                     <p className="text-white text-sm font-semibold">Lifetime access</p>
+                  </div>
+                  <div className="flex items-center gap-2 bg-[#DFB313]/10 border border-[#DFB313]/30 rounded-lg px-3 py-2.5 mt-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#DFB313" strokeWidth="2" className="flex-shrink-0">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="text-[#DFB313] text-sm font-bold">30-day money-back guarantee</p>
                   </div>
                 </div>
               </div>
