@@ -120,7 +120,7 @@ const StoryItem = memo(function StoryItem({
             <ImageWithFallback
               src={story.avatar ? getProxiedAvatar(story.avatar) : ''}
               alt={story.username}
-              className={`w-[56px] h-[56px] rounded-full object-cover${story.id !== 0 ? ' blur-[6px]' : ''}`}
+              className={`w-[56px] h-[56px] rounded-full object-cover${story.isCloseFriend ? ' blur-[6px]' : ''}`}
             />
           </div>
         </div>
@@ -181,7 +181,7 @@ const PostItem = memo(function PostItem({
               <ImageWithFallback
                 src={postAvatar}
                 alt=""
-                className="w-full h-full object-cover blur-[6px]"
+                className="w-full h-full object-cover"
               />
             </div>
           </div>
