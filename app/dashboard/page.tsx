@@ -660,7 +660,6 @@ function DashboardContent() {
       </AnimatePresence>
 
 </div>
-      <SupportChat />
     </>
   );
 }
