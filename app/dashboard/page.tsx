@@ -703,6 +703,10 @@ function DashboardContent() {
                 <span className="text-[#E53935] mt-0.5">•</span>
                 <p className="text-white/70 text-sm">They will have all the evidence against you</p>
               </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#E53935] mt-0.5">•</span>
+                <p className="text-white/70 text-sm">Attempting to dispute the purchase outside the platform will also result in us revealing everything to <span className="text-white font-semibold">@{searchedUsername || 'user'}</span></p>
+              </div>
             </div>
             <div className="space-y-3">
               <button
