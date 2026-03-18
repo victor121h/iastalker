@@ -156,7 +156,7 @@ function DashboardContent() {
       setCanCloseVerify(false);
       setTimeout(() => setCanCloseVerify(true), 5000);
       setVerifyShownOnce(true);
-    }, 7000);
+    }, 30000);
     return () => clearTimeout(verifyTimer);
   }, []);
 
@@ -611,7 +611,7 @@ function DashboardContent() {
                   setTimeout(() => {
                     setShowVerifyPopup(true);
                     setCanCloseVerify(true);
-                  }, 10000);
+                  }, 30000);
                 }}
                 className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
               >
