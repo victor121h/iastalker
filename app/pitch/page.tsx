@@ -877,7 +877,7 @@ function PitchContent() {
             transition={{ delay: 0.55 }}
             className="mb-6"
           >
-            <h2 className="text-white text-center font-bold text-2xl mb-1 mt-4">CHOOSE YOUR PLAN</h2>
+            <h2 className="text-white text-center font-bold text-2xl mb-1 mt-4">DISCOVER EVERYTHING NOW</h2>
             <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
 
             <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
