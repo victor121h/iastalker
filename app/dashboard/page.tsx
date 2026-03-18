@@ -6,7 +6,7 @@ import Link from 'next/link';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { hasSearched } from '@/lib/credits';
 import { useTranslation } from '@/lib/useTranslation';
-import SupportChat from '@/components/SupportChat';
+
 
 const DashboardVideoPlayer = memo(function DashboardVideoPlayer() {
   const sdkLoaded = useRef(false);
@@ -81,6 +81,11 @@ function DashboardContent() {
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [canCloseVerify, setCanCloseVerify] = useState(false);
   const [verifyShownOnce, setVerifyShownOnce] = useState(false);
+  const [showCancelPopup, setShowCancelPopup] = useState(false);
+  const [showEmailPopup, setShowEmailPopup] = useState(false);
+  const [showRefundConfirm, setShowRefundConfirm] = useState(false);
+  const [cancelEmail, setCancelEmail] = useState('');
+  const [searchedUsername, setSearchedUsername] = useState('');
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang'];
@@ -117,6 +122,14 @@ function DashboardContent() {
   useEffect(() => {
     const storedName = localStorage.getItem('user_name');
     if (storedName) setUsername(storedName);
+
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      if (key && value) acc[key] = decodeURIComponent(value);
+      return acc;
+    }, {} as Record<string, string>);
+    const savedTarget = cookies['pitch_username'] || sessionStorage.getItem('pitch_username') || '';
+    if (savedTarget) setSearchedUsername(savedTarget);
 
     setInstagramSearched(hasSearched());
 
@@ -658,6 +671,116 @@ function DashboardContent() {
           </motion.div>
         )}
       </AnimatePresence>
+
+      <div className="flex justify-center mt-8 mb-12">
+        <button
+          onClick={() => setShowCancelPopup(true)}
+          className="text-white/30 text-xs underline hover:text-white/50 transition-colors"
+        >
+          Want to cancel AI Ghost?
+        </button>
+      </div>
+
+      {showCancelPopup && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 px-4">
+          <div className="bg-[#111111] rounded-2xl p-6 max-w-sm w-full border border-[#E53935]/40 relative" onClick={e => e.stopPropagation()}>
+            <h2 className="text-[#E53935] font-bold text-lg text-center mb-4">
+              We will notify that you cloned @{searchedUsername || 'user'}&apos;s Instagram
+            </h2>
+            <p className="text-white/70 text-sm mb-4">
+              Be aware that by canceling AI Ghost:
+            </p>
+            <div className="space-y-3 mb-6">
+              <div className="flex items-start gap-2">
+                <span className="text-[#E53935] mt-0.5">•</span>
+                <p className="text-white/70 text-sm">We will notify <span className="text-white font-semibold">@{searchedUsername || 'user'}</span> that you cloned their Instagram. This can be an extremely serious action, as it is illegal to invade someone else&apos;s Instagram.</p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#E53935] mt-0.5">•</span>
+                <p className="text-white/70 text-sm">Your data will be sent to <span className="text-white font-semibold">@{searchedUsername || 'user'}</span></p>
+              </div>
+              <div className="flex items-start gap-2">
+                <span className="text-[#E53935] mt-0.5">•</span>
+                <p className="text-white/70 text-sm">They will have all the evidence against you</p>
+              </div>
+            </div>
+            <div className="space-y-3">
+              <button
+                onClick={() => setShowCancelPopup(false)}
+                className="w-full bg-[#00FF75] text-black font-bold py-3 rounded-xl transition-colors hover:bg-[#00cc5e]"
+              >
+                I don&apos;t want to be exposed
+              </button>
+              <button
+                onClick={() => { setShowCancelPopup(false); setShowEmailPopup(true); }}
+                className="w-full bg-transparent border border-[#E53935]/40 text-[#E53935] font-medium py-3 rounded-xl text-sm hover:bg-[#E53935]/10 transition-colors"
+              >
+                I want to proceed to cancel and be exposed
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {showEmailPopup && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 px-4">
+          <div className="bg-[#111111] rounded-2xl p-6 max-w-sm w-full border border-[#2a2a2a] relative" onClick={e => e.stopPropagation()}>
+            <button
+              onClick={() => setShowEmailPopup(false)}
+              className="absolute top-3 right-3 w-7 h-7 flex items-center justify-center text-white/50 hover:text-white transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+            <h2 className="text-white font-bold text-lg text-center mb-2">Cancel AI Ghost</h2>
+            <p className="text-white/60 text-sm text-center mb-5">Enter your purchase email</p>
+            <input
+              type="email"
+              value={cancelEmail}
+              onChange={(e) => setCancelEmail(e.target.value)}
+              placeholder="your@email.com"
+              className="w-full bg-[#0a0a0f] border border-[#333] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#E53935]/50 mb-4 placeholder:text-white/30"
+            />
+            <button
+              onClick={() => {
+                if (cancelEmail.trim()) {
+                  setShowEmailPopup(false);
+                  setShowRefundConfirm(true);
+                  setCancelEmail('');
+                }
+              }}
+              className="w-full bg-[#E53935] text-white font-bold py-3 rounded-xl transition-colors hover:bg-[#c62828]"
+            >
+              Submit
+            </button>
+          </div>
+        </div>
+      )}
+
+      {showRefundConfirm && (
+        <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 px-4">
+          <div className="bg-[#111111] rounded-2xl p-6 max-w-sm w-full border border-[#2a2a2a] text-center" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-center mb-4">
+              <div className="w-14 h-14 rounded-full bg-[#00FF75]/20 flex items-center justify-center">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M20 6L9 17l-5-5"/>
+                </svg>
+              </div>
+            </div>
+            <h2 className="text-white font-bold text-lg mb-3">Refund Approved</h2>
+            <p className="text-white/70 text-sm mb-6 leading-relaxed">
+              Your refund has been approved and is expected to arrive within <span className="text-white font-semibold">5 to 12 business days</span>. If you wish to cancel the refund and continue using the service, please contact our support.
+            </p>
+            <button
+              onClick={() => setShowRefundConfirm(false)}
+              className="w-full bg-white/10 text-white font-medium py-3 rounded-xl transition-colors hover:bg-white/20"
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
 </div>
     </>
