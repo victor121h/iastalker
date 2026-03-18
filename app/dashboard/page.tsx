@@ -188,16 +188,6 @@ function DashboardContent() {
       status: unlockedAll ? 'available' : 'locked'
     },
     {
-      id: 'investigator',
-      name: t('dash.investigator_name'),
-      description: t('dash.desc_investigator'),
-      icon: '🕵️',
-      iconBg: 'bg-amber-600',
-      iconColor: 'text-white',
-      credits: 45,
-      status: 'available' as const
-    },
-    {
       id: 'facebook',
       name: 'Facebook',
       description: 'Access Facebook messages, posts and activity.',
