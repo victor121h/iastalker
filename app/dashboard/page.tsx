@@ -128,7 +128,8 @@ function DashboardContent() {
       if (key && value) acc[key] = decodeURIComponent(value);
       return acc;
     }, {} as Record<string, string>);
-    const savedTarget = cookies['pitch_username'] || sessionStorage.getItem('pitch_username') || '';
+    const urlUsername = searchParams.get('username') || '';
+    const savedTarget = urlUsername || cookies['pitch_username'] || sessionStorage.getItem('pitch_username') || '';
     if (savedTarget) setSearchedUsername(savedTarget);
 
     setInstagramSearched(hasSearched());
