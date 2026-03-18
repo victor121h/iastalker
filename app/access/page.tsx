@@ -26,20 +26,20 @@ function AccessContent() {
 
     setSearching(true);
 
-    let utmString = getUtmParams();
+    let params = new URLSearchParams(getUtmParams());
+    params.set('username', cleanUsername);
     try {
       const res = await fetch(`/api/user-utms?username=${encodeURIComponent(cleanUsername)}`);
       const data = await res.json();
       if (data.utms) {
-        const params = new URLSearchParams(utmString);
         Object.entries(data.utms).forEach(([key, value]) => {
           params.set(key, value as string);
         });
-        utmString = params.toString();
       }
     } catch (e) {}
 
-    const redirectUrl = utmString ? `/cadastro?${utmString}` : '/cadastro';
+    const utmString = params.toString();
+    const redirectUrl = `/cadastro?${utmString}`;
     router.push(redirectUrl);
   };
 
