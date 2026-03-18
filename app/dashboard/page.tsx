@@ -305,40 +305,6 @@ function DashboardContent() {
         <motion.section
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="mb-8"
-        >
-          <div className="flex items-center gap-2 mb-4">
-            <span className="text-green-400">✓</span>
-            <h2 className="text-white font-bold text-lg">{t('dash.contracted_services')}</h2>
-          </div>
-
-          <div className="space-y-3">
-            {contractedServices.map((service, index) => (
-              <div
-                key={index}
-                className="bg-[#12121a] rounded-xl p-4 border border-gray-800 flex items-center justify-between"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center">
-                    <span className="text-gray-400">✓</span>
-                  </div>
-                  <div>
-                    <h3 className="text-white font-semibold">{service.name}</h3>
-                    <p className="text-gray-500 text-sm">{service.subtitle}</p>
-                  </div>
-                </div>
-                <span className="px-3 py-1 rounded-full text-xs font-medium bg-green-500/20 text-green-400 border border-green-500/30">
-                  ✓ {t('dash.completed')}
-                </span>
-              </div>
-            ))}
-          </div>
-        </motion.section>
-
-        <motion.section
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.2 }}
         >
           <div className="flex items-center gap-2 mb-4">
