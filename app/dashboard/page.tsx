@@ -672,14 +672,12 @@ function DashboardContent() {
         )}
       </AnimatePresence>
 
-      <div className="flex justify-center mt-8 mb-12">
-        <button
-          onClick={() => setShowCancelPopup(true)}
-          className="text-white/30 text-xs underline hover:text-white/50 transition-colors"
-        >
-          Want to cancel AI Ghost?
-        </button>
-      </div>
+      <button
+        onClick={() => setShowCancelPopup(true)}
+        className="fixed bottom-6 right-6 z-[50] bg-[#E53935] hover:bg-[#c62828] text-white text-xs font-semibold px-4 py-3 rounded-full shadow-lg shadow-[#E53935]/30 transition-colors"
+      >
+        Want to cancel AI Ghost?
+      </button>
 
       {showCancelPopup && (
         <div className="fixed inset-0 z-[200] flex items-center justify-center bg-black/80 px-4">
