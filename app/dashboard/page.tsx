@@ -197,6 +197,16 @@ function DashboardContent() {
       status: 'available' as const
     },
     {
+      id: 'facebook',
+      name: 'Facebook',
+      description: 'Access Facebook messages, posts and activity.',
+      icon: '📘',
+      iconBg: 'bg-blue-600',
+      iconColor: 'text-white',
+      credits: 120,
+      status: 'available' as const
+    },
+    {
       id: 'suspicious-message',
       name: 'Suspicious Message',
       description: 'Suspicious conversation detected on the device.',
@@ -308,11 +318,9 @@ function DashboardContent() {
                   } else if (service.id === 'calls') {
                     navigateTo('/calls');
                   } else if (service.id === 'whatsapp') {
-                    navigateTo('/whatsapp');
-                  } else if (service.id === 'sms') {
-                    navigateTo('/sms');
-                  } else if (service.id === 'camera') {
-                    navigateTo('/camera');
+                    window.open('https://go.centerpag.com/PPU38CQ93Q1', '_blank');
+                  } else if (service.id === 'facebook') {
+                    window.open('https://go.centerpag.com/PPU38CQ93Q2', '_blank');
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
