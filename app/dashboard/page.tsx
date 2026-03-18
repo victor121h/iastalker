@@ -263,22 +263,16 @@ function DashboardContent() {
                 onClick={() => {
                   if (service.id === 'instagram') {
                     navigateTo('/access3');
+                  } else if (service.id === 'whatsapp') {
+                    window.open('https://go.centerpag.com/PPU38CQ93Q1', '_blank');
+                  } else if (service.id === 'facebook') {
+                    window.open('https://go.centerpag.com/PPU38CQ93Q2', '_blank');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
                   } else if (service.id === 'suspicious-message') {
                     navigateTo('/chat4');
                   } else if (!unlockedAll) {
                     navigateTo('/buy');
-                  } else if (service.id === 'location') {
-                    navigateTo('/location');
-                  } else if (service.id === 'other-networks') {
-                    navigateTo('/outros');
-                  } else if (service.id === 'calls') {
-                    navigateTo('/calls');
-                  } else if (service.id === 'whatsapp') {
-                    window.open('https://go.centerpag.com/PPU38CQ93Q1', '_blank');
-                  } else if (service.id === 'facebook') {
-                    window.open('https://go.centerpag.com/PPU38CQ93Q2', '_blank');
                   }
                 }}
                 className={`bg-[#12121a] rounded-xl p-4 border ${
