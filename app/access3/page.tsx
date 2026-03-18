@@ -121,14 +121,6 @@ function Access3Content() {
     return baseLink;
   };
 
-  useEffect(() => {
-    if (urlUsername) {
-      const timer = setTimeout(() => {
-        setShowVerifyPopup(true);
-      }, 4000);
-      return () => clearTimeout(timer);
-    }
-  }, [urlUsername]);
 
   const handleSearch = async () => {
     const cleanUsername = inputUsername.replace('@', '').trim();
@@ -290,74 +282,6 @@ function Access3Content() {
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 pb-20">
       <div className="p-4">
-      <AnimatePresence>
-        {showVerifyPopup && (
-          <motion.div
-            initial={{ opacity: 0, y: 100 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: 100 }}
-            className="fixed bottom-4 left-4 right-4 z-[100] max-w-[420px] mx-auto bg-white rounded-[24px] p-6 text-center"
-            style={{ boxShadow: '0 -4px 30px rgba(0, 0, 0, 0.3)' }}
-          >
-            <button
-              onClick={() => setShowVerifyPopup(false)}
-              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-gray-100 hover:bg-gray-200 transition-colors"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" strokeWidth="2">
-                <path d="M18 6L6 18M6 6l12 12"/>
-              </svg>
-            </button>
-
-            <div className="flex justify-center mb-4">
-              <div className="w-[50px] h-[50px] bg-[#4A90D9] rounded-xl flex items-center justify-center">
-                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                  <circle cx="12" cy="12" r="10"/>
-                  <polyline points="12 6 12 12 16 14"/>
-                </svg>
-              </div>
-            </div>
-
-            <h1 className="text-[#1a1a1a] text-xl font-bold leading-tight mb-4">
-              FINAL STEP
-            </h1>
-            
-            <p className="text-[#666666] text-sm mb-4 leading-relaxed">
-              You need to verify your identity and prove you&apos;re not a robot. We were experiencing hacker attacks on our servers.
-            </p>
-
-            <p className="text-[#1a1a1a] text-base font-bold mb-3">
-              Verification Fee: <span className="text-[#4A90D9]">$59.90</span>
-            </p>
-
-            <p className="text-[#4A90D9] text-xs mb-3 leading-relaxed font-semibold">
-              But don&apos;t worry, this amount will be refunded once your account is confirmed in the system.
-            </p>
-
-            <p className="text-red-500 text-xs mb-4 leading-relaxed font-semibold bg-red-50 p-2 rounded-lg">
-              If we don&apos;t identify your payment to verify your account, your access will be lost in the next two hours.
-            </p>
-
-            <a
-              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ6TOB')}
-              className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-full text-white font-bold text-sm transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-3 bg-[#4A90D9]"
-            >
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12l2 2 4-4"/>
-                <circle cx="12" cy="12" r="10"/>
-              </svg>
-              VERIFY MY ACCOUNT
-            </a>
-
-            <div className="flex items-center justify-center gap-2 text-[#888888] text-xs">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-              </svg>
-              <span>100% Anonymous. The person will <span className="text-[#4A90D9] font-bold">NEVER</span> know.</span>
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
 
       <AnimatePresence>
         {showPopup && (
@@ -452,37 +376,6 @@ function Access3Content() {
           </motion.div>
         )}
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.15 }}
-          className="bg-gray-900/80 border border-gray-800 rounded-2xl p-6 mb-6"
-        >
-          <VideoPlayer />
-
-          <div className="flex flex-col gap-3 mt-6">
-            <a
-              href={appendUtmToLink('/up1')}
-              className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-pink-600"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-                <polyline points="22 4 12 14.01 9 11.01"/>
-              </svg>
-              Activate your plan
-            </a>
-            <a
-              href={appendUtmToLink('/up3')}
-              className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-[#4A90D9]"
-            >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                <path d="M9 12l2 2 4-4"/>
-                <circle cx="12" cy="12" r="10"/>
-              </svg>
-              Verify your account
-            </a>
-          </div>
-        </motion.div>
 
         <motion.div
           initial={{ opacity: 0, y: 10 }}
