@@ -276,64 +276,6 @@ function DashboardContent() {
           </Link>
         </div>
         <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-purple-900/50 to-purple-800/30 rounded-2xl p-6 mb-8 border border-purple-500/20"
-        >
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 text-purple-400 text-sm mb-1">
-                <span>✨</span>
-                <span>{t('dash.welcome')}</span>
-              </div>
-              <h1 className="text-white text-2xl md:text-3xl font-bold">
-                {t('dash.hello')} {username}! 👋
-              </h1>
-              <p className="text-gray-400 mt-1">{t('dash.choose_service')}</p>
-            </div>
-
-            <div className="flex items-center gap-2">
-              <div className="bg-purple-600/30 border border-purple-500/50 rounded-xl px-4 py-2 text-center">
-                <span className="text-purple-300 text-xs">{t('dash.level')}</span>
-                <p className="text-white font-bold text-lg">Nv.{level}</p>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-            <div className="bg-[#12121a] rounded-xl p-4 border border-gray-800">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <span className="text-yellow-400">⚡</span>
-                  <span className="text-gray-400 text-sm">{t('dash.credits')}</span>
-                </div>
-              </div>
-              <p className="text-white text-3xl font-bold mb-3">{credits}</p>
-              <Link 
-                href={appendUtmToPath('/buy')}
-                className="block w-full py-2 px-4 rounded-xl bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white text-sm font-bold text-center transition-all"
-              >
-                {t('dash.buy_credits')}
-              </Link>
-            </div>
-
-            <div className="bg-[#12121a] rounded-xl p-4 border border-gray-800">
-              <div className="flex items-center gap-2 mb-2">
-                <span className="text-blue-400">⭐</span>
-                <span className="text-gray-400 text-sm">XP</span>
-              </div>
-              <p className="text-white text-xl font-bold mb-2">{xp}/{maxXp}</p>
-              <div className="w-full h-2 bg-gray-700 rounded-full overflow-hidden">
-                <div 
-                  className="h-full bg-gradient-to-r from-blue-500 to-purple-500 rounded-full"
-                  style={{ width: `${(xp / maxXp) * 100}%` }}
-                />
-              </div>
-            </div>
-          </div>
-        </motion.div>
-
-        <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.03 }}
