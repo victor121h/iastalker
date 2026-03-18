@@ -175,7 +175,7 @@ function DashboardContent() {
       iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
       iconColor: 'text-white',
       credits: 25,
-      status: totalCredits > 0 ? 'available' : 'locked'
+      status: 'available' as const
     },
     {
       id: 'whatsapp',
@@ -185,7 +185,7 @@ function DashboardContent() {
       iconBg: 'bg-green-500',
       iconColor: 'text-white',
       credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
+      status: 'available' as const
     },
     {
       id: 'facebook',
