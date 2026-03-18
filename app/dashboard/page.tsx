@@ -282,30 +282,7 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    if (unlockedAll) {
-                      navigateTo('/buscando');
-                    } else if (credits >= 25) {
-                      const storedEmail = localStorage.getItem('user_email') || '';
-                      if (storedEmail) {
-                        setNavigating(true);
-                        fetch('/api/credits', {
-                          method: 'POST',
-                          headers: { 'Content-Type': 'application/json' },
-                          body: JSON.stringify({ email: storedEmail, amount: 25 }),
-                        }).then(res => {
-                          if (res.ok) {
-                            setCredits(prev => prev - 25);
-                            navigateTo('/buscando');
-                          } else {
-                            navigateTo('/buy');
-                          }
-                        }).catch(() => navigateTo('/buy'));
-                      } else {
-                        navigateTo('/buy');
-                      }
-                    } else {
-                      navigateTo('/buy');
-                    }
+                    navigateTo('/access2');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
                   } else if (service.id === 'suspicious-message') {
