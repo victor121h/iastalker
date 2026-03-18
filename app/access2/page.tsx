@@ -38,9 +38,8 @@ function Access2Content() {
       }
     } catch (e) {}
 
-    params.set('next', 'pitch');
     const utmString = params.toString();
-    const redirectUrl = `/buscando?${utmString}`;
+    const redirectUrl = `/pitch?${utmString}`;
     router.push(redirectUrl);
   };
 
