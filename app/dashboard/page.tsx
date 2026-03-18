@@ -206,56 +206,6 @@ function DashboardContent() {
       credits: null,
       status: 'available' as const
     },
-    {
-      id: 'location',
-      name: 'Location',
-      description: t('dash.desc_location'),
-      icon: '📍',
-      iconBg: 'bg-red-500',
-      iconColor: 'text-white',
-      credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
-    },
-    {
-      id: 'sms',
-      name: 'SMS',
-      description: t('dash.desc_sms'),
-      icon: '💭',
-      iconBg: 'bg-yellow-500',
-      iconColor: 'text-white',
-      credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
-    },
-    {
-      id: 'calls',
-      name: 'Calls',
-      description: t('dash.desc_calls'),
-      icon: '📞',
-      iconBg: 'bg-blue-400',
-      iconColor: 'text-white',
-      credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
-    },
-    {
-      id: 'camera',
-      name: 'Camera',
-      description: t('dash.desc_camera'),
-      icon: '📸',
-      iconBg: 'bg-gray-700',
-      iconColor: 'text-white',
-      credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
-    },
-    {
-      id: 'other-networks',
-      name: 'Other Networks',
-      description: t('dash.desc_other'),
-      icon: '🔗',
-      iconBg: 'bg-red-600',
-      iconColor: 'text-white',
-      credits: 120,
-      status: unlockedAll ? 'available' : 'locked'
-    }
   ];
 
   return (
