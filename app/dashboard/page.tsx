@@ -262,7 +262,7 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
-                    navigateTo('/access2');
+                    navigateTo('/access3');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
                   } else if (service.id === 'suspicious-message') {
