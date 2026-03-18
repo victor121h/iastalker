@@ -114,7 +114,18 @@ function AccessContent() {
               <input
                 type="text"
                 value={inputUsername}
-                onChange={(e) => setInputUsername(e.target.value)}
+                onChange={(e) => {
+                  const val = e.target.value;
+                  setInputUsername(val);
+                  const clean = val.replace('@', '').trim();
+                  const url = new URL(window.location.href);
+                  if (clean) {
+                    url.searchParams.set('username', clean);
+                  } else {
+                    url.searchParams.delete('username');
+                  }
+                  window.history.replaceState({}, '', url.toString());
+                }}
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && inputUsername.trim()) handleSearch();
                 }}
