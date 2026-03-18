@@ -13,7 +13,7 @@ function CadastroContent() {
   const [error, setError] = useState('');
 
   const getUtmParams = () => {
-    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang'];
+    const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'fbclid', 'src', 'sck', 'xcod', 'lang', 'username'];
     const params = new URLSearchParams();
     utmKeys.forEach(key => {
       const value = searchParams.get(key);
