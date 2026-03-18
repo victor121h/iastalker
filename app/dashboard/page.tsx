@@ -57,7 +57,7 @@ interface Service {
   id: string;
   name: string;
   description: string;
-  icon: string;
+  icon: React.ReactNode;
   iconBg: string;
   iconColor: string;
   credits: number | null;
@@ -171,8 +171,8 @@ function DashboardContent() {
       id: 'instagram',
       name: 'Instagram',
       description: t('dash.desc_instagram'),
-      icon: '📷',
-      iconBg: 'bg-gradient-to-br from-purple-500 to-pink-500',
+      icon: <img src="/instalogo.png" alt="Instagram" className="w-8 h-8 rounded-full" />,
+      iconBg: 'bg-transparent',
       iconColor: 'text-white',
       credits: 25,
       status: 'available' as const
@@ -181,8 +181,8 @@ function DashboardContent() {
       id: 'whatsapp',
       name: 'WhatsApp',
       description: t('dash.desc_whatsapp'),
-      icon: '💬',
-      iconBg: 'bg-green-500',
+      icon: <img src="/whatsapplogo.png" alt="WhatsApp" className="w-8 h-8" />,
+      iconBg: 'bg-transparent',
       iconColor: 'text-white',
       credits: 120,
       status: 'available' as const
@@ -191,8 +191,8 @@ function DashboardContent() {
       id: 'facebook',
       name: 'Facebook',
       description: 'Access Facebook messages, posts and activity.',
-      icon: '📘',
-      iconBg: 'bg-blue-600',
+      icon: <img src="/facelogo.webp" alt="Facebook" className="w-8 h-8 rounded-full" />,
+      iconBg: 'bg-transparent',
       iconColor: 'text-white',
       credits: 120,
       status: 'available' as const
