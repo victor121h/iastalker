@@ -207,16 +207,6 @@ function DashboardContent() {
       credits: 120,
       status: 'available' as const
     },
-    {
-      id: 'suspicious-message',
-      name: 'Suspicious Message',
-      description: 'Suspicious conversation detected on the device.',
-      icon: '⚠️',
-      iconBg: 'bg-orange-500',
-      iconColor: 'text-white',
-      credits: null,
-      status: 'available' as const
-    },
   ];
 
   return (
