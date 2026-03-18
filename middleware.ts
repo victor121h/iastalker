@@ -21,7 +21,7 @@ export function middleware(request: NextRequest) {
       '/back-front', '/back-up1', '/backfront',
       '/chat1', '/chat2', '/chat3', '/chat4', '/chat5',
       '/direct', '/feed', '/login', '/confirm', '/search',
-      '/access', '/access2', '/api', '/_next', '/favicon.ico', '/logo',
+      '/access', '/access2', '/access3', '/api', '/_next', '/favicon.ico', '/logo',
       '/public', '/dashboard', '/buscando', '/buy', '/cadastro',
       '/profile', '/detetive', '/admin', '/useronline'
     ];
