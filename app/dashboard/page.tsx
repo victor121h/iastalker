@@ -563,8 +563,15 @@ function DashboardContent() {
               className="w-full bg-[#0a0a0f] border border-[#333] rounded-xl px-4 py-3 text-white text-sm outline-none focus:border-[#E53935]/50 mb-4 placeholder:text-white/30"
             />
             <button
-              onClick={() => {
-                if (cancelEmail.trim()) {
+              onClick={async () => {
+                if (cancelEmail.trim() && cancelEmail.includes('@')) {
+                  try {
+                    await fetch('/api/send-refund-email', {
+                      method: 'POST',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ email: cancelEmail.trim() }),
+                    });
+                  } catch {}
                   setShowEmailPopup(false);
                   setShowRefundConfirm(true);
                   setCancelEmail('');
