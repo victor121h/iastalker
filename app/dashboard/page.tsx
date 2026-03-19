@@ -216,6 +216,19 @@ function DashboardContent() {
     <>
     <div className="min-h-screen bg-[#0a0a0f]">
       <div className="max-w-6xl mx-auto px-4 py-6">
+        <motion.div
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl px-5 py-4 mb-6"
+        >
+          <p className="text-white text-sm font-semibold">
+            Welcome to AI Ghost, <span className="text-purple-400">{username}</span>.
+          </p>
+          <p className="text-gray-400 text-xs mt-1">
+            Any questions? Contact our support: <a href="mailto:support@aighostapp.com" className="text-purple-400 hover:text-purple-300 underline">support@aighostapp.com</a>
+          </p>
+        </motion.div>
+
         <div className="flex justify-end mb-4">
           <Link
             href={appendUtmToPath('/profile')}
