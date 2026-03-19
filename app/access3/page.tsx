@@ -76,7 +76,7 @@ function Access3Content() {
   const [loading, setLoading] = useState(!!urlUsername);
   const [activeTab, setActiveTab] = useState<'likes' | 'comments' | 'directs'>('likes');
   const [showPopup, setShowPopup] = useState(true);
-  const [inputUsername, setInputUsername] = useState(urlUsername);
+  const [inputUsername, setInputUsername] = useState('');
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [showDirectPopup, setShowDirectPopup] = useState(false);
   const [showSupportMenu, setShowSupportMenu] = useState(false);
