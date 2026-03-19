@@ -80,6 +80,7 @@ function DashboardContent() {
   const [navigating, setNavigating] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [hasVerifyPurchase, setHasVerifyPurchase] = useState(false);
+  const [hasActivatePurchase, setHasActivatePurchase] = useState(false);
   const [canCloseVerify, setCanCloseVerify] = useState(false);
   const [verifyShownOnce, setVerifyShownOnce] = useState(false);
   const [showCancelPopup, setShowCancelPopup] = useState(false);
@@ -157,6 +158,9 @@ function DashboardContent() {
           if (data.has_verify_purchase) {
             setHasVerifyPurchase(true);
           }
+          if (data.has_activate_purchase) {
+            setHasActivatePurchase(true);
+          }
         })
         .catch(() => {});
     }
@@ -225,32 +229,36 @@ function DashboardContent() {
             <span className="font-semibold text-sm">{t('dash.my_profile')}</span>
           </Link>
         </div>
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.03 }}
-          className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
-        >
-          <DashboardVideoPlayer />
-        </motion.div>
+        {!hasActivatePurchase && (
+          <>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.03 }}
+              className="bg-[#12121a] rounded-2xl p-6 mb-6 border border-gray-800"
+            >
+              <DashboardVideoPlayer />
+            </motion.div>
 
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-          className="flex flex-col gap-3 mb-8"
-        >
-          <Link
-            href={appendUtmToPath('/up1')}
-            className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-pink-600"
-          >
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
-              <polyline points="22 4 12 14.01 9 11.01"/>
-            </svg>
-            Activate your plan
-          </Link>
-        </motion.div>
+            <motion.div
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="flex flex-col gap-3 mb-8"
+            >
+              <Link
+                href={appendUtmToPath('/up1')}
+                className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-pink-600"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                  <polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+                Activate your plan
+              </Link>
+            </motion.div>
+          </>
+        )}
 
         <motion.section
           initial={{ opacity: 0, y: 20 }}

@@ -44,6 +44,12 @@ export async function GET(request: NextRequest) {
     );
     const hasVerifyPurchase = verifyPurchase.rows.length > 0;
 
+    const activatePurchase = await pool.query(
+      `SELECT id FROM webhook_logs WHERE customer_email = $1 AND event_type = 'approved' AND raw_payload::text LIKE '%PPPBEB3D%' LIMIT 1`,
+      [email]
+    );
+    const hasActivatePurchase = activatePurchase.rows.length > 0;
+
     return NextResponse.json({
       credits: row.total_credits || 0,
       used: row.used_credits || 0,
@@ -52,6 +58,7 @@ export async function GET(request: NextRequest) {
       unlocked_all: unlockedAll,
       show_bonus_popup: row.show_bonus_popup || false,
       has_verify_purchase: hasVerifyPurchase,
+      has_activate_purchase: hasActivatePurchase,
     });
   } catch (error: any) {
     console.error('[Credits API] Error:', error?.message || error);
