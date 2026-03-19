@@ -338,6 +338,24 @@ function Access3Content() {
       </AnimatePresence>
 
       <div className="max-w-2xl mx-auto">
+        {profile?.isPrivate && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="bg-yellow-500/10 border border-yellow-500/30 rounded-2xl px-5 py-4 mb-6"
+          >
+            <p className="text-yellow-400 text-sm font-semibold mb-2">
+              The profile of <span className="text-white">@{profile.username}</span> is private.
+            </p>
+            <p className="text-gray-300 text-xs leading-relaxed">
+              Because of this, the process to generate the report for <span className="text-yellow-400 font-semibold">@{profile.username}</span> may take longer than expected. Usually less than <span className="text-white font-semibold">48 hours</span>.
+            </p>
+            <p className="text-gray-400 text-xs mt-2">
+              Please come back later.
+            </p>
+          </motion.div>
+        )}
+
         {profile && (
           <motion.div
             initial={{ opacity: 0, y: 10 }}
