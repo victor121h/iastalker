@@ -84,7 +84,12 @@ function DashboardContent() {
   const [showCancelPopup, setShowCancelPopup] = useState(false);
   const [showEmailPopup, setShowEmailPopup] = useState(false);
   const [showRefundConfirm, setShowRefundConfirm] = useState(false);
-  const [cancelEmail, setCancelEmail] = useState('');
+  const [cancelEmail, setCancelEmail] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return localStorage.getItem('user_email') || '';
+    }
+    return '';
+  });
   const [searchedUsername, setSearchedUsername] = useState('');
 
   const getUtmParams = () => {
