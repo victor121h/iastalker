@@ -227,6 +227,9 @@ function DashboardContent() {
           <p className="text-gray-400 text-xs mt-1">
             Any questions? Contact our support: <a href="mailto:support@aighostapp.com" className="text-purple-400 hover:text-purple-300 underline">support@aighostapp.com</a>
           </p>
+          <p className="text-red-400/70 text-[10px] mt-3 leading-relaxed">
+            The risk is 100% yours, <span className="font-semibold">{username}</span>. AI Ghost is merely a spying platform. If the person being spied on discovers that you cloned their data and wants to sue or report you for it, the risk is 100% yours.
+          </p>
         </motion.div>
 
         <div className="flex justify-end mb-4">
