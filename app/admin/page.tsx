@@ -8,9 +8,13 @@ interface WebhookLog {
   plan_code: string;
   plan_name: string;
   sale_status: number;
+  sale_status_detail: string;
   customer_email: string;
   customer_name: string;
+  customer_phone: string;
+  sale_amount: number;
   credits_added: number;
+  raw_payload: any;
   created_at: string;
 }
 
@@ -59,6 +63,7 @@ export default function AdminPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
   const [activeTab, setActiveTab] = useState<'webhooks' | 'credits'>('webhooks');
+  const [expandedLog, setExpandedLog] = useState<number | null>(null);
 
   const fetchData = async (pwd: string) => {
     setLoading(true);
@@ -211,43 +216,77 @@ export default function AdminPage() {
                     <thead>
                       <tr className="border-b border-gray-800">
                         <th className="text-left text-gray-400 px-4 py-3 font-medium">Date</th>
-                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Sale Code</th>
-                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Plan</th>
-                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Status</th>
-                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Customer</th>
+                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Name</th>
                         <th className="text-left text-gray-400 px-4 py-3 font-medium">Email</th>
+                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Phone</th>
+                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Status</th>
+                        <th className="text-left text-gray-400 px-4 py-3 font-medium">Plan</th>
+                        <th className="text-right text-gray-400 px-4 py-3 font-medium">Amount</th>
                         <th className="text-right text-gray-400 px-4 py-3 font-medium">Credits</th>
+                        <th className="text-center text-gray-400 px-4 py-3 font-medium">Logs</th>
                       </tr>
                     </thead>
                     <tbody>
                       {data.recent_webhooks.length === 0 ? (
                         <tr>
-                          <td colSpan={7} className="text-center text-gray-500 py-8">
+                          <td colSpan={9} className="text-center text-gray-500 py-8">
                             No webhooks received yet. Configure the URL above in PerfectPay.
                           </td>
                         </tr>
                       ) : (
                         data.recent_webhooks.map((log) => (
-                          <tr key={log.id} className="border-b border-gray-800/50 hover:bg-[#1a1a22]">
-                            <td className="px-4 py-3 text-gray-300 whitespace-nowrap">
-                              {new Date(log.created_at).toLocaleString('pt-BR')}
-                            </td>
-                            <td className="px-4 py-3 text-gray-300 font-mono text-xs">{log.sale_code}</td>
-                            <td className="px-4 py-3">
-                              <div className="text-white text-xs">{log.plan_code}</div>
-                              <div className="text-gray-500 text-xs">{log.plan_name}</div>
-                            </td>
-                            <td className="px-4 py-3">{getStatusBadge(log.sale_status)}</td>
-                            <td className="px-4 py-3 text-gray-300">{log.customer_name}</td>
-                            <td className="px-4 py-3 text-gray-300 text-xs">{log.customer_email}</td>
-                            <td className="px-4 py-3 text-right">
-                              {log.credits_added > 0 ? (
-                                <span className="text-green-400 font-bold">+{log.credits_added}</span>
-                              ) : (
-                                <span className="text-gray-600">0</span>
-                              )}
-                            </td>
-                          </tr>
+                          <>
+                            <tr key={log.id} className="border-b border-gray-800/50 hover:bg-[#1a1a22]">
+                              <td className="px-4 py-3 text-gray-300 whitespace-nowrap text-xs">
+                                {new Date(log.created_at).toLocaleString('pt-BR')}
+                              </td>
+                              <td className="px-4 py-3 text-white font-medium">{log.customer_name || '-'}</td>
+                              <td className="px-4 py-3 text-gray-300 text-xs">{log.customer_email || '-'}</td>
+                              <td className="px-4 py-3 text-gray-300 text-xs">{log.customer_phone || '-'}</td>
+                              <td className="px-4 py-3">
+                                {getStatusBadge(log.sale_status)}
+                                {log.sale_status_detail && (
+                                  <div className="text-gray-500 text-xs mt-1">{log.sale_status_detail}</div>
+                                )}
+                              </td>
+                              <td className="px-4 py-3">
+                                <div className="text-white text-xs">{log.plan_code}</div>
+                                <div className="text-gray-500 text-xs">{log.plan_name}</div>
+                              </td>
+                              <td className="px-4 py-3 text-right text-gray-300">
+                                {log.sale_amount ? `$${(log.sale_amount / 100).toFixed(2)}` : '-'}
+                              </td>
+                              <td className="px-4 py-3 text-right">
+                                {log.credits_added > 0 ? (
+                                  <span className="text-green-400 font-bold">+{log.credits_added}</span>
+                                ) : (
+                                  <span className="text-gray-600">0</span>
+                                )}
+                              </td>
+                              <td className="px-4 py-3 text-center">
+                                <button
+                                  onClick={() => setExpandedLog(expandedLog === log.id ? null : log.id)}
+                                  className={`px-3 py-1 rounded-lg text-xs font-medium transition-all ${
+                                    expandedLog === log.id
+                                      ? 'bg-purple-600 text-white'
+                                      : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                                  }`}
+                                >
+                                  {expandedLog === log.id ? 'Hide' : 'View'}
+                                </button>
+                              </td>
+                            </tr>
+                            {expandedLog === log.id && (
+                              <tr key={`${log.id}-log`}>
+                                <td colSpan={9} className="px-4 py-4 bg-[#0a0a0f]">
+                                  <div className="text-gray-400 text-xs mb-2 font-medium">Raw Payload (Sale: {log.sale_code})</div>
+                                  <pre className="bg-[#1a1a22] border border-gray-800 rounded-xl p-4 text-xs text-green-400 overflow-x-auto max-h-80 overflow-y-auto whitespace-pre-wrap">
+                                    {JSON.stringify(log.raw_payload, null, 2)}
+                                  </pre>
+                                </td>
+                              </tr>
+                            )}
+                          </>
                         ))
                       )}
                     </tbody>

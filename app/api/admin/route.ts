@@ -25,7 +25,7 @@ export async function POST(request: NextRequest) {
       const [webhookCount, creditsCount, recentWebhooks, recentCredits] = await Promise.all([
         pool.query('SELECT COUNT(*) as total FROM webhook_logs'),
         pool.query('SELECT COUNT(*) as total, SUM(total_credits) as total_credits FROM user_credits'),
-        pool.query('SELECT id, sale_code, plan_code, plan_name, sale_status, customer_email, customer_name, credits_added, created_at FROM webhook_logs ORDER BY created_at DESC LIMIT 50'),
+        pool.query('SELECT id, sale_code, plan_code, plan_name, sale_status, sale_status_detail, customer_email, customer_name, customer_phone, sale_amount, credits_added, raw_payload, created_at FROM webhook_logs ORDER BY created_at DESC LIMIT 100'),
         pool.query('SELECT id, email, name, total_credits, used_credits, created_at, updated_at FROM user_credits ORDER BY updated_at DESC LIMIT 50'),
       ]);
 
