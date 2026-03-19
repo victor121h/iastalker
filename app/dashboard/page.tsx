@@ -79,6 +79,7 @@ function DashboardContent() {
   const [showFacebookPopup, setShowFacebookPopup] = useState(false); // kept for backward compat
   const [navigating, setNavigating] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+  const [hasVerifyPurchase, setHasVerifyPurchase] = useState(false);
   const [canCloseVerify, setCanCloseVerify] = useState(false);
   const [verifyShownOnce, setVerifyShownOnce] = useState(false);
   const [showCancelPopup, setShowCancelPopup] = useState(false);
@@ -152,6 +153,9 @@ function DashboardContent() {
           }
           if (data.unlocked_all) {
             setUnlockedAll(true);
+          }
+          if (data.has_verify_purchase) {
+            setHasVerifyPurchase(true);
           }
         })
         .catch(() => {});
@@ -419,7 +423,7 @@ function DashboardContent() {
       </AnimatePresence>
 
       <AnimatePresence>
-        {showVerifyPopup && (
+        {showVerifyPopup && !hasVerifyPurchase && (
           <motion.div
             initial={{ opacity: 0, y: 100 }}
             animate={{ opacity: 1, y: 0 }}
