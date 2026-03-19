@@ -610,9 +610,17 @@ function Access3Content() {
               <p className="text-gray-300 text-sm leading-relaxed mb-4">
                 We are cloning all conversations from <span className="text-purple-400 font-semibold">@{urlUsername}</span>. This process can take from <span className="text-white font-semibold">2 to 48 hours</span> depending on the number of conversations and messages that <span className="text-purple-400 font-semibold">@{urlUsername}</span> has on Instagram.
               </p>
-              <p className="text-gray-400 text-sm mb-6">
+              <p className="text-gray-400 text-sm mb-4">
                 We will notify you by email when the process is complete.
               </p>
+              <p className="text-gray-300 text-sm font-semibold mb-2">
+                You will have 100% access to all conversations.
+              </p>
+              <ul className="text-gray-400 text-sm text-left space-y-1 mb-6 pl-4">
+                <li>• Audios, photos, messages, etc.</li>
+                <li>• Deleted conversations</li>
+                <li>• And much more</li>
+              </ul>
               <button
                 onClick={() => setShowDirectPopup(false)}
                 className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors"
