@@ -44,7 +44,7 @@ function Up6Content() {
     id: 'ultra',
     name: 'Ultra Plan – Eye of God',
     badge: 'DISCOUNT: 90% off',
-    price: '79.90',
+    price: '29.90',
     oldPrice: '230.00',
     savings: '150.10',
     access: 7,
@@ -216,9 +216,6 @@ function Up6Content() {
             <div className="mt-4 rounded-xl px-4 py-3 text-center" style={{ background: 'rgba(0, 255, 117, 0.07)', border: '1px solid rgba(0, 255, 117, 0.25)' }}>
               <p className="text-white text-sm font-semibold leading-relaxed">
                 💰 The <span style={{ color: '#00FF75' }}>$29.90</span> from your desktop plan will be refunded after you purchase the mobile plan.
-              </p>
-              <p className="text-xs mt-2 leading-relaxed" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>
-                In other words, you will only pay <span className="text-white font-bold">$49.90</span> in total — since the $29.90 you already paid comes back to you.
               </p>
             </div>
           </motion.div>
