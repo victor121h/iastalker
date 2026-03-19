@@ -2,7 +2,7 @@ const CRON_SECRET = process.env.CRON_SECRET || 'cron_secret_key_2024';
 
 function getBaseUrl() {
   if (process.env.REPLIT_DEPLOYMENT === '1') {
-    return 'https://aiobserver.replit.app';
+    return 'https://aighostapp.replit.app';
   }
   if (process.env.REPLIT_DEV_DOMAIN) {
     return `https://${process.env.REPLIT_DEV_DOMAIN}`;

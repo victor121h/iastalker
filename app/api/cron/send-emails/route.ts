@@ -30,7 +30,7 @@ async function sendSupportFollowup(email: string, name: string) {
 
         <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
           <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>Verify your account now</strong></p>
-          <a href="https://aiobserver.replit.app/up3?utm_source=email2" style="display: inline-block; background-color: #6366f1; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Verify Now</a>
+          <a href="https://aighostapp.replit.app/up3?utm_source=email2" style="display: inline-block; background-color: #6366f1; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Verify Now</a>
         </div>
 
         <p style="font-size: 14px; line-height: 1.8; color: #444444;">Please note that not completing the payment will result in errors and limitations within our platform. If you have already paid and are still experiencing issues, please make the payment again to resolve it and we will refund the amount right away.</p>
@@ -72,7 +72,7 @@ async function sendRegistrationFollowup(email: string, name: string) {
 
         <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
           <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>Find out everything now</strong></p>
-          <a href="https://aiobserver.replit.app/cadastro?utm_source=email1" style="display: inline-block; background-color: #dc2626; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Discover the Truth</a>
+          <a href="https://aighostapp.replit.app/cadastro?utm_source=email1" style="display: inline-block; background-color: #dc2626; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Discover the Truth</a>
         </div>
 
         <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
