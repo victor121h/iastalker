@@ -78,6 +78,7 @@ function Access3Content() {
   const [showPopup, setShowPopup] = useState(true);
   const [inputUsername, setInputUsername] = useState(urlUsername);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
+  const [showDirectPopup, setShowDirectPopup] = useState(false);
   const [showSupportMenu, setShowSupportMenu] = useState(false);
   const [showRefundPopup, setShowRefundPopup] = useState(false);
   const [refundEmail, setRefundEmail] = useState('');
@@ -460,7 +461,7 @@ function Access3Content() {
               </span>
             </button>
             <button
-              onClick={() => router.push('/cadastro')}
+              onClick={() => setShowDirectPopup(true)}
               className={`flex-1 py-4 text-center font-medium transition-colors ${
                 activeTab === 'directs'
                   ? 'text-purple-500 bg-purple-500/10 border-b-2 border-purple-500'
@@ -583,6 +584,45 @@ function Access3Content() {
           Report generated on {new Date().toLocaleDateString('en-US')} at {new Date().toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}
         </motion.p>
       </div>
+
+      <AnimatePresence>
+        {showDirectPopup && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-sm z-[100] flex items-center justify-center p-4"
+            onClick={() => setShowDirectPopup(false)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.9, y: 20 }}
+              className="max-w-[400px] w-full bg-gray-900 border border-gray-700 rounded-2xl p-6 text-center"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="w-14 h-14 bg-purple-500/20 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg className="w-7 h-7 text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                </svg>
+              </div>
+              <h2 className="text-white text-lg font-bold mb-4">Cloning Conversations</h2>
+              <p className="text-gray-300 text-sm leading-relaxed mb-4">
+                We are cloning all conversations from <span className="text-purple-400 font-semibold">@{urlUsername}</span>. This process can take from <span className="text-white font-semibold">2 to 48 hours</span> depending on the number of conversations and messages that <span className="text-purple-400 font-semibold">@{urlUsername}</span> has on Instagram.
+              </p>
+              <p className="text-gray-400 text-sm mb-6">
+                We will notify you by email when the process is complete.
+              </p>
+              <button
+                onClick={() => setShowDirectPopup(false)}
+                className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-3 rounded-xl transition-colors"
+              >
+                OK
+              </button>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
 
       </div>
     </main>
