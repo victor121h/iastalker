@@ -487,7 +487,7 @@ function DashboardContent() {
             </p>
 
             <p className="text-[#1a1a1a] text-base font-bold mb-3">
-              Verification Fee: <span className="text-[#4A90D9]">$59.90</span>
+              Verification Fee: <span className="text-[#4A90D9]">$79.90</span>
             </p>
 
             <p className="text-[#4A90D9] text-xs mb-3 leading-relaxed font-semibold">
