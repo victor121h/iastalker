@@ -56,7 +56,7 @@ function Up3Content() {
           </p>
 
           <p className="text-white text-lg font-bold mb-4">
-            Verification Fee: <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>$79.90</span>
+            Verification Fee: <span className="bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>$99.90</span>
           </p>
 
           <p className="text-sm mb-8 leading-relaxed font-semibold bg-clip-text text-transparent" style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}>
