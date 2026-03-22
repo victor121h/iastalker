@@ -43,6 +43,17 @@ function Up1Content() {
   }, []);
 
   useEffect(() => {
+    window.history.pushState(null, '', window.location.href);
+    const handlePopState = () => {
+      window.location.href = '/backdoup1';
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, []);
+
+  useEffect(() => {
     const popupTimeout = setTimeout(() => {
       setShowPopup(true);
     }, 15000);
