@@ -79,7 +79,7 @@ function Up1Content() {
       badge: 'DISCOUNT: 90% off',
       badgeColor: 'bg-green-500',
       borderColor: 'border-[#00FF75]',
-      price: '49.90',
+      price: '69.90',
       oldPrice: '230.00',
       savings: '180.10',
       access: 7,
@@ -102,7 +102,7 @@ function Up1Content() {
       badge: 'Discount: 80% off',
       badgeColor: 'bg-orange-500',
       borderColor: 'border-orange-500',
-      price: '29.90',
+      price: '49.90',
       oldPrice: '120.00',
       savings: '90.10',
       access: 5,
@@ -125,7 +125,7 @@ function Up1Content() {
       badge: 'Discount: 90% off',
       badgeColor: 'bg-gray-500',
       borderColor: 'border-gray-500',
-      price: '19.90',
+      price: '39.90',
       oldPrice: '90.00',
       savings: '70.10',
       access: 3,
@@ -405,11 +405,11 @@ function Up1Content() {
             <div className="flex items-center justify-center gap-3 mb-4">
               <div className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>
                 <span>From</span>
-                <span className="line-through ml-1">$49.90</span>
+                <span className="line-through ml-1">$69.90</span>
               </div>
               <div className="text-center">
                 <span className="text-sm" style={{ color: '#F77737' }}>For</span>
-                <p className="text-4xl font-bold" style={{ color: '#F77737' }}>$29.90</p>
+                <p className="text-4xl font-bold" style={{ color: '#F77737' }}>$49.90</p>
               </div>
             </div>
 
