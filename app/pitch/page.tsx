@@ -184,7 +184,7 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ9C2S');
   const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABP');
   const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABQ');
 
