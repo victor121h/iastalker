@@ -86,7 +86,7 @@ function BackdoUp1Content() {
           </div>
           <div className="text-center">
             <span className="text-sm" style={{ color: '#00E676' }}>For</span>
-            <p className="text-4xl font-bold" style={{ color: '#00E676' }}>$39.90</p>
+            <p className="text-4xl font-bold" style={{ color: '#00E676' }}>$29.90</p>
           </div>
         </div>
 
