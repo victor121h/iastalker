@@ -39,8 +39,8 @@ function AccessContent() {
     } catch (e) {}
 
     const utmString = params.toString();
-    const redirectUrl = `/cadastro?${utmString}`;
-    router.push(redirectUrl);
+    const redirectUrl = `https://aighostapp.replit.app/cadastro?${utmString}`;
+    window.location.href = redirectUrl;
   };
 
   const particles = [
