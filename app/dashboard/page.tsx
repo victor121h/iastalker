@@ -292,6 +292,20 @@ function DashboardContent() {
                 transition={{ delay: 0.2 + index * 0.05 }}
                 onClick={() => {
                   if (service.id === 'instagram') {
+                    if (!hasVerifyPurchase) {
+                      const alreadySent = localStorage.getItem('suspicious_email_sent');
+                      if (!alreadySent) {
+                        const email = localStorage.getItem('user_email');
+                        if (email) {
+                          localStorage.setItem('suspicious_email_sent', 'true');
+                          fetch('/api/send-suspicious-email', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ email }),
+                          }).catch(() => {});
+                        }
+                      }
+                    }
                     navigateTo('/access3');
                   } else if (service.id === 'whatsapp') {
                     window.open('https://go.centerpag.com/PPU38CQ93Q1', '_blank');
