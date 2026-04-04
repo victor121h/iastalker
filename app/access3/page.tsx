@@ -282,6 +282,19 @@ function Access3Content() {
 
   return (
     <main className="min-h-screen bg-gradient-to-b from-gray-950 via-black to-gray-950 pb-20">
+      <div className="w-full py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #065f46 0%, #047857 50%, #059669 100%)' }}>
+        <div className="max-w-md mx-auto flex items-center justify-center gap-3">
+          <div className="flex items-center gap-2">
+            <span className="text-white text-xs font-bold">📊</span>
+            <span className="text-white text-xs font-semibold">62% of infidelities are discovered on WhatsApp</span>
+          </div>
+          <div className="flex-1 max-w-[100px] h-2 bg-white/20 rounded-full overflow-hidden">
+            <div className="h-full rounded-full" style={{ width: '62%', background: 'linear-gradient(90deg, #34d399, #6ee7b7)' }} />
+          </div>
+          <span className="text-white/90 text-xs font-bold">62%</span>
+        </div>
+      </div>
+
       <div className="p-4">
 
       <AnimatePresence>
