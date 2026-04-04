@@ -32,7 +32,7 @@ async function sendPurchaseEmail(customerEmail: string, customerName: string) {
           <div style="background-color: #f7f7f7; border: 1px solid #e0e0e0; border-radius: 8px; padding: 24px; margin: 30px 0; text-align: center;">
             <p style="font-size: 15px; color: #444444; margin-bottom: 16px;"><strong>How to Access AI Ghost</strong></p>
             <p style="font-size: 14px; color: #666666; margin-bottom: 20px;">Use the link below to get started:</p>
-            <a href="https://aighostapp.replit.app/access" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Access AI Ghost</a>
+            <a href="https://www.aighostapp.com/access" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 12px 28px; border-radius: 6px; text-decoration: none;">Access AI Ghost</a>
           </div>
 
           <p style="font-size: 14px; line-height: 1.6; color: #666666;">If you have any questions or need help, reply to this email and our team will assist you.</p>
