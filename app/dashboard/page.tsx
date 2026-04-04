@@ -203,7 +203,7 @@ function DashboardContent() {
     {
       id: 'facebook',
       name: 'Facebook',
-      description: 'Access Facebook messages, posts and activity.',
+      description: '21% of people who found infidelity using AI Ghost discovered it through Facebook.',
       icon: <img src="/facelogo.webp" alt="Facebook" className="w-8 h-8 rounded-full" />,
       iconBg: 'bg-transparent',
       iconColor: 'text-white',
