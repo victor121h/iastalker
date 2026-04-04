@@ -4,7 +4,7 @@ const translations: Record<string, Record<string, string>> = {
     'dash.target_device': 'Target device',
     'dash.other_networks': 'Other Networks',
     'dash.social_networks': 'Social networks',
-    'dash.desc_instagram': 'Access photos, stories, direct messages and Instagram activities.',
+    'dash.desc_instagram': 'What if what you\'re looking for is hidden here?',
     'dash.desc_whatsapp': 'Monitor WhatsApp conversations, media and calls.',
     'dash.investigator_name': 'Investigator',
     'dash.desc_investigator': 'Complete profile investigation with detailed data.',
