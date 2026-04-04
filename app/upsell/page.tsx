@@ -82,7 +82,7 @@ function UpsellContent() {
             className="bg-clip-text text-transparent"
             style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
           >US$34.90</strong>{' '}
-          is required for one of our support team to install AI Observer on your phone.
+          is required for one of our support team to install AI Ghost on your phone.
         </p>
 
         <p className="text-sm mb-4" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>
