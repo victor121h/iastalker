@@ -214,7 +214,7 @@ function DashboardContent() {
       id: 'imessage',
       name: 'iMessage',
       description: 'What if what you\'re looking for is hidden here?',
-      icon: <svg width="32" height="32" viewBox="0 0 24 24" fill="none"><defs><linearGradient id="imsg" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#5BF675"/><stop offset="100%" stopColor="#2DB843"/></linearGradient></defs><rect width="24" height="24" rx="5.5" fill="url(#imsg)"/><path d="M12 6C8.13 6 5 8.58 5 11.7c0 1.76 1.06 3.33 2.72 4.35L7.2 18l2.18-1.13c.82.23 1.7.35 2.62.35 3.87 0 7-2.58 7-5.52C19 8.58 15.87 6 12 6z" fill="white"/></svg>,
+      icon: <img src="/imessagelogo.png" alt="iMessage" className="w-8 h-8 rounded-lg" />,
       iconBg: 'bg-transparent',
       iconColor: 'text-white',
       credits: 120,
