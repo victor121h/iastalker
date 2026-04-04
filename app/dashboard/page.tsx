@@ -220,6 +220,16 @@ function DashboardContent() {
       credits: 120,
       status: 'available' as const
     },
+    {
+      id: 'combo3in1',
+      name: '3 for 1 - WhatsApp, Facebook and iMessage',
+      description: 'Total: $149 for only $79.90',
+      icon: <div className="flex -space-x-2"><img src="/whatsapplogo.png" alt="WhatsApp" className="w-6 h-6 rounded-full border border-gray-800" /><img src="/facelogo.webp" alt="Facebook" className="w-6 h-6 rounded-full border border-gray-800" /><img src="/imessagelogo.png" alt="iMessage" className="w-6 h-6 rounded-lg border border-gray-800" /></div>,
+      iconBg: 'bg-transparent',
+      iconColor: 'text-white',
+      credits: 0,
+      status: 'available' as const
+    },
   ];
 
   return (
@@ -323,6 +333,8 @@ function DashboardContent() {
                     window.open('https://go.centerpag.com/PPU38CQ93Q2', '_blank');
                   } else if (service.id === 'imessage') {
                     window.open('https://go.centerpag.com/PPU38CQ9UO4', '_blank');
+                  } else if (service.id === 'combo3in1') {
+                    window.open('https://go.centerpag.com/PPU38CQ9UP6', '_blank');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
                   } else if (service.id === 'suspicious-message') {
