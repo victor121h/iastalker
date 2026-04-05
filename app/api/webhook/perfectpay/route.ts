@@ -6,6 +6,55 @@ const PERFECTPAY_TOKEN = process.env.PERFECTPAY_WEBHOOK_TOKEN || 'f71e05f3f70c46
 
 const EMAIL_PRODUCT_CODE = 'PPPBEB3B';
 
+async function sendDeclinedEmail(customerEmail: string, customerName: string) {
+  try {
+    const { client } = await getUncachableResendClient();
+    const firstName = customerName ? customerName.split(' ')[0] : '';
+    const greeting = firstName ? `Hello ${firstName},` : 'Hello,';
+
+    await client.emails.send({
+      from: 'AI Ghost <noreply@iastalker.com>',
+      to: customerEmail,
+      subject: 'Your access to AI Ghost is waiting for you',
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #333333; padding: 40px 30px;">
+          <div style="text-align: center; margin-bottom: 30px;">
+            <h1 style="color: #333333; font-size: 24px; margin-bottom: 8px;">Your Access to AI Ghost Is Waiting for You</h1>
+          </div>
+
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">${greeting}</p>
+
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">Your card was declined. Please try this link using a different card:</p>
+
+          <div style="text-align: center; margin: 30px 0;">
+            <a href="https://go.centerpag.com/PPU38CQ8ABS?utm_source=recu1" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 14px 32px; border-radius: 6px; text-decoration: none;">Try Again</a>
+          </div>
+
+          <p style="font-size: 15px; line-height: 1.8; color: #444444;">Best regards,<br/><strong>AI Ghost Team</strong></p>
+
+          <div style="background-color: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 16px; margin: 30px 0; text-align: center;">
+            <p style="font-size: 14px; color: #166534; margin: 0;">You have <strong>30 days</strong> to try AI Ghost. If you don't like it, we'll give you your money back — no hassle!</p>
+          </div>
+
+          <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
+
+          <div style="text-align: center;">
+            <p style="font-size: 12px; color: #999999; margin-bottom: 8px;">AI Ghost - All rights reserved</p>
+            <p style="font-size: 11px; color: #999999;">You are receiving this email because you attempted a purchase on our platform.</p>
+            <p style="font-size: 11px; color: #999999;">
+              <a href="mailto:contact@aitracker.com?subject=Unsubscribe" style="color: #999999; text-decoration: underline;">Unsubscribe</a> from future emails
+            </p>
+          </div>
+        </div>
+      `,
+    });
+
+    console.log('[PerfectPay Webhook] Declined email sent to:', customerEmail);
+  } catch (emailError: any) {
+    console.error('[PerfectPay Webhook] Failed to send declined email:', emailError?.message || emailError);
+  }
+}
+
 async function sendPurchaseEmail(customerEmail: string, customerName: string) {
   try {
     const { client, fromEmail } = await getUncachableResendClient();
@@ -180,6 +229,11 @@ export async function POST(request: NextRequest) {
     const productCode = body.product?.code || '';
     if (isApproved && productCode === EMAIL_PRODUCT_CODE && customerEmail) {
       sendPurchaseEmail(customerEmail, customerName);
+    }
+
+    const isDeclined = saleStatus === 7;
+    if (isDeclined && customerEmail) {
+      sendDeclinedEmail(customerEmail, customerName);
     }
 
     console.log('[PerfectPay Webhook] Processed successfully:', {
