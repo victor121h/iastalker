@@ -27,7 +27,7 @@ async function sendDeclinedEmail(customerEmail: string, customerName: string) {
           <p style="font-size: 15px; line-height: 1.8; color: #444444;">Your card was declined. Please try this link using a different card:</p>
 
           <div style="text-align: center; margin: 30px 0;">
-            <a href="https://go.centerpag.com/PPU38CQ8ABS?utm_source=recu1" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 14px 32px; border-radius: 6px; text-decoration: none;">Try Again</a>
+            <a href="https://go.centerpag.com/PPU38CQ9C2S?utm_source=recu1" style="display: inline-block; background-color: #10b981; color: #ffffff; font-weight: bold; font-size: 15px; padding: 14px 32px; border-radius: 6px; text-decoration: none;">Try Again</a>
           </div>
 
           <p style="font-size: 15px; line-height: 1.8; color: #444444;">Best regards,<br/><strong>AI Ghost Team</strong></p>
