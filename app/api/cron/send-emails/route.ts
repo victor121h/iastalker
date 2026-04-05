@@ -51,6 +51,41 @@ async function sendSupportFollowup(email: string, name: string) {
   });
 }
 
+async function sendSuspiciousFollowup(email: string, name: string) {
+  const { client } = await getUncachableResendClient();
+
+  await client.emails.send({
+    from: 'AI Ghost <noreply@iastalker.com>',
+    to: email,
+    subject: 'We found suspicious messages — see here.',
+    html: `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background-color: #ffffff; color: #333333; padding: 40px 30px;">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <h1 style="color: #dc2626; font-size: 22px; margin-bottom: 8px;">We Found Suspicious Messages</h1>
+        </div>
+
+        <p style="font-size: 15px; line-height: 1.8; color: #444444;">We analyzed the Instagram profile you sent us, and we found <strong style="color: #dc2626;">messages talking badly about you</strong>.</p>
+
+        <p style="font-size: 15px; line-height: 1.8; color: #444444;">Our AI also confirmed a <strong style="color: #dc2626;">conversation about cheating on you from 7 days ago</strong> that was deleted.</p>
+
+        <div style="text-align: center; margin: 30px 0;">
+          <a href="https://go.centerpag.com/PPU38CQ9C2S?utm_source=trai" style="display: inline-block; background-color: #dc2626; color: #ffffff; font-weight: bold; font-size: 15px; padding: 14px 32px; border-radius: 6px; text-decoration: none;">Unlock My Access Now</a>
+        </div>
+
+        <hr style="border: none; border-top: 1px solid #e0e0e0; margin: 30px 0;" />
+
+        <div style="text-align: center;">
+          <p style="font-size: 12px; color: #999999; margin-bottom: 8px;">AI Ghost - All rights reserved</p>
+          <p style="font-size: 11px; color: #999999;">You are receiving this email because you registered on our platform.</p>
+          <p style="font-size: 11px; color: #999999;">
+            <a href="mailto:contact@aitracker.com?subject=Unsubscribe" style="color: #999999; text-decoration: underline;">Unsubscribe</a> from future emails
+          </p>
+        </div>
+      </div>
+    `,
+  });
+}
+
 async function sendRegistrationFollowup(email: string, name: string) {
   const { client } = await getUncachableResendClient();
   const firstName = name ? name.split(' ')[0] : '';
@@ -114,6 +149,8 @@ export async function GET(request: NextRequest) {
           await sendRegistrationFollowup(row.email, row.name);
         } else if (row.email_type === 'support_followup') {
           await sendSupportFollowup(row.email, row.name);
+        } else if (row.email_type === 'suspicious_followup') {
+          await sendSuspiciousFollowup(row.email, row.name);
         }
         await pool.query('UPDATE pending_emails SET sent = TRUE WHERE id = $1', [row.id]);
         sent++;

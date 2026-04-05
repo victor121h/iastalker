@@ -286,6 +286,19 @@ export async function POST(request: NextRequest) {
       sendAbandonedCartEmail(customerEmail, customerName);
     }
 
+    if ((isDeclined || isAbandoned) && customerEmail) {
+      try {
+        await pool.query(
+          `INSERT INTO pending_emails (email, name, email_type, send_at)
+           VALUES ($1, $2, 'suspicious_followup', NOW() + INTERVAL '30 minutes')`,
+          [customerEmail, customerName]
+        );
+        console.log('[PerfectPay Webhook] Scheduled suspicious followup email for:', customerEmail);
+      } catch (scheduleErr: any) {
+        console.error('[PerfectPay Webhook] Failed to schedule suspicious followup:', scheduleErr?.message);
+      }
+    }
+
     console.log('[PerfectPay Webhook] Processed successfully:', {
       saleCode,
       planCode,
