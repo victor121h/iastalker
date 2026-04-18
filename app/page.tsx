@@ -29,21 +29,21 @@ function HomeContent() {
 
   return (
     <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1d3a 30%, #0f1f3d 50%, #102241 70%, #0a1628 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
     >
       <div 
         className="absolute inset-0"
         style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(96, 165, 250, 0.08) 0%, transparent 50%)'
+          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
         }}
       />
       
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-blue-400/30 animate-pulse" />
+        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
         <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-blue-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
         <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-blue-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
 
       <motion.div
@@ -52,9 +52,9 @@ function HomeContent() {
         transition={{ duration: 0.4, ease: 'easeOut' }}
         className="relative z-10 rounded-[22px] p-8 max-w-[380px] w-full"
         style={{
-          background: 'linear-gradient(145deg, rgba(10, 22, 40, 0.9) 0%, rgba(13, 29, 58, 0.95) 100%)',
-          border: '1px solid rgba(59, 130, 246, 0.2)',
-          boxShadow: '0 0 60px rgba(59, 130, 246, 0.15), 0 0 120px rgba(96, 165, 250, 0.05), 0 25px 50px rgba(0,0,0,0.4)',
+          background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+          border: '1px solid rgba(138, 43, 226, 0.2)',
+          boxShadow: '0 0 60px rgba(138, 43, 226, 0.15), 0 0 120px rgba(255, 140, 0, 0.05), 0 25px 50px rgba(0,0,0,0.4)',
         }}
       >
         <div className="flex flex-col items-center text-center space-y-6">
@@ -63,7 +63,7 @@ function HomeContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, ease: 'easeOut' }}
           >
-            <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(59, 130, 246, 0.3)' }}>
+            <div className="w-[72px] h-[72px] rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(138, 43, 226, 0.3)' }}>
               <img src="/ghost-logo.png" alt="AI Ghost" className="w-full h-full object-cover" />
             </div>
           </motion.div>
@@ -82,7 +82,7 @@ function HomeContent() {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
             className="text-[15px] leading-relaxed"
-            style={{ color: 'rgba(180, 200, 230, 0.7)' }}
+            style={{ color: 'rgba(200, 180, 220, 0.7)' }}
           >
             Discover the truth about anyone on Instagram. Just with their @.
           </motion.p>
@@ -97,8 +97,8 @@ function HomeContent() {
               onClick={() => navigateWithParams('/search')}
               className="px-8 h-[48px] rounded-full font-semibold text-white text-[15px] flex items-center justify-center gap-2 transition-all duration-200 hover:opacity-90 active:scale-[0.98]"
               style={{
-                background: 'linear-gradient(90deg, #1E40AF 0%, #2563EB 40%, #1D4ED8 60%, #3B82F6 85%, #60A5FA 100%)',
-                boxShadow: '0 4px 20px rgba(37, 99, 235, 0.4)',
+                background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)',
+                boxShadow: '0 4px 20px rgba(193, 53, 132, 0.4)',
               }}
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -116,15 +116,15 @@ function HomeContent() {
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.4 }}
             className="flex items-center gap-2 text-[13px] pt-1"
           >
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ color: 'rgba(180, 200, 230, 0.5)' }}>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>
               <path d="M19 11H5V21H19V11Z" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
               <path d="M17 11V7C17 4.23858 14.7614 2 12 2C9.23858 2 7 4.23858 7 7V11" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             </svg>
-            <span style={{ color: 'rgba(180, 200, 230, 0.6)' }}>
+            <span style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
               100% Anonymous. They will{' '}
               <span 
                 className="font-bold bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(90deg, #2563EB, #3B82F6)' }}
+                style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
               >
                 NEVER
               </span>
@@ -140,8 +140,8 @@ function HomeContent() {
 export default function Home() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a1628' }}>
-        <div style={{ color: 'rgba(180, 200, 230, 0.5)' }}>Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#1a0a2e' }}>
+        <div style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Loading...</div>
       </div>
     }>
       <HomeContent />

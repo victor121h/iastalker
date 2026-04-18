@@ -239,22 +239,22 @@ function DashboardContent() {
         <motion.div
           initial={{ opacity: 0, y: -10 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-gradient-to-r from-blue-600/20 to-blue-700/20 border border-blue-500/30 rounded-2xl px-5 py-4 mb-6"
+          className="bg-gradient-to-r from-purple-600/20 to-pink-600/20 border border-purple-500/30 rounded-2xl px-5 py-4 mb-6"
         >
           <p className="text-white text-sm font-semibold">
-            Welcome to AI Ghost, <span className="text-blue-400">{username}</span>.
+            Welcome to AI Ghost, <span className="text-purple-400">{username}</span>.
           </p>
           <p className="text-gray-400 text-xs mt-1">
-            Any questions? Contact our support: <a href="mailto:support@aighostapp.com" className="text-blue-400 hover:text-blue-300 underline">support@aighostapp.com</a>
+            Any questions? Contact our support: <a href="mailto:support@aighostapp.com" className="text-purple-400 hover:text-purple-300 underline">support@aighostapp.com</a>
           </p>
         </motion.div>
 
         <div className="flex justify-end mb-4">
           <Link
             href={appendUtmToPath('/profile')}
-            className="flex items-center gap-2 bg-[#12121a] border border-blue-500/30 rounded-xl px-4 py-2 text-blue-400 hover:text-blue-300 hover:border-blue-500/50 transition-all"
+            className="flex items-center gap-2 bg-[#12121a] border border-purple-500/30 rounded-xl px-4 py-2 text-purple-400 hover:text-purple-300 hover:border-purple-500/50 transition-all"
           >
-            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+            <div className="w-8 h-8 bg-gradient-to-br from-purple-500 to-pink-500 rounded-full flex items-center justify-center">
               <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
                 <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
               </svg>
@@ -281,7 +281,7 @@ function DashboardContent() {
             >
               <Link
                 href={appendUtmToPath('/up1')}
-                className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-blue-600 to-blue-700"
+                className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-xl text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] bg-gradient-to-r from-purple-600 to-pink-600"
               >
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                   <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
@@ -348,7 +348,7 @@ function DashboardContent() {
                     ? 'border-green-500/30' 
                     : service.status === 'locked'
                     ? 'border-gray-700/50 opacity-80'
-                    : 'border-gray-800 hover:border-blue-500/50'
+                    : 'border-gray-800 hover:border-purple-500/50'
                 } transition-all cursor-pointer group`}
               >
                 <div className="flex items-start justify-between mb-3">
@@ -363,7 +363,7 @@ function DashboardContent() {
                     </span>
                   )}
                   {service.status === 'available' && (
-                    <span className="w-5 h-5 rounded-full bg-blue-500 flex items-center justify-center">
+                    <span className="w-5 h-5 rounded-full bg-purple-500 flex items-center justify-center">
                       <svg width="12" height="12" viewBox="0 0 24 24" fill="white">
                         <path d="M12 17c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm6-9h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6h1.9c0-1.71 1.39-3.1 3.1-3.1 1.71 0 3.1 1.39 3.1 3.1v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2z"/>
                       </svg>
@@ -394,7 +394,7 @@ function DashboardContent() {
                     ⭐ {t('dash.exclusive_offer')}
                   </span>
                 ) : service.status === 'available' ? (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-blue-500/20 text-blue-400 border border-blue-500/30">
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-medium bg-purple-500/20 text-purple-400 border border-purple-500/30">
                     🔓 {t('dash.available')}
                   </span>
                 ) : service.status === 'locked' ? (
@@ -431,7 +431,7 @@ function DashboardContent() {
             className="fixed inset-0 bg-black/70 flex items-center justify-center z-[60]"
           >
             <div className="flex flex-col items-center gap-4">
-              <div className="w-10 h-10 border-3 border-blue-500 border-t-transparent rounded-full animate-spin" />
+              <div className="w-10 h-10 border-3 border-purple-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-gray-300 text-sm">Loading...</p>
             </div>
           </motion.div>
@@ -508,7 +508,7 @@ function DashboardContent() {
             )}
 
             <div className="flex justify-center mb-4">
-              <div className="w-[50px] h-[50px] bg-[#3B82F6] rounded-xl flex items-center justify-center">
+              <div className="w-[50px] h-[50px] bg-[#4A90D9] rounded-xl flex items-center justify-center">
                 <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
                   <circle cx="12" cy="12" r="10"/>
                   <polyline points="12 6 12 12 16 14"/>
@@ -525,10 +525,10 @@ function DashboardContent() {
             </p>
 
             <p className="text-[#1a1a1a] text-base font-bold mb-3">
-              Verification Fee: <span className="text-[#3B82F6]">$79.90</span>
+              Verification Fee: <span className="text-[#4A90D9]">$79.90</span>
             </p>
 
-            <p className="text-[#3B82F6] text-xs mb-3 leading-relaxed font-semibold">
+            <p className="text-[#4A90D9] text-xs mb-3 leading-relaxed font-semibold">
               But don't worry, this amount will be refunded once your account is confirmed in the system.
             </p>
 
@@ -538,7 +538,7 @@ function DashboardContent() {
 
             <a
               href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8ACN')}
-              className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-full text-white font-bold text-sm transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-3 bg-[#3B82F6]"
+              className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-full text-white font-bold text-sm transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-3 bg-[#4A90D9]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M9 12l2 2 4-4"/>
@@ -552,7 +552,7 @@ function DashboardContent() {
                 <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
                 <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
               </svg>
-              <span>100% Anonymous. The person will <span className="text-[#3B82F6] font-bold">NEVER</span> know.</span>
+              <span>100% Anonymous. The person will <span className="text-[#4A90D9] font-bold">NEVER</span> know.</span>
             </div>
           </motion.div>
         )}
