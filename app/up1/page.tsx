@@ -158,25 +158,25 @@ function Up1Content() {
   return (
     <div
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d1d3a 30%, #0f1f3d 50%, #102241 70%, #0a1628 100%)' }}
     >
       <div
         className="absolute inset-0 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
+          background: 'radial-gradient(ellipse at 30% 20%, rgba(59, 130, 246, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(96, 165, 250, 0.08) 0%, transparent 50%)'
         }}
       />
 
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
+        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-blue-400/30 animate-pulse" />
         <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-blue-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
         <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
+        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-blue-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
 
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)' }}>
+        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #1E40AF 0%, #2563EB 40%, #1D4ED8 60%, #3B82F6 85%, #60A5FA 100%)' }}>
           <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
             <span className="text-xl">⚠️</span>
             <span className="text-white text-sm font-medium">YOUR SESSION EXPIRES IN:</span>
@@ -199,13 +199,13 @@ function Up1Content() {
             transition={{ duration: 0.4 }}
             className="rounded-[22px] p-6 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.25)',
-              boxShadow: '0 0 60px rgba(138, 43, 226, 0.12), 0 25px 50px rgba(0,0,0,0.4)',
+              background: 'linear-gradient(145deg, rgba(10, 22, 40, 0.9) 0%, rgba(13, 29, 58, 0.95) 100%)',
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              boxShadow: '0 0 60px rgba(59, 130, 246, 0.12), 0 25px 50px rgba(0,0,0,0.4)',
             }}
           >
             <div className="flex items-center justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(138, 43, 226, 0.3)' }}>
+              <div className="w-20 h-20 rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(59, 130, 246, 0.3)' }}>
                 <img src="/ghost-logo.png" alt="AI Ghost Logo" className="w-full h-full object-cover" />
               </div>
             </div>
@@ -224,27 +224,27 @@ function Up1Content() {
             </div>
 
             <div className="mb-6">
-              <p className="text-sm text-center mb-2" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>Step 2 of 3 - Activate your plan</p>
+              <p className="text-sm text-center mb-2" style={{ color: 'rgba(180, 200, 230, 0.6)' }}>Step 2 of 3 - Activate your plan</p>
               <div className="w-full rounded-full h-2.5 overflow-hidden" style={{ background: 'rgba(255,255,255,0.08)' }}>
                 <div
                   className="h-full rounded-full"
                   style={{
                     width: '66%',
-                    background: 'linear-gradient(90deg, #8B2FC9, #C13584)',
+                    background: 'linear-gradient(90deg, #1E40AF, #2563EB)',
                   }}
                 />
               </div>
             </div>
 
-            <div className="rounded-xl p-4 mb-4" style={{ background: 'rgba(193, 53, 132, 0.1)', border: '1px solid rgba(193, 53, 132, 0.3)' }}>
+            <div className="rounded-xl p-4 mb-4" style={{ background: 'rgba(37, 99, 235, 0.1)', border: '1px solid rgba(37, 99, 235, 0.3)' }}>
               <div className="flex items-start gap-3">
                 <div className="w-6 h-6 flex items-center justify-center flex-shrink-0">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#C13584">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="#2563EB">
                     <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
                   </svg>
                 </div>
                 <p className="text-white text-sm">
-                  <span className="font-bold" style={{ color: '#C13584' }}>IMPORTANT:</span> If your plan is not activated now, you won&apos;t be able to spy on any profile.
+                  <span className="font-bold" style={{ color: '#2563EB' }}>IMPORTANT:</span> If your plan is not activated now, you won&apos;t be able to spy on any profile.
                 </p>
               </div>
             </div>
@@ -255,7 +255,7 @@ function Up1Content() {
                   <span className="text-lg">⚠️</span>
                 </div>
                 <p className="text-white text-sm">
-                  <span className="font-bold" style={{ color: '#F77737' }}>Attention!</span> Not activating one of the plans will result in the disclosure of your spying. That&apos;s right, if you don&apos;t activate the plan, we will expose that you spied on the person.
+                  <span className="font-bold" style={{ color: '#3B82F6' }}>Attention!</span> Not activating one of the plans will result in the disclosure of your spying. That&apos;s right, if you don&apos;t activate the plan, we will expose that you spied on the person.
                 </p>
               </div>
             </div>
@@ -271,7 +271,7 @@ function Up1Content() {
               <span className="text-white">SELECT </span>
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
+                style={{ backgroundImage: 'linear-gradient(90deg, #2563EB, #3B82F6)' }}
               >your plan below:</span>
             </h2>
           </motion.div>
@@ -285,8 +285,8 @@ function Up1Content() {
                 transition={{ duration: 0.4, delay: 0.2 + index * 0.1 }}
                 className={`rounded-[22px] p-5 border-2 ${plan.borderColor} relative overflow-hidden`}
                 style={{
-                  background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-                  boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+                  background: 'linear-gradient(145deg, rgba(10, 22, 40, 0.9) 0%, rgba(13, 29, 58, 0.95) 100%)',
+                  boxShadow: '0 0 40px rgba(59, 130, 246, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
                 }}
               >
                 <div className={`absolute top-3 right-3 ${plan.badgeColor} text-white text-xs font-bold px-3 py-1 rounded-full`}>
@@ -317,7 +317,7 @@ function Up1Content() {
                   <p className="text-white text-3xl font-bold">
                     ${plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}</span>
                   </p>
-                  <p className="text-sm font-medium mt-1" style={{ color: '#C13584' }}>You save ${plan.savings}</p>
+                  <p className="text-sm font-medium mt-1" style={{ color: '#2563EB' }}>You save ${plan.savings}</p>
                 </div>
 
                 <a
@@ -327,11 +327,11 @@ function Up1Content() {
                   className="block w-full py-3.5 rounded-xl text-center font-bold text-white"
                   style={{
                     background: plan.recommended
-                      ? 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)'
+                      ? 'linear-gradient(90deg, #1E40AF 0%, #2563EB 40%, #1D4ED8 60%, #3B82F6 85%, #60A5FA 100%)'
                       : plan.id === 'premium'
                         ? 'linear-gradient(90deg, #F97316, #EA580C)'
                         : '#4B5563',
-                    boxShadow: plan.recommended ? '0 4px 20px rgba(193, 53, 132, 0.4)' : undefined,
+                    boxShadow: plan.recommended ? '0 4px 20px rgba(37, 99, 235, 0.4)' : undefined,
                   }}
                 >
                   SELECT PLAN
@@ -348,16 +348,16 @@ function Up1Content() {
             transition={{ duration: 0.4, delay: 0.6 }}
             className="mt-8 text-center"
           >
-            <p className="text-sm mb-4" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>100% Secure Purchase - SSL Encryption</p>
+            <p className="text-sm mb-4" style={{ color: 'rgba(180, 200, 230, 0.4)' }}>100% Secure Purchase - SSL Encryption</p>
             <div className="flex justify-center gap-4">
-              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(30, 15, 50, 0.8)', border: '1px solid rgba(138, 43, 226, 0.2)' }}>
+              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(10, 22, 40, 0.8)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   <path d="M9 12l2 2 4-4"/>
                 </svg>
                 <span className="text-white text-xs">30-day guarantee</span>
               </div>
-              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(30, 15, 50, 0.8)', border: '1px solid rgba(138, 43, 226, 0.2)' }}>
+              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(10, 22, 40, 0.8)', border: '1px solid rgba(59, 130, 246, 0.2)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                   <rect x="1" y="4" width="22" height="16" rx="2"/>
                   <path d="M1 10h22"/>
@@ -376,15 +376,15 @@ function Up1Content() {
             animate={{ opacity: 1, scale: 1 }}
             className="relative w-full max-w-[380px] rounded-[24px] p-6 overflow-hidden"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.97) 0%, rgba(20, 10, 35, 0.99) 100%)',
-              border: '1px solid rgba(193, 53, 132, 0.4)',
-              boxShadow: '0 0 40px rgba(193, 53, 132, 0.3)',
+              background: 'linear-gradient(145deg, rgba(10, 22, 40, 0.97) 0%, rgba(13, 29, 58, 0.99) 100%)',
+              border: '1px solid rgba(37, 99, 235, 0.4)',
+              boxShadow: '0 0 40px rgba(37, 99, 235, 0.3)',
             }}
           >
             <button
               onClick={closePopup}
               className="absolute top-4 right-4 transition-colors"
-              style={{ color: 'rgba(200, 180, 220, 0.5)' }}
+              style={{ color: 'rgba(180, 200, 230, 0.5)' }}
             >
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                 <path d="M18 6L6 18M6 6l12 12" strokeLinecap="round" strokeLinejoin="round"/>
@@ -394,7 +394,7 @@ function Up1Content() {
             <div className="flex justify-center mb-4">
               <div
                 className="text-white text-xs font-bold px-4 py-1.5 rounded-full flex items-center gap-1.5"
-                style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #F77737 100%)' }}
+                style={{ background: 'linear-gradient(90deg, #1E40AF 0%, #2563EB 40%, #3B82F6 100%)' }}
               >
                 <span>⚡</span>
                 <span>FLASH SALE</span>
@@ -405,22 +405,22 @@ function Up1Content() {
               <span className="text-white">Wait! </span>
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
+                style={{ backgroundImage: 'linear-gradient(90deg, #2563EB, #3B82F6)' }}
               >Last Chance</span>
             </h2>
 
-            <p className="text-sm text-center mb-5" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
+            <p className="text-sm text-center mb-5" style={{ color: 'rgba(180, 200, 230, 0.6)' }}>
               Get the most complete plan with a discount that won&apos;t be repeated.
             </p>
 
             <div className="flex items-center justify-center gap-3 mb-4">
-              <div className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>
+              <div className="text-sm" style={{ color: 'rgba(180, 200, 230, 0.5)' }}>
                 <span>From</span>
                 <span className="line-through ml-1">$69.90</span>
               </div>
               <div className="text-center">
-                <span className="text-sm" style={{ color: '#F77737' }}>For</span>
-                <p className="text-4xl font-bold" style={{ color: '#F77737' }}>$49.90</p>
+                <span className="text-sm" style={{ color: '#3B82F6' }}>For</span>
+                <p className="text-4xl font-bold" style={{ color: '#3B82F6' }}>$49.90</p>
               </div>
             </div>
 
@@ -432,13 +432,13 @@ function Up1Content() {
 
             <div className="mb-5">
               <p className="text-white text-sm font-semibold text-center mb-3 flex items-center justify-center gap-2">
-                <span style={{ color: '#F77737' }}>◉</span>
+                <span style={{ color: '#3B82F6' }}>◉</span>
                 Ultra Plan – Eye of God Included:
               </p>
               <div className="grid grid-cols-2 gap-x-4 gap-y-2 text-sm">
                 {['Unlimited profile search', '24h GPS', 'Total anonymity', 'Complete history', 'Real-time notifications', 'WhatsApp Spy', 'Hidden gallery', 'Multiple targets'].map(item => (
-                  <div key={item} className="flex items-center gap-2" style={{ color: 'rgba(200, 180, 220, 0.7)' }}>
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#C13584"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
+                  <div key={item} className="flex items-center gap-2" style={{ color: 'rgba(180, 200, 230, 0.7)' }}>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="#2563EB"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/></svg>
                     <span>{item}</span>
                   </div>
                 ))}
@@ -449,8 +449,8 @@ function Up1Content() {
               href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8ACM')}
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
               style={{
-                background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)',
-                boxShadow: '0 4px 20px rgba(193, 53, 132, 0.4)',
+                background: 'linear-gradient(90deg, #1E40AF 0%, #2563EB 40%, #1D4ED8 60%, #3B82F6 85%, #60A5FA 100%)',
+                boxShadow: '0 4px 20px rgba(37, 99, 235, 0.4)',
               }}
             >
               <span className="flex items-center justify-center gap-2">
@@ -459,14 +459,14 @@ function Up1Content() {
               </span>
             </a>
 
-            <p className="text-xs text-center mb-3" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>
+            <p className="text-xs text-center mb-3" style={{ color: 'rgba(180, 200, 230, 0.4)' }}>
               • This offer expires in: <span className="text-white font-semibold">{String(popupTimer.minutes).padStart(2, '0')}:{String(popupTimer.seconds).padStart(2, '0')}</span>
             </p>
 
             <button
               onClick={closePopup}
               className="text-xs text-center w-full underline transition-colors"
-              style={{ color: 'rgba(200, 180, 220, 0.4)' }}
+              style={{ color: 'rgba(180, 200, 230, 0.4)' }}
             >
               No, thanks. I prefer to pay more later.
             </button>
@@ -480,8 +480,8 @@ function Up1Content() {
 export default function Up1Page() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#1a0a2e' }}>
-        <div style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a1628' }}>
+        <div style={{ color: 'rgba(180, 200, 230, 0.5)' }}>Loading...</div>
       </div>
     }>
       <Up1Content />

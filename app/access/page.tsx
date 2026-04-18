@@ -54,7 +54,7 @@ function AccessContent() {
   return (
     <main
       className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden"
-      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #0d0518 50%, #1a0a2e 100%)' }}
+      style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d0518 50%, #0a1628 100%)' }}
     >
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute inset-0" style={{ background: 'radial-gradient(ellipse at 20% 50%, rgba(138,43,226,0.15) 0%, transparent 60%)' }} />
@@ -68,7 +68,7 @@ function AccessContent() {
               height: p.height,
               left: p.left,
               top: p.top,
-              background: 'linear-gradient(135deg, #8B2FC9, #FCAF45)',
+              background: 'linear-gradient(135deg, #1E40AF, #60A5FA)',
               opacity: 0.4,
             }}
             animate={{ scale: [1, 1.5, 1], opacity: [0.4, 0.8, 0.4] }}
@@ -88,15 +88,15 @@ function AccessContent() {
           <div
             className="rounded-2xl p-8"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.25)',
-              boxShadow: '0 0 60px rgba(138, 43, 226, 0.15), 0 30px 60px rgba(0,0,0,0.4)',
+              background: 'linear-gradient(145deg, rgba(10, 22, 40, 0.9) 0%, rgba(13, 29, 58, 0.95) 100%)',
+              border: '1px solid rgba(59, 130, 246, 0.25)',
+              boxShadow: '0 0 60px rgba(59, 130, 246, 0.15), 0 30px 60px rgba(0,0,0,0.4)',
             }}
           >
             <div className="text-center mb-8">
               <div
                 className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4"
-                style={{ background: 'linear-gradient(135deg, #8B2FC9, #E1306C, #FCAF45)' }}
+                style={{ background: 'linear-gradient(135deg, #1E40AF, #1D4ED8, #60A5FA)' }}
               >
                 <svg className="w-8 h-8 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
@@ -104,13 +104,13 @@ function AccessContent() {
               </div>
 
               <h2 className="text-white text-2xl font-bold mb-2">Search Profile</h2>
-              <p className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.7)' }}>
+              <p className="text-sm" style={{ color: 'rgba(180, 200, 230, 0.7)' }}>
                 Enter the @ of the profile you want to analyze
               </p>
             </div>
 
             <div className="relative mb-5">
-              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>@</span>
+              <span className="absolute left-4 top-1/2 -translate-y-1/2 text-lg font-semibold" style={{ color: 'rgba(180, 200, 230, 0.5)' }}>@</span>
               <input
                 type="text"
                 value={inputUsername}
@@ -132,15 +132,15 @@ function AccessContent() {
                 placeholder="username"
                 className="w-full rounded-xl py-4 pl-10 pr-4 text-white placeholder-[rgba(200,180,220,0.3)] focus:outline-none transition-all text-base"
                 style={{
-                  background: 'rgba(138, 43, 226, 0.08)',
-                  border: '1px solid rgba(138, 43, 226, 0.3)',
+                  background: 'rgba(59, 130, 246, 0.08)',
+                  border: '1px solid rgba(59, 130, 246, 0.3)',
                 }}
                 onFocus={(e) => {
-                  e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.7)';
-                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(138, 43, 226, 0.15)';
+                  e.currentTarget.style.border = '1px solid rgba(59, 130, 246, 0.7)';
+                  e.currentTarget.style.boxShadow = '0 0 0 3px rgba(59, 130, 246, 0.15)';
                 }}
                 onBlur={(e) => {
-                  e.currentTarget.style.border = '1px solid rgba(138, 43, 226, 0.3)';
+                  e.currentTarget.style.border = '1px solid rgba(59, 130, 246, 0.3)';
                   e.currentTarget.style.boxShadow = 'none';
                 }}
                 autoFocus
@@ -154,15 +154,15 @@ function AccessContent() {
               className="w-full text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{
                 background: inputUsername.trim() && !searching
-                  ? 'linear-gradient(90deg, #8B2FC9, #E1306C, #FCAF45)'
+                  ? 'linear-gradient(90deg, #1E40AF, #1D4ED8, #60A5FA)'
                   : 'rgba(100, 60, 140, 0.4)',
-                boxShadow: inputUsername.trim() && !searching ? '0 4px 20px rgba(138, 43, 226, 0.4)' : 'none',
+                boxShadow: inputUsername.trim() && !searching ? '0 4px 20px rgba(59, 130, 246, 0.4)' : 'none',
               }}
             >
               {searching ? 'Searching...' : 'Spy Now'}
             </button>
 
-            <p className="text-center text-xs mt-5" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>
+            <p className="text-center text-xs mt-5" style={{ color: 'rgba(180, 200, 230, 0.4)' }}>
               The report will be generated based on public profile information
             </p>
           </div>
@@ -174,7 +174,7 @@ function AccessContent() {
 
 export default function AccessPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #0d0518 50%, #1a0a2e 100%)' }} />}>
+    <Suspense fallback={<div className="min-h-screen" style={{ background: 'linear-gradient(135deg, #0a1628 0%, #0d0518 50%, #0a1628 100%)' }} />}>
       <AccessContent />
     </Suspense>
   );
