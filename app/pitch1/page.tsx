@@ -3,10 +3,7 @@
 import { motion } from 'framer-motion';
 import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
-import dynamic from 'next/dynamic';
 import { getProfileCache } from '@/lib/profileCache';
-
-const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
 interface ProfileData {
   username: string;
@@ -33,6 +30,16 @@ function PitchContent() {
       sessionStorage.setItem('pitch_username', urlUsername);
       document.cookie = `pitch_username=${encodeURIComponent(urlUsername)}; path=/; max-age=31536000`;
       setUsername(urlUsername);
+
+      const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
+      const utmParts: string[] = [];
+      utmKeys.forEach(key => {
+        const value = searchParams.get(key);
+        if (value) utmParts.push(`${key}=${encodeURIComponent(value)}`);
+      });
+      if (utmParts.length > 0) {
+        fetch(`/api/track-utms?username=${encodeURIComponent(urlUsername.toLowerCase())}&${utmParts.join('&')}`).catch(() => {});
+      }
     } else {
       const cookies = document.cookie.split(';').reduce((acc, cookie) => {
         const [key, value] = cookie.trim().split('=');
@@ -44,7 +51,7 @@ function PitchContent() {
       if (storedUsername) {
         const params = new URLSearchParams(searchParamsString);
         params.set('username', storedUsername);
-        router.replace(`/pitch1?${params.toString()}`);
+        router.replace(`/pitch?${params.toString()}`);
         setUsername(storedUsername);
       }
     }
@@ -55,7 +62,7 @@ function PitchContent() {
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
-  const [showDiscountPopup, setShowDiscountPopup] = useState(true);
+  const [showBackPopup, setShowBackPopup] = useState(false);
 
   const handleBlockedClick = () => {
     setShowBlockedPopup(true);
@@ -70,7 +77,7 @@ function PitchContent() {
   };
   const [warningTimeLeft, setWarningTimeLeft] = useState(() => {
     if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('pitch1_timer_end');
+      const saved = localStorage.getItem('pitch_timer_end');
       if (saved) {
         const endTime = parseInt(saved);
         const now = Date.now();
@@ -80,14 +87,29 @@ function PitchContent() {
         if (remaining > 0) return { minutes, seconds };
       }
       const endTime = Date.now() + 3 * 60 * 1000;
-      localStorage.setItem('pitch1_timer_end', endTime.toString());
+      localStorage.setItem('pitch_timer_end', endTime.toString());
     }
     return { minutes: 3, seconds: 0 };
   });
 
   useEffect(() => {
     document.cookie = 'deepgram_visited=true; path=/; max-age=31536000';
-  }, []);
+    
+    const cookies = document.cookie.split(';').reduce((acc, cookie) => {
+      const [key, value] = cookie.trim().split('=');
+      if (key && value) acc[key] = value;
+      return acc;
+    }, {} as Record<string, string>);
+    
+    const hasVisitedPitch = cookies['pitch_first_visit'] === 'true';
+    
+    if (hasVisitedPitch) {
+      const params = searchParams.toString();
+      router.replace(params ? `/pitch1?${params}` : '/pitch1');
+    } else {
+      document.cookie = 'pitch_first_visit=true; path=/; max-age=31536000';
+    }
+  }, [router, searchParams]);
 
   useEffect(() => {
     if (username) {
@@ -121,6 +143,21 @@ function PitchContent() {
     return () => clearInterval(warningTimer);
   }, []);
 
+  useEffect(() => {
+    const params = searchParams.toString();
+    window.history.pushState(null, '', window.location.href);
+    
+    const handlePopState = () => {
+      window.history.pushState(null, '', window.location.href);
+      setShowBackPopup(true);
+    };
+    
+    window.addEventListener('popstate', handlePopState);
+    
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [router, searchParams]);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -147,7 +184,7 @@ function PitchContent() {
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABR');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG');
   const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABS');
   const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABT');
 
@@ -177,9 +214,24 @@ function PitchContent() {
   ];
 
   return (
-    <div className="min-h-screen bg-white relative">
-      <MatrixBackground />
-      
+    <div
+      className="min-h-screen relative overflow-x-hidden"
+      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
+    >
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
+        }}
+      />
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
+        <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
+      </div>
+
       {showBlockedPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
           <div 
@@ -240,52 +292,33 @@ function PitchContent() {
         </div>
       )}
 
-      {showDiscountPopup && (
-        <motion.div 
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="fixed inset-0 z-[100] flex items-center justify-center bg-black/80 backdrop-blur-sm px-4"
-        >
-          <motion.div 
-            initial={{ scale: 0.9, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
-            transition={{ type: "spring", duration: 0.5 }}
-            className="bg-[#0C1011] border border-[#00FF75] rounded-2xl p-6 max-w-sm w-full shadow-2xl"
-          >
-            <div className="flex items-center justify-center mb-4">
-              <div className="w-20 h-20 rounded-full bg-[#00FF75]/20 flex items-center justify-center">
-                <svg width="40" height="40" viewBox="0 0 24 24" fill="#00FF75">
-                  <path d="M21.41 11.58l-9-9C12.05 2.22 11.55 2 11 2H4c-1.1 0-2 .9-2 2v7c0 .55.22 1.05.59 1.42l9 9c.36.36.86.58 1.41.58.55 0 1.05-.22 1.41-.59l7-7c.37-.36.59-.86.59-1.41 0-.55-.23-1.06-.59-1.42zM5.5 7C4.67 7 4 6.33 4 5.5S4.67 4 5.5 4 7 4.67 7 5.5 6.33 7 5.5 7z"/>
+      {showBackPopup && (
+        <div className="fixed inset-0 z-[120] flex items-center justify-center bg-black/75 px-4" onClick={() => setShowBackPopup(false)}>
+          <div className="bg-[#111111] rounded-2xl p-8 max-w-sm w-full text-center border border-[#E53935]/30 relative" onClick={e => e.stopPropagation()}>
+            <div className="flex items-center justify-center mb-5">
+              <div className="w-16 h-16 rounded-full bg-[#E53935]/20 flex items-center justify-center">
+                <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#E53935" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="10"/>
+                  <polyline points="12 6 12 12 16 14"/>
                 </svg>
               </div>
             </div>
-
-            <h2 className="text-[#00FF75] text-center font-bold text-2xl mb-2 animate-pulse">
-              You WON 50% OFF!
-            </h2>
-
-            <p className="text-white text-center text-sm mb-4">
-              Exclusive discount for you! Complete your purchase now and get <span className="font-bold text-[#00FF75]">50% off</span> on full access.
+            <h2 className="text-[#E53935] font-bold text-2xl mb-3">Time is up.</h2>
+            <p className="text-white/80 text-[15px] mb-6 leading-relaxed">
+              The data collected from <span className="font-semibold text-white">@{username}</span> is about to be permanently deleted. This is your last chance to see what they&apos;re hiding from you.
             </p>
-
-            <div className="bg-[#00FF75]/10 border border-[#00FF75]/30 rounded-xl p-4 mb-4">
-              <p className="text-white text-center text-sm">
-                This offer expires in <span className="font-bold text-[#00FF75]">{String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}</span>
-              </p>
-            </div>
-
-            <button 
-              onClick={() => setShowDiscountPopup(false)}
-              className="w-full bg-[#00FF75] hover:bg-[#00CC5E] text-black font-bold py-3 rounded-xl transition-colors"
+            <button
+              onClick={() => { setShowBackPopup(false); scrollToPlan(); }}
+              className="w-full bg-[#E53935] hover:bg-[#c62828] text-white font-bold py-4 rounded-xl transition-colors text-base"
             >
-              Claim My Discount
+              See the truth now
             </button>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
       
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 z-50 bg-[#E53935] py-2.5 px-4">
+        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)' }}>
           <div className="flex items-center justify-between max-w-md mx-auto">
             <button className="p-1">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
@@ -312,29 +345,6 @@ function PitchContent() {
             </p>
           </div>
 
-          <div className="bg-[#0C1011] border border-[#E53935] rounded-xl p-4 mb-4">
-            <div className="flex items-center gap-2 mb-3">
-              <span className="w-2 h-2 rounded-full bg-[#E53935] animate-pulse inline-block"></span>
-              <p className="text-[#E53935] font-bold text-sm uppercase tracking-wide">Our AI found:</p>
-            </div>
-            <div className="space-y-2">
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">14 deleted DMs</span> in the last 40 days</p>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">2 meetups</span> scheduled near: <span className="blur-sm select-none">██████████</span></p>
-              </div>
-              <div className="flex items-center gap-2">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0"><path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/></svg>
-                <p className="text-white text-sm"><span className="font-bold text-[#E53935]">+23 photos +18</span> found in private archive</p>
-              </div>
-            </div>
-            <div className="mt-3 pt-3 border-t border-[#E53935]/30 text-center">
-              <p className="text-white font-bold text-sm">Infidelity chance: <span className="text-[#E53935] text-base">98.9%</span></p>
-            </div>
-          </div>
 
           <motion.div
             initial={{ opacity: 0, y: -10 }}
@@ -385,7 +395,7 @@ function PitchContent() {
             <div className="flex items-center justify-center mb-4">
               <img src="/ghost-logo.png" alt="AI Ghost" className="h-[48px] w-auto" />
             </div>
-            <h1 className="text-black text-xl font-bold leading-tight">
+            <h1 className="text-white text-xl font-bold leading-tight">
               See everything @{username} hides from you
             </h1>
           </motion.section>
@@ -394,7 +404,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="rounded-[22px] p-5 mb-6"
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.25)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.1), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <p className="text-[#A0A0A0] text-sm text-center mb-4">Full access to the profile of:</p>
             
@@ -404,7 +419,7 @@ function PitchContent() {
                   className="p-[2px] rounded-full"
                   style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)' }}
                 >
-                  <div className="bg-[#0C1011] rounded-full p-[2px]">
+                  <div className="rounded-full p-[2px]" style={{ background: 'rgba(20, 10, 35, 0.95)' }}>
                     {profile?.avatar ? (
                       <img
                         src={getProxiedAvatar(profile.avatar)}
@@ -453,7 +468,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="rounded-[22px] p-5 mb-6"
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-[#EB1C8F]/20 flex items-center justify-center flex-shrink-0">
@@ -479,8 +499,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.25 }}
-            className="bg-[#0C1011] rounded-[22px] overflow-hidden mb-6 cursor-pointer"
+            className="rounded-[22px] overflow-hidden mb-6 cursor-pointer"
             onClick={handleBlockedClick}
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+            }}
           >
             <div className="relative h-32">
               <div 
@@ -527,8 +551,13 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6 cursor-pointer"
+            className="rounded-[22px] p-5 mb-6 cursor-pointer"
             onClick={handleBlockedClick}
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-[#962FBF]/20 flex items-center justify-center flex-shrink-0">
@@ -542,8 +571,8 @@ function PitchContent() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -569,8 +598,8 @@ function PitchContent() {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 bg-[#1A1A1A] rounded-xl overflow-hidden">
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#2A2A2A]">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -603,7 +632,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.35 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="rounded-[22px] p-5 mb-6"
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <div className="flex items-start gap-3 mb-4">
               <div className="w-8 h-8 rounded-full bg-[#1A73E8]/20 flex items-center justify-center flex-shrink-0">
@@ -616,8 +650,8 @@ function PitchContent() {
                 <p className="text-[#808080] text-xs mt-1">All conversations from @{username}</p>
               </div>
             </div>
-            <div className="bg-[#1A1A1A] rounded-xl p-3">
-              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#262626]">
+            <div className="rounded-xl p-3" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
+              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#8B2FC9]/20">
                 <div className="relative">
                   {profile?.avatar ? (
                     <img
@@ -667,7 +701,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="rounded-[22px] p-5 mb-6"
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <div className="flex items-center justify-center mb-4">
               <img src="/ghost-logo.png" alt="AI Ghost" className="h-[36px] w-auto" />
@@ -727,7 +766,12 @@ function PitchContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
-            className="bg-[#0C1011] rounded-[22px] p-5 mb-6"
+            className="rounded-[22px] p-5 mb-6"
+            style={{
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.2)',
+              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+            }}
           >
             <h2 className="text-white text-center font-bold text-xl mb-6">
               Take control of any profile in your hands!
@@ -788,17 +832,17 @@ function PitchContent() {
             transition={{ delay: 0.5 }}
             className="mb-6"
           >
-            <h2 className="text-black text-center font-bold text-xl mb-6">
+            <h2 className="text-white text-center font-bold text-xl mb-6">
               See what people who use AI Ghost are saying:
             </h2>
 
             <div className="space-y-4">
               {testimonials.map((t, i) => (
-                <div key={t.id} className="bg-[#0C1011] rounded-xl p-4">
+                <div key={t.id} className="rounded-xl p-4" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
                   <div className="flex items-start gap-3">
                     <div className="relative flex-shrink-0">
                       {t.hasLock ? (
-                        <div className="w-10 h-10 rounded-full bg-[#1A1A1A] flex items-center justify-center">
+                        <div className="w-10 h-10 rounded-full flex items-center justify-center" style={{ background: 'rgba(30, 15, 50, 0.9)' }}>
                           <svg width="16" height="16" viewBox="0 0 24 24" fill="#666">
                             <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
                           </svg>
@@ -833,78 +877,10 @@ function PitchContent() {
             transition={{ delay: 0.55 }}
             className="mb-6"
           >
-            <div className="flex justify-center mb-4">
-              <div 
-                className="px-4 py-1.5 rounded-full text-sm font-bold"
-                style={{ background: 'linear-gradient(90deg, #EB1C8F, #DFB313)' }}
-              >
-                <span className="text-white">LIMITED BLACK FRIDAY</span>
-              </div>
-            </div>
-
-            <h2 className="text-black text-center font-bold text-2xl mb-1">CHOOSE YOUR PLAN</h2>
+            <h2 className="text-white text-center font-bold text-2xl mb-1 mt-4">DISCOVER EVERYTHING NOW</h2>
             <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
 
-            <div className="bg-[#0C1011] rounded-[22px] p-5 mb-4">
-              <h3 className="text-white text-center font-bold text-lg mb-1">Profile Access</h3>
-              <p className="text-[#808080] text-center text-xs mb-4">Full access to @{username}'s profile</p>
-              
-              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $130.00</p>
-              <div className="bg-[#1A1A1A] rounded-xl py-4 mb-4">
-                <p className="text-white text-center text-3xl font-bold"><span className="text-xl">$</span>9.90</p>
-              </div>
-
-              <div className="space-y-3 mb-6">
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Full access to @{username}'s profile</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Hidden stories or posts only for close friends</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Access to media (photos and videos) received and sent by @{username}</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Real-time DMs and old DMs (up to 18 months back)</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Real-time location and frequently visited places</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <svg width="16" height="16" viewBox="0 0 24 24" fill="#00FF75" className="flex-shrink-0 mt-0.5">
-                    <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
-                  </svg>
-                  <p className="text-white text-sm">Access to all deleted conversations</p>
-                </div>
-              </div>
-
-              <a 
-                href={purchaseLink39}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="block bg-[#2A3A4A] rounded-xl py-3 text-center text-white font-bold"
-              >
-                Choose Plan
-              </a>
-              <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
-            </div>
-
-            <div id="plan-2990" className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#00FF75] relative">
+            <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
@@ -914,7 +890,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>14.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -976,6 +952,12 @@ function PitchContent() {
                     </svg>
                     <p className="text-white text-sm font-semibold">No monthly fees</p>
                   </div>
+                  <div className="flex items-center gap-2 bg-[#00FF75]/10 border border-[#00FF75]/30 rounded-lg px-3 py-2.5 mt-1">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2" className="flex-shrink-0">
+                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                    <p className="text-[#00FF75] text-sm font-bold">30-day money-back guarantee</p>
+                  </div>
                 </div>
               </div>
 
@@ -985,7 +967,7 @@ function PitchContent() {
                 rel="noopener noreferrer"
                 className="block bg-[#00FF75] rounded-xl py-3 text-center text-black font-bold"
               >
-                Choose Plan
+                See everything about @{username}
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
@@ -997,7 +979,7 @@ function PitchContent() {
 
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost All Apps</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access to all spy versions</p>
-              
+
               <div className="bg-[#1A1A1A] rounded-xl p-4 mb-4">
                 <p className="text-[#A0A0A0] text-xs text-center mb-3">Bundled App Access:</p>
                 <div className="space-y-2">
@@ -1059,16 +1041,10 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>24.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>49.90</p>
               </div>
 
-              <div className="bg-[#0D2818] border border-[#00FF75]/30 rounded-xl py-2 px-4 text-center mb-4">
-                <p className="text-[#00FF75] text-sm font-semibold">
-                  You save $104.50 (81% OFF)
-                </p>
-              </div>
-
-              <a 
+              <a
                 href={purchaseLinkAllApps}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -1088,21 +1064,21 @@ function PitchContent() {
           >
             <div className="flex justify-center gap-8 mb-4">
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl bg-[#0C1011] border border-[#262626] flex items-center justify-center mb-2 mx-auto">
+                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
                   </svg>
                 </div>
-                <p className="text-black text-xs">Lifetime Access</p>
+                <p className="text-white text-xs">Lifetime Access</p>
               </div>
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl bg-[#0C1011] border border-[#262626] flex items-center justify-center mb-2 mx-auto">
+                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
                 </div>
-                <p className="text-black text-xs">24/7 Support</p>
+                <p className="text-white text-xs">24/7 Support</p>
               </div>
             </div>
 
@@ -1130,13 +1106,14 @@ function PitchContent() {
             transition={{ delay: 0.65 }}
             className="mb-8"
           >
-            <h2 className="text-black text-center font-bold text-xl mb-6">Frequently Asked Questions</h2>
+            <h2 className="text-white text-center font-bold text-xl mb-6">Frequently Asked Questions</h2>
 
             <div className="space-y-3">
               {faqs.map((faq, i) => (
                 <div 
                   key={i}
-                  className="bg-[#0C1011] rounded-xl overflow-hidden"
+                  className="rounded-xl overflow-hidden"
+                  style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
