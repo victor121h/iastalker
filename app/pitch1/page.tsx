@@ -61,9 +61,11 @@ function PitchContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
-  const [showDiscountPopup, setShowDiscountPopup] = useState(true);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [showBackPopup, setShowBackPopup] = useState(false);
+  const [showDiscountPopup, setShowDiscountPopup] = useState(true);
+  const [trackingCoords, setTrackingCoords] = useState('40.7128° N, 74.0060° W');
+  const [trackingSeconds, setTrackingSeconds] = useState(2);
 
   const handleBlockedClick = () => {
     setShowBlockedPopup(true);
@@ -126,6 +128,21 @@ function PitchContent() {
         .catch(console.error);
     }
   }, [username]);
+
+  useEffect(() => {
+    const trackingTimer = setInterval(() => {
+      setTrackingSeconds(prev => {
+        if (prev >= 8) {
+          const lat = (40.7128 + (Math.random() - 0.5) * 0.001).toFixed(4);
+          const lng = (74.0060 + (Math.random() - 0.5) * 0.001).toFixed(4);
+          setTrackingCoords(`${lat}° N, ${lng}° W`);
+          return 1;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(trackingTimer);
+  }, []);
 
   useEffect(() => {
     const warningTimer = setInterval(() => {
@@ -225,21 +242,8 @@ function PitchContent() {
   return (
     <div
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
+      style={{ background: '#0a0a0a' }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
-        }}
-      />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
-        <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
-      </div>
 
       {showDiscountPopup && (
         <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 px-4" onClick={() => setShowDiscountPopup(false)}>
@@ -256,30 +260,23 @@ function PitchContent() {
                 <path d="M18 6L6 18M6 6l12 12"/>
               </svg>
             </button>
-
             <div className="text-5xl mb-3">🎉</div>
-
             <div className="inline-block bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full mb-3">
               EXCLUSIVE OFFER
             </div>
-
             <h2 className="text-white text-2xl font-bold mb-3">Congratulations!</h2>
-
             <p className="text-white text-base mb-4 leading-relaxed">
               You just earned a <span className="text-[#00FF75] font-bold text-xl">50% discount</span> on your plan!
             </p>
-
             <p className="text-white/70 text-sm mb-5 leading-relaxed">
               This is a limited-time offer just for you. Take advantage now before it expires.
             </p>
-
             <button
               onClick={() => setShowDiscountPopup(false)}
               className="w-full bg-[#00FF75] text-black font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity"
             >
               Claim My Discount
             </button>
-
             <p className="text-white/40 text-xs mt-3">🔒 Discount automatically applied to your plans below</p>
           </div>
         </div>
@@ -370,39 +367,49 @@ function PitchContent() {
         </div>
       )}
       
-      <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)' }}>
-          <div className="flex items-center justify-between max-w-md mx-auto">
-            <button className="p-1">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>Your Exclusive Access Expires in:</span>
-              <span className="font-bold">
-                {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
-              </span>
+      <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-8">
+        <header className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-[#1a1a1a]">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2">
+              <img src="/ghost-logo.png" alt="AI Ghost" className="h-6 w-auto" />
+              <span className="text-white font-semibold text-base">AI Ghost</span>
             </div>
-            <div className="w-5" />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#E53935]/15 border border-[#E53935]/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E53935] animate-pulse" />
+                <span className="text-[#E53935] text-[11px] font-bold tabular-nums">
+                  {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
+                </span>
+              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
           </div>
+
         </header>
 
-        <main className="pt-16 pb-8 px-4 max-w-md mx-auto">
-          <div className="bg-[#1a0a0a] border border-[#E53935]/60 rounded-xl p-4 mb-4 mt-2 text-center">
-            <p className="text-white text-sm font-medium leading-snug">
-              After this time, the collected data from <span className="font-bold text-[#E53935]">@{username}</span> will be deleted from our system for security.
-            </p>
-            <p className="text-white/60 text-xs mt-2 leading-snug">
-              If you let this chance pass, you won&apos;t be able to check again and will lose the chance to know the truth.
-            </p>
+        <main className="px-3 pt-3">
+          <div className="bg-[#1a0a0a] border border-[#E53935]/40 rounded-xl p-3.5 mb-3 flex items-start gap-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0 mt-0.5">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            <div>
+              <p className="text-white text-sm font-medium leading-snug">
+                Data from <span className="font-bold text-[#E53935]">@{username}</span> will be permanently deleted from our system soon.
+              </p>
+              <p className="text-white/50 text-xs mt-1.5 leading-snug">
+                If you let this chance pass, you won&apos;t be able to check again.
+              </p>
+            </div>
           </div>
 
 
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] border border-[#0f3460]/50 rounded-xl p-4 mb-4 mt-2"
+            className="bg-[#0d1620] border border-[#00D9FF]/20 rounded-xl p-3.5 mb-3"
           >
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-[#00D9FF]/20 flex items-center justify-center flex-shrink-0">
@@ -440,15 +447,15 @@ function PitchContent() {
             </p>
           </motion.div>
 
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-8"
+            className="rounded-xl p-4 mb-3 bg-gradient-to-br from-[#1a0f2e] to-[#0a0a0a] border border-[#262626]"
           >
-            <div className="flex items-center justify-center mb-4">
-              <img src="/ghost-logo.png" alt="AI Ghost" className="h-[48px] w-auto" />
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <span className="px-2 py-0.5 rounded-md bg-[#8B2FC9]/20 text-[#C084FC] text-[10px] font-bold tracking-wide">PREMIUM ACCESS</span>
             </div>
-            <h1 className="text-white text-xl font-bold leading-tight">
+            <h1 className="text-white text-lg font-bold leading-tight">
               See everything @{username} hides from you
             </h1>
           </motion.section>
@@ -459,9 +466,9 @@ function PitchContent() {
             transition={{ delay: 0.1 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.25)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.1), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-center justify-between mb-4">
@@ -490,7 +497,7 @@ function PitchContent() {
                   className="p-[2px] rounded-full"
                   style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)' }}
                 >
-                  <div className="rounded-full p-[2px]" style={{ background: 'rgba(20, 10, 35, 0.95)' }}>
+                  <div className="rounded-full p-[2px]" style={{ background: '#121212' }}>
                     {profile?.avatar ? (
                       <img
                         src={getProxiedAvatar(profile.avatar)}
@@ -555,9 +562,9 @@ function PitchContent() {
             transition={{ delay: 0.2 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -587,11 +594,11 @@ function PitchContent() {
             className="rounded-[22px] overflow-hidden mb-6 cursor-pointer"
             onClick={handleBlockedClick}
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
+              background: '#121212',
+              border: '1px solid #262626',
             }}
           >
-            <div className="relative h-32">
+            <div className="relative h-40">
               <div 
                 className="absolute inset-0"
                 style={{
@@ -603,10 +610,21 @@ function PitchContent() {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a2332]/90" />
+
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#E53935] shadow-lg">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span className="text-white text-[10px] font-bold tracking-wider">LIVE</span>
+              </div>
+
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
+                  <span className="absolute inset-0 -m-3 rounded-full bg-[#E53935]/30 animate-ping"></span>
+                  <span className="absolute inset-0 -m-6 rounded-full bg-[#E53935]/15 animate-ping" style={{ animationDelay: '0.5s' }}></span>
                   <div 
-                    className="p-[3px] rounded-full"
+                    className="relative p-[3px] rounded-full"
                     style={{ background: '#E53935' }}
                   >
                     {profile?.avatar ? (
@@ -622,9 +640,17 @@ function PitchContent() {
                   </div>
                 </div>
               </div>
+
+              <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[10px] text-white/80">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF75] animate-pulse"></span>
+                  Signal: strong
+                </span>
+                <span className="font-mono">updated {trackingSeconds}s ago</span>
+              </div>
             </div>
             <div className="bg-[#1a2332] px-5 py-4 text-center">
-              <p className="text-white font-semibold text-base mb-1">Current location</p>
+              <p className="text-white font-semibold text-base mb-1">Current location · Tracking live</p>
               <p className="text-[#808080] text-sm mb-4">@{username} is sharing</p>
               <button className="bg-[#2a3a4a] hover:bg-[#3a4a5a] text-white font-medium py-2.5 px-12 rounded-lg transition-colors">
                 View
@@ -639,9 +665,9 @@ function PitchContent() {
             className="rounded-[22px] p-5 mb-6 cursor-pointer"
             onClick={handleBlockedClick}
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -656,8 +682,8 @@ function PitchContent() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#262626]">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -683,8 +709,8 @@ function PitchContent() {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#262626]">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -719,9 +745,9 @@ function PitchContent() {
             transition={{ delay: 0.35 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -735,8 +761,8 @@ function PitchContent() {
                 <p className="text-[#808080] text-xs mt-1">All conversations from @{username}</p>
               </div>
             </div>
-            <div className="rounded-xl p-3" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#8B2FC9]/20">
+            <div className="rounded-xl p-3" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#262626]">
                 <div className="relative">
                   {profile?.avatar ? (
                     <img
@@ -788,9 +814,9 @@ function PitchContent() {
             transition={{ delay: 0.4 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-center justify-center mb-4">
@@ -853,9 +879,9 @@ function PitchContent() {
             transition={{ delay: 0.45 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <h2 className="text-white text-center font-bold text-xl mb-6">
@@ -923,7 +949,7 @@ function PitchContent() {
 
             <div className="space-y-4">
               {testimonials.map((t, i) => (
-                <div key={t.id} className="rounded-xl p-4" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
+                <div key={t.id} className="rounded-xl p-4" style={{ background: '#121212', border: '1px solid #1f1f1f' }}>
                   <div className="flex items-start gap-3">
                     <div className="relative flex-shrink-0">
                       {t.hasLock ? (
@@ -962,10 +988,18 @@ function PitchContent() {
             transition={{ delay: 0.55 }}
             className="mb-6"
           >
-            <h2 className="text-white text-center font-bold text-2xl mb-1 mt-4">DISCOVER EVERYTHING NOW</h2>
-            <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
+            <div className="rounded-2xl border border-[#262626] bg-[#0d0d0d] p-5 mb-4 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#00FF75]/15 flex items-center justify-center mx-auto mb-3">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                </svg>
+              </div>
+              <h2 className="text-white font-bold text-xl mb-1">DISCOVER EVERYTHING NOW</h2>
+              <p className="text-[#DFB313] text-xs font-semibold tracking-wider mb-3">FOR A LIMITED TIME</p>
+              <p className="text-[#888] text-xs leading-relaxed">Unlock @{username}&apos;s full data inside the app. Pick a plan to continue.</p>
+            </div>
 
-            <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
+            <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: '#121212', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
@@ -973,9 +1007,9 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost Tool</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access + Lifetime tool</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $67.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>33.50</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -1070,32 +1104,24 @@ function PitchContent() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">iMessage</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Facebook</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$49.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Instagram</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                    <span className="text-[#808080] text-sm line-through">$67.00</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">WhatsApp</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$59.90</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Snapchat</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Tinder</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-white text-sm">Facebook</span>
+                    <span className="text-[#808080] text-sm line-through">$49.90</span>
                   </div>
                   <div className="border-t border-[#262626] pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A0A0A0] text-sm">Total value:</span>
-                      <span className="text-[#808080] text-sm line-through">$129.40</span>
+                      <span className="text-[#808080] text-sm line-through">$226.70</span>
                     </div>
                   </div>
                 </div>
@@ -1149,7 +1175,7 @@ function PitchContent() {
           >
             <div className="flex justify-center gap-8 mb-4">
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
+                <div className="w-14 h-14 rounded-2xl border border-[#262626] flex items-center justify-center mb-2 mx-auto" style={{ background: '#121212' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
@@ -1158,7 +1184,7 @@ function PitchContent() {
                 <p className="text-white text-xs">Lifetime Access</p>
               </div>
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
+                <div className="w-14 h-14 rounded-2xl border border-[#262626] flex items-center justify-center mb-2 mx-auto" style={{ background: '#121212' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
@@ -1198,7 +1224,7 @@ function PitchContent() {
                 <div 
                   key={i}
                   className="rounded-xl overflow-hidden"
-                  style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}
+                  style={{ background: '#121212', border: '1px solid #1f1f1f' }}
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
