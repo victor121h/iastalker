@@ -145,22 +145,15 @@ function PitchContent() {
 
   useEffect(() => {
     const params = searchParams.toString();
-    const pageLoadTime = Date.now();
     window.history.pushState(null, '', window.location.href);
-
+    
     const handlePopState = () => {
-      const elapsedSeconds = (Date.now() - pageLoadTime) / 1000;
-      if (elapsedSeconds >= 90) {
-        const query = params ? `?${params}` : '';
-        window.location.href = `/pitch1${query}`;
-        return;
-      }
       window.history.pushState(null, '', window.location.href);
       setShowBackPopup(true);
     };
-
+    
     window.addEventListener('popstate', handlePopState);
-
+    
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
