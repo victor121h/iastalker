@@ -963,7 +963,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>67.00</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
@@ -1106,7 +1106,7 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>99.90</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>49.90</p>
               </div>
 
               <a
