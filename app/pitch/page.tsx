@@ -587,10 +587,6 @@ function PitchContent() {
                 <span className="text-white text-[10px] font-bold tracking-wider">LIVE</span>
               </div>
 
-              <div className="absolute top-3 right-3 px-2 py-1 rounded-md bg-black/60 backdrop-blur">
-                <p className="text-white text-[10px] font-mono">GPS · {trackingCoords}</p>
-              </div>
-
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
                   <span className="absolute inset-0 -m-3 rounded-full bg-[#E53935]/30 animate-ping"></span>
