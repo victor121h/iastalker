@@ -304,7 +304,7 @@ function PitchContent() {
         </div>
       )}
       
-      <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-24">
+      <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-8">
         <div className="bg-black px-4 pt-3 pb-2 flex items-center justify-between border-b border-[#1a1a1a]">
           <span className="text-white text-sm font-semibold">9:41</span>
           <div className="flex items-center gap-1.5">
@@ -334,31 +334,6 @@ function PitchContent() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1 px-2 overflow-x-auto scrollbar-hide">
-            {[
-              { id: 'profile', label: 'Profile', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' },
-              { id: 'media', label: 'Media', icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z' },
-              { id: 'dms', label: 'DMs', icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z' },
-              { id: 'location', label: 'Location', icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z' },
-              { id: 'stories', label: 'Stories', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' },
-              { id: 'plans', label: 'Unlock', icon: 'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z' },
-            ].map((tab, idx) => (
-              <button
-                key={tab.id}
-                onClick={() => {
-                  if (tab.id === 'plans') scrollToPlan();
-                  else handleBlockedClick();
-                }}
-                className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 whitespace-nowrap ${idx === 0 ? 'border-white text-white' : 'border-transparent text-[#888]'}`}
-              >
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d={tab.icon}/></svg>
-                {tab.label}
-                {tab.id !== 'profile' && (
-                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#E53935"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>
-                )}
-              </button>
-            ))}
-          </div>
         </header>
 
         <main className="px-3 pt-3">
@@ -430,6 +405,43 @@ function PitchContent() {
               See everything @{username} hides from you
             </h1>
           </motion.section>
+
+          <motion.button
+            type="button"
+            onClick={handleBlockedClick}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.05 }}
+            className="w-full rounded-2xl mb-3 p-4 text-left relative overflow-hidden"
+            style={{
+              background: 'linear-gradient(135deg, #1a0d24 0%, #0f0a1a 100%)',
+              border: '1px solid #8B2FC9',
+              boxShadow: '0 0 30px rgba(139, 47, 201, 0.2)',
+            }}
+          >
+            <div className="flex items-center gap-3">
+              <div
+                className="w-12 h-12 rounded-2xl flex items-center justify-center flex-shrink-0"
+                style={{ background: 'linear-gradient(135deg, #D62976 0%, #FA7E1E 50%, #FEDA75 100%)' }}
+              >
+                <svg width="26" height="26" viewBox="0 0 24 24" fill="white">
+                  <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zM12 16a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
+                </svg>
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[#C084FC] text-[10px] font-bold tracking-wider mb-0.5">DIRECT ACCESS</p>
+                <p className="text-white text-base font-bold leading-tight truncate">
+                  Access @{username}&apos;s Instagram here
+                </p>
+                <p className="text-[#888] text-xs mt-0.5">Tap to enter the account</p>
+              </div>
+              <div className="w-8 h-8 rounded-full bg-[#E53935]/20 flex items-center justify-center flex-shrink-0">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="#E53935">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                </svg>
+              </div>
+            </div>
+          </motion.button>
 
           <motion.section
             initial={{ opacity: 0, y: 20 }}
@@ -1177,31 +1189,6 @@ function PitchContent() {
           </motion.section>
 
         </main>
-
-        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-black/95 backdrop-blur border-t border-[#1a1a1a] px-4 py-2.5 flex items-center justify-around z-30">
-          {[
-            { label: 'Home', icon: 'M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z', locked: false },
-            { label: 'Search', icon: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z', locked: true },
-            { label: 'Inbox', icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z', locked: true },
-            { label: 'Profile', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z', locked: false },
-          ].map((item, idx) => (
-            <button
-              key={item.label}
-              onClick={() => item.locked ? handleBlockedClick() : scrollToPlan()}
-              className="relative flex flex-col items-center gap-0.5 px-3 py-1"
-            >
-              <svg width="24" height="24" viewBox="0 0 24 24" fill={idx === 0 ? 'white' : '#666'}>
-                <path d={item.icon}/>
-              </svg>
-              {item.locked && (
-                <span className="absolute top-0 right-1 w-3 h-3 rounded-full bg-[#E53935] flex items-center justify-center">
-                  <svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>
-                </span>
-              )}
-              <span className={`text-[10px] ${idx === 0 ? 'text-white' : 'text-[#666]'}`}>{item.label}</span>
-            </button>
-          ))}
-        </nav>
       </div>
     </div>
   );
