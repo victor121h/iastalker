@@ -322,15 +322,6 @@ function PitchContent() {
       )}
       
       <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-8">
-        <div className="bg-black px-4 pt-3 pb-2 flex items-center justify-between border-b border-[#1a1a1a]">
-          <span className="text-white text-sm font-semibold">9:41</span>
-          <div className="flex items-center gap-1.5">
-            <svg width="14" height="10" viewBox="0 0 18 12" fill="white"><path d="M1 11h16v-1H1v1zm2-3h12V7H3v1zm2-3h8V5H5v1zm2-3h4V2H7v1z"/></svg>
-            <svg width="14" height="10" viewBox="0 0 14 10" fill="white"><path d="M7 0C4.5 0 2.3 1 .7 2.6l1.4 1.4C3.4 2.7 5.1 2 7 2s3.6.7 4.9 2l1.4-1.4C11.7 1 9.5 0 7 0zM2.8 4.8l1.4 1.4C5 5.4 6 5 7 5s2 .4 2.8 1.2l1.4-1.4C10.1 3.7 8.6 3 7 3s-3.1.7-4.2 1.8z"/></svg>
-            <svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="white" strokeWidth="1"><rect x="1" y="1" width="18" height="8" rx="2"/><rect x="3" y="3" width="14" height="4" rx="1" fill="white"/></svg>
-          </div>
-        </div>
-
         <header className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-[#1a1a1a]">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
