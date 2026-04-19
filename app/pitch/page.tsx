@@ -63,6 +63,8 @@ function PitchContent() {
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [showBackPopup, setShowBackPopup] = useState(false);
+  const [trackingCoords, setTrackingCoords] = useState('40.7128° N, 74.0060° W');
+  const [trackingSeconds, setTrackingSeconds] = useState(2);
 
   const handleBlockedClick = () => {
     setShowBlockedPopup(true);
@@ -125,6 +127,21 @@ function PitchContent() {
         .catch(console.error);
     }
   }, [username]);
+
+  useEffect(() => {
+    const trackingTimer = setInterval(() => {
+      setTrackingSeconds(prev => {
+        if (prev >= 8) {
+          const lat = (40.7128 + (Math.random() - 0.5) * 0.001).toFixed(4);
+          const lng = (74.0060 + (Math.random() - 0.5) * 0.001).toFixed(4);
+          setTrackingCoords(`${lat}° N, ${lng}° W`);
+          return 1;
+        }
+        return prev + 1;
+      });
+    }, 1000);
+    return () => clearInterval(trackingTimer);
+  }, []);
 
   useEffect(() => {
     const warningTimer = setInterval(() => {
@@ -549,7 +566,7 @@ function PitchContent() {
               border: '1px solid #262626',
             }}
           >
-            <div className="relative h-32">
+            <div className="relative h-40">
               <div 
                 className="absolute inset-0"
                 style={{
@@ -561,10 +578,25 @@ function PitchContent() {
                 }}
               />
               <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#1a2332]/90" />
+
+              <div className="absolute top-3 left-3 flex items-center gap-1.5 px-2 py-1 rounded-full bg-[#E53935] shadow-lg">
+                <span className="relative flex h-2 w-2">
+                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                  <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                </span>
+                <span className="text-white text-[10px] font-bold tracking-wider">LIVE</span>
+              </div>
+
+              <div className="absolute top-3 right-3 px-2 py-1 rounded-md bg-black/60 backdrop-blur">
+                <p className="text-white text-[10px] font-mono">GPS · {trackingCoords}</p>
+              </div>
+
               <div className="absolute inset-0 flex items-center justify-center">
                 <div className="relative">
+                  <span className="absolute inset-0 -m-3 rounded-full bg-[#E53935]/30 animate-ping"></span>
+                  <span className="absolute inset-0 -m-6 rounded-full bg-[#E53935]/15 animate-ping" style={{ animationDelay: '0.5s' }}></span>
                   <div 
-                    className="p-[3px] rounded-full"
+                    className="relative p-[3px] rounded-full"
                     style={{ background: '#E53935' }}
                   >
                     {profile?.avatar ? (
@@ -580,9 +612,17 @@ function PitchContent() {
                   </div>
                 </div>
               </div>
+
+              <div className="absolute bottom-2 left-3 right-3 flex items-center justify-between text-[10px] text-white/80">
+                <span className="flex items-center gap-1">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00FF75] animate-pulse"></span>
+                  Signal: strong
+                </span>
+                <span className="font-mono">updated {trackingSeconds}s ago</span>
+              </div>
             </div>
             <div className="bg-[#1a2332] px-5 py-4 text-center">
-              <p className="text-white font-semibold text-base mb-1">Current location</p>
+              <p className="text-white font-semibold text-base mb-1">Current location · Tracking live</p>
               <p className="text-[#808080] text-sm mb-4">@{username} is sharing</p>
               <button className="bg-[#2a3a4a] hover:bg-[#3a4a5a] text-white font-medium py-2.5 px-12 rounded-lg transition-colors">
                 View
