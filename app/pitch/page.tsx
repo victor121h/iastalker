@@ -233,21 +233,8 @@ function PitchContent() {
   return (
     <div
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
+      style={{ background: '#0a0a0a' }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
-        }}
-      />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
-        <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
-      </div>
 
       {showBlockedPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
@@ -334,7 +321,7 @@ function PitchContent() {
         </div>
       )}
       
-      <div className="relative z-10 max-w-md mx-auto min-h-screen pb-8" style={{ background: 'rgba(10, 5, 20, 0.55)', backdropFilter: 'blur(2px)' }}>
+      <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-8">
         <header className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-[#1a1a1a]">
           <div className="flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-2">
