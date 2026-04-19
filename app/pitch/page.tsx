@@ -86,10 +86,10 @@ function PitchContent() {
         const seconds = Math.floor((remaining % 60000) / 1000);
         if (remaining > 0) return { minutes, seconds };
       }
-      const endTime = Date.now() + 15 * 60 * 1000;
+      const endTime = Date.now() + 3 * 60 * 1000;
       localStorage.setItem('pitch_timer_end', endTime.toString());
     }
-    return { minutes: 14, seconds: 59 };
+    return { minutes: 3, seconds: 0 };
   });
 
   useEffect(() => {
@@ -134,9 +134,10 @@ function PitchContent() {
         } else if (prev.minutes > 0) {
           return { minutes: prev.minutes - 1, seconds: 59 };
         }
-        const endTime = Date.now() + 15 * 60 * 1000;
-        localStorage.setItem('pitch_timer_end', endTime.toString());
-        return { minutes: 14, seconds: 59 };
+        if (!localStorage.getItem('pitch_timer_popup_shown')) {
+          setShowTimerPopup(true);
+        }
+        return prev;
       });
     }, 1000);
     return () => clearInterval(warningTimer);
@@ -382,7 +383,7 @@ function PitchContent() {
               />
             </div>
             <p className="text-[#FF6B6B] text-sm text-center font-medium">
-              Our artificial intelligence found these photos above, which were recently deleted.
+              Our artificial intelligence found these photos above, which were deleted 3 months ago.
             </p>
           </motion.div>
 
@@ -887,7 +888,7 @@ function PitchContent() {
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost Tool</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access + Lifetime tool</p>
               
-              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $67.00</p>
+              <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
                 <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
