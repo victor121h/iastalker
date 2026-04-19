@@ -216,21 +216,8 @@ function PitchContent() {
   return (
     <div
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
+      style={{ background: '#0a0a0a' }}
     >
-      <div
-        className="absolute inset-0 pointer-events-none"
-        style={{
-          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
-        }}
-      />
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
-        <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
-        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
-      </div>
 
       {showBlockedPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
@@ -317,39 +304,83 @@ function PitchContent() {
         </div>
       )}
       
-      <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)' }}>
-          <div className="flex items-center justify-between max-w-md mx-auto">
-            <button className="p-1">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
-                <path d="M19 12H5M12 19l-7-7 7-7" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
-            <div className="flex items-center gap-2 text-white text-sm font-medium">
-              <span>Your Exclusive Access Expires in:</span>
-              <span className="font-bold">
-                {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
-              </span>
+      <div className="relative z-10 max-w-md mx-auto bg-black min-h-screen pb-24">
+        <div className="bg-black px-4 pt-3 pb-2 flex items-center justify-between border-b border-[#1a1a1a]">
+          <span className="text-white text-sm font-semibold">9:41</span>
+          <div className="flex items-center gap-1.5">
+            <svg width="14" height="10" viewBox="0 0 18 12" fill="white"><path d="M1 11h16v-1H1v1zm2-3h12V7H3v1zm2-3h8V5H5v1zm2-3h4V2H7v1z"/></svg>
+            <svg width="14" height="10" viewBox="0 0 14 10" fill="white"><path d="M7 0C4.5 0 2.3 1 .7 2.6l1.4 1.4C3.4 2.7 5.1 2 7 2s3.6.7 4.9 2l1.4-1.4C11.7 1 9.5 0 7 0zM2.8 4.8l1.4 1.4C5 5.4 6 5 7 5s2 .4 2.8 1.2l1.4-1.4C10.1 3.7 8.6 3 7 3s-3.1.7-4.2 1.8z"/></svg>
+            <svg width="22" height="10" viewBox="0 0 22 10" fill="none" stroke="white" strokeWidth="1"><rect x="1" y="1" width="18" height="8" rx="2"/><rect x="3" y="3" width="14" height="4" rx="1" fill="white"/></svg>
+          </div>
+        </div>
+
+        <header className="sticky top-0 z-40 bg-black/95 backdrop-blur border-b border-[#1a1a1a]">
+          <div className="flex items-center justify-between px-4 py-3">
+            <div className="flex items-center gap-2">
+              <img src="/ghost-logo.png" alt="AI Ghost" className="h-6 w-auto" />
+              <span className="text-white font-semibold text-base">AI Ghost</span>
             </div>
-            <div className="w-5" />
+            <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1 px-2 py-1 rounded-full bg-[#E53935]/15 border border-[#E53935]/30">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#E53935] animate-pulse" />
+                <span className="text-[#E53935] text-[11px] font-bold tabular-nums">
+                  {String(warningTimeLeft.minutes).padStart(2, '0')}:{String(warningTimeLeft.seconds).padStart(2, '0')}
+                </span>
+              </div>
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+                <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+              </svg>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-1 px-2 overflow-x-auto scrollbar-hide">
+            {[
+              { id: 'profile', label: 'Profile', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z' },
+              { id: 'media', label: 'Media', icon: 'M19 3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm-7 14l-5-5 1.41-1.41L12 14.17l4.59-4.58L18 11l-6 6z' },
+              { id: 'dms', label: 'DMs', icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z' },
+              { id: 'location', label: 'Location', icon: 'M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5a2.5 2.5 0 0 1 0-5 2.5 2.5 0 0 1 0 5z' },
+              { id: 'stories', label: 'Stories', icon: 'M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8z' },
+              { id: 'plans', label: 'Unlock', icon: 'M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z' },
+            ].map((tab, idx) => (
+              <button
+                key={tab.id}
+                onClick={() => {
+                  if (tab.id === 'plans') scrollToPlan();
+                  else handleBlockedClick();
+                }}
+                className={`flex items-center gap-1.5 px-3 py-2.5 text-xs font-medium border-b-2 whitespace-nowrap ${idx === 0 ? 'border-white text-white' : 'border-transparent text-[#888]'}`}
+              >
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d={tab.icon}/></svg>
+                {tab.label}
+                {tab.id !== 'profile' && (
+                  <svg width="10" height="10" viewBox="0 0 24 24" fill="#E53935"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>
+                )}
+              </button>
+            ))}
           </div>
         </header>
 
-        <main className="pt-16 pb-8 px-4 max-w-md mx-auto">
-          <div className="bg-[#1a0a0a] border border-[#E53935]/60 rounded-xl p-4 mb-4 mt-2 text-center">
-            <p className="text-white text-sm font-medium leading-snug">
-              After this time, the collected data from <span className="font-bold text-[#E53935]">@{username}</span> will be deleted from our system for security.
-            </p>
-            <p className="text-white/60 text-xs mt-2 leading-snug">
-              If you let this chance pass, you won&apos;t be able to check again and will lose the chance to know the truth.
-            </p>
+        <main className="px-3 pt-3">
+          <div className="bg-[#1a0a0a] border border-[#E53935]/40 rounded-xl p-3.5 mb-3 flex items-start gap-3">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="#E53935" className="flex-shrink-0 mt-0.5">
+              <path d="M1 21h22L12 2 1 21zm12-3h-2v-2h2v2zm0-4h-2v-4h2v4z"/>
+            </svg>
+            <div>
+              <p className="text-white text-sm font-medium leading-snug">
+                Data from <span className="font-bold text-[#E53935]">@{username}</span> will be permanently deleted from our system soon.
+              </p>
+              <p className="text-white/50 text-xs mt-1.5 leading-snug">
+                If you let this chance pass, you won&apos;t be able to check again.
+              </p>
+            </div>
           </div>
 
 
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-gradient-to-r from-[#1a1a2e] to-[#16213e] border border-[#0f3460]/50 rounded-xl p-4 mb-4 mt-2"
+            className="bg-[#0d1620] border border-[#00D9FF]/20 rounded-xl p-3.5 mb-3"
           >
             <div className="flex items-start gap-3">
               <div className="w-10 h-10 rounded-full bg-[#00D9FF]/20 flex items-center justify-center flex-shrink-0">
@@ -387,15 +418,15 @@ function PitchContent() {
             </p>
           </motion.div>
 
-          <motion.section 
+          <motion.section
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="text-center py-8"
+            className="rounded-xl p-4 mb-3 bg-gradient-to-br from-[#1a0f2e] to-[#0a0a0a] border border-[#262626]"
           >
-            <div className="flex items-center justify-center mb-4">
-              <img src="/ghost-logo.png" alt="AI Ghost" className="h-[48px] w-auto" />
+            <div className="flex items-center gap-2.5 mb-1.5">
+              <span className="px-2 py-0.5 rounded-md bg-[#8B2FC9]/20 text-[#C084FC] text-[10px] font-bold tracking-wide">PREMIUM ACCESS</span>
             </div>
-            <h1 className="text-white text-xl font-bold leading-tight">
+            <h1 className="text-white text-lg font-bold leading-tight">
               See everything @{username} hides from you
             </h1>
           </motion.section>
@@ -406,9 +437,9 @@ function PitchContent() {
             transition={{ delay: 0.1 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.25)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.1), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <p className="text-[#A0A0A0] text-sm text-center mb-4">Full access to the profile of:</p>
@@ -470,9 +501,9 @@ function PitchContent() {
             transition={{ delay: 0.2 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -502,8 +533,8 @@ function PitchContent() {
             className="rounded-[22px] overflow-hidden mb-6 cursor-pointer"
             onClick={handleBlockedClick}
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
+              background: '#121212',
+              border: '1px solid #262626',
             }}
           >
             <div className="relative h-32">
@@ -554,9 +585,9 @@ function PitchContent() {
             className="rounded-[22px] p-5 mb-6 cursor-pointer"
             onClick={handleBlockedClick}
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -571,8 +602,8 @@ function PitchContent() {
               </div>
             </div>
             <div className="flex gap-3">
-              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#262626]">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -598,8 +629,8 @@ function PitchContent() {
                   </div>
                 </div>
               </div>
-              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-                <div className="flex items-center gap-2 p-2.5 border-b border-[#8B2FC9]/20">
+              <div className="flex-1 rounded-xl overflow-hidden" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+                <div className="flex items-center gap-2 p-2.5 border-b border-[#262626]">
                   {profile?.avatar ? (
                     <img
                       src={getProxiedAvatar(profile.avatar)}
@@ -634,9 +665,9 @@ function PitchContent() {
             transition={{ delay: 0.35 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-start gap-3 mb-4">
@@ -650,8 +681,8 @@ function PitchContent() {
                 <p className="text-[#808080] text-xs mt-1">All conversations from @{username}</p>
               </div>
             </div>
-            <div className="rounded-xl p-3" style={{ background: 'rgba(25, 12, 42, 0.95)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
-              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#8B2FC9]/20">
+            <div className="rounded-xl p-3" style={{ background: '#0d0d0d', border: '1px solid #1f1f1f' }}>
+              <div className="flex items-center gap-3 mb-3 pb-3 border-b border-[#262626]">
                 <div className="relative">
                   {profile?.avatar ? (
                     <img
@@ -703,9 +734,9 @@ function PitchContent() {
             transition={{ delay: 0.4 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <div className="flex items-center justify-center mb-4">
@@ -768,9 +799,9 @@ function PitchContent() {
             transition={{ delay: 0.45 }}
             className="rounded-[22px] p-5 mb-6"
             style={{
-              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
-              border: '1px solid rgba(138, 43, 226, 0.2)',
-              boxShadow: '0 0 40px rgba(138, 43, 226, 0.08), 0 20px 40px rgba(0,0,0,0.3)',
+              background: '#121212',
+              border: '1px solid #262626',
+              boxShadow: 'none',
             }}
           >
             <h2 className="text-white text-center font-bold text-xl mb-6">
@@ -838,7 +869,7 @@ function PitchContent() {
 
             <div className="space-y-4">
               {testimonials.map((t, i) => (
-                <div key={t.id} className="rounded-xl p-4" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}>
+                <div key={t.id} className="rounded-xl p-4" style={{ background: '#121212', border: '1px solid #1f1f1f' }}>
                   <div className="flex items-start gap-3">
                     <div className="relative flex-shrink-0">
                       {t.hasLock ? (
@@ -877,10 +908,18 @@ function PitchContent() {
             transition={{ delay: 0.55 }}
             className="mb-6"
           >
-            <h2 className="text-white text-center font-bold text-2xl mb-1 mt-4">DISCOVER EVERYTHING NOW</h2>
-            <p className="text-[#DFB313] text-center text-sm mb-6">FOR A LIMITED TIME</p>
+            <div className="rounded-2xl border border-[#262626] bg-[#0d0d0d] p-5 mb-4 text-center">
+              <div className="w-14 h-14 rounded-full bg-[#00FF75]/15 flex items-center justify-center mx-auto mb-3">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
+                  <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/>
+                </svg>
+              </div>
+              <h2 className="text-white font-bold text-xl mb-1">DISCOVER EVERYTHING NOW</h2>
+              <p className="text-[#DFB313] text-xs font-semibold tracking-wider mb-3">FOR A LIMITED TIME</p>
+              <p className="text-[#888] text-xs leading-relaxed">Unlock @{username}&apos;s full data inside the app. Pick a plan to continue.</p>
+            </div>
 
-            <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
+            <div id="plan-2990" className="rounded-[22px] p-5 border-2 border-[#00FF75] relative" style={{ background: '#121212', boxShadow: '0 0 30px rgba(0, 255, 117, 0.1)' }}>
               <div className="absolute -top-3 left-1/2 -translate-x-1/2">
                 <span className="bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">RECOMMENDED</span>
               </div>
@@ -1056,7 +1095,7 @@ function PitchContent() {
           >
             <div className="flex justify-center gap-8 mb-4">
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
+                <div className="w-14 h-14 rounded-2xl border border-[#262626] flex items-center justify-center mb-2 mx-auto" style={{ background: '#121212' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                     <circle cx="12" cy="12" r="10"/>
                     <polyline points="12 6 12 12 16 14"/>
@@ -1065,7 +1104,7 @@ function PitchContent() {
                 <p className="text-white text-xs">Lifetime Access</p>
               </div>
               <div className="text-center">
-                <div className="w-14 h-14 rounded-2xl border border-[#8B2FC9]/30 flex items-center justify-center mb-2 mx-auto" style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)' }}>
+                <div className="w-14 h-14 rounded-2xl border border-[#262626] flex items-center justify-center mb-2 mx-auto" style={{ background: '#121212' }}>
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                     <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>
                   </svg>
@@ -1105,7 +1144,7 @@ function PitchContent() {
                 <div 
                   key={i}
                   className="rounded-xl overflow-hidden"
-                  style={{ background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.85) 0%, rgba(20, 10, 35, 0.9) 100%)', border: '1px solid rgba(138, 43, 226, 0.15)' }}
+                  style={{ background: '#121212', border: '1px solid #1f1f1f' }}
                 >
                   <button
                     onClick={() => setExpandedFaq(expandedFaq === i ? null : i)}
@@ -1138,6 +1177,31 @@ function PitchContent() {
           </motion.section>
 
         </main>
+
+        <nav className="fixed bottom-0 left-1/2 -translate-x-1/2 w-full max-w-md bg-black/95 backdrop-blur border-t border-[#1a1a1a] px-4 py-2.5 flex items-center justify-around z-30">
+          {[
+            { label: 'Home', icon: 'M12 5.69l5 4.5V18h-2v-6H9v6H7v-7.81l5-4.5M12 3L2 12h3v8h6v-6h2v6h6v-8h3L12 3z', locked: false },
+            { label: 'Search', icon: 'M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z', locked: true },
+            { label: 'Inbox', icon: 'M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z', locked: true },
+            { label: 'Profile', icon: 'M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z', locked: false },
+          ].map((item, idx) => (
+            <button
+              key={item.label}
+              onClick={() => item.locked ? handleBlockedClick() : scrollToPlan()}
+              className="relative flex flex-col items-center gap-0.5 px-3 py-1"
+            >
+              <svg width="24" height="24" viewBox="0 0 24 24" fill={idx === 0 ? 'white' : '#666'}>
+                <path d={item.icon}/>
+              </svg>
+              {item.locked && (
+                <span className="absolute top-0 right-1 w-3 h-3 rounded-full bg-[#E53935] flex items-center justify-center">
+                  <svg width="7" height="7" viewBox="0 0 24 24" fill="white"><path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z"/></svg>
+                </span>
+              )}
+              <span className={`text-[10px] ${idx === 0 ? 'text-white' : 'text-[#666]'}`}>{item.label}</span>
+            </button>
+          ))}
+        </nav>
       </div>
     </div>
   );
