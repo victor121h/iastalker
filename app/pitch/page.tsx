@@ -1041,7 +1041,7 @@ function PitchContent() {
 
               <p className="text-[#DFB313] text-center text-sm font-semibold mb-2">Get all versions today for only:</p>
               <div className="bg-[#DFB313] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>99.00</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>99.90</p>
               </div>
 
               <a
