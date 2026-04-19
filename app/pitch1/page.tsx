@@ -145,20 +145,28 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
-    const params = searchParams.toString();
     window.history.pushState(null, '', window.location.href);
-    
+
     const handlePopState = () => {
+      const popupOpen = document.body.dataset.backPopupOpen === 'true';
+      if (popupOpen) {
+        window.location.href = '/pitch1';
+        return;
+      }
       window.history.pushState(null, '', window.location.href);
       setShowBackPopup(true);
     };
-    
+
     window.addEventListener('popstate', handlePopState);
-    
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
   }, [router, searchParams]);
+
+  useEffect(() => {
+    document.body.dataset.backPopupOpen = showBackPopup ? 'true' : 'false';
+  }, [showBackPopup]);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
