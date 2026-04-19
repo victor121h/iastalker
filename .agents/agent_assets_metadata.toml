@@ -1,0 +1,8 @@
+uploads = []
+generated = []
+
+[[outputs]]
+id = "aHzm8sWmSxKGG2Yrltm_T"
+uri = "file://DOCUMENTACAO_AI_GHOST.md"
+type = "text"
+title = "Documentação Completa - AI Ghost"
