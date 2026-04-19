@@ -425,50 +425,67 @@ function PitchContent() {
               boxShadow: 'none',
             }}
           >
-            <p className="text-[#A0A0A0] text-sm text-center mb-4">Full access to the profile of:</p>
-            
-            <div className="flex items-center gap-4 mb-4">
-              <div className="relative">
-                <div 
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-2">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M19 12H5M12 19l-7-7 7-7"/>
+                </svg>
+                <p className="text-white font-bold text-lg">@{username}</p>
+              </div>
+              <div className="flex items-center gap-3">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.8">
+                  <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
+                  <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
+                </svg>
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="white">
+                  <circle cx="5" cy="12" r="2"/>
+                  <circle cx="12" cy="12" r="2"/>
+                  <circle cx="19" cy="12" r="2"/>
+                </svg>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-5 mb-3">
+              <div className="relative flex-shrink-0">
+                <div
                   className="p-[2px] rounded-full"
                   style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)' }}
                 >
-                  <div className="rounded-full p-[2px]" style={{ background: 'rgba(20, 10, 35, 0.95)' }}>
+                  <div className="rounded-full p-[2px]" style={{ background: '#121212' }}>
                     {profile?.avatar ? (
                       <img
                         src={getProxiedAvatar(profile.avatar)}
                         alt=""
-                        className="w-[64px] h-[64px] rounded-full object-cover"
+                        className="w-[80px] h-[80px] rounded-full object-cover"
                       />
                     ) : (
-                      <div className="w-[64px] h-[64px] rounded-full bg-[#262626]" />
+                      <div className="w-[80px] h-[80px] rounded-full bg-[#262626]" />
                     )}
                   </div>
                 </div>
               </div>
-              <div>
-                <p className="text-white font-bold text-lg">@{username}</p>
-                <p className="text-[#A0A0A0] text-sm">{profile?.name || 'Loading...'}</p>
-              </div>
-            </div>
 
-            <div className="flex justify-around py-3 border-y border-[#262626] mb-4">
-              <div className="text-center">
-                <p className="text-white font-bold">{profile?.posts || 0}</p>
-                <p className="text-[#A0A0A0] text-xs">posts</p>
-              </div>
-              <div className="text-center">
-                <p className="text-white font-bold">{formatNumber(profile?.followers || 0)}</p>
-                <p className="text-[#A0A0A0] text-xs">followers</p>
-              </div>
-              <div className="text-center">
-                <p className="text-white font-bold">{formatNumber(profile?.following || 0)}</p>
-                <p className="text-[#A0A0A0] text-xs">following</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-white font-bold text-base mb-2 truncate">{profile?.name || 'Loading...'}</p>
+                <div className="flex items-center justify-between">
+                  <div className="text-center">
+                    <p className="text-white font-bold text-base leading-tight">{profile?.posts || 0}</p>
+                    <p className="text-[#A0A0A0] text-[11px]">posts</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-white font-bold text-base leading-tight">{formatNumber(profile?.followers || 0)}</p>
+                    <p className="text-[#A0A0A0] text-[11px]">followers</p>
+                  </div>
+                  <div className="text-center">
+                    <p className="text-white font-bold text-base leading-tight">{formatNumber(profile?.following || 0)}</p>
+                    <p className="text-[#A0A0A0] text-[11px]">following</p>
+                  </div>
+                </div>
               </div>
             </div>
 
             {profile?.bio && (
-              <p className="text-[#C0C0C0] text-sm text-center mb-4">{profile.bio}</p>
+              <p className="text-white text-sm leading-snug mb-4 whitespace-pre-line">{profile.bio}</p>
             )}
 
             <button
