@@ -61,6 +61,7 @@ function PitchContent() {
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [expandedFaq, setExpandedFaq] = useState<number | null>(null);
   const [showBlockedPopup, setShowBlockedPopup] = useState(false);
+  const [showDiscountPopup, setShowDiscountPopup] = useState(true);
   const [showTimerPopup, setShowTimerPopup] = useState(false);
   const [showBackPopup, setShowBackPopup] = useState(false);
 
@@ -231,6 +232,50 @@ function PitchContent() {
         <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
         <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
       </div>
+
+      {showDiscountPopup && (
+        <div className="fixed inset-0 z-[110] flex items-center justify-center bg-black/80 px-4" onClick={() => setShowDiscountPopup(false)}>
+          <div
+            className="rounded-3xl p-7 max-w-sm w-full text-center relative"
+            style={{ background: 'linear-gradient(145deg, #0F2818 0%, #082015 100%)', border: '2px solid #00FF75', boxShadow: '0 0 60px rgba(0, 255, 117, 0.3)' }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <button
+              onClick={() => setShowDiscountPopup(false)}
+              className="absolute top-3 right-3 w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 transition-colors"
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+                <path d="M18 6L6 18M6 6l12 12"/>
+              </svg>
+            </button>
+
+            <div className="text-5xl mb-3">🎉</div>
+
+            <div className="inline-block bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full mb-3">
+              EXCLUSIVE OFFER
+            </div>
+
+            <h2 className="text-white text-2xl font-bold mb-3">Congratulations!</h2>
+
+            <p className="text-white text-base mb-4 leading-relaxed">
+              You just earned a <span className="text-[#00FF75] font-bold text-xl">50% discount</span> on your plan!
+            </p>
+
+            <p className="text-white/70 text-sm mb-5 leading-relaxed">
+              This is a limited-time offer just for you. Take advantage now before it expires.
+            </p>
+
+            <button
+              onClick={() => setShowDiscountPopup(false)}
+              className="w-full bg-[#00FF75] text-black font-bold py-3.5 rounded-xl hover:opacity-90 transition-opacity"
+            >
+              Claim My Discount
+            </button>
+
+            <p className="text-white/40 text-xs mt-3">🔒 Discount automatically applied to your plans below</p>
+          </div>
+        </div>
+      )}
 
       {showBlockedPopup && (
         <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/70 px-4" onClick={() => setShowBlockedPopup(false)}>
