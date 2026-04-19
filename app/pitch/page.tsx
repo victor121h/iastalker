@@ -985,32 +985,24 @@ function PitchContent() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">iMessage</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Facebook</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-[#808080] text-sm line-through">$49.90</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">Instagram</span>
-                    <span className="text-[#808080] text-sm line-through">$29.90</span>
+                    <span className="text-[#808080] text-sm line-through">$67.00</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-white text-sm">WhatsApp</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
+                    <span className="text-[#808080] text-sm line-through">$59.90</span>
                   </div>
                   <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Snapchat</span>
-                    <span className="text-[#808080] text-sm line-through">$19.90</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-white text-sm">Tinder</span>
-                    <span className="text-[#808080] text-sm line-through">$14.90</span>
+                    <span className="text-white text-sm">Facebook</span>
+                    <span className="text-[#808080] text-sm line-through">$49.90</span>
                   </div>
                   <div className="border-t border-[#262626] pt-2 mt-2">
                     <div className="flex justify-between items-center">
                       <span className="text-[#A0A0A0] text-sm">Total value:</span>
-                      <span className="text-[#808080] text-sm line-through">$129.40</span>
+                      <span className="text-[#808080] text-sm line-through">$226.70</span>
                     </div>
                   </div>
                 </div>
