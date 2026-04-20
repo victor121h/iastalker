@@ -144,20 +144,18 @@ function PitchContent() {
   }, []);
 
   useEffect(() => {
-    const params = searchParams.toString();
     window.history.pushState(null, '', window.location.href);
-    
+
     const handlePopState = () => {
       window.history.pushState(null, '', window.location.href);
-      setShowBackPopup(true);
     };
-    
+
     window.addEventListener('popstate', handlePopState);
-    
+
     return () => {
       window.removeEventListener('popstate', handlePopState);
     };
-  }, [router, searchParams]);
+  }, []);
 
   const getProxiedAvatar = (url: string) => {
     if (url && (url.includes('cdninstagram.com') || url.includes('fbcdn.net'))) {
@@ -890,7 +888,7 @@ function PitchContent() {
               
               <p className="text-[#808080] text-center text-sm line-through mb-2">From: $200.00</p>
               <div className="bg-[#00FF75] rounded-xl py-4 mb-4">
-                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>67.00</p>
+                <p className="text-black text-center text-3xl font-bold"><span className="text-xl">$</span>29.90</p>
               </div>
 
               <div className="space-y-3 mb-4">
