@@ -1045,7 +1045,11 @@ function PitchContent() {
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
             </div>
 
-            {false && <div className="hidden">
+            <div className="bg-[#0C1011] rounded-[22px] p-5 border-2 border-[#DFB313] relative mt-4">
+              <div className="absolute -top-3 left-1/2 -translate-x-1/2">
+                <span className="bg-[#DFB313] text-black text-xs font-bold px-3 py-1 rounded-full">BEST VALUE</span>
+              </div>
+
               <h3 className="text-white text-center font-bold text-lg mb-1 mt-2">AI Ghost All Apps</h3>
               <p className="text-[#808080] text-center text-xs mb-4">Full access to all spy versions</p>
 
@@ -1114,7 +1118,7 @@ function PitchContent() {
                 Get All Apps
               </a>
               <p className="text-center text-white/40 text-xs mt-3">🔒 One-time payment. No subscription. No hidden fees. Instant access.</p>
-            </div>}
+            </div>
           </motion.section>
 
           <motion.section
