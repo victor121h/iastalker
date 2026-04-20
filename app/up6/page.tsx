@@ -64,10 +64,25 @@ function Up6Content() {
   return (
     <div
       className="min-h-screen relative overflow-x-hidden"
-      style={{ background: '#0a0a0a' }}
+      style={{ background: 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)' }}
     >
+      <div
+        className="absolute inset-0 pointer-events-none"
+        style={{
+          background: 'radial-gradient(ellipse at 30% 20%, rgba(138, 43, 226, 0.15) 0%, transparent 50%), radial-gradient(ellipse at 70% 80%, rgba(255, 140, 0, 0.08) 0%, transparent 50%)'
+        }}
+      />
+
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute top-[10%] left-[5%] w-2 h-2 rounded-full bg-purple-400/30 animate-pulse" />
+        <div className="absolute top-[30%] right-[10%] w-1.5 h-1.5 rounded-full bg-orange-400/25 animate-pulse" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-[25%] left-[15%] w-1 h-1 rounded-full bg-pink-400/20 animate-pulse" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-[60%] right-[20%] w-1.5 h-1.5 rounded-full bg-yellow-400/20 animate-pulse" style={{ animationDelay: '0.5s' }} />
+        <div className="absolute top-[15%] right-[30%] w-1 h-1 rounded-full bg-purple-300/25 animate-pulse" style={{ animationDelay: '1.5s' }} />
+      </div>
+
       <div className="relative z-10">
-        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4 bg-[#E53935]">
+        <header className="fixed top-0 left-0 right-0 z-50 py-2.5 px-4" style={{ background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)' }}>
           <div className="flex items-center justify-center gap-3 max-w-md mx-auto">
             <span className="text-xl">⚠️</span>
             <span className="text-white text-sm font-medium">YOUR SESSION EXPIRES IN:</span>
@@ -90,26 +105,27 @@ function Up6Content() {
             transition={{ duration: 0.4 }}
             className="rounded-[22px] p-6 mb-6"
             style={{
-              background: '#121212',
-              border: '1px solid #262626',
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              border: '1px solid rgba(138, 43, 226, 0.25)',
+              boxShadow: '0 0 60px rgba(138, 43, 226, 0.12), 0 25px 50px rgba(0,0,0,0.4)',
             }}
           >
             <div className="flex items-center justify-center mb-6">
-              <div className="w-20 h-20 rounded-2xl overflow-hidden">
+              <div className="w-20 h-20 rounded-2xl overflow-hidden" style={{ boxShadow: '0 0 30px rgba(138, 43, 226, 0.3)' }}>
                 <img src="/ghost-logo.png" alt="AI Ghost Logo" className="w-full h-full object-cover" />
               </div>
             </div>
 
             <div className="text-center mb-6">
               <h1 className="text-white text-xl font-bold mb-1">Mobile Installation Fee</h1>
-              <div className="w-12 h-0.5 mx-auto mt-2" style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E)' }} />
+              <div className="w-12 h-0.5 mx-auto mt-2" style={{ background: 'linear-gradient(90deg, #C13584, #F77737)' }} />
             </div>
 
-            <div className="rounded-xl p-4 mb-5" style={{ background: '#1a1a1a', border: '1px solid #262626' }}>
-              <p className="text-sm leading-relaxed text-[#A0A0A0]">
+            <div className="rounded-xl p-4 mb-5" style={{ background: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
+              <p className="text-sm leading-relaxed" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
                 You purchased AI Ghost for <span className="text-white font-semibold">desktop</span> and we detected that you are accessing via <span className="text-white font-semibold">mobile</span>.
               </p>
-              <p className="text-sm leading-relaxed mt-3 text-[#A0A0A0]">
+              <p className="text-sm leading-relaxed mt-3" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
                 It is <span className="text-white font-semibold">mandatory</span> that you choose one of the plans below to activate your account on mobile. If you do not complete the activation, <span className="text-white font-semibold">you will not be able to access AI Ghost</span>.
               </p>
             </div>
@@ -118,7 +134,7 @@ function Up6Content() {
               <div className="flex items-start gap-3">
                 <span className="text-xl flex-shrink-0">👆</span>
                 <div>
-                  <p className="text-sm text-[#A0A0A0]">
+                  <p className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
                     <span className="text-white font-semibold">Current plan:</span> Eye of God – $29.90
                   </p>
                   <p className="text-xs mt-1.5 leading-relaxed" style={{ color: '#F59E0B' }}>
@@ -139,7 +155,7 @@ function Up6Content() {
               <span className="text-white">SELECT </span>
               <span
                 className="bg-clip-text text-transparent"
-                style={{ backgroundImage: 'linear-gradient(135deg, #D62976, #FA7E1E)' }}
+                style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
               >your plan below:</span>
             </h2>
           </motion.div>
@@ -150,10 +166,11 @@ function Up6Content() {
             transition={{ duration: 0.4, delay: 0.2 }}
             className="rounded-[22px] p-5 border-2 border-[#00FF75] relative overflow-hidden"
             style={{
-              background: '#121212',
+              background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+              boxShadow: '0 0 40px rgba(0, 255, 117, 0.1), 0 20px 40px rgba(0,0,0,0.3)',
             }}
           >
-            <div className="absolute top-3 right-3 bg-[#00FF75] text-black text-xs font-bold px-3 py-1 rounded-full">
+            <div className="absolute top-3 right-3 bg-green-500 text-white text-xs font-bold px-3 py-1 rounded-full">
               {plan.badge}
             </div>
 
@@ -180,7 +197,7 @@ function Up6Content() {
               <p className="text-white text-3xl font-bold">
                 ${plan.price.split('.')[0]}<span className="text-xl">.{plan.price.split('.')[1]}</span>
               </p>
-              <p className="text-sm font-medium mt-1" style={{ color: '#D62976' }}>You save ${plan.savings}</p>
+              <p className="text-sm font-medium mt-1" style={{ color: '#C13584' }}>You save ${plan.savings}</p>
             </div>
 
             <a
@@ -189,7 +206,8 @@ function Up6Content() {
               rel="noopener noreferrer"
               className="block w-full py-3.5 rounded-xl text-center font-bold text-white"
               style={{
-                background: 'linear-gradient(135deg, #D62976 0%, #FA7E1E 50%, #FEDA75 100%)',
+                background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)',
+                boxShadow: '0 4px 20px rgba(193, 53, 132, 0.4)',
               }}
             >
               SELECT PLAN
@@ -208,16 +226,16 @@ function Up6Content() {
             transition={{ duration: 0.4, delay: 0.6 }}
             className="mt-8 text-center"
           >
-            <p className="text-sm mb-4 text-[#666]">100% Secure Purchase - SSL Encryption</p>
+            <p className="text-sm mb-4" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>100% Secure Purchase - SSL Encryption</p>
             <div className="flex justify-center gap-4">
-              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: '#121212', border: '1px solid #262626' }}>
+              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(30, 15, 50, 0.8)', border: '1px solid rgba(138, 43, 226, 0.2)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#00FF75" strokeWidth="2">
                   <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
                   <path d="M9 12l2 2 4-4"/>
                 </svg>
                 <span className="text-white text-xs">30-day guarantee</span>
               </div>
-              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: '#121212', border: '1px solid #262626' }}>
+              <div className="flex items-center gap-2 rounded-lg px-3 py-2" style={{ background: 'rgba(30, 15, 50, 0.8)', border: '1px solid rgba(138, 43, 226, 0.2)' }}>
                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#1A73E8" strokeWidth="2">
                   <rect x="1" y="4" width="22" height="16" rx="2"/>
                   <path d="M1 10h22"/>
@@ -235,8 +253,8 @@ function Up6Content() {
 export default function Up6Page() {
   return (
     <Suspense fallback={
-      <div className="min-h-screen flex items-center justify-center" style={{ background: '#0a0a0a' }}>
-        <div className="text-[#808080]">Loading...</div>
+      <div className="min-h-screen flex items-center justify-center" style={{ background: '#1a0a2e' }}>
+        <div style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Loading...</div>
       </div>
     }>
       <Up6Content />

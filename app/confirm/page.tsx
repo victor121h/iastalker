@@ -3,7 +3,10 @@
 import { motion } from 'framer-motion';
 import { useRouter, useSearchParams } from 'next/navigation';
 import { Suspense, useEffect, useState } from 'react';
+import dynamic from 'next/dynamic';
 import InstagramButton from '@/components/InstagramButton';
+
+const MatrixBackground = dynamic(() => import('@/components/MatrixBackground'), { ssr: false });
 
 interface ProfileData {
   username: string;
@@ -19,17 +22,18 @@ interface ProfileData {
   pk: string;
 }
 
-const pageBg = '#0a0a0a';
+const ghostBg = 'linear-gradient(135deg, #1a0a2e 0%, #16082b 30%, #1c0c30 50%, #200e35 70%, #1a0a2e 100%)';
 const cardStyle = {
-  background: '#121212',
-  border: '1px solid #262626',
+  background: 'linear-gradient(145deg, rgba(30, 15, 50, 0.9) 0%, rgba(20, 10, 35, 0.95) 100%)',
+  border: '1px solid rgba(138, 43, 226, 0.2)',
+  boxShadow: '0 0 60px rgba(138, 43, 226, 0.15), 0 25px 50px rgba(0,0,0,0.4)',
 };
 
 function ConfirmContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const username = searchParams.get('username') || '';
-
+  
   const [profile, setProfile] = useState<ProfileData | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -72,14 +76,14 @@ function ConfirmContent() {
       try {
         setLoading(true);
         setError(null);
-
+        
         const response = await fetch(`/api/instagram?username=${encodeURIComponent(username)}`);
-
+        
         if (!response.ok) {
           const errorData = await response.json();
           throw new Error(errorData.error || 'Failed to fetch profile');
         }
-
+        
         const data = await response.json();
         setProfile(data);
       } catch (err) {
@@ -95,7 +99,8 @@ function ConfirmContent() {
 
   if (loading) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: pageBg }}>
+      <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: ghostBg }}>
+        <MatrixBackground />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -104,8 +109,8 @@ function ConfirmContent() {
           style={cardStyle}
         >
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="animate-spin rounded-full h-12 w-12" style={{ borderTop: '2px solid #D62976', borderBottom: '2px solid #FA7E1E', borderLeft: '2px solid transparent', borderRight: '2px solid transparent' }}></div>
-            <p className="text-[#A0A0A0]">Searching for profile @{username}...</p>
+            <div className="animate-spin rounded-full h-12 w-12" style={{ borderTop: '2px solid #C13584', borderBottom: '2px solid #F77737', borderLeft: '2px solid transparent', borderRight: '2px solid transparent' }}></div>
+            <p style={{ color: 'rgba(200, 180, 220, 0.7)' }}>Searching for profile @{username}...</p>
           </div>
         </motion.div>
       </main>
@@ -114,7 +119,8 @@ function ConfirmContent() {
 
   if (error || !profile) {
     return (
-      <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: pageBg }}>
+      <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: ghostBg }}>
+        <MatrixBackground />
         <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           animate={{ opacity: 1, scale: 1 }}
@@ -123,14 +129,14 @@ function ConfirmContent() {
           style={cardStyle}
         >
           <div className="flex flex-col items-center text-center space-y-6">
-            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'rgba(229, 57, 53, 0.15)' }}>
+            <div className="w-16 h-16 rounded-full flex items-center justify-center" style={{ background: 'rgba(220, 38, 38, 0.15)' }}>
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#ef4444" strokeWidth="2">
                 <circle cx="12" cy="12" r="10" />
                 <path d="M15 9l-6 6M9 9l6 6" />
               </svg>
             </div>
             <h2 className="text-xl font-bold text-white">Profile not found</h2>
-            <p className="text-sm text-[#808080]">
+            <p className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
               {error || `Could not find the profile @${username}`}
             </p>
             <InstagramButton onClick={() => navigateWithParams('/search')}>
@@ -153,7 +159,9 @@ function ConfirmContent() {
   };
 
   return (
-    <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: pageBg }}>
+    <main className="min-h-screen flex items-center justify-center p-4 relative overflow-hidden" style={{ background: ghostBg }}>
+      <MatrixBackground />
+      
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
@@ -166,29 +174,31 @@ function ConfirmContent() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.1 }}
-            className="text-3xl font-bold text-white"
+            className="text-3xl font-bold bg-clip-text text-transparent"
+            style={{ backgroundImage: 'linear-gradient(90deg, #C13584, #F77737)' }}
           >
             Confirm Search
           </motion.h1>
-
+          
           <motion.p
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.2 }}
-            className="text-base text-[#A0A0A0]"
+            className="text-base"
+            style={{ color: 'rgba(200, 180, 220, 0.7)' }}
           >
             Do you want to spy on the profile{' '}
             <span className="text-white font-bold">@{profile.username}</span>?
           </motion.p>
-
+          
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.3 }}
             className="rounded-full p-[3px]"
-            style={{ background: 'linear-gradient(135deg, #D62976, #FA7E1E, #FEDA75, #962FBF, #4F5BD5)' }}
+            style={{ background: 'linear-gradient(135deg, #8B2FC9, #C13584, #F77737, #FCAF45)' }}
           >
-            <div className="rounded-full p-1" style={{ background: '#121212' }}>
+            <div className="rounded-full p-1" style={{ background: '#1a0a2e' }}>
               {profile.avatar ? (
                 <img
                   src={`/api/proxy-image?url=${encodeURIComponent(profile.avatar)}`}
@@ -196,8 +206,8 @@ function ConfirmContent() {
                   className="w-32 h-32 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-32 h-32 rounded-full flex items-center justify-center" style={{ background: '#1a1a1a' }}>
-                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#808080" strokeWidth="1.5">
+                <div className="w-32 h-32 rounded-full flex items-center justify-center" style={{ background: 'rgba(138, 43, 226, 0.15)' }}>
+                  <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="rgba(200,180,220,0.5)" strokeWidth="1.5">
                     <circle cx="12" cy="8" r="4" />
                     <path d="M4 20c0-4 4-6 8-6s8 2 8 6" />
                   </svg>
@@ -205,7 +215,7 @@ function ConfirmContent() {
               )}
             </div>
           </motion.div>
-
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -215,21 +225,21 @@ function ConfirmContent() {
             <div className="flex items-center justify-center gap-2">
               <h2 className="text-white font-bold text-xl">{profile.name}</h2>
               {profile.isVerified && (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="#D62976">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="#C13584">
                   <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z" />
                 </svg>
               )}
               {profile.isPrivate && (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="#808080">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="rgba(200,180,220,0.5)">
                   <path d="M18 8h-1V6c0-2.76-2.24-5-5-5S7 3.24 7 6v2H6c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V10c0-1.1-.9-2-2-2zM9 6c0-1.66 1.34-3 3-3s3 1.34 3 3v2H9V6z" />
                 </svg>
               )}
             </div>
             {profile.bio && (
-              <p className="text-sm max-w-xs text-[#808080]">{profile.bio}</p>
+              <p className="text-sm max-w-xs" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>{profile.bio}</p>
             )}
           </motion.div>
-
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -238,36 +248,36 @@ function ConfirmContent() {
           >
             <div className="text-center">
               <div className="text-white font-bold text-lg">{formatNumber(profile.posts)}</div>
-              <div className="text-xs text-[#808080]">Posts</div>
+              <div className="text-xs" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Posts</div>
             </div>
             <div className="text-center">
               <div className="text-white font-bold text-lg">{formatNumber(profile.followers)}</div>
-              <div className="text-xs text-[#808080]">Followers</div>
+              <div className="text-xs" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Followers</div>
             </div>
             <div className="text-center">
               <div className="text-white font-bold text-lg">{formatNumber(profile.following)}</div>
-              <div className="text-xs text-[#808080]">Following</div>
+              <div className="text-xs" style={{ color: 'rgba(200, 180, 220, 0.5)' }}>Following</div>
             </div>
           </motion.div>
-
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: 'easeOut', delay: 0.6 }}
             className="w-full rounded-2xl p-4"
-            style={{ background: '#1a1a1a', border: '1px solid #262626' }}
+            style={{ background: 'rgba(138, 43, 226, 0.08)', border: '1px solid rgba(138, 43, 226, 0.15)' }}
           >
             <div className="flex items-start gap-3 text-left">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: '#FA7E1E' }}>
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" className="flex-shrink-0 mt-0.5" style={{ color: '#C13584' }}>
                 <circle cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="2" />
                 <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
               </svg>
-              <p className="text-sm text-[#A0A0A0]">
+              <p className="text-sm" style={{ color: 'rgba(200, 180, 220, 0.6)' }}>
                 Our platform allows only one search per person, so confirm if you really want to spy.
               </p>
             </div>
           </motion.div>
-
+          
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -299,7 +309,7 @@ function ConfirmContent() {
 
 export default function ConfirmPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen" style={{ background: '#0a0a0a' }} />}>
+    <Suspense fallback={<div className="min-h-screen" style={{ background: '#1a0a2e' }} />}>
       <ConfirmContent />
     </Suspense>
   );
