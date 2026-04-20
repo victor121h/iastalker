@@ -202,7 +202,7 @@ function PitchContent() {
   };
 
   const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG');
-  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQAO6C');
+  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQAPQU');
   const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABQ');
 
   const formatNumber = (num: number) => {
