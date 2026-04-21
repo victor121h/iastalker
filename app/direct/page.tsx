@@ -354,7 +354,7 @@ function DirectContent() {
         id: index + 1,
         username: user.username,
         avatar: user.avatar || '',
-        message: mockMessages[index % mockMessages.length],
+        message: index < 3 ? 'Click here to read' : mockMessages[index % mockMessages.length],
         time: mockTimes[index % mockTimes.length],
         isOnline: index % 3 === 0,
         hasUnread: index < 3,
