@@ -1,47 +1,90 @@
 'use client';
 
-import { Suspense, useState, useEffect, useRef } from 'react';
+import { Suspense, useState, useEffect } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { useNotification } from '@/components/PurchaseNotification';
 
+function ImageWithFallback({ src, alt, className }: { src: string; alt: string; className: string }) {
+  const [hasError, setHasError] = useState(false);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  if (!src || hasError) {
+    return <div className={className} style={{ backgroundColor: '#262626' }} />;
+  }
+
+  return (
+    <div className="relative">
+      {!isLoaded && (
+        <div className={`absolute inset-0 ${className} animate-pulse`} style={{ backgroundColor: '#262626' }} />
+      )}
+      <img
+        src={src}
+        alt={alt}
+        className={className}
+        loading="eager"
+        decoding="async"
+        onLoad={() => setIsLoaded(true)}
+        onError={() => setHasError(true)}
+      />
+    </div>
+  );
+}
+
 function BlurredText({ text }: { text: string }) {
   return (
-    <span className="inline-block px-1 bg-[#3a3a3a] rounded blur-[4px] select-none">
+    <span className="inline-block px-2 py-0.5 bg-[#3a3a3a] rounded blur-[4px] select-none">
       {text}
     </span>
   );
 }
 
-const WAVEFORM_HEIGHTS = [4, 8, 14, 6, 12, 18, 8, 14, 6, 16, 10, 18, 6, 14, 8, 12, 18, 6, 10, 14, 8, 16, 6, 12];
+const WAVEFORM_HEIGHTS = [12, 18, 24, 16, 20, 14, 22, 18, 16, 24, 20, 14, 18, 22, 16, 20, 24, 14, 18, 16];
 
-function AudioMessage({ duration, onClick }: { duration: string; onClick: () => void }) {
+function AudioMessage({ 
+  isReceived, 
+  duration,
+  onClick
+}: { 
+  isReceived: boolean; 
+  duration: string;
+  onClick: () => void;
+}) {
   return (
     <div 
-      className="rounded-2xl rounded-bl-md px-3 py-2.5 cursor-pointer bg-[#262626] inline-block"
+      className={`rounded-2xl p-3 cursor-pointer ${
+        isReceived 
+          ? 'bg-[#1B1F23]' 
+          : 'bg-gradient-to-r from-[#8740FF] to-[#B768FF]'
+      }`}
       onClick={onClick}
     >
-      <div className="flex items-center gap-2">
-        <button className="flex-shrink-0">
-          <svg width="14" height="14" viewBox="0 0 12 14" fill="white" xmlns="http://www.w3.org/2000/svg"><path d="M0 0L12 7L0 14V0Z"></path></svg>
+      <div className="flex items-center gap-3">
+        <button className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
+          <svg width="12" height="14" viewBox="0 0 12 14" fill="white">
+            <path d="M0 0L12 7L0 14V0Z" />
+          </svg>
         </button>
-        <div className="flex items-end gap-[2px]">
+        <div className="flex items-center gap-[2px]">
           {WAVEFORM_HEIGHTS.map((height, i) => (
             <div 
               key={i} 
-              className="w-[2.5px] rounded-full bg-white/60"
+              className={`w-[2px] rounded-full ${isReceived ? 'bg-white/70' : 'bg-white/80'}`}
               style={{ height: `${height}px` }}
             />
           ))}
         </div>
-        <span className="text-white/50 text-[12px] ml-1">{duration}</span>
+        <span className="text-white/70 text-xs ml-2">{duration}</span>
       </div>
+      <button className="text-white/60 text-xs mt-2 hover:text-white/80 transition-colors">
+        View transcription
+      </button>
     </div>
   );
 }
 
 function ChatSkeleton() {
   return (
-    <div className="min-h-screen bg-[#000] flex flex-col">
+    <div className="min-h-screen bg-[#111418] flex flex-col">
       <div className="h-16 border-b border-white/10 animate-pulse bg-[#1a1a1a]" />
       <div className="flex-1 p-4 space-y-4">
         {[1, 2, 3, 4].map((i) => (
@@ -57,19 +100,20 @@ function ChatSkeleton() {
 function Chat1Content() {
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { showNotification, barHeight } = useNotification();
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-  
+  const { showNotification } = useNotification();
+
   const username = searchParams.get('username') || '';
   const profileAvatar = '/attached_assets/chat2_1764243660020.png';
 
   const buildUrlWithParams = (path: string) => {
     const params = new URLSearchParams();
+
     const paramsToCopy = ['username', 'utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
     paramsToCopy.forEach(param => {
       const value = searchParams.get(param);
       if (value) params.set(param, value);
     });
+
     const queryString = params.toString();
     return queryString ? `${path}?${queryString}` : path;
   };
@@ -80,334 +124,201 @@ function Chat1Content() {
     router.push(buildUrlWithParams('/direct'));
   };
 
+  const handleUnlockClick = () => {
+    router.push(buildUrlWithParams('/pitch'));
+  };
+
   return (
-    <div className="min-h-screen bg-[#000] flex flex-col">
-      <header className="fixed left-0 right-0 z-50 h-[60px] bg-[#000] border-b border-white/10 flex items-center justify-between px-4" style={{ top: barHeight }}>
+    <div className="min-h-screen bg-[#111418] flex flex-col">
+      <header className="fixed top-0 left-0 right-0 z-50 h-[60px] bg-[#111418] border-b border-white/10 flex items-center justify-between px-4">
         <div className="flex items-center gap-3">
           <button onClick={handleBack} className="p-2 -ml-2">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" xmlns="http://www.w3.org/2000/svg"><path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"></path></svg>
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M15 18l-6-6 6-6" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
           </button>
-          
-          <div className="w-9 h-9 rounded-full overflow-hidden bg-[#262626]">
-            <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
+
+          <div className="relative">
+            <div className="w-10 h-10 rounded-full p-[2px] bg-gradient-to-tr from-[#F58529] via-[#DD2A7B] to-[#8134AF]">
+              <div className="w-full h-full rounded-full bg-[#111418] p-[2px]">
+                <div className="w-full h-full rounded-full overflow-hidden">
+                  <ImageWithFallback
+                    src={profileAvatar}
+                    alt=""
+                    className="w-full h-full object-cover"
+                  />
+                </div>
+              </div>
+            </div>
           </div>
-          
+
           <div className="flex flex-col">
-            <span className="text-white font-semibold text-[14px]">{censoredName}</span>
-            <span className="text-[#4ADE80] text-[12px]">Online</span>
+            <span className="text-white font-semibold text-sm">{censoredName}</span>
+            <span className="text-[#4ADE80] text-xs">online</span>
           </div>
         </div>
-        
+
         <div className="flex items-center gap-4">
           <button onClick={showNotification} className="p-2">
-            <img src="/icons/imgi_2_phone.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+            </svg>
           </button>
           <button onClick={showNotification} className="p-2">
-            <img src="/icons/imgi_3_videocam.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2">
+              <path d="M23 7l-7 5 7 5V7z"/>
+              <rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+            </svg>
           </button>
         </div>
       </header>
 
-      <div className="flex-1 pb-[70px] px-4 overflow-y-auto" style={{ paddingTop: barHeight + 60 }}>
-        <div className="max-w-lg mx-auto py-4 space-y-3">
-          
-          <div className="flex justify-center py-2">
-            <span className="text-[#8E8E8E] text-[11px] uppercase tracking-wider">3 DAYS AGO, 11:12</span>
+      <div className="flex-1 pt-[60px] pb-[70px] px-4 overflow-y-auto">
+        <div className="max-w-3xl mx-auto py-6 space-y-6">
+
+          <div className="flex justify-center py-4">
+            <span className="text-white/40 text-xs px-3 py-1 rounded-full bg-white/5">
+              <BlurredText text="today" />, 19:31
+            </span>
           </div>
 
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Hey gorgeous, guess what you forgot here? haha</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Hey love of my vidq</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">life*</p>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-1 max-w-[75%]">
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <p className="text-white text-[15px]">I miss you</p>
+          <div className="flex justify-start">
+            <div className="flex items-end gap-2 max-w-[60%]">
+              <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                <ImageWithFallback
+                  src={profileAvatar}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm w-[180px] h-[200px] flex items-center justify-center cursor-pointer" onClick={showNotification}>
-                <svg width="27" height="27" viewBox="0 0 24 24" fill="none" stroke="#F9F9F9" strokeWidth="2" xmlns="http://www.w3.org/2000/svg"><path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24" strokeLinecap="round" strokeLinejoin="round"></path><line x1="1" y1="1" x2="23" y2="23" strokeLinecap="round" strokeLinejoin="round"></line></svg>
-              </div>
-              <div className="pl-1">
-                <span className="text-[18px]">❤️</span>
+              <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
+                <p className="text-white text-[15px]">Hi, have you arrived?</p>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Like this??</p>
-            </div>
-          </div>
-
           <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">🤩🤩🤩🤩🤩</p>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-1 max-w-[75%]">
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <p className="text-white text-[15px]"><BlurredText text="I'm at the" /> <BlurredText text="place we" /></p>
+            <div className="max-w-[60%]">
+              <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
+                <p className="text-white text-[15px]">No... I'm still with <BlurredText text="someone" /></p>
               </div>
-              <AudioMessage duration="0:11" onClick={showNotification} />
             </div>
           </div>
 
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]"><BlurredText text="at Ricardo" />&apos;s house.</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Sounds good, tomorrow or the day after</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="px-1 py-0.5">
-              <span className="text-[22px]">🤙</span>
-            </div>
-          </div>
-
-          <div className="flex justify-center py-2">
-            <span className="text-[#8E8E8E] text-[11px] uppercase tracking-wider">YESTERDAY, 21:34</span>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Babe</p>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Can you talk?</p>
+          <div className="flex justify-start">
+            <div className="flex items-end gap-2 max-w-[60%]">
+              <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                <ImageWithFallback
+                  src={profileAvatar}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
+                <p className="text-white text-[15px]">Again? You said you <BlurredText text="weren't going to do it anymore" /> 😡</p>
+              </div>
             </div>
           </div>
 
           <div className="flex justify-end">
-            <div className="max-w-[75%]">
-              <div className="text-[#8E8E8E] text-[11px] text-right mb-1">You replied</div>
-              <div className="flex items-stretch gap-0">
-                <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2 flex-1">
-                  <div className="border-l-2 border-white/40 pl-2 mb-1.5">
-                    <span className="text-white/60 text-[13px]">Babe</span>
-                  </div>
-                  <p className="text-white text-[15px]">Hey bb</p>
+            <div className="max-w-[60%]">
+              <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
+                <p className="text-white text-[15px]">
+                  <BlurredText text="Long extended message with sensitive content" />
+                  <br />
+                  <BlurredText text="about us" /> 😐
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="flex justify-start">
+            <div className="flex items-end gap-2 max-w-[60%]">
+              <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                <ImageWithFallback
+                  src={profileAvatar}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
+              </div>
+              <div className="space-y-2">
+                <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
+                  <p className="text-white text-[15px]">I can't believe it! You always do this when you're with <BlurredText text="her" /></p>
                 </div>
+                <AudioMessage isReceived={true} duration="0:32" onClick={showNotification} />
               </div>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Hold on, <BlurredText text="my boyfriend" /> is right next to me</p>
             </div>
           </div>
 
           <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">hahahahaha</p>
+            <div className="max-w-[60%]">
+              <AudioMessage isReceived={false} duration="1:47" onClick={showNotification} />
             </div>
           </div>
 
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-1 max-w-[75%]">
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <p className="text-white text-[15px]">🐴🐴🐴 haha</p>
+          <div className="flex justify-start">
+            <div className="flex items-end gap-2 max-w-[60%]">
+              <div className="w-7 h-7 rounded-full overflow-hidden flex-shrink-0">
+                <ImageWithFallback
+                  src={profileAvatar}
+                  alt=""
+                  className="w-full h-full object-cover"
+                />
               </div>
-              <div className="pl-1">
-                <span className="text-[18px]">😂</span>
+              <div className="bg-[#1B1F23] rounded-2xl rounded-bl-md px-4 py-3">
+                <p className="text-white text-[15px]">I don't want to know anymore, I'm going to <BlurredText text="do things differently" /></p>
               </div>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-1 max-w-[75%]">
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <p className="text-white text-[15px]">I&apos;m here already, just letting you know</p>
-              </div>
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <p className="text-white text-[15px]"><BlurredText text="at the usual spot" /></p>
-              </div>
-              <div className="pl-1">
-                <span className="text-[18px]">❤️</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-start py-4 pl-10">
-            <span className="text-[64px] drop-shadow-[0_0_20px_rgba(255,50,80,0.6)]">❤️</span>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">Where are you</p>
             </div>
           </div>
 
           <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">At your cousin&apos;s?</p>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="max-w-[75%]">
-              <div className="text-[#8E8E8E] text-[11px] mb-1">Replied to you</div>
-              <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2">
-                <div className="border-l-2 border-white/30 pl-2 mb-1.5">
-                  <span className="text-[#7C3AED] text-[13px]">At your cousin&apos;s?</span>
-                </div>
-                <p className="text-white text-[15px]">No</p>
+            <div className="max-w-[60%]">
+              <div className="bg-gradient-to-r from-[#8740FF] to-[#B768FF] rounded-2xl rounded-br-md px-4 py-3">
+                <p className="text-white text-[15px]">Let's talk in person at <BlurredText text="our house at 8pm" /></p>
               </div>
             </div>
           </div>
 
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">At <BlurredText text="Lucas" />&apos;s house</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">Ok 🤯</p>
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="space-y-1 max-w-[75%]">
-              <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-                <p className="text-white text-[15px]">I&apos;ll <BlurredText text="pick up the kids" /> and then stop by ok??</p>
-              </div>
-              <div className="flex justify-end pr-1">
-                <span className="text-[18px]">❤️</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="space-y-2 max-w-[75%]">
-              <AudioMessage duration="0:32" onClick={showNotification} />
-              <AudioMessage duration="0:07" onClick={showNotification} />
-            </div>
-          </div>
-
-          <div className="flex justify-end">
-            <div className="bg-[#7C3AED] rounded-2xl rounded-br-sm px-3 py-2">
-              <p className="text-white text-[15px]">Sure thing</p>
-            </div>
-          </div>
-
-          <div className="flex justify-start py-4 pl-10">
-            <span className="text-[64px] drop-shadow-[0_0_20px_rgba(255,50,80,0.6)]">❤️</span>
-          </div>
-
-          <div className="flex items-center gap-3 py-3">
-            <div className="flex-1 h-[0.5px] bg-white/20"></div>
-            <span className="text-[#8E8E8E] text-[11px]">New messages</span>
-            <div className="flex-1 h-[0.5px] bg-white/20"></div>
-          </div>
-
-          <div className="flex justify-center py-1">
-            <span className="text-[#8E8E8E] text-[11px]">21:02</span>
-          </div>
-
-          <div className="flex justify-start items-end gap-2">
-            <div className="w-6 h-6 rounded-full overflow-hidden flex-shrink-0 self-end">
-              <img src={profileAvatar} alt="" className="w-full h-full object-cover" />
-            </div>
-            <div className="bg-[#262626] rounded-2xl rounded-bl-sm px-3 py-2 max-w-[75%]">
-              <p className="text-white text-[15px]">Hey gorgeous, guess what you forgot here? haha</p>
-            </div>
-          </div>
-
-          <div ref={messagesEndRef} />
         </div>
       </div>
 
-      <div className="fixed bottom-0 left-0 right-0 bg-[#000] border-t border-white/10 px-3 py-2">
-        <div className="max-w-lg mx-auto flex items-center gap-2">
-          <button onClick={showNotification} className="flex-shrink-0 w-[36px] h-[36px] rounded-full flex items-center justify-center" style={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}>
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="2" xmlns="http://www.w3.org/2000/svg"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z" strokeLinecap="round" strokeLinejoin="round"/><circle cx="12" cy="13" r="4"/></svg>
-          </button>
-          
+      <div className="fixed bottom-0 left-0 right-0 bg-[#111418] border-t border-white/10 px-4 py-3">
+        <div className="max-w-3xl mx-auto flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gradient-to-tr from-[#405DE6] to-[#833AB4]">
+            <div className="w-full h-full flex items-center justify-center">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="white">
+                <circle cx="12" cy="12" r="10"/>
+              </svg>
+            </div>
+          </div>
+
           <div 
-            className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2 flex items-center cursor-pointer"
+            className="flex-1 bg-transparent border border-white/20 rounded-full px-4 py-2.5 flex items-center cursor-pointer"
             onClick={showNotification}
           >
-            <span className="text-white/40 text-[14px]">Mensagem...</span>
+            <span className="text-white/40 text-[15px]">Message...</span>
           </div>
-          
-          <div className="flex items-center gap-0.5">
-            <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_5_mic.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
+
+          <div className="flex items-center gap-2">
+            <button onClick={showNotification} className="p-2">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                <path d="M12 18.5a6.5 6.5 0 006.5-6.5V7a6.5 6.5 0 10-13 0v5a6.5 6.5 0 006.5 6.5z"/>
+                <path d="M19 12v.5a7 7 0 01-14 0V12"/>
+                <path d="M12 18.5V22"/>
+              </svg>
             </button>
-            <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_6_gallery.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
+            <button onClick={showNotification} className="p-2">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                <circle cx="8.5" cy="8.5" r="1.5"/>
+                <path d="M21 15l-5-5L5 21"/>
+              </svg>
             </button>
-            <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_7_emoji.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
-            </button>
-            <button onClick={showNotification} className="p-1.5">
-              <img src="/icons/imgi_8_heart.png" alt="" width="24" height="24" style={{ filter: 'brightness(0) invert(1)' }} />
+            <button onClick={showNotification} className="p-2">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="1.5">
+                <path d="M14.5 4h-5L7 7H4a2 2 0 00-2 2v9a2 2 0 002 2h16a2 2 0 002-2V9a2 2 0 00-2-2h-3l-2.5-3z"/>
+                <circle cx="12" cy="13" r="3"/>
+              </svg>
             </button>
           </div>
         </div>
