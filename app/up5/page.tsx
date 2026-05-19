@@ -20,7 +20,8 @@ function Up5Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };
@@ -72,7 +73,7 @@ function Up5Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8MHF')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8MHF?template=9')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
             style={{
               background: 'linear-gradient(90deg, #DC2626 0%, #991B1B 100%)',

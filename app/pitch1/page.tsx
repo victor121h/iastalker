@@ -188,14 +188,15 @@ function PitchContent() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };
 
-  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG');
-  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABS');
-  const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABT');
+  const purchaseLink39 = appendUtmToLink('https://go.centerpag.com/PPU38CQ89MG?template=9');
+  const purchaseLink59 = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABS?template=9');
+  const purchaseLinkAllApps = appendUtmToLink('https://go.centerpag.com/PPU38CQ8ABT?template=9');
 
   const formatNumber = (num: number) => {
     if (num >= 1000000) return (num / 1000000).toFixed(1) + 'M';

@@ -117,7 +117,8 @@ function Access3Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };

@@ -52,7 +52,8 @@ function Up2Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };
@@ -343,7 +344,7 @@ function Up2Content() {
             </div>
 
             <a
-              href={appendUtmToLink("https://go.centerpag.com/PPU38CQ4OE7")}
+              href={appendUtmToLink("https://go.centerpag.com/PPU38CQ4OE7?template=9")}
               target="_blank"
               rel="noopener noreferrer"
               className="block w-full py-4 rounded-xl font-bold text-white text-lg text-center mb-4 transition-all hover:opacity-90"

@@ -20,7 +20,8 @@ function BackdoUp3Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };
@@ -87,7 +88,7 @@ function BackdoUp3Content() {
           </p>
 
           <a
-            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ99O4')}
+            href={appendUtmToLink('https://go.centerpag.com/PPU38CQ99O4?template=9')}
             className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-4"
             style={{
               background: 'linear-gradient(90deg, #00C853 0%, #00E676 50%, #69F0AE 100%)',

@@ -20,7 +20,8 @@ function UpsellContent() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      return `${baseLink}?${utmParams}`;
+      const sep = baseLink.includes("?") ? "&" : "?";
+      return `${baseLink}${sep}${utmParams}`;
     }
     return baseLink;
   };
@@ -94,7 +95,7 @@ function UpsellContent() {
         </p>
 
         <a
-          href={appendUtmToLink('https://go.centerpag.com/PPU38CQ9UM9')}
+          href={appendUtmToLink('https://go.centerpag.com/PPU38CQ9UM9?template=9')}
           className="flex items-center justify-center gap-2 w-full py-4 px-6 rounded-full text-white font-bold text-base transition-all duration-200 hover:opacity-90 active:scale-[0.98] mb-4"
           style={{
             background: 'linear-gradient(90deg, #8B2FC9 0%, #C13584 40%, #E1306C 60%, #F77737 85%, #FCAF45 100%)',
