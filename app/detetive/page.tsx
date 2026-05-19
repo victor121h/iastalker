@@ -69,8 +69,7 @@ function DetetiveContent() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      const sep = baseLink.includes("?") ? "&" : "?";
-      return `${baseLink}${sep}${utmParams}`;
+      return `${baseLink}?${utmParams}`;
     }
     return baseLink;
   };
@@ -378,7 +377,7 @@ function DetetiveContent() {
           </div>
 
           <a
-            href={appendUtmToLink(getCheckoutUrl('https://go.centerpag.com/PPU38CQ8AD3?template=9', lang))}
+            href={appendUtmToLink(getCheckoutUrl('https://go.centerpag.com/PPU38CQ8AD3', lang))}
             className="block w-full py-4 rounded-xl text-center font-bold text-black bg-gradient-to-r from-amber-400 to-amber-600 hover:from-amber-500 hover:to-amber-700 transition-all"
           >
             {t('det.hire_master')}

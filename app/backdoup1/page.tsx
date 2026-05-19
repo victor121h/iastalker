@@ -21,8 +21,7 @@ function BackdoUp1Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      const sep = baseLink.includes("?") ? "&" : "?";
-      return `${baseLink}${sep}${utmParams}`;
+      return `${baseLink}?${utmParams}`;
     }
     return baseLink;
   };
@@ -113,7 +112,7 @@ function BackdoUp1Content() {
         </div>
 
         <a
-          href={appendUtmToLink('https://go.centerpag.com/PPU38CQ99O2?template=9')}
+          href={appendUtmToLink('https://go.centerpag.com/PPU38CQ99O2')}
           className="block w-full py-3.5 rounded-xl text-center font-bold text-white mb-3"
           style={{
             background: 'linear-gradient(90deg, #00C853 0%, #00E676 50%, #69F0AE 100%)',

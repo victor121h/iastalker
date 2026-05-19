@@ -328,13 +328,13 @@ function DashboardContent() {
                     }
                     navigateTo('/access3');
                   } else if (service.id === 'whatsapp') {
-                    window.open('https://go.centerpag.com/PPU38CQ93Q1?template=9', '_blank');
+                    window.open('https://go.centerpag.com/PPU38CQ93Q1', '_blank');
                   } else if (service.id === 'facebook') {
-                    window.open('https://go.centerpag.com/PPU38CQ93Q2?template=9', '_blank');
+                    window.open('https://go.centerpag.com/PPU38CQ93Q2', '_blank');
                   } else if (service.id === 'imessage') {
-                    window.open('https://go.centerpag.com/PPU38CQ9UO4?template=9', '_blank');
+                    window.open('https://go.centerpag.com/PPU38CQ9UO4', '_blank');
                   } else if (service.id === 'combo3in1') {
-                    window.open('https://go.centerpag.com/PPU38CQ9UP6?template=9', '_blank');
+                    window.open('https://go.centerpag.com/PPU38CQ9UP6', '_blank');
                   } else if (service.id === 'investigator') {
                     navigateTo('/detetive');
                   } else if (service.id === 'suspicious-message') {
@@ -537,7 +537,7 @@ function DashboardContent() {
             </p>
 
             <a
-              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8ACN?template=9')}
+              href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8ACN')}
               className="flex items-center justify-center gap-2 w-full py-3 px-6 rounded-full text-white font-bold text-sm transition-all duration-300 hover:opacity-90 hover:scale-[1.02] mb-3 bg-[#4A90D9]"
             >
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

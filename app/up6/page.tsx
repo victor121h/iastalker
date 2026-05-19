@@ -21,8 +21,7 @@ function Up6Content() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      const sep = baseLink.includes("?") ? "&" : "?";
-      return `${baseLink}${sep}${utmParams}`;
+      return `${baseLink}?${utmParams}`;
     }
     return baseLink;
   };
@@ -59,7 +58,7 @@ function Up6Content() {
       { text: 'Unlimited profile searches', included: true },
       { text: '24h priority support', included: true },
     ],
-    link: 'https://go.centerpag.com/PPU38CQ8U5G?template=9',
+    link: 'https://go.centerpag.com/PPU38CQ8U5G',
   };
 
   return (

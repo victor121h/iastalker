@@ -28,8 +28,7 @@ function BuyContent() {
   const appendUtmToLink = (baseLink: string) => {
     const utmParams = getUtmParams();
     if (utmParams) {
-      const sep = baseLink.includes("?") ? "&" : "?";
-      return `${baseLink}${sep}${utmParams}`;
+      return `${baseLink}?${utmParams}`;
     }
     return baseLink;
   };
@@ -50,7 +49,7 @@ function BuyContent() {
       borderColor: 'border-blue-500/30',
       bgColor: 'bg-blue-500/10',
       buttonColor: 'bg-blue-600 hover:bg-blue-700',
-      link: 'https://go.centerpag.com/PPU38CQ89N4?template=9'
+      link: 'https://go.centerpag.com/PPU38CQ89N4'
     },
     {
       id: 'pro',
@@ -71,7 +70,7 @@ function BuyContent() {
       bgColor: 'bg-purple-500/10',
       buttonColor: 'bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700',
       popular: true,
-      link: 'https://go.centerpag.com/PPU38CQ8ACT?template=9'
+      link: 'https://go.centerpag.com/PPU38CQ8ACT'
     },
     {
       id: 'mega',
@@ -89,7 +88,7 @@ function BuyContent() {
       borderColor: 'border-amber-500/30',
       bgColor: 'bg-amber-500/10',
       buttonColor: 'bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600',
-      link: 'https://go.centerpag.com/PPU38CQ8ACU?template=9'
+      link: 'https://go.centerpag.com/PPU38CQ8ACU'
     },
     {
       id: 'unlimited',
@@ -110,7 +109,7 @@ function BuyContent() {
       bgColor: 'bg-emerald-500/10',
       buttonColor: 'bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600',
       best: true,
-      link: 'https://go.centerpag.com/PPU38CQ8AD0?template=9'
+      link: 'https://go.centerpag.com/PPU38CQ8AD0'
     }
   ];
 
@@ -330,7 +329,7 @@ function BuyContent() {
               </div>
 
               <a
-                href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8AD1?template=9')}
+                href={appendUtmToLink('https://go.centerpag.com/PPU38CQ8AD1')}
                 className="block w-full py-4 rounded-xl text-center font-bold text-white bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 transition-all duration-300 text-lg"
               >
                 Grab This Deal Now

@@ -393,7 +393,7 @@ function WhatsAppContent() {
                             </div>
 
                             <a
-                              href="https://go.centerpag.com/PPU38CQ8AE0?template=9"
+                              href="https://go.centerpag.com/PPU38CQ8AE0"
                               target="_blank"
                               rel="noopener noreferrer"
                               className="flex items-center justify-center gap-2 w-full py-3 rounded-xl font-bold text-white text-center text-sm bg-gradient-to-r from-green-600 to-emerald-600 hover:opacity-90 transition-opacity"
