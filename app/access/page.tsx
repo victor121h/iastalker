@@ -1,7 +1,7 @@
 'use client';
 
 import { motion, AnimatePresence } from 'framer-motion';
-import { useState, Suspense } from 'react';
+import { useState, useEffect, Suspense } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 
 function AccessContent() {
@@ -9,6 +9,12 @@ function AccessContent() {
   const router = useRouter();
   const [inputUsername, setInputUsername] = useState('');
   const [searching, setSearching] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   const getUtmParams = () => {
     const utmKeys = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content', 'src', 'sck', 'xcod'];
@@ -133,22 +139,22 @@ function AccessContent() {
                   e.currentTarget.style.boxShadow = 'none';
                 }}
                 autoFocus
-                disabled={searching}
+                disabled={searching || !ready}
               />
             </div>
 
             <button
               onClick={handleSearch}
-              disabled={!inputUsername.trim() || searching}
+              disabled={!inputUsername.trim() || searching || !ready}
               className="w-full text-white font-bold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:scale-100"
               style={{
-                background: inputUsername.trim() && !searching
+                background: inputUsername.trim() && !searching && ready
                   ? 'linear-gradient(90deg, #8B2FC9, #E1306C, #FCAF45)'
                   : 'rgba(100, 60, 140, 0.4)',
-                boxShadow: inputUsername.trim() && !searching ? '0 4px 20px rgba(138, 43, 226, 0.4)' : 'none',
+                boxShadow: inputUsername.trim() && !searching && ready ? '0 4px 20px rgba(138, 43, 226, 0.4)' : 'none',
               }}
             >
-              {searching ? 'Searching...' : 'Spy Now'}
+              {!ready ? 'Loading...' : searching ? 'Searching...' : 'Spy Now'}
             </button>
 
             <p className="text-center text-xs mt-5" style={{ color: 'rgba(200, 180, 220, 0.4)' }}>

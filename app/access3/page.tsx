@@ -77,6 +77,7 @@ function Access3Content() {
   const [activeTab, setActiveTab] = useState<'likes' | 'comments' | 'directs'>('likes');
   const [showPopup, setShowPopup] = useState(true);
   const [inputUsername, setInputUsername] = useState('');
+  const [ready, setReady] = useState(false);
   const [showVerifyPopup, setShowVerifyPopup] = useState(false);
   const [showDirectPopup, setShowDirectPopup] = useState(false);
   const [showSupportMenu, setShowSupportMenu] = useState(false);
@@ -92,6 +93,11 @@ function Access3Content() {
     comments: [],
     directs: []
   });
+
+  useEffect(() => {
+    const timer = setTimeout(() => setReady(true), 3000);
+    return () => clearTimeout(timer);
+  }, []);
 
   useEffect(() => {
     const sdkScript = document.createElement('script');
@@ -245,17 +251,18 @@ function Access3Content() {
                     onChange={(e) => setInputUsername(e.target.value)}
                     onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                     placeholder="username"
-                    className="w-full bg-gray-800 border border-gray-600 rounded-xl py-4 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                    className="w-full bg-gray-800 border border-gray-600 rounded-xl py-4 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all disabled:opacity-60"
                     autoFocus
+                    disabled={!ready}
                   />
                 </div>
 
                 <button
                   onClick={handleSearch}
-                  disabled={!inputUsername.trim()}
+                  disabled={!inputUsername.trim() || !ready}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
                 >
-                  Spy Now
+                  {!ready ? 'Loading...' : 'Spy Now'}
                 </button>
 
                 <p className="text-gray-500 text-xs text-center mt-4">
@@ -329,17 +336,18 @@ function Access3Content() {
                   onChange={(e) => setInputUsername(e.target.value)}
                   onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
                   placeholder="username"
-                  className="w-full bg-gray-800 border border-gray-600 rounded-xl py-4 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all"
+                  className="w-full bg-gray-800 border border-gray-600 rounded-xl py-4 pl-10 pr-4 text-white placeholder-gray-500 focus:outline-none focus:border-purple-500 focus:ring-2 focus:ring-purple-500/20 transition-all disabled:opacity-60"
                   autoFocus
+                  disabled={!ready}
                 />
               </div>
 
               <button
                 onClick={handleSearch}
-                disabled={!inputUsername.trim()}
+                disabled={!inputUsername.trim() || !ready}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 disabled:from-gray-600 disabled:to-gray-600 disabled:cursor-not-allowed text-white font-semibold py-4 rounded-xl transition-all transform hover:scale-[1.02] active:scale-[0.98]"
               >
-                Spy Now
+                {!ready ? 'Loading...' : 'Spy Now'}
               </button>
 
               <p className="text-gray-500 text-xs text-center mt-4">
