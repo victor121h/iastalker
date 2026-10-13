@@ -66,6 +66,33 @@
     const tag = (t.tagName || '').toLowerCase();
     return tag === 'input' || tag === 'textarea' || tag === 'select' || t.isContentEditable;
   }
+  function isCoarse() {
+    try { return !!(window.matchMedia && window.matchMedia('(pointer: coarse)').matches); } catch (e) { return false; }
+  }
+  /** 'Clique' → 'Toque' on touch screens (engine texts are written for the mouse). */
+  function touchText(t) {
+    t = String(t == null ? '' : t);
+    if (!isCoarse()) return t;
+    return t.replace(/\bClique\b/g, 'Toque').replace(/\bclique\b/g, 'toque').replace(/\bClicar\b/g, 'Tocar').replace(/\bclicar\b/g, 'tocar');
+  }
+  /** Why the engine refused the last queue/buy/build call (CONTRACT_V2 §3), '' when unknown. */
+  function engineReason() {
+    try { const r = M.engine && M.engine.lastReason; return typeof r === 'string' ? r : ''; } catch (e) { return ''; }
+  }
+  function refusal(fallback) {
+    const r = engineReason() || fallback || '';
+    if (r) toast(r, 'bad', { icon: '✋', timeout: 4500 });
+    return r;
+  }
+  function rectOf(el) {
+    if (!el || el.hidden || !el.isConnected) return null;
+    const r = el.getBoundingClientRect();
+    return r.width > 0 && r.height > 0 ? r : null;
+  }
+  function overlaps(a, b, pad) {
+    pad = pad || 0;
+    return !!(a && b && a.left < b.right + pad && b.left < a.right + pad && a.top < b.bottom + pad && b.top < a.bottom + pad);
+  }
 
   /** Tiny element builder: h('div', {class, id, text, on:{click}}, children) */
   function h(tag, attrs, children) {
@@ -293,7 +320,7 @@
     t5: 0, t1: 0, tHover: 0,
     pie: null,
     buy: { cat: 'all', placing: null, sel: null, confirm: false, hoverType: null },
-    build: { tool: 'wall', floor: 1, paper: 0, drag: null, hoverKey: null, sel: null, confirm: false },
+    build: { tool: 'wall', floor: 1, paper: 0, roomFloor: 1, wholeRoom: false, drag: null, hoverKey: null, sel: null, confirm: false },
     pointers: new Map(),
     gesture: null,
     keys: new Set(),
@@ -306,10 +333,16 @@
     money: { shown: null, target: 0 },
     bubbles: new Map(),
     trend: { simId: null, at: -1, vals: null, prev: null },
-    sig: { portraits: '', queue: '', tab: '', rel: '', career: '', log: '', toolbar: '' },
+    sig: { portraits: '', queue: '', tab: '', rel: '', career: '', log: '', toolbar: '', checklist: '' },
     thumbs: {},
     lastSim: null,
     shift: false,
+    undo: [],                 // Buy/Build snapshots (CONTRACT_V2 §2), cleared when leaving those modes
+    flashUntil: 0,            // a confirmation tip stays up until then (BB-6)
+    pendingToasts: [],        // toasts requested before init()
+    reframe: null,            // camera shift applied while the drawer is open (VIS-10)
+    selAway: null,            // id of a selected character that left the lot (switch offer)
+    catQuery: '', catSort: 'price', catAfford: false,
   };
 
   // ======================================================================
@@ -366,11 +399,11 @@
     const TABS = [['needs', '🍔', 'Necessidades'], ['skills', '🎓', 'Habilidades'], ['career', '💼', 'Carreira'], ['rel', '💞', 'Relações'], ['pers', '🧩', 'Personalidade']];
     els.tabBtns = {};
     for (const [key, ico, label] of TABS) {
-      const b = h('button', { class: 'tab', type: 'button', role: 'tab', id: 'tab-' + key, 'aria-selected': 'false', 'aria-controls': 'tab-body', title: label, on: { click: () => setTab(key) } }, [emo(ico), h('span', { class: 't-label', text: label })]);
+      const b = h('button', { class: 'tab', type: 'button', role: 'tab', id: 'tab-' + key, 'aria-selected': 'false', 'aria-controls': 'tab-body', 'aria-label': label, title: label, on: { click: () => setTab(key) } }, [emo(ico), h('span', { class: 't-label', text: label })]);
       els.tabBtns[key] = b;
       els.tabs.appendChild(b);
     }
-    els.tabBody = h('div', { class: 'tab-body', id: 'tab-body', role: 'tabpanel' });
+    els.tabBody = h('div', { class: 'tab-body', id: 'tab-body', role: 'tabpanel', tabindex: '-1' });
     els.needsPanel = h('section', { id: 'needs-panel', class: 'panel needs', 'aria-label': 'Painel do morador' }, [
       h('div', { class: 'needs-head' }, [
         h('div', { style: { minWidth: '0' } }, [els.needsName, els.needsSub]),
@@ -406,6 +439,7 @@
     els.handM = h('i', { class: 'hand m' });
     els.clockFace = h('div', { class: 'clock-face', 'aria-hidden': 'true' }, [els.handH, els.handM]);
     els.clockTime = h('div', { class: 'clock-time', text: '08:00' });
+    els.eta = h('div', { class: 'eta-chip', hidden: true, role: 'status', text: '' });
     els.dayLong = h('span', { class: 'long', text: '' });
     els.dayShort = h('span', { class: 'short', text: '' });
     els.clockDay = h('div', { class: 'clock-day' }, [els.dayLong, els.dayShort]);
@@ -430,10 +464,15 @@
     els.moneybox = h('div', { class: 'moneybox' }, [els.family, els.money, els.saveChip]);
     els.bar = h('div', { id: 'bar', class: 'panel' }, [
       modes,
-      h('div', { class: 'timebox' }, [h('div', { class: 'clock' }, [els.clockFace, h('div', { class: 'clock-text' }, [els.clockTime, els.clockDay])]), speeds]),
+      h('div', { class: 'timebox' }, [h('div', { class: 'clock' }, [els.eta, els.clockFace, h('div', { class: 'clock-text' }, [els.clockTime, els.clockDay])]), speeds]),
       els.moneybox,
     ]);
     hud.appendChild(els.bar);
+    watchBarHeight();
+
+    // ---- move-in checklist (empty lot)
+    els.checklist = h('section', { id: 'checklist', class: 'panel', hidden: true, 'aria-label': 'Lista da mudança' });
+    hud.appendChild(els.checklist);
 
     // ---- layers
     els.bubbles = h('div', { id: 'bubbles', class: 'layer', 'aria-hidden': 'true' });
@@ -445,6 +484,25 @@
     // bubbles sit under panels
     hud.insertBefore(els.bubbles, hud.firstChild);
     hud.insertBefore(els.hoverLabel, els.bubbles.nextSibling);
+  }
+
+  // VIS-4: panels are positioned from --bar-h, which must be the bar's real OUTER height (it grows with fonts,
+  // the save chip and the phone grid). Measured continuously.
+  function watchBarHeight() {
+    const bar = ui.els.bar;
+    if (!bar) return;
+    const apply = () => {
+      const r = bar.getBoundingClientRect();
+      if (!(r.height > 0)) return;
+      const v = Math.ceil(r.height) + 'px';
+      if (document.documentElement.style.getPropertyValue('--bar-h') !== v) document.documentElement.style.setProperty('--bar-h', v);
+    };
+    apply();
+    if (ui._barRO) { try { ui._barRO.disconnect(); } catch (e) { /* ignore */ } }
+    if (typeof ResizeObserver === 'function') {
+      try { ui._barRO = new ResizeObserver(apply); ui._barRO.observe(bar); } catch (e) { /* ignore */ }
+    }
+    ui._barApply = apply;
   }
 
   // ======================================================================
@@ -466,7 +524,7 @@
   }
   function leaveMode(mode) {
     closePie();
-    hideTip();
+    hideTip(true);
     if (mode === 'buy') {
       stopPlacing();
       deselectObject();
@@ -476,11 +534,14 @@
       rcall('hideEdgeGhost'); rcall('hideTileGhost');
       ui.build.sel = null; ui.build.confirm = false;
     }
+    if (mode === 'buy' || mode === 'build') ui.undo = [];     // the undo stack lives for one Buy/Build session
     rcall('hideGhost'); rcall('hideEdgeGhost'); rcall('hideTileGhost');
+    updateWallOverride();
     renderToolbar();
   }
   function applyModeDom() {
     const els = ui.els;
+    if (!els || !els.modeBtns) return;
     const optionsOpen = ui.modals.some((m) => m.kind === 'options');
     for (const k in els.modeBtns) {
       const on = optionsOpen ? k === 'options' : k === ui.mode;
@@ -495,6 +556,59 @@
     const view = $('view');
     if (view) view.style.cursor = ui.mode === 'build' ? 'crosshair' : '';
     renderToolbar();
+    refreshChecklist();
+    reframeForDrawer();
+  }
+
+  // VIS-10: while the catalog drawer is open the camera shifts so the lot sits in the free area beside
+  // (desktop/tablet) or above (phone) the drawer; the shift is undone when the drawer closes.
+  function reframeForDrawer() {
+    const dr = ui.els.drawer;
+    const open = !!dr && (ui.mode === 'buy' || ui.mode === 'build') && !dr.hidden;
+    if (!open) {
+      if (ui.reframe) {
+        const rf = ui.reframe;
+        ui.reframe = null;
+        const cam = rcall('getCamera');
+        const untouched = !cam || !rf.cam || (Math.abs(num(cam.x) - num(rf.cam.x)) < 0.05 && Math.abs(num(cam.z) - num(rf.cam.z)) < 0.05);
+        if (untouched && (rf.dx || rf.dy)) { rcall('pan', -rf.dx, -rf.dy); snapCamera(); }
+        rcall('setViewInsets', null);
+      }
+      return;
+    }
+    cancelAnimationFrame(ui._reframeRaf);
+    ui._reframeRaf = requestAnimationFrame(() => {
+      if (!(ui.mode === 'buy' || ui.mode === 'build') || dr.hidden) return;
+      if (dr.classList.contains('collapsed') && ui.reframe) return;   // keep the shift of the open sheet
+      const r = dr.getBoundingClientRect();
+      const vw = window.innerWidth, vh = window.innerHeight;
+      if (!(r.width > 0)) return;
+      let tx = 0, ty = 0;
+      const bottomSheet = r.left < vw * 0.2;          // phones: the drawer is a bottom sheet
+      if (bottomSheet) ty = Math.round(Math.min(0, (r.top - vh) / 2));
+      else tx = Math.round(Math.min(0, (r.left - vw) / 2));
+      const prev = ui.reframe || { dx: 0, dy: 0 };
+      const ddx = tx - prev.dx, ddy = ty - prev.dy;
+      if (Math.abs(ddx) >= 1 || Math.abs(ddy) >= 1) { rcall('pan', ddx, ddy); snapCamera(); }
+      ui.reframe = { dx: tx, dy: ty, cam: rcall('getCamera') };
+      const barTop = ui.els.bar ? ui.els.bar.getBoundingClientRect().top : vh;
+      rcall('setViewInsets', bottomSheet ? { top: 60, right: 56, bottom: Math.max(0, vh - r.top), left: 0 } : { top: 60, right: Math.max(0, vw - r.left), bottom: Math.max(0, vh - barTop), left: 0 });
+    });
+  }
+  // the drawer appears at once, so the view jumps with it (no easing: taps right after opening land where aimed)
+  function snapCamera() {
+    const c = rcall('getCamera');
+    if (c && isFinite(c.x) && isFinite(c.z)) rcall('setCamera', { x: c.x, z: c.z });
+  }
+  // CONTRACT_V2 §4: walls stay up while a wall-mounted item is placed or selected in Buy mode
+  function updateWallOverride() {
+    let on = false;
+    if (ui.mode === 'buy') {
+      const p = ui.buy.placing;
+      const d = p ? (D().CATALOG || {})[p.type] : ui.buy.sel != null ? objDef(objById(ui.buy.sel)) : null;
+      on = !!(d && d.wall);
+    }
+    if (on !== !!ui._wallsUp) { ui._wallsUp = on; rcall('setWallsUpOverride', on); }
   }
 
   // ======================================================================
@@ -566,7 +680,17 @@
           class: 'portrait', type: 'button', 'data-sim': s.id, 'aria-pressed': 'false', title: s.name,
           'aria-label': 'Selecionar ' + s.name,
           on: {
-            click: () => selectSim(s.id),
+            // LIVE-10: touch screens never send dblclick — a tap on the already-selected portrait (or a second
+            // tap within 350 ms) centres the camera on that character
+            click: () => {
+              const now = performance.now();
+              const st2 = S();
+              const already = st2 && st2.settings && st2.settings.selectedSimId === s.id;
+              const dbl = ui._portraitTap && ui._portraitTap.id === s.id && now - ui._portraitTap.t < 350;
+              ui._portraitTap = { id: s.id, t: now };
+              if (already || dbl) { selectSim(s.id, true); focusSim(simById(s.id)); return; }
+              selectSim(s.id);
+            },
             dblclick: () => { selectSim(s.id, true); focusSim(simById(s.id)); },
           },
         }, [cv, badge, dot, h('span', { class: 'portrait-name', text: firstName(s) })]);
@@ -604,18 +728,21 @@
   function refreshQueue(sim) {
     const el = ui.els.queue;
     if (!sim) { clear(el); ui.sig.queue = ''; return; }
-    const q = Array.isArray(sim.queue) ? sim.queue.slice(0, 8) : [];
-    const sig = sim.id + '|' + q.map((a) => a.id + ':' + (a.phase === 'do' ? 'd' : 'w') + (a.cancel ? 'x' : '') + a.source + (a.icon || '')).join(',');
+    const full = Array.isArray(sim.queue) ? sim.queue : [];
+    // LIVE-8: at most 8 icons; with more actions the last slot becomes a '+N' chip
+    const q = full.length > 8 ? full.slice(0, 7) : full.slice(0, 8);
+    const more = full.length - q.length;
+    const sig = sim.id + '|' + more + '|' + q.map((a) => a.id + ':' + (a.phase === 'do' ? 'd' : 'w') + (a.cancel ? 'x' : '') + a.source + (a.icon || '')).join(',');
     if (sig !== ui.sig.queue) {
       ui.sig.queue = sig;
       clear(el);
       if (!q.length) {
-        el.appendChild(h('span', { class: 'queue-empty', text: sim.hidden ? (sim.atWork ? 'No trabalho' : 'Fora de casa') : 'Sem ações na fila — clique em algo para interagir' }));
+        el.appendChild(h('span', { class: 'queue-empty', text: sim.hidden ? (sim.atWork ? 'No trabalho' : 'Fora de casa') : (isCoarse() ? 'Sem ações na fila — toque em algo para interagir' : 'Sem ações na fila — clique em algo para interagir') }));
       }
       q.forEach((a, i) => {
         const walking = a.phase === 'route' || a.phase === 'walk';
         const cls = 'q-item' + (i === 0 ? ' current' : '') + (a.source === 'auto' ? ' auto' : '') + (walking && i === 0 ? ' walking' : '') + (a.cancel ? ' cancel' : '');
-        const label = (a.label || 'Ação') + (a.source === 'auto' ? ' (vontade própria)' : '') + (a.nocancel ? '' : ' — clique para cancelar');
+        const label = (a.label || 'Ação') + (a.source === 'auto' ? ' (vontade própria)' : '') + (a.nocancel ? '' : (isCoarse() ? ' — toque para cancelar' : ' — clique para cancelar'));
         const prog = h('span', { class: 'q-prog', hidden: true }, h('i', { style: { width: '0%' } }));
         const b = h('button', {
           class: cls, type: 'button', title: label, 'aria-label': label, 'data-act': a.id,
@@ -624,6 +751,10 @@
         b._prog = prog;
         el.appendChild(b);
       });
+      if (more > 0) {
+        const rest = full.slice(q.length).map((a) => a.label || 'Ação').join(', ');
+        el.appendChild(h('span', { class: 'q-more num', title: 'Mais ' + more + ' na fila: ' + rest, 'aria-label': 'Mais ' + more + ' ações na fila', text: '+' + more }));
+      }
     }
     // progress of the current action
     const first = el.querySelector('.q-item.current');
@@ -730,6 +861,8 @@
         grid.appendChild(row);
       }
       body.appendChild(grid);
+      body._why = h('div', { class: 'mood-why', 'aria-live': 'off' });
+      body.appendChild(body._why);
       body._kind = 'needs';
     }
     if (!sim) return;
@@ -752,6 +885,11 @@
       setText(row._trend, tr);
       row._trend.style.color = tr === '▲' ? 'var(--good)' : 'var(--bad)';
       row.title = (LAB[k] || k) + ': ' + Math.round(v) + ' de 100';
+    }
+    if (body._why) {
+      const low = MOT.map((k) => ({ k, v: num(sim.motives && sim.motives[k]) })).filter((q) => q.v < 0).sort((a, b) => a.v - b.v).slice(0, 3);
+      setText(body._why, sim.hidden ? (sim.atWork ? '💼 No trabalho: as necessidades ficam em pausa.' : '🚗 Fora de casa.') :
+        low.length ? '⚠️ Precisa de: ' + low.map((q) => LAB[q.k] || q.k).join(', ') : '🙂 Tudo em ordem por enquanto.');
     }
   }
 
@@ -802,34 +940,63 @@
     if (v >= 0) { fill.style.left = '50%'; fill.style.width = (v / 2).toFixed(1) + '%'; fill.style.backgroundColor = posColor || 'var(--good)'; }
     else { fill.style.left = (50 + v / 2).toFixed(1) + '%'; fill.style.width = (-v / 2).toFixed(1) + '%'; fill.style.backgroundColor = negColor || 'var(--bad)'; }
   }
+  function shiftLen(lv) {
+    if (D().shiftHours) { try { const v = D().shiftHours(lv); if (isFinite(v)) return v; } catch (e) { /* ignore */ } }
+    const d = (num(lv.end) - num(lv.start) + 24) % 24;
+    return d || 24;
+  }
+  function untilText(mins) {
+    mins = Math.max(0, Math.round(mins));
+    if (mins < 60) return mins + ' min';
+    const hh = Math.floor(mins / 60), mm = mins % 60;
+    return hh + 'h' + (mm ? (mm < 10 ? '0' : '') + mm : '');
+  }
+  function offerRows(sim, offers) {
+    const ul = h('ul', { class: 'offer-list' });
+    for (const o of offers) {
+      ul.appendChild(h('li', {}, h('button', {
+        class: 'offer-row', type: 'button', 'aria-label': 'Ver vaga: ' + o.title + ', ' + o.name + ', ' + fmtMoney(o.pay) + ' por dia',
+        on: { click: () => openOfferCard(o, sim.id, null) },
+      }, [emo(o.icon || '💼'), h('span', {}, [h('b', { text: o.title }), h('small', { text: o.name + ' · ' + fmtMoney(o.pay) + '/dia · ' + hourStr(o.start) + '–' + hourStr(o.end) + ' · ' + (o.source === 'jornal' ? 'jornal' : 'computador') })]),
+        h('span', { class: 'o-go', text: 'Ver vaga ›' })])));
+    }
+    return ul;
+  }
+  // LIVE-14/15 + improvement: the Carreira tab is a live progress view and offers can be accepted from it
   function renderCareer(body, sim, rebuild) {
     if (!sim) { clear(body); return; }
     const info = ecall('careerInfo', sim.id);
     const SL = D().SKILL_LABELS || {};
-    const sig = JSON.stringify(info ? [info.track, info.level, Math.round(info.performance / 5), info.atWork, info.friends, info.next && info.next.met, info.daysWorked, info.missedDays] : null) + sim.id;
+    const offers = ecall('jobOffers') || [];
+    const m = moodOf(sim);
+    const now = absMinute();
+    const mins = info ? (info.atWork ? num(sim.workReturnAt) - now : info.nextShift != null ? num(info.nextShift) - now : null) : null;
+    const sig = JSON.stringify(info ? [info.track, info.level, Math.round(info.performance / 5), info.atWork, info.friends, info.next && info.next.met, info.daysWorked, info.missedDays] : null) +
+      sim.id + ':' + (m > 0 ? 1 : 0) + ':' + (mins == null ? '-' : Math.floor(mins / 5)) + ':' + offers.map((o) => o.track + o.source).join(',');
     if (!rebuild && sig === ui.sig.career && body._kind === 'career') return;
     ui.sig.career = sig;
     body._kind = 'career';
     clear(body);
+    const where = isCoarse() ? 'Toque numa vaga para ver os detalhes e aceitar.' : 'Clique numa vaga para ver os detalhes e aceitar.';
     if (!info) {
       body.appendChild(h('div', { class: 'career-card' }, [
         h('div', { class: 'career-top' }, [h('div', { class: 'career-ico emoji', text: '📰' }), h('div', {}, [h('div', { class: 'career-title', text: 'Sem emprego' }), h('div', { class: 'muted', text: firstName(sim) + ' está procurando o que fazer da vida.' })])]),
-        h('p', { class: 'empty-note', text: 'Leia o jornal que chega toda manhã perto da caixa de correio (1 vaga por dia) ou use “Procurar emprego” no computador (3 vagas). Clique na vaga para aceitar.' }),
       ]));
-      const offers = ecall('jobOffers') || [];
       if (offers.length) {
         body.appendChild(h('div', { class: 'section-label', text: 'Vagas disponíveis hoje' }));
-        const ul = h('ul', { class: 'req-list' });
-        for (const o of offers) {
-          ul.appendChild(h('li', {}, [h('span', { text: (o.icon || '💼') + ' ' + o.title + ' (' + o.name + ')' }), h('span', { class: 'num', text: fmtMoney(o.pay) + '/dia · ' + (o.source === 'jornal' ? 'jornal' : 'computador') })]));
-        }
-        body.appendChild(ul);
-      }
+        body.appendChild(offerRows(sim, offers));
+        body.appendChild(h('p', { class: 'career-hint', text: where + ' Vagas novas chegam no jornal (1 por dia, perto da caixa de correio) e em “Procurar emprego” no computador (3).' }));
+      } else body.appendChild(h('p', { class: 'empty-note', text: 'Nenhuma vaga à vista hoje. O jornal chega toda manhã perto da caixa de correio (1 vaga por dia) e “Procurar emprego” no computador mostra mais 3.' }));
       return;
     }
     const perf = h('i', {});
     const perfBar = h('div', { class: 'bar center', role: 'meter', 'aria-label': 'Desempenho', 'aria-valuemin': '-100', 'aria-valuemax': '100', 'aria-valuenow': String(Math.round(info.performance)) }, perf);
     centerBar(perf, info.performance);
+    let status = '—';
+    if (info.atWork) status = 'No trabalho' + (sim.workReturnAt ? ' · volta às ' + fmtTime(((num(sim.workReturnAt) % 1440) + 1440) % 1440) + (mins > 0 ? ' (em ' + untilText(mins) + ')' : '') : '');
+    else if (info.nextShift != null) {
+      status = describeShift(info.nextShift) + (mins != null && mins > 0 ? ' (em ' + untilText(mins) + ')' : '');
+    }
     const kids = [
       h('div', { class: 'career-top' }, [
         h('div', { class: 'career-ico emoji', text: info.icon || '💼' }),
@@ -837,9 +1004,10 @@
       ]),
       h('dl', { class: 'kv' }, [
         h('dt', { text: 'Salário' }), h('dd', { text: fmtMoney(info.pay) + ' por dia' }),
-        h('dt', { text: 'Horário' }), h('dd', { text: hourStr(info.start) + '–' + hourStr(info.end) + ' (' + info.hours + ' h)' }),
-        h('dt', { text: 'Dias' }), h('dd', { text: dayRange(info.days) }),
-        h('dt', { text: 'Status' }), h('dd', { text: info.atWork ? 'No trabalho agora' : (info.nextShift != null ? 'Próximo turno: ' + describeShift(info.nextShift) : '—') }),
+        h('dt', { text: 'Horário' }), h('dd', { text: hourStr(info.start) + '–' + hourStr(info.end) + ' (' + info.hours + ' h) · ' + dayRange(info.days) }),
+        h('dt', { text: info.atWork ? 'Agora' : 'Próximo turno' }), h('dd', { text: status }),
+        !info.atWork && mins != null && mins > 0 ? h('dt', { text: 'Carona' }) : null,
+        !info.atWork && mins != null && mins > 0 ? h('dd', { text: mins > 60 ? 'chega em ' + untilText(mins - 60) : 'já está esperando' }) : null,
         h('dt', { text: 'Dias trabalhados' }), h('dd', { text: String(info.daysWorked) + (info.missedDays ? ' · faltas seguidas: ' + info.missedDays : '') }),
       ]),
       h('div', {}, [h('div', { class: 'section-label', text: 'Desempenho' }), perfBar]),
@@ -855,9 +1023,16 @@
       }
       if (num(req.friends) > 0) {
         const ok = !!met.friends;
-        ul.appendChild(h('li', { class: ok ? 'ok' : 'no' }, [h('span', { text: (ok ? '✓ ' : '○ ') + 'Amigos da família' }), h('span', { class: 'num', text: info.friends + ' / ' + req.friends })]));
+        ul.appendChild(h('li', { class: ok ? 'ok' : 'no' }, [
+          h('span', {}, [(ok ? '✓ ' : '○ ') + 'Amigos da família', ok ? null : h('span', { class: 'r-hint', text: ' — converse e ligue para vizinhos' })]),
+          h('span', { class: 'num', text: info.friends + ' / ' + req.friends })]));
       }
-      ul.appendChild(h('li', { class: 'no' }, [h('span', { text: '○ Ir trabalhar de bom humor' }), h('span', { text: '' })]));
+      // LIVE-15: the promotion roll uses the mood at departure — show it live (or the departure mood at work)
+      const depMood = sim.career && sim.career.moodAtDeparture != null ? num(sim.career.moodAtDeparture) : null;
+      const goodMood = info.atWork && depMood != null ? depMood > 0 : m > 0;
+      ul.appendChild(h('li', { class: goodMood ? 'ok' : 'no' }, [
+        h('span', { text: (goodMood ? '✓ ' : '○ ') + (info.atWork ? 'Saiu de bom humor' : 'Ir trabalhar de bom humor') }),
+        h('span', { class: 'r-hint', text: info.atWork ? '' : 'agora: ' + moodLabel(m).toLowerCase() })]));
       kids.push(h('div', {}, [
         h('div', { class: 'section-label', text: 'Próxima promoção: ' + info.next.title + ' · ' + fmtMoney(info.next.pay) + '/dia' }),
         ul,
@@ -866,6 +1041,89 @@
       kids.push(h('p', { class: 'empty-note', text: 'Topo da carreira! Não há promoções acima deste cargo.' }));
     }
     body.appendChild(h('div', { class: 'career-card' }, kids));
+    const others = offers.filter((o) => o.track !== info.track);
+    if (others.length) {
+      body.appendChild(h('div', { class: 'section-label', text: 'Outras vagas hoje (troca de emprego)' }));
+      body.appendChild(offerRows(sim, others));
+    }
+  }
+  // ---- job offer card (LIVE-2): title, career, pay, hours, days, promotion path; compare when employed
+  function offerFor(track, srcObj) {
+    const list = ecall('jobOffers') || [];
+    const want = srcObj ? (srcObj.type === 'computer' ? 'computador' : 'jornal') : null;
+    let o = list.find((q) => q.track === track && (!want || q.source === want)) || list.find((q) => q.track === track) || null;
+    if (!o) {
+      const c = (D().CAREERS || {})[track];
+      const lv = c && c.levels && c.levels[0];
+      if (lv) o = { track, source: want || 'jornal', name: c.name, icon: c.icon, title: lv.title, pay: lv.pay, start: lv.start, end: lv.end, days: (lv.days || []).slice() };
+    }
+    return o;
+  }
+  function offerSource(offer, sim) {
+    const st = S();
+    if (!st || !offer) return null;
+    if (offer.source === 'computador') {
+      const comps = st.objects.filter((o) => o.type === 'computer' && !o.broken);
+      comps.sort((a, b) => Math.hypot(a.x - sim.x, a.y - sim.y) - Math.hypot(b.x - sim.x, b.y - sim.y));
+      return comps[0] || null;
+    }
+    return st.objects.find((o) => o.type === 'newspaper' && o.offer === offer.track) || null;
+  }
+  function openOfferCard(offer, simId, objId) {
+    const sim = simById(simId);
+    if (!offer || !sim) return Promise.resolve(false);
+    const c = (D().CAREERS || {})[offer.track] || {};
+    const levels = Array.isArray(c.levels) ? c.levels : [];
+    const lv = levels[0] || offer;
+    const next = levels[1] || null;
+    const cur = sim.career ? ecall('careerInfo', sim.id) : null;
+    const hours = shiftLen(lv);
+    const night = num(lv.start) >= 20 || num(lv.end) <= 6 || num(lv.end) < num(lv.start);
+    const head = h('div', { class: 'offer-head' }, [
+      h('div', { class: 'career-ico emoji', text: offer.icon || c.icon || '💼' }),
+      h('div', {}, [h('b', { text: offer.title }), h('span', { text: offer.name + ' · nível 1 de ' + (levels.length || 10) + ' · vaga do ' + (offer.source === 'computador' ? 'computador' : 'jornal') })]),
+    ]);
+    const kids = [head];
+    const hoursTxt = (l) => hourStr(num(l.start)) + '–' + hourStr(num(l.end)) + ' (' + shiftLen(l) + ' h)';
+    if (cur) {
+      const cmp = (a, b) => (a > b ? 'better' : a < b ? 'worse' : '');
+      kids.push(h('dl', { class: 'compare' }, [
+        h('span', {}), h('span', { class: 'c-h', text: 'Emprego atual' }), h('span', { class: 'c-h', text: 'Nova vaga' }),
+        h('dt', { text: 'Cargo' }), h('dd', { text: cur.title }), h('dd', { text: offer.title }),
+        h('dt', { text: 'Carreira' }), h('dd', { text: cur.trackName + ' · nível ' + cur.level }), h('dd', { text: offer.name + ' · nível 1' }),
+        h('dt', { text: 'Salário' }), h('dd', { text: fmtMoney(cur.pay) + '/dia' }), h('dd', { class: cmp(num(offer.pay), num(cur.pay)), text: fmtMoney(offer.pay) + '/dia' }),
+        h('dt', { text: 'Horário' }), h('dd', { text: hoursTxt(cur) }), h('dd', { text: hoursTxt(lv) }),
+        h('dt', { text: 'Dias' }), h('dd', { text: dayRange(cur.days) }), h('dd', { text: dayRange(offer.days || lv.days) }),
+      ]));
+      kids.push(h('div', { class: 'warn-note bad', text: 'Ao trocar de emprego, ' + firstName(sim) + ' começa no nível 1 de ' + offer.name + ' e perde o cargo de ' + cur.title + ' (nível ' + cur.level + ') em ' + cur.trackName + ', com todo o desempenho acumulado.' }));
+    } else {
+      kids.push(h('dl', { class: 'kv' }, [
+        h('dt', { text: 'Salário' }), h('dd', { text: fmtMoney(offer.pay) + ' por dia' }),
+        h('dt', { text: 'Horário' }), h('dd', { text: hoursTxt(lv) }),
+        h('dt', { text: 'Dias' }), h('dd', { text: dayRange(offer.days || lv.days) }),
+        h('dt', { text: 'Carona' }), h('dd', { text: 'chega 1 h antes, às ' + hourStr((num(lv.start) + 23) % 24) }),
+      ]));
+    }
+    if (next) kids.push(h('p', { class: 'offer-path', text: 'Próxima promoção: ' + next.title + ' · ' + fmtMoney(next.pay) + '/dia' + '.' }));
+    if (night) kids.push(h('div', { class: 'warn-note', text: 'Turno da noite: ' + firstName(sim) + ' vai precisar dormir antes do trabalho.' }));
+    return choice({
+      title: cur ? 'Trocar de emprego?' : 'Vaga de emprego',
+      body: h('div', { class: 'offer-card' }, kids),
+      buttons: [{ label: 'Agora não', value: false }, { label: cur ? 'Trocar de emprego' : 'Aceitar vaga', value: true, primary: !cur, danger: !!cur }],
+      cancelValue: false,
+      kind: 'offer',
+    }).then((yes) => {
+      if (!yes) return false;
+      const src = objId != null ? objById(objId) : offerSource(offer, sim);
+      if (!src) { toast('Esta vaga não está mais disponível.', 'bad'); return false; }
+      const ok = !!ecall('queueInteraction', sim.id, src.id, 'job:' + offer.track, 'player');
+      if (ok) {
+        sfx('click');
+        toast(firstName(sim) + ' vai ' + (src.type === 'computer' ? 'ao computador' : 'até o jornal') + ' aceitar a vaga de ' + offer.title + '.', 'career', { icon: offer.icon || '💼', timeout: 3500 });
+        ui.sig.queue = ''; refreshDock();
+      } else refusal('Não foi possível aceitar a vaga agora.');
+      return ok;
+    });
   }
   function describeShift(absStart) {
     const st = S();
@@ -942,6 +1200,7 @@
   function toggleNeedsDrawer(force) {
     const open = typeof force === 'boolean' ? force : !ui.els.dock.classList.contains('needs-open');
     ui.els.dock.classList.toggle('needs-open', open);
+    ui.els.hud.classList.toggle('needs-open', open);
     ui.els.needsToggle.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) refreshDock(true);
   }
@@ -967,13 +1226,40 @@
     const speed = M.main && typeof M.main.getSpeed === 'function' ? M.main.getSpeed() : num(st.speed, 1);
     const reasons = M.main && M.main.pauseReasons ? M.main.pauseReasons() : [];
     els.speedBtns.forEach((b, i) => b.setAttribute('aria-pressed', i === speed ? 'true' : 'false'));
-    let note = '';
+    let note = '', userPause = false;
     if (reasons.indexOf('buy') >= 0 || reasons.indexOf('build') >= 0) note = 'Tempo pausado';
-    else if (reasons.length) note = 'Pausado';
+    else if (reasons.length) {
+      // the reason label from M.main (e.g. "Pausado · Opções") when it has one
+      let lab = '';
+      if (M.main && typeof M.main.pauseLabel === 'function') { try { lab = M.main.pauseLabel() || ''; } catch (e) { lab = ''; } }
+      note = lab && !/^paus/i.test(lab) ? 'Pausado · ' + lab : (lab || 'Pausado');
+    }
+    else if (speed === 0) { note = 'Pausado'; userPause = true; }      // LIVE-9: the player's own pause shows too
     else if (M.main && M.main.isUltraBoost && M.main.isUltraBoost()) note = 'Todos dormindo · 30×';
     els.speedNote.hidden = !note;
+    els.speedNote.classList.toggle('user', userPause);
     setText(els.speedNote, note);
     setText(els.family, st.householdName || '');
+    refreshEta();
+  }
+  // CONTRACT_V2 §3: pizza / service / guest arrival chip next to the clock
+  const ETA_ICON = { pizza: '🍕', repair: '🔧', maid: '🧹', guest: '🏠' };
+  function refreshEta() {
+    const el = ui.els.eta;
+    if (!el) return;
+    const list = typeof E().pendingDeliveries === 'function' ? (ecall('pendingDeliveries') || []) : [];
+    if (!Array.isArray(list) || !list.length) { if (!el.hidden) el.hidden = true; return; }
+    const now = absMinute();
+    const first = list[0];
+    const when = (d) => num(d.at) <= now + 1 ? 'chegando' : 'às ' + fmtTime(((num(d.at) % 1440) + 1440) % 1440);
+    const short = (d) => (ETA_ICON[d.kind] || '⏳') + ' ' + (d.kind === 'pizza' ? 'Pizza' : String(d.label || '').replace(/ a caminho$/, '')) + ' ' + when(d);
+    let txt = short(first);
+    if (ui.narrow) txt = (ETA_ICON[first.kind] || '⏳') + ' ' + (num(first.at) <= now + 1 ? 'chegando' : fmtTime(((num(first.at) % 1440) + 1440) % 1440));
+    if (list.length > 1) txt += ' · +' + (list.length - 1);
+    setText(el, txt);
+    const title = list.map((d) => (d.label || d.kind) + ' — ' + when(d)).join('\n');
+    if (el.title !== title) { el.title = title; el.setAttribute('aria-label', title); }
+    if (el.hidden) el.hidden = false;
   }
   function refreshMoney(dt) {
     const st = S();
@@ -1000,16 +1286,33 @@
   // ======================================================================
   // Toasts & log
   // ======================================================================
+  /**
+   * toast(text, kind, opts) — CONTRACT_V2 §6. opts: { icon, timeout, sticky, focus: {x,y}|{simId}|{objId}
+   * (adds a 'Ver' button), action: { label, fn }, actions: [{ label, fn, primary }], id (notification id) }.
+   * The same text already on screen is bumped instead of stacked. Phones keep at most 2 toasts (LIVE-13);
+   * older ones stay in the bell log.
+   */
   function toast(text, kind, opts) {
     opts = opts || {};
     kind = kind || 'info';
     const els = ui.els;
-    if (!els.toasts) return null;
-    const actions = Array.isArray(opts.actions) ? opts.actions : [];
+    if (!els.toasts) { if (ui.pendingToasts.length < 12) ui.pendingToasts.push([text, kind, opts]); return null; }
+    text = touchText(text);
+    for (const n of Array.from(els.toasts.children)) {
+      if (n._text === text && !n.classList.contains('leaving')) {
+        n.classList.remove('bump'); void n.offsetWidth; n.classList.add('bump');
+        if (n._timeout) { clearTimeout(n._timer); n._timer = setTimeout(() => dismissToast(n), n._timeout); }
+        return n;
+      }
+    }
+    const actions = (Array.isArray(opts.actions) ? opts.actions : []).slice();
+    if (opts.action && opts.action.label && typeof opts.action.fn === 'function') actions.push(Object.assign({ primary: true }, opts.action));
+    if (opts.focus && focusPoint(opts.focus)) actions.push({ label: 'Ver', primary: false, fn: () => focusTarget(opts.focus) });
     const node = h('div', { class: 'toast ' + kind, role: kind === 'bad' ? 'alert' : 'status' });
     const close = () => dismissToast(node);
+    const textEl = h('div', {}, [String(text)]);
     node.appendChild(h('span', { class: 't-ico emoji', 'aria-hidden': 'true', text: opts.icon || KIND_ICON[kind] || 'ℹ️' }));
-    node.appendChild(h('div', { text: String(text) }));
+    node.appendChild(textEl);
     node.appendChild(h('button', { class: 't-close', type: 'button', 'aria-label': 'Fechar aviso', text: '×', on: { click: close } }));
     if (actions.length) {
       node.appendChild(h('div', { class: 't-actions' }, actions.map((a) => h('button', {
@@ -1017,18 +1320,51 @@
         on: { click: () => { close(); try { a.fn(); } catch (e) { warnOnce('toast-action', e); } } },
       }))));
     }
+    node._text = text; node._textEl = textEl; node._id = opts.id != null ? opts.id : null; node._sticky = !!opts.sticky;
     els.toasts.appendChild(node);
-    while (els.toasts.children.length > 4) dismissToast(els.toasts.firstChild, true);
-    node._timer = setTimeout(close, opts.timeout || (actions.length ? 12000 : kind === 'bad' ? 7000 : 5500));
+    const max = ui.narrow ? 2 : 4;
+    while (els.toasts.children.length > max) {
+      const kids = Array.from(els.toasts.children).filter((n) => n !== node);
+      const victim = kids.find((n) => !n._sticky) || kids[0];
+      if (!victim) break;
+      dismissToast(victim, true);
+    }
+    const phone = ui.narrow;
+    const dflt = actions.length ? 12000 : kind === 'bad' ? (phone ? 5000 : 7000) : (phone ? 4000 : 5500);
+    node._timeout = opts.sticky ? 0 : (opts.timeout || dflt);
+    if (node._timeout) node._timer = setTimeout(close, node._timeout);
     els.hud.classList.toggle('toasts-live', els.toasts.children.length > 0);
     return node;
+  }
+  /** World position for a notification focus ({simId} | {objId} | {x, y}) or null. */
+  function focusPoint(f) {
+    if (!f || typeof f !== 'object') return null;
+    if (f.simId != null) { const s = simById(f.simId); return s && !s.hidden ? { x: num(s.x), y: num(s.y) } : null; }
+    if (f.objId != null) {
+      const o = objById(f.objId);
+      if (!o) return null;
+      const sz = wcall('rotatedSize', o.type, o.rot) || { w: 1, h: 1 };
+      return { x: num(o.x) + (num(sz.w, 1) - 1) / 2, y: num(o.y) + (num(sz.h, 1) - 1) / 2 };
+    }
+    if (f.x != null && f.y != null && isFinite(+f.x) && isFinite(+f.y)) return { x: +f.x, y: +f.y };
+    return null;
+  }
+  function focusTarget(f) {
+    const p = focusPoint(f);
+    if (!p) { toast('Isso não está mais à vista.', 'info', { timeout: 2200 }); return; }
+    if (ui.mode !== 'live' && ui.mode !== 'buy' && ui.mode !== 'build') setMode('live');
+    rcall('focus', p.x, p.y);
+    setTimeout(() => {
+      const pr = rcall('project', p.x + 0.5, 0.2, p.y + 0.5);
+      if (pr && pr.visible !== false) walkPing(pr.clientX != null ? pr.clientX : pr.x, pr.clientY != null ? pr.clientY : pr.y);
+    }, 650);
   }
   function dismissToast(node, now) {
     if (!node || !node.parentNode) return;
     clearTimeout(node._timer);
     const done = () => {
       if (node.parentNode) node.parentNode.removeChild(node);
-      ui.els.hud.classList.toggle('toasts-live', ui.els.toasts.children.length > 0);
+      if (ui.els.hud && ui.els.toasts) ui.els.hud.classList.toggle('toasts-live', ui.els.toasts.children.length > 0);
     };
     if (now) { done(); return; }
     node.classList.add('leaving');
@@ -1051,7 +1387,8 @@
     if (!ui.logOpen) return;
     const st = S();
     const list = st && Array.isArray(st.notifications) ? st.notifications : [];
-    const sig = list.length + ':' + (list.length ? list[list.length - 1].id : '');
+    const last = list.length ? list[list.length - 1] : null;
+    const sig = list.length + ':' + (last ? last.id + ':' + num(last.count) : '');
     if (sig === ui.sig.log) return;
     ui.sig.log = sig;
     const ol = ui.els.logList;
@@ -1062,7 +1399,7 @@
       if (!n) continue;
       ol.appendChild(h('li', {}, [
         h('span', { class: 'emoji', 'aria-hidden': 'true', text: KIND_ICON[n.kind] || 'ℹ️' }),
-        h('div', {}, [h('time', { text: (M.util ? M.util.weekdayName(num(n.day, 1)) : '') + ', dia ' + num(n.day, 1) + ' · ' + fmtTime(num(n.minute)) }), String(n.text || '')]),
+        h('div', {}, [h('time', { text: (M.util ? M.util.weekdayName(num(n.day, 1)) : '') + ', dia ' + num(n.day, 1) + ' · ' + fmtTime(num(n.minute)) }), touchText(String(n.text || '')) + (num(n.count) > 1 ? ' (×' + num(n.count) + ')' : '')]),
       ]));
     }
   }
@@ -1070,12 +1407,14 @@
   // ======================================================================
   // Bubbles (speech / thought) and hover label — every frame
   // ======================================================================
+  // Bubbles: all screen positions are read first (simScreenPos may measure the canvas), then every bubble is
+  // written in one pass with a transform (no left/top → no layout per bubble), skipping unchanged values.
   function updateBubbles() {
     const st = S();
     const layer = ui.els.bubbles;
     if (!st || !layer) return;
     const now = absMinute();
-    const seen = new Set();
+    const todo = [];
     for (const s of st.sims) {
       const b = s && s.bubble;
       if (!b || s.hidden || num(b.until) <= now) continue;
@@ -1083,18 +1422,24 @@
       if (!pos || pos.visible === false) continue;
       const px = pos.clientX != null ? pos.clientX : pos.x, py = pos.clientY != null ? pos.clientY : pos.y;
       if (!isFinite(px) || !isFinite(py)) continue;
-      seen.add(s.id);
-      let el = ui.bubbles.get(s.id);
+      todo.push({ s, b, px: Math.round(px), py: Math.round(py) });
+    }
+    const seen = new Set();
+    for (const t of todo) {
+      seen.add(t.s.id);
+      let el = ui.bubbles.get(t.s.id);
       if (!el) {
         el = h('div', { class: 'bubble pop' });
         layer.appendChild(el);
-        ui.bubbles.set(s.id, el);
+        ui.bubbles.set(t.s.id, el);
       }
-      const cls = 'bubble ' + (b.kind === 'talk' ? 'talk' : 'think');
+      const cls = 'bubble ' + (t.b.kind === 'talk' ? 'talk' : 'think');
       if (el._cls !== cls) { el._cls = cls; el.className = cls + ' pop'; }
-      if (el._icon !== b.icon) { el._icon = b.icon; el.textContent = b.icon || '…'; }
-      el.style.left = Math.round(px) + 'px';
-      el.style.top = Math.round(py) + 'px';
+      if (el._icon !== t.b.icon) { el._icon = t.b.icon; el.textContent = t.b.icon || '…'; }
+      if (el._px !== t.px || el._py !== t.py) {
+        el._px = t.px; el._py = t.py;
+        el.style.transform = 'translate3d(' + t.px + 'px,' + t.py + 'px,0) translate(-50%, calc(-100% - 14px))';
+      }
     }
     for (const [id, el] of ui.bubbles) {
       if (!seen.has(id)) { if (el.parentNode) el.parentNode.removeChild(el); ui.bubbles.delete(id); }
@@ -1104,28 +1449,89 @@
     for (const [, el] of ui.bubbles) if (el.parentNode) el.parentNode.removeChild(el);
     ui.bubbles.clear();
   }
+  // LIVE-1: a click on a counter/table (no interactions of its own) that holds a meal, plate or other item
+  // targets that item. render.pick already prefers items; this covers ray hits on the bare surface.
+  function resolveTarget(p) {
+    if (!p || p.kind !== 'object') return p;
+    const o = objById(p.id);
+    const d = objDef(o);
+    if (!o || !d || d.noBlock) return p;
+    const hasOwn = interactionsFor(o.id).length > 0;
+    if (hasOwn && !d.surface) return p;
+    let item = null;
+    if (p.x != null && p.y != null) item = wcall('itemAt', p.x, p.y);
+    if (!item && d.surface) {
+      const tiles = wcall('footprint', o.type, o.x, o.y, o.rot) || [];
+      for (const t of tiles) { item = wcall('itemAt', t.x, t.y); if (item) break; }
+    }
+    if (item && item.id !== o.id && (!hasOwn || interactionsFor(item.id).length)) return { kind: 'object', id: item.id, x: item.x, y: item.y, item: true };
+    return p;
+  }
+  // interactions of an object for the selected character, cached briefly (hover runs ~10×/s)
+  function interactionsFor(objId) {
+    const sim = selectedSim();
+    if (!sim) return [];
+    const key = sim.id + ':' + objId;
+    const now = performance.now();
+    const c = ui._interCache;
+    if (c && c.key === key && now - c.t < 400) return c.list;
+    const list = ecall('getInteractions', sim.id, objId) || [];
+    ui._interCache = { key, t: now, list };
+    return list;
+  }
   function updateHover(now) {
     const lab = ui.els.hoverLabel;
     if (ui.mode !== 'live' || ui.pie || !ui.mouse.over || ui.mouse.type !== 'mouse' || ui.gesture || ui.modals.length) { lab.hidden = true; return; }
     if (now - ui.tHover < 90) return;
     ui.tHover = now;
-    const p = rcall('pick', ui.mouse.x, ui.mouse.y);
-    let text = '';
+    const p = resolveTarget(rcall('pick', ui.mouse.x, ui.mouse.y));
+    let text = '', active = false;
     if (p && p.kind === 'sim') {
       const s = simById(p.id);
-      if (s) text = s.name + (s.visitor ? (s.role === 'walkby' ? ' · passando na rua' : s.role && s.role !== 'guest' ? ' · serviço' : ' · visita') : '');
+      if (s) { text = s.name + (s.visitor ? (s.role === 'walkby' ? ' · passando na rua' : s.role && s.role !== 'guest' ? ' · serviço' : ' · visita') : ''); active = true; }
     } else if (p && p.kind === 'object') {
       const o = objById(p.id);
       const d = objDef(o);
-      if (d) text = d.name + (o.broken ? ' (quebrado)' : '');
+      if (d) {
+        text = objLabel(o, d);
+        active = interactionsFor(o.id).length > 0;     // LIVE-18: no pointer for objects with nothing to do
+      }
     }
     const view = $('view');
-    if (view) view.style.cursor = text ? 'pointer' : '';
+    if (view) view.style.cursor = active ? 'pointer' : '';
     if (!text) { lab.hidden = true; return; }
     setText(lab, text);
+    lab.classList.toggle('dim', !active);
     lab.style.left = ui.mouse.x + 'px';
     lab.style.top = (ui.mouse.y - 10) + 'px';
     lab.hidden = false;
+  }
+  function objLabel(o, d) {
+    let t = d.name;
+    if (o.broken) t += ' (com defeito)';
+    else if (o.type === 'meal') t = o.spoiled ? 'Comida estragada' : (o.food === 'pizza' ? 'Pizza' : d.name) + (o.servings ? ' · ' + o.servings + (o.servings === 1 ? ' prato' : ' pratos') : '');
+    else if (o.type === 'dirty_plate' && o.spoiled) t = 'Prato sujo (estragado)';
+    else if (o.type === 'newspaper' && o.offer) t = d.name + ' · vaga de emprego';
+    return t;
+  }
+  // LIVE-18: what to say when an object has nothing to do right now
+  function idleTip(o, d) {
+    const name = d ? d.name : 'Objeto';
+    if (!o || !d) return 'Nada para fazer aqui agora.';
+    const bills = (S() && Array.isArray(S().bills)) ? S().bills.length : 0;
+    switch (o.type) {
+      case 'mailbox': return bills ? 'Há contas, mas ninguém pode pagá-las agora.' : 'Nenhuma conta para pagar. Contas chegam a cada 3 dias.';
+      case 'trash_can': return 'Lixeira: os moradores jogam fora pratos sujos e comida estragada aqui.';
+      case 'counter': return 'Balcão vazio. Prepare uma refeição na geladeira: ela é montada aqui.';
+      case 'table_dining': case 'table_small': return name + ': os moradores comem aqui quando há comida servida.';
+      case 'end_table': return name + ': decoração. Deixa o cômodo mais agradável.';
+      case 'newspaper': return 'Jornal de hoje já lido.';
+      case 'carpool': return 'Carona do trabalho: espera o morador na hora do turno.';
+      default:
+    }
+    if (d.cat === 'plants' || /^plant_/.test(o.type)) return o.dead ? name + ': a planta morreu. Venda e compre outra.' : name + ': a planta está regada' + (o.water != null ? ' (água ' + Math.round(num(o.water)) + '%)' : '') + '.';
+    if (d.cat === 'decor' || d.wall) return name + ': decoração. Melhora o Ambiente do cômodo.';
+    return name + ': nada para fazer agora.';
   }
   function walkPing(x, y) {
     const el = h('div', { class: 'walk-ping', style: { left: x + 'px', top: y + 'px' } });
@@ -1136,24 +1542,51 @@
   // ======================================================================
   // Cursor tip
   // ======================================================================
-  function showTip(x, y, content, bad) {
+  /**
+   * Cursor tip. Placed below-right of the pointer (above the finger on touch), kept inside the viewport and
+   * clear of the camera cluster, the floating toolbar and the drawer (BB-11). While a confirmation flash is
+   * up (flashTip), hover updates leave it alone unless `force` (BB-6).
+   */
+  function showTip(x, y, content, bad, force) {
     const tip = ui.els.tip;
+    if (!tip) return;
+    if (!force && performance.now() < ui.flashUntil) return;
     clear(tip);
     appendKids(tip, content);
     tip.classList.toggle('bad', !!bad);
     tip.hidden = false;
+    tip.style.transform = 'none';
     const w = tip.offsetWidth || 120, hgt = tip.offsetHeight || 24;
-    const vx = Math.min(x, window.innerWidth - w - 22);
-    const vy = Math.min(y, window.innerHeight - hgt - 22);
-    tip.style.left = Math.max(4, vx) + 'px';
-    tip.style.top = Math.max(4, vy) + 'px';
+    const vw = window.innerWidth, vh = window.innerHeight;
+    const touch = ui.mouse.type !== 'mouse';
+    const cands = touch
+      ? [[x - w / 2, y - hgt - 46], [x + 24, y - hgt - 30], [x - w - 24, y - hgt - 30], [x - w / 2, y + 40]]
+      : [[x + 14, y + 14], [x - w - 14, y + 14], [x + 14, y - hgt - 14], [x - w - 14, y - hgt - 14]];
+    const avoid = [rectOf(ui.els.cam), rectOf(ui.els.toolbar), rectOf(ui.els.drawer), rectOf(ui.els.bar)].filter(Boolean);
+    let best = null;
+    for (const c of cands) {
+      const lx = clamp(c[0], 4, Math.max(4, vw - w - 4)), ly = clamp(c[1], 4, Math.max(4, vh - hgt - 4));
+      const r = { left: lx, top: ly, right: lx + w, bottom: ly + hgt };
+      const hits = avoid.filter((a) => overlaps(r, a, 2)).length;
+      if (!best || hits < best.hits) best = { lx, ly, hits };
+      if (!hits) break;
+    }
+    tip.style.left = Math.round(best.lx) + 'px';
+    tip.style.top = Math.round(best.ly) + 'px';
   }
-  function hideTip() { if (ui.els.tip) ui.els.tip.hidden = true; }
-  function flashTip(x, y, text, bad) {
-    showTip(x, y, text, bad);
+  function hideTip(force) {
+    if (!force && performance.now() < ui.flashUntil) return;
+    if (ui.els.tip) ui.els.tip.hidden = true;
+  }
+  function flashTip(x, y, text, bad, ms) {
+    ms = ms || 1800;
+    ui.flashUntil = 0;
+    showTip(x, y, text, bad, true);
+    ui.flashUntil = performance.now() + ms;
     clearTimeout(ui._tipTimer);
-    ui._tipTimer = setTimeout(hideTip, 1800);
+    ui._tipTimer = setTimeout(() => { ui.flashUntil = 0; hideTip(true); }, ms);
   }
+  function endFlash() { ui.flashUntil = 0; clearTimeout(ui._tipTimer); }
 
   // ======================================================================
   // Pie menu
@@ -1174,33 +1607,62 @@
       return Object.assign({}, it, { label: call ? 'Ligar para…' : 'Convidar…', children: kids });
     });
   }
+  const MOOD_REFUSE = 'De mau humor demais.';
+  // LIVE-2/LIVE-3: job offers get a short label + sub-line in the pie; the click opens the offer card
+  function decorateItem(it, sim) {
+    if (!it || typeof it.key !== 'string' || it.key.indexOf('job:') !== 0) return it;
+    const track = it.key.slice(4);
+    const c = (D().CAREERS || {})[track];
+    const lv = c && c.levels && c.levels[0];
+    if (!lv) return it;
+    return Object.assign({}, it, {
+      label: (sim && sim.career ? 'Trocar de emprego: ' : 'Vaga: ') + lv.title,
+      sub: c.name + ' · ' + fmtMoney(lv.pay) + '/dia · ' + hourStr(lv.start) + '–' + hourStr(lv.end),
+      job: track,
+    });
+  }
   function openPie(cx, cy, target) {
     closePie();
     const sim = selectedSim();
     if (!sim) { flashTip(cx, cy, 'Selecione um morador primeiro.', true); return; }
+    if (target && target.kind === 'sim' && target.id === sim.id) { openSelfPie(cx, cy, sim); return; }
     if (sim.hidden) { flashTip(cx, cy, firstName(sim) + (sim.atWork ? ' está no trabalho.' : ' não está em casa.'), true); return; }
+    target = resolveTarget(target);
     let items = [], title = '', targetSim = null, obj = null;
     if (target.kind === 'object') {
       obj = objById(target.id);
       if (!obj) return;
       const d = objDef(obj);
-      title = d ? d.name : 'Objeto';
+      title = d ? objLabel(obj, d) : 'Objeto';
       items = (ecall('getInteractions', sim.id, obj.id) || []).slice();
-      items = expandPhone(items, obj);
+      items = expandPhone(items, obj).map((it) => decorateItem(it, sim));
     } else if (target.kind === 'sim') {
       targetSim = simById(target.id);
       if (!targetSim) return;
-      if (targetSim.id === sim.id) { flashTip(cx, cy, sim.name + ' (selecionado)', false); return; }
       title = targetSim.name;
       items = (ecall('getSocials', sim.id, targetSim.id) || []).slice();
       if (!targetSim.visitor) items.unshift({ key: '__select', label: 'Controlar ' + firstName(targetSim), icon: '👆', enabled: true });
     }
     if (!items.length) {
       flashTip(cx, cy, targetSim && targetSim.visitor && targetSim.role && targetSim.role !== 'guest' && targetSim.role !== 'walkby'
-        ? targetSim.name + ' está trabalhando.' : 'Nada para fazer aqui agora.', false);
+        ? targetSim.name + ' está trabalhando.' : obj ? idleTip(obj, objDef(obj)) : 'Nada para fazer aqui agora.', false);
       return;
     }
-    ui.pie = { x: cx, y: cy, target, simId: sim.id, title, items, stack: [], obj, targetSim, openedAt: performance.now() };
+    const lowMood = items.some((it) => !it.enabled && it.reason === MOOD_REFUSE);
+    ui.pie = { x: cx, y: cy, target, simId: sim.id, title, items, stack: [], obj, targetSim, openedAt: performance.now(), lowMood, actor: firstName(sim) };
+    sfx('open');
+    renderPie();
+  }
+  // Improvement: clicking the selected character opens a menu about themselves
+  function openSelfPie(cx, cy, sim) {
+    const q = Array.isArray(sim.queue) ? sim.queue : [];
+    const cancellable = q.filter((a) => !a.nocancel && !a.cancel).length;
+    const items = [
+      { key: '__cancelall', label: 'Cancelar tudo', icon: '✋', enabled: cancellable > 0, reason: 'Nada na fila para cancelar.' },
+      { key: '__home', label: 'Ir para dentro de casa', icon: '🏠', enabled: !sim.hidden && typeof E().homeTile === 'function', reason: 'Indisponível agora.' },
+      { key: '__needs', label: 'Ver necessidades', icon: '📊', enabled: true },
+    ];
+    ui.pie = { x: cx, y: cy, target: { kind: 'sim', id: sim.id }, simId: sim.id, title: sim.name, items, stack: [], obj: null, targetSim: sim, openedAt: performance.now(), self: true, actor: firstName(sim) };
     sfx('open');
     renderPie();
   }
@@ -1230,26 +1692,36 @@
     const center = h('button', {
       class: 'pie-center' + (p.stack.length ? ' back' : ''), type: 'button',
       'aria-label': p.stack.length ? 'Voltar' : 'Fechar menu',
-      title: p.stack.length ? 'Voltar' : 'Fechar',
+      title: p.stack.length ? 'Voltar' : (p.actor ? p.actor + ' — fechar' : 'Fechar'),
       on: { click: () => { if (performance.now() - p.openedAt < 300) return; if (p.stack.length) { p.stack.pop(); p.openedAt = performance.now() - 300; renderPie(); } else closePie(); } },
     }, cv);
     wrap.appendChild(center);
-    wrap.appendChild(h('div', { class: 'pie-title', text: p.stack.length ? p.stack[p.stack.length - 1].label.replace('…', '') : p.title }));
+    // centre label: who acts → on what (improvement: the face above the title is the actor, not the target)
+    const titleText = p.stack.length ? p.stack[p.stack.length - 1].label.replace('…', '') : p.title;
+    const titleEl = h('div', { class: 'pie-title' }, p.self ? [titleText] : [h('span', { class: 'pie-actor', text: (p.actor || '') + ' →' }), titleText]);
+    wrap.appendChild(titleEl);
+    let noteEl = null;
+    if (p.lowMood && !p.stack.length) {
+      noteEl = h('div', { class: 'pie-note', text: '😫 De mau humor: só cuida das necessidades' });
+      wrap.appendChild(noteEl);
+    }
     document.body.appendChild(root);
     const nodes = [];
     items.forEach((it, i) => {
       const dis = !it.enabled;
-      const why = dis && it.reason ? h('span', { class: 'p-why', text: it.reason }) : null;
+      const moodBlock = dis && it.reason === MOOD_REFUSE;
+      const why = dis && it.reason && !moodBlock ? h('span', { class: 'p-why', text: it.reason }) : null;
+      const sub = it.sub ? h('span', { class: 'p-sub', text: it.sub }) : null;
       const node = h('button', {
-        class: 'pie-item' + (it.children ? ' cat' : '') + (why ? ' has-why' : ''), type: 'button', role: 'menuitem',
-        'aria-disabled': dis ? 'true' : 'false', title: dis ? (it.reason || 'Indisponível agora') : it.label,
+        class: 'pie-item' + (it.children ? ' cat' : '') + (why ? ' has-why' : '') + (p.lowMood && !dis ? ' need' : '') + (moodBlock ? ' dimmed' : ''), type: 'button', role: 'menuitem',
+        'aria-disabled': dis ? 'true' : 'false', title: dis ? (it.reason || 'Indisponível agora') : it.label + (it.sub ? ' — ' + it.sub : ''),
         on: { click: (e) => onPieItem(it, e) },
-      }, [emo(it.icon || '•'), h('span', { class: 'p-label-wrap' }, [h('span', { class: 'p-label', text: it.label }), why])]);
+      }, [emo(it.icon || '•'), h('span', { class: 'p-label-wrap' }, [h('span', { class: 'p-label', text: it.label }), sub, why])]);
       node.style.animationDelay = (i * 18) + 'ms';
       wrap.appendChild(node);
       nodes.push(node);
     });
-    layoutPie(wrap, nodes);
+    layoutPie(wrap, nodes, titleEl, noteEl);
     try { root.focus({ preventScroll: true }); } catch (e) { /* ignore */ }
     root.addEventListener('keydown', (e) => {
       if (e.key === 'ArrowDown' || e.key === 'ArrowRight' || e.key === 'ArrowUp' || e.key === 'ArrowLeft') {
@@ -1261,17 +1733,19 @@
       }
     });
   }
-  function layoutPie(wrap, nodes) {
+  function layoutPie(wrap, nodes, titleEl, noteEl) {
     const p = ui.pie;
     const n = nodes.length;
     const vw = window.innerWidth, vh = window.innerHeight;
     const gap = 6;
     const sizes = nodes.map((el) => ({ el, w: el.offsetWidth, h: el.offsetHeight }));
-    const titleEl = wrap.querySelector('.pie-title');
+    for (const q of sizes) if (q.h > 44) q.el.classList.add('multi');
     const tw = titleEl ? titleEl.offsetWidth : 90;
+    const nw = noteEl ? noteEl.offsetWidth : 0;
+    // VIS-9: in column layouts the title sits ABOVE the portrait and the items start at the portrait's top,
+    // so the column never covers the title
     const column = (list, side) => {
-      const total = list.reduce((a, q) => a + q.h + gap, -gap);
-      let y = -total / 2;
+      let y = -38;
       return list.map((q) => { const r = { el: q.el, x: side > 0 ? 46 : -46 - q.w, y, w: q.w, h: q.h }; y += q.h + gap; return r; });
     };
     const ring = () => {
@@ -1288,8 +1762,9 @@
       });
       // resolve overlaps (with each other and with the centre portrait + title) by pushing items outward
       const fixed = [{ x: -38, y: -38, w: 76, h: 76 }, { x: -tw / 2, y: 42, w: tw, h: 22 }];
+      if (noteEl) fixed.push({ x: -nw / 2, y: 68, w: nw, h: 20 });
       const hit = (a, b) => a.x < b.x + b.w + 4 && b.x < a.x + a.w + 4 && a.y < b.y + b.h + 4 && b.y < a.y + a.h + 4;
-      for (let iter = 0; iter < 60; iter++) {
+      for (let iter = 0; iter < 80; iter++) {
         let moved = false;
         for (let i = 0; i < rects.length; i++) {
           const a = rects[i];
@@ -1303,19 +1778,24 @@
       }
       return rects;
     };
-    const bbox = (rects) => {
-      let minX = Math.min(-40, -tw / 2), maxX = Math.max(40, tw / 2), minY = -40, maxY = 66;
+    const bbox = (rects, colMode) => {
+      let minX = Math.min(-40, -tw / 2, -nw / 2), maxX = Math.max(40, tw / 2, nw / 2);
+      let minY = colMode ? (noteEl ? -90 : -66) : -40, maxY = colMode ? 40 : (noteEl ? 90 : 66);
       for (const r of rects) { minX = Math.min(minX, r.x); maxX = Math.max(maxX, r.x + r.w); minY = Math.min(minY, r.y); maxY = Math.max(maxY, r.y + r.h); }
       return { minX, maxX, minY, maxY };
     };
-    let rects = n > 8 ? column(sizes.slice(0, Math.ceil(n / 2)), -1).concat(column(sizes.slice(Math.ceil(n / 2)), 1)) : ring();
-    let bb = bbox(rects);
+    let colMode = n > 8;
+    let rects = colMode ? column(sizes.slice(0, Math.ceil(n / 2)), -1).concat(column(sizes.slice(Math.ceil(n / 2)), 1)) : ring();
+    let bb = bbox(rects, colMode);
     if (bb.maxX - bb.minX > vw - 16 || bb.maxY - bb.minY > vh - 16) {
       // not enough room (phones): one column on the side of the tap with more space
       const side = p.x < vw / 2 ? 1 : -1;
+      colMode = true;
       rects = column(sizes, side);
-      bb = bbox(rects);
+      bb = bbox(rects, true);
     }
+    if (titleEl) titleEl.style.top = colMode ? '-64px' : '44px';
+    if (noteEl) noteEl.style.top = colMode ? '-88px' : '70px';
     const m = 8;
     let cx = p.x, cy = p.y;
     if (cx + bb.minX < m) cx = m - bb.minX;
@@ -1342,14 +1822,49 @@
       return;
     }
     if (it.children) { p.stack.push(it); sfx('click'); renderPie(); p.openedAt = performance.now() - 200; return; }
-    let ok = false;
+    const simId = p.simId;
     if (it.key === '__select' && p.targetSim) { selectSim(p.targetSim.id); closePie(); return; }
-    if (p.target.kind === 'object') ok = !!ecall('queueInteraction', p.simId, p.target.id, it.key, 'player');
-    else ok = !!ecall('queueSocial', p.simId, p.target.id, it.key, 'player');
+    if (it.key === '__cancelall') { closePie(); cancelAll(simId); return; }
+    if (it.key === '__home') {
+      closePie();
+      const t = ecall('homeTile', simId);
+      const ok = t ? !!ecall('queueWalk', simId, t.x, t.y, { append: false }) : false;
+      if (ok) { sfx('click'); ui.sig.queue = ''; refreshDock(); } else { sfx('error'); refusal('Não dá para ir para dentro de casa agora.'); }
+      return;
+    }
+    if (it.key === '__needs') { closePie(); showNeeds(); return; }
+    if (it.job && p.target.kind === 'object') {
+      const objId = p.target.id;
+      closePie();
+      openOfferCard(offerFor(it.job, objById(objId)), simId, objId);
+      return;
+    }
+    let ok = false;
+    if (p.target.kind === 'object') ok = !!ecall('queueInteraction', simId, p.target.id, it.key, 'player');
+    else ok = !!ecall('queueSocial', simId, p.target.id, it.key, 'player');
     sfx(ok ? 'click' : 'error');
     closePie();
+    if (!ok) refusal('Não foi possível fazer isso agora.');      // LIVE-8: say why
     ui.sig.queue = '';
     refreshDock();
+  }
+  function cancelAll(simId) {
+    const sim = simById(simId);
+    if (!sim || !Array.isArray(sim.queue)) return;
+    let n = 0;
+    for (const a of sim.queue.slice().reverse()) {
+      if (a.nocancel || a.cancel) continue;
+      if (ecall('cancelAction', sim.id, a.id) !== false) n++;
+    }
+    sfx(n ? 'click' : 'error');
+    ui.sig.queue = '';
+    refreshDock();
+  }
+  function showNeeds() {
+    setTab('needs');
+    if (ui.narrow) toggleNeedsDrawer(true);
+    const panel = ui.els.needsPanel;
+    if (panel && panel.animate) { try { panel.animate([{ boxShadow: '0 0 0 3px rgba(247,197,72,.8)' }, { boxShadow: '0 0 0 0 rgba(247,197,72,0)' }], { duration: 900 }); } catch (e) { /* ignore */ } }
   }
 
   // ======================================================================
@@ -1383,8 +1898,11 @@
     if (narrow !== ui.narrow) {
       ui.narrow = narrow;
       if (!narrow) toggleNeedsDrawer(false);
+      ui.sig.checklist = '';
     }
     if (ui.pie) renderPie();
+    if (ui._barApply) ui._barApply();
+    if (ui.mode === 'buy' || ui.mode === 'build') reframeForDrawer();
   }
 
   function onWheel(e) {
@@ -1399,6 +1917,7 @@
     if (p && p.kind === 'sim') { const s = simById(p.id); if (s && !s.visitor) { closePie(); selectSim(s.id, true); rcall('focus', s.x, s.y); } }
   }
 
+  const TAP_TOOLS = { door: true, window: true, paper: true };
   function onPointerDown(e) {
     ui.mouse.type = e.pointerType || 'mouse';
     ui.mouse.x = e.clientX; ui.mouse.y = e.clientY;
@@ -1420,7 +1939,8 @@
     }
     if (e.button !== 0 && e.pointerType === 'mouse') return;
     ui.gesture = { kind: 'press', id: e.pointerId, x: e.clientX, y: e.clientY, moved: false };
-    if (ui.mode === 'build') buildDown(e);
+    // touch: with the door / window / wallpaper tools one finger pans and a tap acts (improvement)
+    if (ui.mode === 'build' && !(e.pointerType !== 'mouse' && TAP_TOOLS[ui.build.tool])) buildDown(e);
     else if (ui.mode === 'buy' && ui.buy.placing && e.pointerType !== 'mouse') updateGhostAt(e.clientX, e.clientY);
   }
   function onPointerMove(e) {
@@ -1497,11 +2017,12 @@
   }
 
   function handleClick(x, y, e) {
-    if (ui.mode === 'live') return liveClick(x, y);
+    if (ui.mode === 'live') return liveClick(x, y, e);
     if (ui.mode === 'buy') return buyClick(x, y, e);
   }
-  function liveClick(x, y) {
+  function liveClick(x, y, e) {
     if (ui.pie) { closePie(); return; }
+    if (ui.logOpen) { toggleLog(); return; }          // LIVE-17: a click outside the log only closes it
     if (ui.narrow && ui.els.dock.classList.contains('needs-open')) toggleNeedsDrawer(false);
     const p = rcall('pick', x, y);
     if (!p) return;
@@ -1510,8 +2031,10 @@
       const sim = selectedSim();
       if (!sim) return;
       if (sim.hidden) { flashTip(x, y, firstName(sim) + (sim.atWork ? ' está no trabalho.' : ' não está em casa.'), true); return; }
-      const ok = ecall('queueWalk', sim.id, p.x, p.y);
-      if (ok) { walkPing(x, y); sfx('click'); ui.sig.queue = ''; } else sfx('error');
+      // LIVE-11: a plain click redirects the current walk; Shift+click appends another stop
+      const append = !!((e && e.shiftKey) || ui.shift);
+      const ok = ecall('queueWalk', sim.id, p.x, p.y, { append });
+      if (ok) { walkPing(x, y); sfx('click'); ui.sig.queue = ''; } else { sfx('error'); refusal('Não dá para andar até lá.'); }
     }
   }
 
@@ -1521,12 +2044,19 @@
     if (k === 'Shift') ui.shift = true;
     if (ui.modals.length) {
       if (k === 'Escape') { e.preventDefault(); closeTopModal(); }
+      else if (k === 'Tab' && !e.defaultPrevented) trapTab(e);
       return;
     }
     if (isTyping(e.target)) return;
+    // CONTRACT_V2 §2: Ctrl+Z / Cmd+Z undoes the last Buy/Build action of this session
+    if ((e.ctrlKey || e.metaKey) && !e.altKey && (k === 'z' || k === 'Z') && !e.shiftKey) {
+      if (ui.mode === 'buy' || ui.mode === 'build') { e.preventDefault(); undo(); }
+      return;
+    }
     if (e.ctrlKey || e.metaKey || e.altKey) return;
+    // LIVE-9: the welcome card takes Space / Enter / Esc (closing it), never the game shortcuts underneath
     const helpEl = $('help-card');
-    if (helpEl && !helpEl.hidden && k === 'Escape') { e.preventDefault(); hideHelp(); return; }
+    if (helpEl && !helpEl.hidden && (k === 'Escape' || k === ' ' || k === 'Enter' || k === 'Spacebar')) { e.preventDefault(); hideHelp(); return; }
     const lower = k.length === 1 ? k.toLowerCase() : k;
     switch (lower) {
       case ' ': case 'p':
@@ -1546,7 +2076,8 @@
       case 'Escape':
         e.preventDefault(); escape(); return;
       case 'Delete': case 'Backspace':
-        if (ui.mode === 'buy' && ui.buy.sel != null) { e.preventDefault(); sellSelected(true); }
+        // BB-9: same in Buy and Build; the first press arms the confirmation, the second one sells
+        if ((ui.mode === 'buy' && ui.buy.sel != null) || (ui.mode === 'build' && ui.build.sel != null)) { e.preventDefault(); sellSelected(false); }
         return;
       case 'w': case 'a': case 's': case 'd': case 'ArrowUp': case 'ArrowDown': case 'ArrowLeft': case 'ArrowRight':
         ui.keys.add(lower); if (lower.indexOf('Arrow') === 0) e.preventDefault(); return;
@@ -1618,10 +2149,27 @@
   // ======================================================================
   // Buy mode
   // ======================================================================
+  // VIS-11: short category names that fit the chip grid (full names stay in the tooltip)
+  const CAT_SHORT = { surfaces: 'Mesas', appliances: 'Cozinha', plumbing: 'Banheiro', electronics: 'Eletrônicos', lighting: 'Luzes' };
+  function normText(t) {
+    t = String(t == null ? '' : t).toLowerCase();
+    try { t = t.normalize('NFD').replace(/[̀-ͯ]/g, ''); } catch (e) { /* ignore */ }
+    return t.trim();
+  }
+  function catLabel(key) { const c = (D().CATEGORIES || []).find((q) => q.key === key); return c ? c.label : ''; }
   function catalogItems(cat) {
     const list = Array.isArray(D().CATALOG_LIST) ? D().CATALOG_LIST : Object.values(D().CATALOG || {});
-    return list.filter((d) => d && d.buyable !== false && d.cat !== 'system' && (cat === 'all' || d.cat === cat))
-      .sort((a, b) => num(a.price) - num(b.price) || String(a.name).localeCompare(String(b.name)));
+    const q = normText(ui.catQuery);
+    const money = moneyNow();
+    let out = list.filter((d) => d && d.buyable !== false && d.cat !== 'system' && (q || cat === 'all' || d.cat === cat));
+    if (q) out = out.filter((d) => normText(d.name + ' ' + (d.desc || '') + ' ' + catLabel(d.cat) + ' ' + (CAT_SHORT[d.cat] || '')).indexOf(q) >= 0);
+    if (ui.catAfford) out = out.filter((d) => num(d.price) <= money);
+    const byName = (a, b) => String(a.name).localeCompare(String(b.name), 'pt-BR');
+    out.sort(ui.catSort === 'name' ? byName : (a, b) => num(a.price) - num(b.price) || byName(a, b));
+    return out;
+  }
+  function undoButton() {
+    return h('button', { class: 'btn small undo-btn', type: 'button', title: 'Desfazer (Ctrl+Z)', 'aria-label': 'Desfazer a última ação', disabled: !ui.undo.length, on: { click: () => undo() } }, [emo('↩'), 'Desfazer']);
   }
   function buildBuyDrawer() {
     const dr = ui.els.drawer;
@@ -1632,18 +2180,46 @@
     const catWrap = h('div', { class: 'cats', role: 'group', 'aria-label': 'Categorias' });
     for (const c of cats) {
       catWrap.appendChild(h('button', {
-        class: 'cat-btn', type: 'button', 'aria-pressed': c.key === ui.buy.cat ? 'true' : 'false', title: c.label,
-        on: { click: () => { ui.buy.cat = c.key; prefs.buyCat = c.key; savePrefs(); sfx('click'); buildBuyDrawer(); } },
-      }, [emo(c.icon || '•'), h('span', { class: 'c-label', text: c.label })]));
+        class: 'cat-btn', type: 'button', 'aria-pressed': c.key === ui.buy.cat && !ui.catQuery ? 'true' : 'false', title: c.label, 'aria-label': c.label,
+        on: { click: () => { ui.buy.cat = c.key; prefs.buyCat = c.key; savePrefs(); ui.catQuery = ''; sfx('click'); buildBuyDrawer(); } },
+      }, [emo(c.icon || '•'), h('span', { class: 'c-label', text: CAT_SHORT[c.key] || c.label })]));
     }
-    const grid = h('div', { class: 'catalog', role: 'list' });
+    // improvement: search, sort and an "only what I can afford" filter
+    const search = h('input', { class: 'cat-search', type: 'search', id: 'cat-search', placeholder: 'Buscar no catálogo…', 'aria-label': 'Buscar no catálogo', autocomplete: 'off', value: ui.catQuery });
+    search.addEventListener('input', () => {
+      ui.catQuery = search.value;
+      for (const b of catWrap.children) b.setAttribute('aria-pressed', !ui.catQuery && b.title === (cats.find((c) => c.key === ui.buy.cat) || {}).label ? 'true' : 'false');
+      fillCatalog();
+    });
+    search.addEventListener('keydown', (e) => { if (e.key === 'Escape') { e.stopPropagation(); if (search.value) { search.value = ''; ui.catQuery = ''; fillCatalog(); } else search.blur(); } });
+    const sortSeg = h('div', { class: 'seg', role: 'group', 'aria-label': 'Ordenar' });
+    for (const [k, lab] of [['price', 'Preço'], ['name', 'Nome']]) {
+      sortSeg.appendChild(h('button', { type: 'button', id: 'cat-sort-' + k, 'aria-pressed': ui.catSort === k ? 'true' : 'false', text: lab, on: { click: (e) => { ui.catSort = k; for (const c of sortSeg.children) c.setAttribute('aria-pressed', c === e.currentTarget ? 'true' : 'false'); fillCatalog(); } } }));
+    }
+    const afford = h('input', { type: 'checkbox', id: 'cat-afford', checked: ui.catAfford });
+    afford.addEventListener('change', () => { ui.catAfford = afford.checked; fillCatalog(); });
+    const tools = h('div', { class: 'cat-tools' }, [search, sortSeg, h('label', { class: 'chk', for: 'cat-afford' }, [afford, 'Só o que dá pra comprar'])]);
+    ui.els.catalog = h('div', { class: 'catalog', role: 'list' });
     ui.els.detail = h('div', { class: 'detail', 'aria-live': 'polite' });
+    dr.appendChild(h('button', { class: 'drawer-grip', type: 'button', 'aria-label': 'Recolher ou expandir catálogo', on: { click: () => collapseDrawer() } }));
+    dr.appendChild(h('div', { class: 'drawer-head' }, [h('h2', { text: 'Comprar' }), h('div', { class: 'dh-right' }, [undoButton(), h('span', { class: 'paused-pill', text: 'Tempo pausado' })])]));
+    dr.appendChild(catWrap);
+    dr.appendChild(tools);
+    dr.appendChild(ui.els.catalog);
+    dr.appendChild(ui.els.detail);
+    fillCatalog();
+    showDetail(ui.buy.placing ? (D().CATALOG || {})[ui.buy.placing.type] : null);
+  }
+  function fillCatalog() {
+    const grid = ui.els.catalog;
+    if (!grid) return;
+    clear(grid);
     const items = catalogItems(ui.buy.cat);
-    const money = num((S() || {}).money);
+    const money = moneyNow();
+    const ICO = D().MOTIVE_ICONS || {};
     for (const d of items) {
       const chips = h('div', { class: 'chips' });
       const R = d.ratings || {};
-      const ICO = D().MOTIVE_ICONS || {};
       for (const k in R) if (num(R[k]) > 0) chips.appendChild(h('span', { class: 'chip', title: (D().MOTIVE_LABELS || {})[k] + ' ' + R[k], text: (ICO[k] || k) + ' ' + R[k] }));
       for (const sk of (Array.isArray(d.skills) ? d.skills : [])) {
         chips.appendChild(h('span', { class: 'chip skill', title: (D().SKILL_LABELS || {})[sk] || sk, text: ((D().SKILL_ICONS || {})[sk] || '🎓') + ' ' + ((D().SKILL_LABELS || {})[sk] || sk) }));
@@ -1652,7 +2228,7 @@
       setThumb(thumb, d);
       const card = h('button', {
         class: 'card' + (num(d.price) > money ? ' poor' : ''), type: 'button', role: 'listitem',
-        'aria-pressed': ui.buy.placing && ui.buy.placing.type === d.type && !ui.buy.placing.moveId ? 'true' : 'false',
+        'aria-pressed': ui.buy.placing && ui.buy.placing.type === d.type && ui.buy.placing.moveId == null ? 'true' : 'false',
         'aria-label': d.name + ', ' + fmtMoney(d.price), 'data-type': d.type,
         on: {
           click: () => { sfx('click'); startPlacing(d.type); if (ui.narrow) collapseDrawer(true); },
@@ -1662,13 +2238,7 @@
       }, [thumb, h('div', { class: 'card-name', text: d.name }), h('div', { class: 'card-price', text: fmtMoney(d.price) }), chips]);
       grid.appendChild(card);
     }
-    if (!items.length) grid.appendChild(h('p', { class: 'empty-note', text: 'Nada nesta categoria.' }));
-    dr.appendChild(h('button', { class: 'drawer-grip', type: 'button', 'aria-label': 'Recolher ou expandir catálogo', on: { click: () => collapseDrawer() } }));
-    dr.appendChild(h('div', { class: 'drawer-head' }, [h('h2', { text: 'Comprar' }), h('span', { class: 'paused-pill', text: 'Tempo pausado' })]));
-    dr.appendChild(catWrap);
-    dr.appendChild(grid);
-    dr.appendChild(ui.els.detail);
-    showDetail(ui.buy.placing ? (D().CATALOG || {})[ui.buy.placing.type] : null);
+    if (!items.length) grid.appendChild(h('p', { class: 'empty-note', text: ui.catQuery ? 'Nada encontrado para “' + ui.catQuery.trim() + '”.' : ui.catAfford ? 'Nada nesta categoria cabe no orçamento agora.' : 'Nada nesta categoria.' }));
     pumpThumbs();
   }
   function collapseDrawer(force) {
@@ -1676,13 +2246,24 @@
     const on = typeof force === 'boolean' ? force : !dr.classList.contains('collapsed');
     dr.classList.toggle('collapsed', on);
     ui.els.hud.classList.toggle('drawer-collapsed', on);
+    // no camera move here: collapsing happens right before the player aims at the lot. The framing insets do
+    // follow the sheet, so focus() calls ("Ver" on a toast, centring) use the area the sheet really covers.
+    if (ui.mode === 'buy' || ui.mode === 'build') {
+      requestAnimationFrame(() => {
+        if (!(ui.mode === 'buy' || ui.mode === 'build') || dr.hidden) return;
+        const r = dr.getBoundingClientRect();
+        const vw = window.innerWidth, vh = window.innerHeight;
+        if (!(r.width > 0) || r.left >= vw * 0.2) return;         // bottom sheet (phones) only
+        rcall('setViewInsets', { top: 60, right: 56, bottom: Math.max(0, vh - r.top), left: 0 });
+      });
+    }
   }
   function showDetail(d) {
     const el = ui.els.detail;
     if (!el) return;
     clear(el);
     if (!d) {
-      el.appendChild(h('p', { class: 'muted', text: 'Passe o mouse sobre um item para ver os detalhes. Clique para posicionar, R para girar, Esc para cancelar.' }));
+      el.appendChild(h('p', { class: 'muted', text: 'Passe o mouse sobre um item para ver os detalhes. Clique para posicionar, R para girar, Esc para cancelar, Ctrl+Z desfaz.' }));
       return;
     }
     const R = d.ratings || {};
@@ -1699,7 +2280,8 @@
     ]));
   }
 
-  // ---- catalog thumbnails rendered from the real 3D models (falls back to emoji)
+  // ---- catalog thumbnails rendered from the real 3D models (falls back to emoji). Pre-rendered in idle time
+  // after boot so the grid opens with pictures (improvement).
   const thumbQ = [];
   let thumbR = null, thumbBusy = false, thumbFailed = false;
   function setThumb(el, d) {
@@ -1722,7 +2304,25 @@
       }
       setTimeout(step, 16);
     };
-    setTimeout(step, 60);
+    setTimeout(step, 30);
+  }
+  function prerenderThumbs() {
+    if (ui._thumbsIdle || !canThumb()) return;
+    ui._thumbsIdle = true;
+    const list = (Array.isArray(D().CATALOG_LIST) ? D().CATALOG_LIST : Object.values(D().CATALOG || {})).filter((d) => d && d.buyable !== false && d.cat !== 'system');
+    let i = 0;
+    const idle = window.requestIdleCallback ? (fn) => window.requestIdleCallback(fn, { timeout: 1500 }) : (fn) => setTimeout(() => fn({ timeRemaining: () => 8 }), 120);
+    const work = (deadline) => {
+      if (thumbFailed) return;
+      let n = 0;
+      while (i < list.length && (n === 0 || (deadline && deadline.timeRemaining && deadline.timeRemaining() > 6))) {
+        const d = list[i++];
+        if (!ui.thumbs[d.type]) ui.thumbs[d.type] = renderThumb(d) || 'fail';
+        n++;
+      }
+      if (i < list.length) idle(work);
+    };
+    idle(work);
   }
   function renderThumb(d) {
     const T = window.THREE;
@@ -1772,19 +2372,64 @@
     }
   }
 
+  // ---- undo (CONTRACT_V2 §2): a snapshot is taken before every Buy/Build change of this session
+  function snapshot() { return typeof E().snapshotBuild === 'function' ? ecall('snapshotBuild') : null; }
+  function pushUndo(snap) {
+    if (!snap) return;
+    ui.undo.push(snap);
+    if (ui.undo.length > 20) ui.undo.shift();
+    refreshUndoBtn();
+  }
+  function refreshUndoBtn() {
+    const dr = ui.els.drawer;
+    if (!dr) return;
+    for (const b of dr.querySelectorAll('.undo-btn')) b.disabled = !ui.undo.length;
+    const tb = ui.els.toolbar;
+    if (tb) for (const b of tb.querySelectorAll('.undo-btn')) b.disabled = !ui.undo.length;
+  }
+  function undo() {
+    if (!(ui.mode === 'buy' || ui.mode === 'build')) return;
+    if (!ui.undo.length) { sfx('error'); flashTip(ui.mouse.x > 0 ? ui.mouse.x : window.innerWidth / 2, ui.mouse.y > 0 ? ui.mouse.y : window.innerHeight / 2, 'Nada para desfazer.', false); return; }
+    const snap = ui.undo.pop();
+    stopPlacing();
+    deselectObject();
+    cancelBuildDrag();
+    if (ui.build.sel != null) { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); }
+    const r = ecall('restoreBuild', snap);
+    if (r && r.ok === false) { sfx('error'); toast(r.reason || 'Não foi possível desfazer.', 'bad'); }
+    else { sfx('click'); toast('Desfeito.', 'info', { icon: '↩️', timeout: 1800 }); }
+    refreshUndoBtn();
+    renderToolbar(true);
+    buildBuyDrawerMoneyState();
+    refreshChecklist();
+  }
+
   // ---- placing
-  function startPlacing(type, moveId) {
+  function startPlacing(type, moveId, rotOverride) {
     const d = (D().CATALOG || {})[type];
     if (!d) return;
+    const prev = ui.buy.placing;
+    if (prev && prev.moveId != null && prev.moveId !== moveId) rcall('hideObject', prev.moveId, false);
     deselectObject();
-    const keepRot = ui.buy.placing ? ui.buy.placing.rot : (ui.buy.lastRot || 0);
-    let rot = keepRot;
-    if (moveId != null) { const o = objById(moveId); if (o) rot = num(o.rot) % 4; }
-    ui.buy.placing = { type, rot, moveId: moveId == null ? null : moveId, x: null, y: null, ok: false, reason: '' };
+    const keepRot = prev ? prev.rot : (ui.buy.lastRot || 0);
+    let rot = rotOverride != null ? num(rotOverride) % 4 : keepRot;
+    let tx = prev ? prev.tx : null, ty = prev ? prev.ty : null;
+    if (moveId != null) {
+      const o = objById(moveId);
+      if (o) {
+        rot = num(o.rot) % 4;
+        const sz = wcall('rotatedSize', o.type, o.rot) || { w: 1, h: 1 };
+        tx = num(o.x) + Math.floor((num(sz.w, 1) - 1) / 2); ty = num(o.y) + Math.floor((num(sz.h, 1) - 1) / 2);
+      }
+      rcall('hideObject', moveId, true);            // CONTRACT_V2 §4: hide the original while it moves
+    }
+    ui.buy.placing = { type, rot, moveId: moveId == null ? null : moveId, x: null, y: null, tx, ty, ok: false, reason: '' };
+    updateWallOverride();
     markCards();
     showDetail(d);
     renderToolbar();
     if (ui.mouse.over && ui.mouse.type === 'mouse') updateGhostAt(ui.mouse.x, ui.mouse.y);
+    else if (tx != null && moveId != null) placeAtTile(tx, ty, true);
     else placeGhostAtCenter();
   }
   function placeGhostAtCenter() {
@@ -1792,15 +2437,22 @@
     if (!p) return;
     const view = $('view');
     const r = view ? view.getBoundingClientRect() : { left: 0, top: 0, width: window.innerWidth, height: window.innerHeight };
-    const y = ui.narrow ? r.top + r.height * 0.3 : r.top + r.height * 0.45;
-    updateGhostAt(r.left + r.width * (ui.narrow ? 0.5 : 0.42), y, true);
+    let x = r.left + r.width * (ui.narrow ? 0.5 : 0.42), y = ui.narrow ? r.top + r.height * 0.3 : r.top + r.height * 0.45;
+    const dr = rectOf(ui.els.drawer);
+    if (dr && ui.narrow) y = Math.min(y, dr.top * 0.55);
+    else if (dr) x = Math.min(x, dr.left * 0.5);
+    updateGhostAt(x, y, true);
   }
   function stopPlacing() {
     if (!ui.buy.placing) return;
+    const mv = ui.buy.placing.moveId;
     ui.buy.lastRot = ui.buy.placing.rot;
     ui.buy.placing = null;
+    if (mv != null) rcall('hideObject', mv, false);
     rcall('hideGhost');
-    hideTip();
+    if (ui.buy.sel == null) rcall('hideTileGhost');
+    hideTip(true);
+    updateWallOverride();
     markCards();
     renderToolbar();
   }
@@ -1808,16 +2460,17 @@
     const dr = ui.els.drawer;
     if (!dr) return;
     for (const c of dr.querySelectorAll('.card')) {
-      const on = !!(ui.buy.placing && !ui.buy.placing.moveId && ui.buy.placing.type === c.getAttribute('data-type'));
+      const on = !!(ui.buy.placing && ui.buy.placing.moveId == null && ui.buy.placing.type === c.getAttribute('data-type'));
       c.setAttribute('aria-pressed', on ? 'true' : 'false');
     }
   }
+  // improvement: rotation pivots around the cursor tile (the footprint is re-anchored on it)
   function rotatePlacing() {
     const p = ui.buy.placing;
     if (!p) return;
     p.rot = (p.rot + 1) % 4;
     sfx('click');
-    if (p.x != null) validateAndShow(p, ui.mouse.x, ui.mouse.y, true);
+    if (p.tx != null) placeAtTile(p.tx, p.ty, ui.mouse.type !== 'mouse');
   }
   function lotSize() {
     const st = S();
@@ -1827,12 +2480,39 @@
     const p = ui.buy.placing;
     if (!p) return;
     const t = rcall('pickTile', cx, cy);
-    if (!t) { rcall('hideGhost'); p.x = null; hideTip(); return; }
+    if (!t) { rcall('hideGhost'); rcall('hideTileGhost'); p.x = null; hideTip(); return; }
+    ui._tipAt = { x: cx, y: cy };
+    placeAtTile(Math.round(t.x), Math.round(t.y), quietTip);
+  }
+  function placeAtTile(tx, ty, quietTip) {
+    const p = ui.buy.placing;
+    if (!p) return;
+    p.tx = tx; p.ty = ty;
     const size = wcall('rotatedSize', p.type, p.rot) || { w: 1, h: 1 };
     const L = lotSize();
-    p.x = clamp(Math.round(t.x) - Math.floor((size.w - 1) / 2), 0, Math.max(0, L.w - size.w));
-    p.y = clamp(Math.round(t.y) - Math.floor((size.h - 1) / 2), 0, Math.max(0, L.h - size.h));
-    validateAndShow(p, cx, cy, quietTip);
+    p.x = clamp(tx - Math.floor((size.w - 1) / 2), 0, Math.max(0, L.w - size.w));
+    p.y = clamp(ty - Math.floor((size.h - 1) / 2), 0, Math.max(0, L.h - size.h));
+    const at = ui._tipAt || { x: ui.mouse.x, y: ui.mouse.y };
+    validateAndShow(p, at.x, at.y, quietTip);
+  }
+  // placement preview extras (CONTRACT_V2 §2): predicted Ambiente change and non-blocking warnings
+  function placementExtras(p) {
+    const key = [p.type, p.x, p.y, p.rot, p.moveId, (M.world && M.world.version) || 0].join('|');
+    if (ui._plx && ui._plx.key === key) return ui._plx;
+    const amb = wcall('roomScoreWith', p.type, p.x, p.y, p.rot, p.moveId == null ? undefined : p.moveId);
+    const warns = wcall('placementWarnings', p.type, p.x, p.y, p.rot, p.moveId == null ? undefined : p.moveId);
+    ui._plx = { key, amb, warns: Array.isArray(warns) ? warns : [] };
+    return ui._plx;
+  }
+  function ambLine(r, where) {
+    if (!r || r.delta == null) return null;
+    const dlt = Math.round(num(r.delta));
+    if (!dlt) return null;
+    return h('span', { class: 'tip-line' }, ['Ambiente ', h('span', { class: dlt > 0 ? 'amb-pos' : 'amb-neg', text: (dlt > 0 ? '+' : '−') + Math.abs(dlt) }), ' ' + (where || (r.indoor === false ? 'aqui fora' : 'neste cômodo'))]);
+  }
+  function warnLine(list) {
+    if (!Array.isArray(list) || !list.length) return null;
+    return h('span', { class: 'tip-warn', text: '⚠ ' + list.slice(0, 2).join(' · ') });
   }
   function validateAndShow(p, cx, cy, quietTip) {
     const d = (D().CATALOG || {})[p.type];
@@ -1850,56 +2530,93 @@
       }
     }
     let ok = !!res.ok, reason = res.reason || '';
-    if (ok && p.moveId == null && num(d.price) > num((S() || {}).money)) { ok = false; reason = 'Dinheiro insuficiente.'; }
+    if (ok && p.moveId == null && num(d.price) > moneyNow()) { ok = false; reason = 'Dinheiro insuficiente.'; }
     p.ok = ok; p.reason = reason;
     rcall('showGhost', p.type, p.x, p.y, p.rot, ok);
+    // touch: a bold footprint cursor under the ghost (improvement / BB-11)
+    if (ui.mouse.type !== 'mouse') rcall('showTileGhost', wcall('footprint', p.type, p.x, p.y, p.rot) || [{ x: p.x, y: p.y }], ok);
     if (!quietTip && cx >= 0) {
       const touch = ui.mouse.type !== 'mouse';
-      if (ok) showTip(cx, cy, p.moveId != null ? (touch ? 'Toque em “Colocar aqui”' : 'Clique para mover para cá') : [h('span', { class: 'money-neg', text: fmtMoney(d.price) }), touch ? ' · toque em “Comprar aqui”' : ' · clique para comprar']);
-      else showTip(cx, cy, reason || 'Não cabe aqui.', true);
+      if (ok) {
+        const ex = placementExtras(p);
+        const head = p.moveId != null ? (touch ? 'Toque em “Colocar aqui”' : 'Clique para mover para cá')
+          : [h('span', { class: 'money-neg', text: fmtMoney(d.price) }), touch ? ' · toque em “Comprar aqui”' : ' · clique para comprar'];
+        showTip(cx, cy, [head, ambLine(ex.amb), warnLine(ex.warns)]);
+      } else showTip(cx, cy, reason || 'Não cabe aqui.', true);
     }
     renderToolbar();
   }
   function commitPlacement(fromToolbar) {
     const p = ui.buy.placing;
-    if (!p || p.x == null) { if (p) flashTip(ui.mouse.x, ui.mouse.y, 'Toque no terreno para escolher o lugar.', true); return; }
+    if (!p || p.x == null) { if (p) flashTip(ui.mouse.x, ui.mouse.y, isCoarse() ? 'Toque no terreno para escolher o lugar.' : 'Clique no terreno para escolher o lugar.', true); return; }
     if (!p.ok) { sfx('error'); flashTip(ui.mouse.x, ui.mouse.y, p.reason || 'Não cabe aqui.', true); return; }
+    const snap = snapshot();
     let r;
     if (p.moveId != null) r = ecall('moveObject', p.moveId, p.x, p.y, p.rot);
     else r = ecall('buyObject', p.type, p.x, p.y, p.rot);
     if (r && r.ok) {
+      pushUndo(snap);
       sfx('place');
       const keep = p.moveId == null && ui.shift && !fromToolbar;
+      ui._plx = null;
       if (keep) { validateAndShow(p, ui.mouse.x, ui.mouse.y); }
       else {
         stopPlacing();
         if (ui.narrow) collapseDrawer(false);
       }
       buildBuyDrawerMoneyState();
+      refreshChecklist();
     } else {
       sfx('error');
-      flashTip(ui.mouse.x, ui.mouse.y, (r && r.reason) || 'Não foi possível.', true);
+      flashTip(ui.mouse.x, ui.mouse.y, (r && r.reason) || engineReason() || 'Não foi possível.', true);
     }
   }
   function buildBuyDrawerMoneyState() {
-    const money = num((S() || {}).money);
+    const money = moneyNow();
     const dr = ui.els.drawer;
     if (!dr || ui.mode !== 'buy') return;
+    if (ui.catAfford) { fillCatalog(); return; }
     for (const c of dr.querySelectorAll('.card')) {
       const d = (D().CATALOG || {})[c.getAttribute('data-type')];
       if (d) c.classList.toggle('poor', num(d.price) > money);
     }
   }
+  // CR-10: system objects (puddles, plates, meals, newspaper, carpool) cannot be picked up in Buy mode;
+  // the mailbox can only be moved
+  function isSystemObj(o) {
+    const d = objDef(o);
+    return !!(d && (d.buyable === false || d.cat === 'system'));
+  }
+  function systemTip(o) {
+    const d = objDef(o) || {};
+    switch (o && o.type) {
+      case 'puddle': return 'Poça: mande alguém limpar no modo Viver (ou chame a faxineira).';
+      case 'dirty_plate': return 'Prato sujo: recolha no modo Viver.';
+      case 'meal': return o.spoiled ? 'Comida estragada: jogue fora no modo Viver.' : 'Refeição: os moradores comem no modo Viver.';
+      case 'newspaper': return 'Jornal: leia ou jogue fora no modo Viver.';
+      case 'carpool': return 'A carona do trabalho não pode ser mexida.';
+      default: return 'Este objeto não pode ser vendido.';
+    }
+  }
   function buyClick(x, y, e) {
     if (ui.buy.placing) {
-      if (e && e.pointerType && e.pointerType !== 'mouse') { updateGhostAt(x, y); return; }
+      if (e && e.pointerType && e.pointerType !== 'mouse') { ui._tipAt = { x, y }; updateGhostAt(x, y); return; }
       updateGhostAt(x, y, true);
       commitPlacement(false);
       return;
     }
-    const p = rcall('pick', x, y);
-    if (p && p.kind === 'object') selectObject(p.id);
-    else deselectObject();
+    let p = rcall('pick', x, y);
+    // a click on the floor inside an object's footprint (beside a slim model: toilet, lamp, chair) selects it
+    if (p && p.kind === 'tile' && !p.wall && p.x != null) {
+      const o2 = wcall('objectAt', p.x, p.y);
+      const d2 = o2 ? objDef(o2) : null;
+      if (o2 && o2.id != null && d2 && !d2.wall && !isSystemObj(o2)) p = { kind: 'object', id: o2.id, x: p.x, y: p.y };
+    }
+    if (p && p.kind === 'object') {
+      const o = objById(p.id);
+      if (o && isSystemObj(o) && o.type !== 'mailbox') { sfx('error'); deselectObject(); flashTip(x, y, systemTip(o), false, 2600); return; }
+      selectObject(p.id);
+    } else deselectObject();
   }
   function selectObject(id) {
     const o = objById(id);
@@ -1909,6 +2626,7 @@
     const tiles = wcall('footprint', o.type, o.x, o.y, o.rot) || [{ x: o.x, y: o.y }];
     rcall('showTileGhost', tiles, true);
     sfx('click');
+    updateWallOverride();
     renderToolbar();
   }
   function deselectObject() {
@@ -1916,30 +2634,34 @@
     ui.buy.sel = null;
     ui.buy.confirm = false;
     rcall('hideTileGhost');
+    updateWallOverride();
     renderToolbar();
   }
   function sellSelected(direct) {
     const id = ui.mode === 'build' ? ui.build.sel : ui.buy.sel;
     const o = objById(id);
     if (!o) return;
-    if (o.type === 'mailbox' || o.type === 'carpool') { sfx('error'); toast('Este objeto não pode ser vendido.', 'bad'); return; }
+    if (o.type === 'mailbox' || o.type === 'carpool' || isSystemObj(o)) { sfx('error'); toast(o.type === 'mailbox' ? 'A caixa de correio não pode ser vendida (só movida).' : systemTip(o), 'bad'); return; }
     const name = (objDef(o) || {}).name || 'Objeto';
     if (!direct && !(ui.mode === 'build' ? ui.build.confirm : ui.buy.confirm)) {
       if (ui.mode === 'build') ui.build.confirm = true; else ui.buy.confirm = true;
       renderToolbar();
       return;
     }
+    const snap = snapshot();
     const r = ecall('sellObject', id);
     if (r && r.ok) {
+      pushUndo(snap);
       sfx('coin');
-      toast(name + ' vendido' + (r.refund ? ' por ' + fmtMoney(r.refund) : '') + '.', 'money', { timeout: 3000 });
+      toast((r.refund ? 'Venda: ' + name + ' por ' + fmtMoney(r.refund) : 'Removido: ' + name) + '.', 'money', { timeout: 3000 });
     } else {
       sfx('error');
-      toast((r && r.reason) || 'Não foi possível vender.', 'bad');
+      toast((r && r.reason) || engineReason() || 'Não foi possível vender.', 'bad');
     }
     if (ui.mode === 'build') { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); renderToolbar(); }
     else deselectObject();
     buildBuyDrawerMoneyState();
+    refreshChecklist();
   }
 
   // ---- floating toolbar (placement / selection actions)
@@ -1948,7 +2670,7 @@
     if (!tb) return;
     const bp = ui.buy.placing;
     const sig = [ui.mode, ui.narrow, bp ? bp.type + ':' + bp.moveId + ':' + bp.ok : '-', ui.buy.sel, ui.buy.confirm, ui.build.sel, ui.build.confirm,
-      (ui.buy.sel != null || ui.build.sel != null) ? Math.round(num((S() || {}).money)) : 0].join('|');
+      (ui.buy.sel != null || ui.build.sel != null) ? Math.round(moneyNow()) : 0, ui.undo.length].join('|');
     if (!force && sig === ui.sig.toolbar) return;
     ui.sig.toolbar = sig;
     clear(tb);
@@ -1970,18 +2692,26 @@
         show = true;
         const d = objDef(o) || {};
         const value = ecall('sellValue', id) || 0;
-        const fixed = o.type === 'mailbox' || o.type === 'carpool';
+        const fixed = o.type === 'mailbox' || o.type === 'carpool' || isSystemObj(o);
         const confirm = build ? ui.build.confirm : ui.buy.confirm;
-        tb.appendChild(h('span', { class: 'tb-title', text: d.name || 'Objeto' }));
+        tb.appendChild(h('span', { class: 'tb-title', text: (d.name || 'Objeto') + (ui.narrow && !build && !fixed && !confirm ? ' · vale ' + fmtMoney(value) : '') }));
         if (confirm) {
           tb.appendChild(h('span', { class: 'tb-note', text: value ? 'Vender por ' + fmtMoney(value) + '?' : 'Remover sem reembolso?' }));
           tb.appendChild(h('button', { class: 'btn danger', type: 'button', on: { click: () => sellSelected(true) } }, [emo('💰'), 'Confirmar venda']));
           tb.appendChild(h('button', { class: 'btn ghost', type: 'button', on: { click: () => { if (build) ui.build.confirm = false; else ui.buy.confirm = false; renderToolbar(); } } }, 'Cancelar'));
         } else {
-          if (!build && !fixed) tb.appendChild(h('span', { class: 'tb-note num', text: 'Vale ' + fmtMoney(value) }));
-          if (!build && o.type !== 'carpool') tb.appendChild(h('button', { class: 'btn', type: 'button', on: { click: () => startPlacing(o.type, o.id) } }, [emo('✥'), 'Mover']));
-          if (!fixed) tb.appendChild(h('button', { class: 'btn danger', type: 'button', title: 'Vender (Delete)', on: { click: () => sellSelected(false) } }, [emo('💰'), value ? 'Vender +' + fmtMoney(value) : 'Remover']));
-          tb.appendChild(h('button', { class: 'btn ghost', type: 'button', title: 'Fechar (Esc)', on: { click: () => { if (build) { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); renderToolbar(); } else deselectObject(); } } }, '✕'));
+          if (!build && !fixed) {
+            const R = d.ratings || {};
+            const ICO = D().MOTIVE_ICONS || {};
+            const chips = [];
+            for (const k in R) if (num(R[k]) > 0 && chips.length < 3) chips.push(h('span', { class: 'chip', text: (ICO[k] || k) + ' ' + R[k] }));
+            if (chips.length && !ui.narrow) tb.appendChild(h('span', { class: 'tb-chips' }, chips));
+            tb.appendChild(h('span', { class: 'tb-note num', text: 'Vale ' + fmtMoney(value) }));
+          }
+          if (!build && o.type !== 'carpool' && (!isSystemObj(o) || o.type === 'mailbox')) tb.appendChild(h('button', { class: 'btn', type: 'button', on: { click: () => startPlacing(o.type, o.id) } }, [emo('✥'), 'Mover']));
+          if (!build && !fixed) tb.appendChild(h('button', { class: 'btn', type: 'button', title: 'Comprar outro igual', disabled: num(d.price) > moneyNow(), on: { click: () => startPlacing(o.type, null, o.rot) } }, [emo('➕'), ui.narrow ? 'Outro' : 'Comprar outro igual']));
+          if (!fixed) tb.appendChild(h('button', { class: 'btn danger', type: 'button', title: 'Vender (Delete)', on: { click: () => sellSelected(false) } }, [emo('💰'), value ? (ui.narrow ? 'Vender' : 'Vender +' + fmtMoney(value)) : 'Remover']));
+          tb.appendChild(h('button', { class: 'btn ghost', type: 'button', title: 'Fechar (Esc)', 'aria-label': 'Fechar', on: { click: () => { if (build) { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); renderToolbar(); } else deselectObject(); } } }, '✕'));
         }
       }
     }
@@ -1993,6 +2723,7 @@
   // ======================================================================
   const BUILD_TOOLS = [
     { key: 'wall', icon: '🧱', label: 'Parede' },
+    { key: 'room', icon: '🏠', label: 'Cômodo' },
     { key: 'door', icon: '🚪', label: 'Porta' },
     { key: 'window', icon: '🪟', label: 'Janela' },
     { key: 'floor', icon: '🟫', label: 'Piso' },
@@ -2000,6 +2731,7 @@
     { key: 'demolish', icon: '🔨', label: 'Demolir' },
   ];
   function wallPrice(key) { const W2 = D().WALL_PRICES || { wall: 70, door: 150, window: 110 }; return num(W2[key]); }
+  function paperPrice(i) { const p = (D().WALLPAPERS || [])[i]; return p ? num(p.price) : 10; }
   function buildBuildDrawer() {
     const dr = ui.els.drawer;
     clear(dr);
@@ -2007,28 +2739,44 @@
     const tools = h('div', { class: 'tools', role: 'group', 'aria-label': 'Ferramentas' });
     for (const t of BUILD_TOOLS) {
       tools.appendChild(h('button', {
-        class: 'tool-btn', type: 'button', 'aria-pressed': t.key === ui.build.tool ? 'true' : 'false', title: t.label,
+        class: 'tool-btn', type: 'button', id: 'tool-' + t.key, 'aria-pressed': t.key === ui.build.tool ? 'true' : 'false', title: t.label, 'aria-label': t.label,
         on: { click: () => { setBuildTool(t.key); sfx('click'); } },
       }, [emo(t.icon), h('span', { class: 't-long', text: t.label }), h('span', { class: 't-short', text: t.short || t.label })]));
     }
     const opts = h('div', { class: 'tool-opts' });
     const tool = ui.build.tool;
+    const touch = isCoarse();
+    const tapW = touch ? 'Toque' : 'Clique';
     const help = {
       wall: [h('b', { text: 'Arraste' }), ' pelos cantos do piso para erguer paredes em linha reta. ', h('b', { text: fmtMoney(wallPrice('wall')) }), ' por trecho.'],
-      door: [h('b', { text: 'Clique' }), ' numa parede existente para instalar uma porta. ', h('b', { text: fmtMoney(wallPrice('door')) }), ' (descontado metade do valor da parede).'],
-      window: [h('b', { text: 'Clique' }), ' numa parede existente para abrir uma janela. ', h('b', { text: fmtMoney(wallPrice('window')) }), '. Janelas deixam os cômodos mais agradáveis de dia.'],
-      floor: [h('b', { text: 'Clique ou arraste' }), ' um retângulo para cobrir o chão. Escolha o piso abaixo. Grama remove o piso (reembolso de 50%).'],
-      paper: [h('b', { text: 'Clique ou arraste' }), ' sobre as paredes para pintar. Escolha o acabamento abaixo.'],
-      demolish: [h('b', { text: 'Arraste' }), ' sobre paredes, portas e janelas para derrubá-las (reembolso de 50%). ', h('b', { text: 'Clique' }), ' num objeto para vendê-lo.'],
+      room: [h('b', { text: 'Arraste' }), ' um retângulo para erguer as quatro paredes de uma vez (', h('b', { text: fmtMoney(wallPrice('wall')) }), ' por trecho), com piso opcional. Depois coloque uma porta.'],
+      door: [h('b', { text: tapW }), ' numa parede existente para instalar uma porta. ', h('b', { text: fmtMoney(wallPrice('door')) }), ' (descontado metade do valor da parede).'],
+      window: [h('b', { text: tapW }), ' numa parede existente para abrir uma janela. ', h('b', { text: fmtMoney(wallPrice('window')) }), '. Janelas deixam os cômodos mais agradáveis de dia.'],
+      floor: [h('b', { text: tapW + ' ou arraste' }), ' um retângulo para cobrir o chão. ', touch ? '' : [h('b', { text: 'Shift+clique' }), ' cobre o cômodo inteiro. '], 'Grama remove o piso (reembolso de 50%).'],
+      paper: [h('b', { text: tapW }), ' numa face da parede para pintar só aquele lado (', h('b', { text: fmtMoney(paperPrice(ui.build.paper)) }), ' por lado). ', touch ? 'Ligue “Cômodo inteiro” para pintar todas as paredes do cômodo.' : [h('b', { text: 'Shift+clique' }), ' pinta todas as paredes do cômodo.']],
+      demolish: [h('b', { text: 'Arraste' }), ' sobre paredes, portas e janelas para derrubá-las (reembolso de 50%). ', h('b', { text: tapW }), ' num objeto para vendê-lo.'],
     }[tool];
     opts.appendChild(h('div', { class: 'tool-help' }, help));
-    if (tool === 'floor') {
-      opts.appendChild(h('div', { class: 'section-label', text: 'Pisos' }));
+    if (tool === 'floor' || tool === 'paper') {
+      const sw = h('button', { class: 'switch', type: 'button', role: 'switch', id: 'opt-wholeroom', 'aria-checked': ui.build.wholeRoom ? 'true' : 'false', 'aria-label': 'Cômodo inteiro' });
+      sw.addEventListener('click', () => { ui.build.wholeRoom = !ui.build.wholeRoom; sw.setAttribute('aria-checked', ui.build.wholeRoom ? 'true' : 'false'); sfx('click'); rcall('hideEdgeGhost'); rcall('hideTileGhost'); });
+      opts.appendChild(h('div', { class: 'room-toggle' }, [h('div', {}, [h('b', { text: 'Cômodo inteiro' }), h('span', { text: tool === 'floor' ? 'Cobre todo o piso do cômodo fechado.' : 'Pinta o lado de dentro de todas as paredes do cômodo.' })]), sw]));
+    }
+    if (tool === 'floor' || tool === 'room') {
+      opts.appendChild(h('div', { class: 'section-label', text: tool === 'room' ? 'Piso do cômodo' : 'Pisos' }));
       const sw = h('div', { class: 'swatches', role: 'group', 'aria-label': 'Pisos' });
-      (D().FLOORS || []).forEach((f, i) => {
+      const pick = tool === 'room' ? ui.build.roomFloor : ui.build.floor;
+      if (tool === 'room') {
         sw.appendChild(h('button', {
-          class: 'swatch', type: 'button', 'aria-pressed': i === ui.build.floor ? 'true' : 'false', title: f.name,
-          on: { click: () => { ui.build.floor = i; prefs.floorIdx = i; savePrefs(); sfx('click'); buildBuildDrawer(); } },
+          class: 'swatch none', type: 'button', 'aria-pressed': pick == null ? 'true' : 'false', title: 'Sem piso',
+          on: { click: () => { ui.build.roomFloor = null; prefs.roomFloor = null; savePrefs(); sfx('click'); buildBuildDrawer(); } },
+        }, [h('i', {}), h('span', { class: 'sw-name', text: 'Sem piso' }), h('span', { class: 'sw-price', text: 'só paredes' })]));
+      }
+      (D().FLOORS || []).forEach((f, i) => {
+        if (tool === 'room' && i === 0) return;
+        sw.appendChild(h('button', {
+          class: 'swatch', type: 'button', 'aria-pressed': i === pick ? 'true' : 'false', title: f.name,
+          on: { click: () => { if (tool === 'room') { ui.build.roomFloor = i; prefs.roomFloor = i; } else { ui.build.floor = i; prefs.floorIdx = i; } savePrefs(); sfx('click'); buildBuildDrawer(); } },
         }, [h('i', { style: { background: f.color } }), h('span', { class: 'sw-name', text: f.name }), h('span', { class: 'sw-price', text: i === 0 ? 'grátis' : fmtMoney(f.price) + '/piso' })]));
       });
       opts.appendChild(sw);
@@ -2040,22 +2788,24 @@
         sw.appendChild(h('button', {
           class: 'swatch', type: 'button', 'aria-pressed': i === ui.build.paper ? 'true' : 'false', title: p.name,
           on: { click: () => { ui.build.paper = i; prefs.paperIdx = i; savePrefs(); sfx('click'); buildBuildDrawer(); } },
-        }, [h('i', { style: { background: p.color } }), h('span', { class: 'sw-name', text: p.name }), h('span', { class: 'sw-price', text: tool === 'wall' ? 'incluso' : fmtMoney(p.price) + '/parede' })]));
+        }, [h('i', { style: { background: p.color } }), h('span', { class: 'sw-name', text: p.name }), h('span', { class: 'sw-price', text: tool === 'wall' ? 'incluso' : fmtMoney(p.price) + '/lado' })]));
       });
       opts.appendChild(sw);
     }
     dr.appendChild(h('button', { class: 'drawer-grip', type: 'button', 'aria-label': 'Recolher ou expandir ferramentas', on: { click: () => collapseDrawer() } }));
-    dr.appendChild(h('div', { class: 'drawer-head' }, [h('h2', { text: 'Construir' }), h('span', { class: 'paused-pill', text: 'Tempo pausado' })]));
+    dr.appendChild(h('div', { class: 'drawer-head' }, [h('h2', { text: 'Construir' }), h('div', { class: 'dh-right' }, [undoButton(), h('span', { class: 'paused-pill', text: 'Tempo pausado' })])]));
     dr.appendChild(tools);
     dr.appendChild(opts);
   }
   function setBuildTool(key) {
+    if (!BUILD_TOOLS.some((t) => t.key === key)) return;
     cancelBuildDrag();
     ui.build.tool = key;
     ui.build.sel = null; ui.build.confirm = false;
     prefs.buildTool = key; savePrefs();
     rcall('hideEdgeGhost'); rcall('hideTileGhost');
-    hideTip();
+    endFlash();
+    hideTip(true);
     renderToolbar();
     buildBuildDrawer();
   }
@@ -2080,6 +2830,26 @@
     const e = rcall('pickEdge', cx, cy);
     return e && e.key ? e : null;
   }
+  // VIS-2/BB-7: the face of the wall under the cursor ('A'|'B'), from pickEdge or from the picked tile
+  function edgeSide(e, cx, cy) {
+    if (e && (e.side === 'A' || e.side === 'B')) return e.side;
+    const t = rcall('pickTile', cx, cy);
+    if (t) { const sd = wcall('edgeSideFacing', e.key, Math.round(num(t.x)), Math.round(num(t.y))); if (sd === 'A' || sd === 'B') return sd; }
+    return 'both';
+  }
+  function sideTile(key, side) {
+    const t = wcall('edgeSideTile', key, side);
+    if (t && isFinite(t.x)) return t;
+    const p = String(key).split(','); const x = +p[1], y = +p[2];
+    if (p[0] === 'h') return side === 'A' ? { x, y: y - 1 } : { x, y };
+    return side === 'A' ? { x: x - 1, y } : { x, y };
+  }
+  function wallSideColor(key, side) {
+    const c = wcall('wallColor', key, side === 'both' ? 'A' : side);
+    if (c != null) return num(c);
+    const w = getWall(key);
+    return w ? num(side === 'A' && w.cA != null ? w.cA : side === 'B' && w.cB != null ? w.cB : w.c) : null;
+  }
   function getWall(key) {
     const w = wcall('getWall', key);
     if (w !== null && w !== undefined) return w;
@@ -2093,6 +2863,8 @@
     if (extra) parts.push(' · ' + extra);
     return parts;
   }
+  function wholeRoom(e) { return !!(ui.build.wholeRoom || (e && e.shiftKey) || ui.shift); }
+  function plural(n, one, many) { return n + ' ' + (n === 1 ? one : many); }
 
   function wallDragKeys(drag, demolish) {
     const raw = wcall('wallSegmentsForDrag', drag.c1.x, drag.c1.y, drag.c2.x, drag.c2.y) || [];
@@ -2111,19 +2883,28 @@
     }
     return { keys, blocked };
   }
+  function roomRect(dg) {
+    return { x1: Math.min(dg.t1.x, dg.t2.x), y1: Math.min(dg.t1.y, dg.t2.y), x2: Math.max(dg.t1.x, dg.t2.x), y2: Math.max(dg.t1.y, dg.t2.y) };
+  }
   function buildDown(e) {
     const tool = ui.build.tool;
+    endFlash();
     if (tool === 'wall' || tool === 'demolish') {
       const c = cornerAt(e.clientX, e.clientY);
       if (!c) return;
       ui.build.drag = { tool, c1: c, c2: c, keys: [], blocked: [], cost: 0 };
+    } else if (tool === 'room') {
+      const t = tileAt(e.clientX, e.clientY);
+      if (!t) return;
+      ui.build.drag = { tool, t1: t, t2: t, est: null, keys: [] };
+      buildMove(e);
     } else if (tool === 'floor') {
       const t = tileAt(e.clientX, e.clientY);
       if (!t) return;
-      ui.build.drag = { tool, t1: t, t2: t, tiles: [t], cost: 0 };
+      ui.build.drag = { tool, t1: t, t2: t, tiles: [t], cost: 0, whole: wholeRoom(e) };
       buildMove(e);
     } else if (tool === 'paper') {
-      ui.build.drag = { tool, painted: new Set(), cost: 0, count: 0 };
+      ui.build.drag = { tool, painted: new Set(), cost: 0, count: 0, snap: null, whole: wholeRoom(e) };
       paintEdgeAt(e.clientX, e.clientY);
     }
   }
@@ -2143,23 +2924,53 @@
       else rcall('hideEdgeGhost');
       if (!r.keys.length && !r.blocked.length) { showTip(x, y, demolish ? 'Arraste sobre paredes' : 'Arraste para traçar a parede'); return; }
       const bad = !demolish && dg.cost > moneyNow();
-      const extra = (r.keys.length ? r.keys.length + (r.keys.length === 1 ? ' trecho' : ' trechos') : '') +
-        (r.blocked.length ? (r.keys.length ? ' · ' : '') + r.blocked.length + ' bloqueado(s) por objetos' : '') + (bad ? ' · dinheiro insuficiente' : '');
-      showTip(x, y, costTip(dg.cost, extra), bad || (!r.keys.length && r.blocked.length > 0));
+      const extra = (r.keys.length ? plural(r.keys.length, 'trecho', 'trechos') : '') +
+        (r.blocked.length ? (r.keys.length ? ' · ' : '') + plural(r.blocked.length, 'bloqueado por objeto', 'bloqueados por objetos') : '') + (bad ? ' · dinheiro insuficiente' : '');
+      const warns = !demolish && r.keys.length ? wcall('wallWarnings', r.keys, 1) : null;
+      showTip(x, y, [costTip(dg.cost, extra), warnLine(warns)], bad || (!r.keys.length && r.blocked.length > 0));
+    } else if (dg.tool === 'room') {
+      const t = tileAt(x, y);
+      if (!t) return;
+      dg.t2 = t;
+      const R = roomRect(dg);
+      const est = ecall('estimateRoom', R.x1, R.y1, R.x2, R.y2, ui.build.roomFloor) || { ok: false, cost: 0, walls: 0, tiles: 0, reason: 'Indisponível.' };
+      dg.est = est;
+      dg.keys = (wcall('edgesOfRect', R.x1, R.y1, R.x2, R.y2) || []).filter((k) => !getWall(k));
+      const single = R.x1 === R.x2 && R.y1 === R.y2;
+      if (dg.keys.length) rcall('showEdgeGhost', dg.keys, !!est.ok && !single); else rcall('hideEdgeGhost');
+      rcall('showTileGhost', wcall('tilesInRect', R.x1, R.y1, R.x2, R.y2) || [t], !!est.ok && !single);
+      if (single) { showTip(x, y, 'Arraste para desenhar o cômodo'); return; }
+      const size = (R.x2 - R.x1 + 1) + '×' + (R.y2 - R.y1 + 1);
+      const extra = size + ' · ' + plural(num(est.walls), 'parede', 'paredes') + (num(est.tiles) ? ' · ' + plural(num(est.tiles), 'piso', 'pisos') : '');
+      const warns = est.ok && dg.keys.length ? wcall('wallWarnings', dg.keys, 1) : null;
+      showTip(x, y, [costTip(num(est.cost), extra), est.ok ? null : h('span', { class: 'tip-line', text: est.reason || 'Não dá para construir aqui.' }), warnLine(warns)], !est.ok);
     } else if (dg.tool === 'floor') {
       const t = tileAt(x, y);
       if (!t) return;
       dg.t2 = t;
+      if (dg.whole) { floorRoomPreview(x, y, t); return; }
       const tiles = wcall('tilesInRect', dg.t1.x, dg.t1.y, t.x, t.y) || [t];
       dg.tiles = tiles;
       dg.cost = tiles.reduce((a, q) => a + num(ecall('floorCost', q.x, q.y, ui.build.floor)), 0);
       const ok = dg.cost <= moneyNow();
       rcall('showTileGhost', tiles, ok);
       const f = (D().FLOORS || [])[ui.build.floor] || {};
-      showTip(x, y, costTip(dg.cost, tiles.length + ' ' + (tiles.length === 1 ? 'piso' : 'pisos') + ' · ' + (f.name || '') + (ok ? '' : ' · dinheiro insuficiente')), !ok);
+      const amb = wcall('roomScoreWithFloor', tiles, ui.build.floor);
+      showTip(x, y, [costTip(dg.cost, plural(tiles.length, 'piso', 'pisos') + ' · ' + (f.name || '') + (ok ? '' : ' · dinheiro insuficiente')), ambLine(amb)], !ok);
     } else if (dg.tool === 'paper') {
       paintEdgeAt(x, y);
     }
+  }
+  // whole-room floor preview (Shift / "Cômodo inteiro")
+  function floorRoomPreview(x, y, t) {
+    const indoor = wcall('isIndoor', t.x, t.y);
+    const tiles = indoor ? (wcall('roomTiles', t.x, t.y) || [t]) : [t];
+    const cost = tiles.reduce((a, q) => a + num(ecall('floorCost', q.x, q.y, ui.build.floor)), 0);
+    const ok = !!indoor && cost <= moneyNow();
+    rcall('showTileGhost', tiles, ok);
+    const f = (D().FLOORS || [])[ui.build.floor] || {};
+    if (!indoor) { showTip(x, y, 'Só dá para cobrir de uma vez um cômodo fechado', true); return; }
+    showTip(x, y, [costTip(cost, 'cômodo inteiro · ' + plural(tiles.length, 'piso', 'pisos') + ' · ' + (f.name || '') + (cost > moneyNow() ? ' · dinheiro insuficiente' : '')), ambLine(wcall('roomScoreWithFloor', tiles, ui.build.floor))], !ok);
   }
   function paintEdgeAt(x, y) {
     const dg = ui.build.drag;
@@ -2167,52 +2978,104 @@
     if (!e) return;
     const w = getWall(e.key);
     if (!w) { rcall('showEdgeGhost', [e.key], false); showTip(x, y, 'Não há parede aqui', true); return; }
-    if (dg && dg.painted.has(e.key)) return;
-    const r = ecall('paintWall', e.key, ui.build.paper);
-    if (dg) dg.painted.add(e.key);
+    const side = edgeSide(e, x, y);
+    const whole = dg ? dg.whole : wholeRoom(null);
+    const idx = ui.build.paper;
+    let r, tag;
+    if (whole && side !== 'both') {
+      const t = sideTile(e.key, side);
+      const room = wcall('roomAt', t.x, t.y);
+      tag = 'room:' + room;
+      if (dg && dg.painted.has(tag)) return;
+      if (dg && !dg.snap) dg.snap = snapshot();
+      r = ecall('paintRoomWalls', t.x, t.y, idx);
+      if (r && r.ok) { const edges = wcall('roomEdges', t.x, t.y) || []; rcall('showEdgeGhost', edges.map((q) => q.key), true); }
+    } else {
+      tag = e.key + ':' + side;
+      if (dg && dg.painted.has(tag)) return;
+      if (dg && !dg.snap) dg.snap = snapshot();
+      r = ecall('paintWall', e.key, idx, side);
+      if (r && r.ok) rcall('showEdgeGhost', [e.key], true);
+    }
+    if (dg) dg.painted.add(tag);
     if (r && r.ok) {
-      if (dg) { dg.cost += num(r.cost); dg.count++; }
+      const n = whole ? num(r.count) : (num(r.cost) ? 1 : 0);
+      if (dg) { dg.cost += num(r.cost); dg.count += n; }
       if (r.cost) sfx('build');
-      rcall('showEdgeGhost', [e.key], true);
-      showTip(x, y, costTip(dg ? dg.cost : num(r.cost), (dg ? dg.count : 1) + ' parede(s)'));
+      const total = dg ? dg.cost : num(r.cost);
+      const cnt = dg ? dg.count : n;
+      showTip(x, y, costTip(total, cnt ? plural(cnt, 'lado pintado', 'lados pintados') : 'Já tem este acabamento'), false, true);
     } else {
       rcall('showEdgeGhost', [e.key], false);
-      showTip(x, y, (r && r.reason) || 'Não foi possível pintar', true);
+      showTip(x, y, (r && r.reason) || engineReason() || 'Não foi possível pintar', true, true);
     }
   }
   function buildUp(e, moved) {
     const dg = ui.build.drag;
     const tool = ui.build.tool;
     const x = e.clientX, y = e.clientY;
-    if (tool === 'door' || tool === 'window') { placeOpening(x, y, tool === 'door' ? 2 : 3); return; }
-    if (!dg) {
+    if (tool === 'door' || tool === 'window') { if (!moved) placeOpening(x, y, tool === 'door' ? 2 : 3); return; }
+    if (tool === 'paper' && !dg) {
+      // touch tap (the drag pans on touch)
+      if (moved) return;
+      ui.build.drag = { tool: 'paper', painted: new Set(), cost: 0, count: 0, snap: null, whole: wholeRoom(e) };
+      paintEdgeAt(x, y);
+      const d2 = ui.build.drag; ui.build.drag = null;
+      if (d2.count && d2.snap) pushUndo(d2.snap);
+      setTimeout(() => rcall('hideEdgeGhost'), 450);
       return;
     }
+    if (!dg) return;
     ui.build.drag = null;
     if (dg.tool === 'wall' || dg.tool === 'demolish') {
       rcall('hideEdgeGhost');
       if (dg.tool === 'demolish' && (!moved || (dg.c1.x === dg.c2.x && dg.c1.y === dg.c2.y))) { demolishClick(x, y); return; }
-      if (!dg.keys.length) { hideTip(); return; }
+      if (!dg.keys.length) { hideTip(true); return; }
       if (dg.tool === 'wall' && dg.cost > moneyNow()) { sfx('error'); flashTip(x, y, 'Dinheiro insuficiente.', true); return; }
+      const snap = snapshot();
       let done = 0, total = 0, fail = '';
       for (const k of dg.keys) {
         const r = ecall('buildWall', k, dg.tool === 'wall' ? 1 : 0, dg.tool === 'wall' ? ui.build.paper : undefined);
         if (r && r.ok) { done++; total += num(r.cost); } else if (r && r.reason) fail = r.reason;
       }
       if (done) {
+        pushUndo(snap);
         sfx('build');
-        flashTip(x, y, costTip(total, done + (dg.tool === 'wall' ? ' trecho(s) construído(s)' : ' trecho(s) demolido(s)')));
-      } else { sfx('error'); flashTip(x, y, fail || 'Nada foi alterado.', true); }
+        flashTip(x, y, costTip(total, plural(done, dg.tool === 'wall' ? 'trecho construído' : 'trecho demolido', dg.tool === 'wall' ? 'trechos construídos' : 'trechos demolidos')));
+        refreshChecklist();
+      } else { sfx('error'); flashTip(x, y, fail || engineReason() || 'Nada foi alterado.', true); }
+    } else if (dg.tool === 'room') {
+      rcall('hideEdgeGhost'); rcall('hideTileGhost');
+      const R = roomRect(dg);
+      if (R.x1 === R.x2 && R.y1 === R.y2) { flashTip(x, y, 'Arraste para desenhar o cômodo (pelo menos 2 pisos).', false); return; }
+      const snap = snapshot();
+      const r = ecall('buildRoom', R.x1, R.y1, R.x2, R.y2, ui.build.roomFloor);
+      if (r && r.ok) {
+        pushUndo(snap);
+        sfx('build');
+        flashTip(x, y, costTip(num(r.cost), 'Cômodo ' + (R.x2 - R.x1 + 1) + '×' + (R.y2 - R.y1 + 1) + ' construído · agora coloque uma porta'), false, 2600);
+        refreshChecklist();
+      } else { sfx('error'); flashTip(x, y, (r && r.reason) || engineReason() || 'Não foi possível construir o cômodo.', true); }
     } else if (dg.tool === 'floor') {
       rcall('hideTileGhost');
+      const snap = snapshot();
+      if (dg.whole) {
+        const t = dg.t2 || dg.t1;
+        const r = ecall('paintRoomFloor', t.x, t.y, ui.build.floor);
+        if (r && r.ok && num(r.count)) { pushUndo(snap); sfx('build'); flashTip(x, y, costTip(num(r.cost), plural(num(r.count), 'piso', 'pisos') + ' no cômodo')); }
+        else if (r && r.ok) flashTip(x, y, 'O cômodo já tem este piso.', false);
+        else { sfx('error'); flashTip(x, y, (r && r.reason) || engineReason() || 'Não foi possível.', true); }
+        return;
+      }
       if (dg.cost > moneyNow()) { sfx('error'); flashTip(x, y, 'Dinheiro insuficiente.', true); return; }
       let total = 0, n = 0;
       for (const t of dg.tiles) {
         const r = ecall('paintFloor', t.x, t.y, ui.build.floor);
         if (r && r.ok) { total += num(r.cost); if (r.cost) n++; }
       }
-      if (n) { sfx('build'); flashTip(x, y, costTip(total, n + ' piso(s)')); } else hideTip();
+      if (n) { pushUndo(snap); sfx('build'); flashTip(x, y, costTip(total, plural(n, 'piso', 'pisos'))); } else hideTip(true);
     } else if (dg.tool === 'paper') {
+      if (dg.count && dg.snap) pushUndo(dg.snap);
       setTimeout(() => rcall('hideEdgeGhost'), 250);
     }
   }
@@ -2224,26 +3087,46 @@
       if (!e) { rcall('hideEdgeGhost'); hideTip(); return; }
       const w = getWall(e.key);
       if (tool === 'paper') {
-        rcall('showEdgeGhost', [e.key], !!w);
+        if (!w) { rcall('showEdgeGhost', [e.key], false); showTip(x, y, 'Não há parede aqui', true); return; }
         const p = (D().WALLPAPERS || [])[ui.build.paper] || {};
-        if (w) showTip(x, y, num(w.c) === ui.build.paper ? 'Já tem este acabamento' : costTip(num(p.price), p.name)); else showTip(x, y, 'Não há parede aqui', true);
+        const side = edgeSide(e, x, y);
+        if (wholeRoom(null) && side !== 'both') {
+          const t = sideTile(e.key, side);
+          const edges = wcall('roomEdges', t.x, t.y) || [];
+          const todo = edges.filter((q) => wallSideColor(q.key, q.side) !== ui.build.paper);
+          rcall('showEdgeGhost', edges.map((q) => q.key), true);
+          const cost = todo.length * num(p.price);
+          showTip(x, y, todo.length ? [costTip(cost, 'cômodo inteiro · ' + plural(todo.length, 'lado', 'lados') + ' · ' + (p.name || '')), ambLine(wcall('roomScoreWithWallpaper', edges.map((q) => ({ key: q.key, side: q.side })), ui.build.paper))] : 'O cômodo já tem este acabamento', cost > moneyNow());
+          return;
+        }
+        rcall('showEdgeGhost', [e.key], true);
+        const same = wallSideColor(e.key, side) === ui.build.paper;
+        const amb = side !== 'both' ? wcall('roomScoreWithWallpaper', [{ key: e.key, side }], ui.build.paper) : null;
+        showTip(x, y, same ? 'Este lado já tem este acabamento' : [costTip(num(p.price) * (side === 'both' ? 2 : 1), (p.name || '') + (side === 'both' ? '' : ' · este lado')), ambLine(amb)]);
         return;
       }
       const t = tool === 'door' ? 2 : 3;
-      let ok = !!w, reason = w ? '' : 'Precisa de uma parede';
-      if (w && w.t === t) { ok = false; reason = t === 2 ? 'Já é uma porta' : 'Já é uma janela'; }
+      let ok = !!w, reason = w ? '' : 'Precisa de uma parede', neutral = false;
+      if (w && w.t === t) { ok = false; reason = t === 2 ? 'Já é uma porta' : 'Já é uma janela'; neutral = true; }   // BB-6: a state, not an error
       if (ok) { const cb = wcall('canBuildWall', e.key, t); if (cb && cb.ok === false) { ok = false; reason = cb.reason; } }
       const cost = num(ecall('wallCost', e.key, t));
       if (ok && cost > moneyNow()) { ok = false; reason = 'Dinheiro insuficiente'; }
-      rcall('showEdgeGhost', [e.key], ok);
-      if (ok) showTip(x, y, costTip(cost, t === 2 ? 'porta' : 'janela')); else showTip(x, y, reason, true);
+      rcall('showEdgeGhost', [e.key], ok || neutral);
+      const warns = ok && t === 3 ? wcall('wallWarnings', [e.key], 3) : null;
+      if (ok) showTip(x, y, [costTip(cost, t === 2 ? 'porta' : 'janela'), warnLine(warns)]); else showTip(x, y, reason, !neutral);
     } else if (tool === 'floor') {
       const t = tileAt(x, y);
       if (!t) { if (ui.build.sel == null) rcall('hideTileGhost'); hideTip(); return; }
+      if (wholeRoom(null)) { floorRoomPreview(x, y, t); return; }
       const cost = num(ecall('floorCost', t.x, t.y, ui.build.floor));
       rcall('showTileGhost', [t], cost <= moneyNow());
       const f = (D().FLOORS || [])[ui.build.floor] || {};
       showTip(x, y, costTip(cost, f.name || ''));
+    } else if (tool === 'room') {
+      const t = tileAt(x, y);
+      if (!t) { rcall('hideTileGhost'); hideTip(); return; }
+      rcall('showTileGhost', [t], true);
+      showTip(x, y, 'Arraste um retângulo para fazer o cômodo');
     } else if (tool === 'wall' || tool === 'demolish') {
       hideTip();
     }
@@ -2253,41 +3136,48 @@
     if (!e) return;
     const w = getWall(e.key);
     if (!w) { sfx('error'); flashTip(x, y, 'Precisa de uma parede.', true); return; }
+    if (w.t === t) { flashTip(x, y, t === 2 ? 'Já é uma porta.' : 'Já é uma janela.', false); return; }
+    const snap = snapshot();
     const r = ecall('buildWall', e.key, t, num(w.c));
-    if (r && r.ok) { sfx('build'); flashTip(x, y, costTip(num(r.cost), t === 2 ? 'Porta instalada' : 'Janela instalada')); }
-    else { sfx('error'); flashTip(x, y, (r && r.reason) || 'Não foi possível.', true); }
-    setTimeout(() => buildHover(ui.mouse.x, ui.mouse.y), 30);
+    if (r && r.ok) { pushUndo(snap); sfx('build'); flashTip(x, y, costTip(num(r.cost), t === 2 ? 'Porta instalada' : 'Janela instalada')); refreshChecklist(); }
+    else { sfx('error'); flashTip(x, y, (r && r.reason) || engineReason() || 'Não foi possível.', true); }
+    // BB-6: the re-hover only refreshes the ghost while the confirmation tip is up
+    setTimeout(() => { if (ui.mode === 'build' && ui.mouse.type === 'mouse') buildHover(ui.mouse.x, ui.mouse.y); }, 30);
   }
   function demolishClick(x, y) {
     const p = rcall('pick', x, y);
     if (p && p.kind === 'object') {
       const o = objById(p.id);
       if (!o) return;
+      if (isSystemObj(o) || o.type === 'mailbox') { sfx('error'); flashTip(x, y, o.type === 'mailbox' ? 'A caixa de correio não pode ser vendida.' : systemTip(o), false, 2600); return; }
       if (ui.build.sel === o.id) { ui.build.confirm = true; sellSelected(true); return; }
       ui.build.sel = o.id;
       ui.build.confirm = true;
       const tiles = wcall('footprint', o.type, o.x, o.y, o.rot) || [{ x: o.x, y: o.y }];
       rcall('showTileGhost', tiles, false);
       const value = ecall('sellValue', o.id) || 0;
-      flashTip(x, y, 'Clique de novo para vender' + (value ? ' (+' + fmtMoney(value) + ')' : ''));
+      flashTip(x, y, (isCoarse() ? 'Toque' : 'Clique') + ' de novo para vender' + (value ? ' (+' + fmtMoney(value) + ')' : ''));
       renderToolbar();
       return;
     }
     // a click on a wall edge demolishes that single segment
     const e = edgeAt(x, y);
     if (e && getWall(e.key)) {
+      const snap = snapshot();
       const r = ecall('buildWall', e.key, 0);
-      if (r && r.ok) { sfx('build'); flashTip(x, y, costTip(num(r.cost), 'demolido')); } else { sfx('error'); flashTip(x, y, (r && r.reason) || 'Não foi possível.', true); }
+      if (r && r.ok) { pushUndo(snap); sfx('build'); flashTip(x, y, costTip(num(r.cost), 'demolido')); } else { sfx('error'); flashTip(x, y, (r && r.reason) || engineReason() || 'Não foi possível.', true); }
       return;
     }
     if (ui.build.sel != null) { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); renderToolbar(); }
   }
   function cancelBuildDrag() {
     if (!ui.build.drag) return;
+    const dg = ui.build.drag;
     ui.build.drag = null;
+    if (dg.tool === 'paper' && dg.count && dg.snap) pushUndo(dg.snap);
     rcall('hideEdgeGhost');
     rcall('hideTileGhost');
-    hideTip();
+    hideTip(true);
   }
 
   // ======================================================================
@@ -2297,6 +3187,11 @@
     let root = $('modal-root');
     if (!root) {
       root = h('div', { id: 'modal-root', on: { pointerdown: (e) => { if (e.target === root && ui.modals.length) { const top = ui.modals[ui.modals.length - 1]; if (top.dismissable !== false) closeTopModal(); } } } });
+      // works even before init() (save.js / main.js may ask a choice during boot)
+      root.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') trapTab(e);
+        else if (e.key === 'Escape' && !ui.inited) { e.preventDefault(); closeTopModal(); }
+      });
       document.body.appendChild(root);
     }
     root.hidden = false;
@@ -2311,10 +3206,63 @@
     ui.modals.push(entry);
     root.appendChild(el);
     mcall('setPaused', 'modal', true);
+    setInert(true);
     closePie();
-    hideTip();
+    hideTip(true);
     applyModeDom();
     return entry;
+  }
+  // CR-11: while a modal is open the HUD and the 3D view are inert (no focus, no clicks) and Tab cycles
+  // inside the top modal
+  function setInert(on) {
+    for (const id of ['hud', 'view']) {
+      const el = $(id);
+      if (!el) continue;
+      if (on) el.setAttribute('inert', ''); else el.removeAttribute('inert');
+      try { el.inert = !!on; } catch (e) { /* ignore */ }
+      if (on) el.setAttribute('aria-hidden', 'true'); else el.removeAttribute('aria-hidden');
+    }
+  }
+  function focusables(root) {
+    return Array.from(root.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'))
+      .filter((el) => !el.disabled && !el.hidden && el.offsetParent !== null && el.getAttribute('tabindex') !== '-1');
+  }
+  function trapTab(e) {
+    const top = ui.modals[ui.modals.length - 1];
+    if (!top) return;
+    const list = focusables(top.el);
+    if (!list.length) { e.preventDefault(); return; }
+    const first = list[0], last = list[list.length - 1];
+    const inside = top.el.contains(document.activeElement);
+    if (e.shiftKey && (document.activeElement === first || !inside)) { e.preventDefault(); last.focus(); }
+    else if (!e.shiftKey && (document.activeElement === last || !inside)) { e.preventDefault(); first.focus(); }
+  }
+  /**
+   * choice({ title, text, body?, buttons: [{ label, value, primary?, danger? }], cancelValue?, dismissable? })
+   * → Promise resolving to the chosen value (CONTRACT_V2 §6). Modal, pauses time (reason 'modal'),
+   * focus-trapped; Esc / backdrop = the last button's value (or cancelValue when given).
+   */
+  function choice(o) {
+    o = o || {};
+    return new Promise((resolve) => {
+      const buttons = Array.isArray(o.buttons) && o.buttons.length ? o.buttons : [{ label: 'OK', value: true, primary: true }];
+      const escValue = 'cancelValue' in o ? o.cancelValue : buttons[buttons.length - 1].value;
+      let done = false;
+      let m = null;
+      const finish = (v) => { if (done) return; done = true; if (m) closeModal(m); resolve(v); };
+      m = openModal({ title: o.title || '', kind: o.kind || 'choice', wide: !!o.wide, dismissable: o.dismissable !== false,
+        onClose: () => { if (!done) { done = true; resolve(escValue); } } });
+      if (o.text) m.body.appendChild(h('p', { class: 'choice-text', text: String(o.text) }));
+      if (o.body) appendKids(m.body, o.body);
+      let primary = null;
+      buttons.forEach((b, i) => {
+        const btn = h('button', { class: 'btn' + (b.primary ? ' primary' : '') + (b.danger ? ' danger' : ''), type: 'button', id: 'choice-' + i, text: String(b.label == null ? '' : b.label), on: { click: () => finish(b.value) } });
+        if (b.primary && !primary) primary = btn;
+        m.foot.appendChild(btn);
+      });
+      const f = primary || m.foot.lastChild;
+      if (f) setTimeout(() => { try { f.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }, 0);
+    });
   }
   function focusFirst(entry) {
     const f = entry.el.querySelector('input, button.primary, button:not(.icon-btn), textarea, select');
@@ -2328,6 +3276,7 @@
     const root = $('modal-root');
     if (ui.modals.length) ui.modals[ui.modals.length - 1].el.hidden = false;
     else if (root) root.hidden = true;
+    if (!ui.modals.length) setInert(false);
     mcall('setPaused', 'modal', ui.modals.length > 0);
     try { if (entry.onClose) entry.onClose(); } catch (e) { warnOnce('modal-close', e); }
     if (entry.prevFocus && entry.prevFocus.focus && entry.prevFocus.isConnected) { try { entry.prevFocus.focus({ preventScroll: true }); } catch (e) { /* ignore */ } }
@@ -2594,6 +3543,13 @@
         if (!String(draft.householdName || '').trim()) { err.textContent = 'Dê um nome para a família.'; return; }
         const bad = draft.members.findIndex((x) => !String(x.first || '').trim());
         if (bad >= 0) { err.textContent = 'O morador ' + (bad + 1) + ' precisa de um nome.'; return; }
+        // improvement: personality must use exactly the 25 points (DESIGN "sum 25")
+        const short = draft.members.findIndex((x) => PK.reduce((a, k) => a + num(x.personality[k]), 0) !== MAXP);
+        if (short >= 0) {
+          const left = MAXP - PK.reduce((a, k) => a + num(draft.members[short].personality[k]), 0);
+          err.textContent = String(draft.members[short].first || 'O morador ' + (short + 1)).trim() + ' ainda tem ' + left + (left === 1 ? ' ponto' : ' pontos') + ' de personalidade para distribuir (use “Distribuir o resto”).';
+          return;
+        }
         draft.step = 2;
         renderFamilyStep(m, draft);
       });
@@ -2673,7 +3629,9 @@
       const left = MAXP - used;
       points.textContent = left > 0 ? 'Pontos restantes: ' + left : 'Todos os ' + MAXP + ' pontos distribuídos';
       points.classList.toggle('zero', left <= 0);
+      if (fillRef.el) fillRef.el.disabled = left <= 0;
     };
+    const fillRef = { el: null };
     const traits = h('div', { class: 'traits' });
     for (const k of PK) {
       const out = h('output', { for: 'cf-p-' + idx + '-' + k, text: String(num(mem.personality[k])) });
@@ -2687,9 +3645,25 @@
         out.textContent = String(v);
         updatePoints();
       });
+      inp._out = out;
       sliders.push(inp);
       traits.appendChild(h('label', { class: 'trait-slider', for: 'cf-p-' + idx + '-' + k }, [h('span', { text: PL[k] || k }), inp, out]));
     }
+    const fill = h('button', { class: 'btn small', type: 'button', id: 'cf-fill-' + idx, title: 'Distribui os pontos que faltam entre os traços' }, [emo('⚖️'), 'Distribuir o resto']);
+    fill.addEventListener('click', () => {
+      let left = MAXP - PK.reduce((a, k) => a + num(mem.personality[k]), 0);
+      let guard = 0;
+      // spread the remaining points one by one over the traits with room, lowest first (keeps the shape)
+      while (left > 0 && guard++ < 200) {
+        const open = PK.filter((k) => num(mem.personality[k]) < 10).sort((a, b) => num(mem.personality[a]) - num(mem.personality[b]));
+        if (!open.length) break;
+        mem.personality[open[0]] = num(mem.personality[open[0]]) + 1; left--;
+      }
+      PK.forEach((k, i) => { sliders[i].value = String(num(mem.personality[k])); sliders[i]._out.textContent = String(num(mem.personality[k])); });
+      updatePoints();
+      sfx('click');
+    });
+    fillRef.el = fill;
     updatePoints();
     const tools = h('div', { class: 'member-tools' });
     const rnd = h('button', { class: 'btn small', type: 'button', id: 'cf-rnd-' + idx }, [emo('🎲'), 'Sortear']);
@@ -2704,7 +3678,7 @@
       h('div', { class: 'member-top' }, [cv, h('div', { class: 'field' }, [h('label', { for: 'cf-name-' + idx, text: 'Morador ' + (idx + 1) + ' · primeiro nome' }), nameIn, gSeg])]),
       colorRows,
       h('div', { class: 'section-label', text: 'Personalidade' }),
-      points,
+      h('div', { class: 'points-row' }, [points, fill]),
       traits,
       tools,
     ]);
@@ -2719,16 +3693,16 @@
       ['Toque num morador ou objeto', 'Abre o menu de ações.'],
       ['Toque no chão', 'Manda o morador selecionado andar até lá.'],
       ['Arraste com um dedo', 'Move a câmera. Pinça com dois dedos para aproximar.'],
-      ['Retratos embaixo', 'Toque para trocar de morador; toque duas vezes para centralizar.'],
+      ['Retratos embaixo', 'Toque para trocar de morador; toque de novo para centralizar a câmera.'],
       ['Humor', 'O botão ao lado dos retratos abre as necessidades, habilidades e carreira.'],
       ['Comprar e Construir', 'Pausam o tempo. Toque no terreno para posicionar e confirme no botão.'],
     ] : [
       ['Clique num morador ou objeto', 'Abre o menu de ações em volta do cursor.'],
-      ['Clique no chão', 'O morador selecionado anda até lá.'],
+      ['Clique no chão', 'O morador selecionado anda até lá (Shift+clique adiciona uma parada).'],
       ['Câmera', 'Roda do mouse aproxima; botão direito arrasta; Q/E giram; WASD ou setas movem.'],
       ['Tempo', 'P ou Espaço pausa; 1, 2 e 3 escolhem a velocidade.'],
-      ['Comprar', 'Escolha um item, R gira, clique para colocar, Esc cancela, Delete vende.'],
-      ['Construir', 'Arraste pelos cantos do piso para fazer paredes; portas e janelas vão em paredes.'],
+      ['Comprar', 'Escolha um item, R gira, clique para colocar, Esc cancela, Delete vende, Ctrl+Z desfaz.'],
+      ['Construir', 'Cômodo desenha quatro paredes de uma vez; portas e janelas vão em paredes.'],
     ];
     card = h('section', { id: 'help-card', class: 'panel', role: 'dialog', 'aria-modal': 'false', 'aria-labelledby': 'help-title' }, [
       h('h2', { id: 'help-title', text: 'Bem-vindo ao Morada' }),
@@ -2760,11 +3734,26 @@
     const B = M.util.bus;
     B.on('notify', (n) => {
       if (!n || !n.text) return;
-      toast(n.text, n.kind || 'info');
+      toast(n.text, n.kind || 'info', { focus: n.focus || null, id: n.id });
       if (!ui.logOpen) { ui.unread++; refreshLogCount(); }
       ui.sig.log = '';
       if (n.kind === 'career' || n.kind === 'good') sfx('chime');
       else if (n.kind === 'bad') sfx('error');
+    });
+    // repeated notifications are merged by the engine: update the toast on screen with the count
+    B.on('notifyRepeat', (n) => {
+      if (!n || !ui.els.toasts) return;
+      const t = touchText(n.text || '');
+      let node = Array.from(ui.els.toasts.children).find((x) => (n.id != null && x._id === n.id) || x._text === t);
+      if (!node) node = toast(n.text, n.kind || 'info', { id: n.id });
+      if (node && node._textEl) {
+        let c = node._textEl.querySelector('.t-count');
+        if (!c) { c = h('span', { class: 't-count' }); node._textEl.appendChild(c); }
+        c.textContent = '×' + num(n.count, 2);
+        node.classList.remove('bump'); void node.offsetWidth; node.classList.add('bump');
+        if (node._timeout) { clearTimeout(node._timer); node._timer = setTimeout(() => dismissToast(node), node._timeout); }
+      }
+      ui.sig.log = '';
     });
     B.on('money', (m) => {
       if (!m) return;
@@ -2780,11 +3769,19 @@
     B.on('objects', () => {
       if (ui.buy.sel != null && !objById(ui.buy.sel)) deselectObject();
       if (ui.build.sel != null && !objById(ui.build.sel)) { ui.build.sel = null; ui.build.confirm = false; rcall('hideTileGhost'); renderToolbar(); }
+      ui._plx = null; ui._interCache = null;
+      refreshChecklist();
     });
+    B.on('lot', () => { ui._plx = null; refreshChecklist(); });
     B.on('saved', (r) => {
       if (!r) return;
-      const txt = r.ok ? (r.where === 'cloud' ? 'Salvo ☁️' : 'Salvo neste aparelho') : 'Falha ao salvar';
+      let txt = r.ok ? (r.where === 'cloud' ? 'Salvo ☁️' : 'Salvo neste aparelho') : 'Falha ao salvar';
+      // CONTRACT_V2 §5: the chip names the active slot ("Salvo ☁️ · Espaço 2")
+      let label = r.slotLabel || '';
+      if (!label && M.main && typeof M.main.slotLabel === 'function') { try { label = M.main.slotLabel(r.slot) || ''; } catch (e) { label = ''; } }
+      if (label) txt += ' · ' + label;
       setText(ui.els.saveChip, txt);
+      if (label) ui.els.saveChip.title = label + (S() && S().householdName ? ' · ' + S().householdName : '');
       ui.els.saveChip.style.color = r.ok ? '' : 'var(--bad)';
       clearTimeout(ui._saveTimer);
       ui._saveTimer = setTimeout(() => setText(ui.els.saveChip, ''), 4000);
@@ -2792,6 +3789,87 @@
     B.on('speed', () => refreshClock());
     B.on('loaded', (p) => {
       if (p && p.where) toast(p.where === 'cloud' ? 'Jogo carregado da nuvem.' : 'Jogo carregado deste aparelho.', 'info', { icon: '📂', timeout: 3000 });
+    });
+  }
+
+  // ======================================================================
+  // Move-in checklist (improvement): after moving to an empty lot, a small card lists the essentials and
+  // ticks itself as they are bought / built. Stored as state.settings.moveInChecklist (true while active).
+  // ======================================================================
+  const ESSENTIALS = [
+    { key: 'bed', label: 'Cama', icon: '🛏️', test: (o, d) => d.cat === 'beds' },
+    { key: 'fridge', label: 'Geladeira', icon: '🧊', test: (o) => /^fridge/.test(o.type) },
+    { key: 'stove', label: 'Fogão', icon: '🔥', test: (o) => o.type === 'stove' },
+    { key: 'counter', label: 'Balcão', icon: '🧱', test: (o) => o.type === 'counter' },
+    { key: 'toilet', label: 'Vaso sanitário', icon: '🚽', test: (o) => /^toilet/.test(o.type) },
+    { key: 'shower', label: 'Chuveiro ou banheira', icon: '🚿', test: (o) => o.type === 'shower' || o.type === 'bathtub' },
+    { key: 'door', label: 'Porta', icon: '🚪', door: true },
+  ];
+  function essentialsStatus() {
+    const st = S();
+    if (!st) return [];
+    const objs = Array.isArray(st.objects) ? st.objects : [];
+    const walls = (st.lot && st.lot.walls) || {};
+    let hasDoor = false;
+    for (const k in walls) { const w = walls[k]; if (w && (w.t === 2 || w === 2)) { hasDoor = true; break; } }
+    return ESSENTIALS.map((e) => ({ key: e.key, label: e.label, icon: e.icon, ok: e.door ? hasDoor : objs.some((o) => { const d = objDef(o); return d && e.test(o, d); }) }));
+  }
+  function refreshChecklist() {
+    const el = ui.els.checklist;
+    const st = S();
+    if (!el || !st || !st.settings) return;
+    const active = st.settings.moveInChecklist === true;
+    if (!active || ui.mode === 'options') { if (!el.hidden) el.hidden = true; return; }
+    const list = essentialsStatus();
+    const done = list.filter((q) => q.ok).length;
+    if (done === list.length) {
+      st.settings.moveInChecklist = false;
+      el.hidden = true;
+      toast('Casa pronta para morar: cama, cozinha, banheiro e porta! ✓', 'good', { icon: '🏡' });
+      return;
+    }
+    const sig = list.map((q) => (q.ok ? 1 : 0)).join('') + ':' + ui.narrow + ':' + !!ui._clMini;
+    el.hidden = false;
+    if (sig !== ui.sig.checklist) {
+      ui.sig.checklist = sig;
+      clear(el);
+      const mini = ui._clMini != null ? ui._clMini : ui.narrow;
+      el.classList.toggle('mini', mini);
+      el.appendChild(h('h3', {}, [
+        h('button', { class: 'btn small ghost', type: 'button', style: { padding: '0 4px', minHeight: '24px' }, 'aria-expanded': mini ? 'false' : 'true', title: mini ? 'Mostrar a lista' : 'Recolher', on: { click: () => { ui._clMini = !mini; ui.sig.checklist = ''; refreshChecklist(); } } },
+          [emo('🏠'), ' Mudança ', h('span', { class: 'cl-prog', text: done + '/' + list.length }), mini ? ' ▾' : ' ▴']),
+        h('button', { class: 'icon-btn', type: 'button', 'aria-label': 'Fechar a lista da mudança', title: 'Fechar', on: { click: () => { st.settings.moveInChecklist = false; el.hidden = true; } } }, '✕'),
+      ]));
+      el.appendChild(h('ul', {}, list.map((q) => h('li', { class: q.ok ? 'ok' : '' }, [h('span', { 'aria-hidden': 'true', text: q.ok ? '✓' : '○' }), emo(q.icon), h('span', { text: q.label })]))));
+      el.appendChild(h('p', { class: 'cl-tip', text: 'Compre em Comprar; a porta e as paredes ficam em Construir (ferramenta Cômodo).' }));
+    }
+    // never cover the live dock: collapse when they would overlap
+    if (ui.mode === 'live' && ui._clMini == null && !el.classList.contains('mini')) {
+      const a = rectOf(el), b = rectOf(ui.els.needsPanel) || rectOf(ui.els.dock);
+      if (overlaps(a, b, 4)) { el.classList.add('mini'); }
+    }
+  }
+  function maybeStartChecklist() {
+    const st = S();
+    if (!st || !st.settings) return;
+    const missing = essentialsStatus().filter((q) => !q.ok).length;
+    st.settings.moveInChecklist = missing >= 3;
+    ui._clMini = null; ui.sig.checklist = '';
+    refreshChecklist();
+  }
+
+  // Improvement: when the selected character leaves the lot (work, hospital) offer to control someone at home
+  function checkSelectedAway() {
+    const sim = selectedSim();
+    if (!sim) return;
+    if (!sim.hidden) { ui.selAway = null; return; }
+    if (ui.selAway === sim.id) return;
+    ui.selAway = sim.id;
+    const other = household().find((x) => x.id !== sim.id && !x.hidden);
+    if (!other) return;
+    toast(firstName(sim) + (sim.atWork ? ' foi trabalhar.' : ' saiu de casa.'), 'info', {
+      icon: sim.atWork ? '💼' : '🚗', timeout: 10000,
+      action: { label: 'Controlar ' + firstName(other), fn: () => { selectSim(other.id); focusSim(simById(other.id)); } },
     });
   }
 
@@ -2810,6 +3888,7 @@
     if (prefs.buildTool && BUILD_TOOLS.some((t) => t.key === prefs.buildTool)) ui.build.tool = prefs.buildTool;
     if (prefs.floorIdx != null) ui.build.floor = clamp(num(prefs.floorIdx, 1), 0, Math.max(0, (D().FLOORS || [1]).length - 1));
     if (prefs.paperIdx != null) ui.build.paper = clamp(num(prefs.paperIdx, 0), 0, Math.max(0, (D().WALLPAPERS || [1]).length - 1));
+    if ('roomFloor' in prefs) ui.build.roomFloor = prefs.roomFloor == null ? null : clamp(num(prefs.roomFloor, 1), 1, Math.max(1, (D().FLOORS || [1, 1]).length - 1));
     if (prefs.tab) ui.tab = prefs.tab;
     buildHud();
     if (!ui.inited) { bindInput(); bindBus(); }
@@ -2822,14 +3901,20 @@
     if (st && st.settings && st.settings.wallMode) rcall('setWallMode', st.settings.wallMode);
     const sel = selectedSim();
     if (sel) rcall('setSelected', sel.id);
+    if (sel && sel.hidden) ui.selAway = sel.id;
     refreshAll();
+    refreshChecklist();
     if (!prefs.helpSeen) setTimeout(showHelp, 350);
+    // toasts requested before init (save.js / main.js during boot)
+    const pend = ui.pendingToasts.splice(0);
+    for (const t of pend) toast(t[0], t[1], t[2]);
+    setTimeout(prerenderThumbs, 2500);
   }
   /** Called by M.main after a different state was loaded (load / import / new family). */
   function reset(info) {
     info = info || {};
     closePie();
-    hideTip();
+    hideTip(true);
     clearBubbles();
     if (ui.mode !== 'live') {
       leaveMode(ui.mode);
@@ -2839,7 +3924,10 @@
     }
     ui.buy.placing = null; ui.buy.sel = null;
     ui.build.drag = null; ui.build.sel = null;
-    ui.sig = { portraits: '', queue: '', tab: '', rel: '', career: '', log: '', toolbar: '' };
+    ui.undo = [];
+    ui.selAway = null;
+    ui._plx = null; ui._interCache = null;
+    ui.sig = { portraits: '', queue: '', tab: '', rel: '', career: '', log: '', toolbar: '', checklist: '' };
     ui.trend = { simId: null, at: -1, vals: null, prev: null };
     ui.unread = 0; refreshLogCount();
     ui.money.shown = null;
@@ -2849,7 +3937,17 @@
     const sel = selectedSim();
     if (sel) rcall('setSelected', sel.id);
     refreshAll();
-    if (info.kind === 'new' && sel) rcall('focus', sel.x, sel.y);
+    if (info.kind === 'new') maybeStartChecklist(); else { ui.sig.checklist = ''; refreshChecklist(); }
+    if (info.kind === 'new' && sel) {
+      // an empty lot: the family arrives at the mailbox by the street; frame the lot they are about to build on
+      // (a point between them and the lot centre) instead of the road
+      const L = st && st.lot;
+      const hasWalls = !!(L && L.walls && Object.keys(L.walls).length);
+      if (L && !hasWalls && isFinite(L.w) && isFinite(L.h)) {
+        const cx = L.w / 2 - 0.5, cy = L.h / 2 - 0.5;
+        rcall('focus', sel.x + (cx - sel.x) * 0.55, sel.y + (cy - sel.y) * 0.55);
+      } else rcall('focus', sel.x, sel.y);
+    }
     if (info.kind === 'load') toast('Jogo carregado' + (info.where === 'cloud' ? ' da nuvem.' : '.'), 'info', { icon: '📂', timeout: 3000 });
     else if (info.kind === 'import') toast('Jogo importado com sucesso.', 'good', { icon: '📥', timeout: 3500 });
   }
@@ -2889,18 +3987,22 @@
       ui.t1 = now;
       if (ui.mode === 'live' && (ui.tab === 'career' || ui.tab === 'rel')) refreshTab(selectedSim(), false);
       refreshLog();
+      if (ui.mode === 'live') checkSelectedAway();
+      refreshChecklist();
     }
   }
 
   M.ui = {
-    init, update, reset, offer, toast, setMode, setTab, selectSim, showHelp, openOptions, openCreateFamily,
+    init, update, reset, offer, toast, choice, setMode, setTab, selectSim, showHelp, openOptions, openCreateFamily,
     get mode() { return ui.mode; },
-    closePie, openPie,
+    get ready() { return ui.inited; },
+    closePie, openPie, undo, openOfferCard: (track, simId) => { const sim = simById(simId) || selectedSim(); return openOfferCard(offerFor(track, null), sim && sim.id, null); },
     // test hooks
     debug: {
       get ui() { return ui; },
-      handleClick, liveClick, buyClick, startPlacing, commitPlacement, rotatePlacing, setBuildTool, needColor, drawFace,
-      buildDown, buildMove, buildUp, hideHelp, openSlots, openImport, doExport,
+      handleClick, liveClick, buyClick, startPlacing, stopPlacing, commitPlacement, rotatePlacing, setBuildTool, needColor, drawFace,
+      buildDown, buildMove, buildUp, hideHelp, openSlots, openImport, doExport, selectObject, deselectObject, sellSelected,
+      closeModal, refreshChecklist, maybeStartChecklist, resolveTarget, essentialsStatus, flashTip, showTip,
     },
   };
 })(window.M = window.M || {});

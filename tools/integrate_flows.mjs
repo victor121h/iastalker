@@ -1,10 +1,30 @@
 // End-to-end flows on the real index.html, driven with real mouse/touch input where possible.
 //   node tools/integrate_check.mjs --clear --nohelp --script tools/integrate_flows.mjs [--w 390 --h 844 --touch]
 // Returns a JSON summary of checks (each check: true/false or data) and writes screenshots to ctx.shotDir.
+// QA fix round: the CONTRACT_V2 flows (tools/integrate_flows_v2.mjs) run first on a fresh game, then the page is
+// reloaded with cleared saves and the original flows run. FLOWS=v1 or FLOWS=v2 runs only one part.
 import path from 'node:path';
 import fs from 'node:fs';
+import flowsV2 from './integrate_flows_v2.mjs';
 
 export default async function (page, ctx) {
+  const which = process.env.FLOWS || 'all';
+  let v2 = null;
+  if (which !== 'v1') {
+    v2 = await flowsV2(page, ctx);
+    if (which === 'v2') return v2;
+    // fresh game for the original flows: drop the saves and the UI prefs (build tool, tab, catalog category…)
+    await page.evaluate(() => { try { Object.keys(localStorage).filter((k) => k.startsWith('morada')).forEach((k) => localStorage.removeItem(k)); localStorage.setItem('morada.prefs', JSON.stringify({ helpSeen: true })); } catch (e) { /* ignore */ } });
+    await page.reload({ waitUntil: 'load' });
+    await page.waitForFunction(() => window.__morada && window.__morada.M.ui && window.__morada.M.ui.ready, null, { timeout: 30000 }).catch(() => {});
+    await page.waitForTimeout(2500);
+  }
+  const res = await flowsV1(page, ctx);
+  if (v2) { res.fail = v2.fail.map((f) => 'v2.' + f).concat(res.fail); res.v2 = v2.checks; res.shots = v2.shots.concat(res.shots); }
+  return res;
+}
+
+async function flowsV1(page, ctx) {
   const { W, H } = ctx;
   const dir = ctx.shotDir; fs.mkdirSync(dir, { recursive: true });
   const tag = W < 600 ? 'phone' : 'desk';
@@ -383,9 +403,10 @@ export default async function (page, ctx) {
   await shot('11-build-floor-done');
 
   // wallpaper on one of the new walls (engine API) and demolish refund (engine API)
-  const paint = run2 && await ev((k) => window.__morada.M.engine.paintWall(k, 2), run2.keys[0]);
+  // CONTRACT_V2 §1: paint one side (A) only, then the other side keeps its colour
+  const paint = run2 && await ev((k) => { const M = window.__morada.M; const r = M.engine.paintWall(k, 2, 'A'); return { r, A: M.world.wallColor(k, 'A'), B: M.world.wallColor(k, 'B') }; }, run2.keys[0]);
   const demo = run2 && await ev((k) => window.__morada.M.engine.buildWall(k, 0), run2.keys[2]);
-  expect('build.paintAndDemolish', paint && paint.ok && demo && demo.ok && !(await ev((k) => window.__morada.M.world.getWall(k), run2.keys[2])), { paint, demo });
+  expect('build.paintAndDemolish', paint && paint.r.ok && paint.A === 2 && paint.B !== 2 && demo && demo.ok && !(await ev((k) => window.__morada.M.world.getWall(k), run2.keys[2])), { paint, demo });
 
   await modeBtn('live');
   expect('live.unpaused', (await ev(() => window.__morada.M.main.pauseReasons())).length === 0);

@@ -4,6 +4,119 @@ File: `js/render.js`. Implements every ARCHITECTURE.md `M.render` function. Read
 `M.engine.state` when the engine has one, otherwise the state passed to `init` (so a state swap after
 loading a save is picked up automatically on the next frame). Never mutates the state.
 
+## QA round 2 (CONTRACT_V2) — what changed
+- **§4 picking** — `pick(cx, cy, opts?)` order: characters → small items on the tile the hit lands on →
+  other objects → ground.
+  - Characters use an enlarged capsule: radius 0.31, or 0.42 while walking. A screen-space snap radius
+    (18 px, 24 px on a coarse pointer) applies on top. Body hits win over snap hits.
+  - Visible walls occlude characters and objects (BB-2).
+  - `opts.objectsOnly` skips characters. It defaults to true while `M.ui.mode` is `'buy'` or `'build'`.
+    `opts.includeCharacters` forces characters back on. `opts.snapPx` overrides the snap radius.
+  - Item results carry `item: true` (meal, dirty plate, spoiled meal, newspaper, puddle; LIVE-1). The
+    preference for an item lying on the hit tile applies only outside Buy/Build (`opts.preferItems`
+    overrides this); in Buy/Build, a click on the counter selects the counter.
+    **NEW** `itemAt(x, y)` → id of the item lying on that tile, or null.
+- **§1 / BB-1 `pickEdge(cx, cy, opts?)`** → `{ key, kind, x, y, side: 'A'|'B', wall, how }`. The ray is
+  tested against the FULL-HEIGHT volume of every wall, the same slab the edge ghost draws. Aiming at a
+  cut-down stub, or up to 0.6 above it, targets that wall. Resolution order:
+  1. A wall the ray enters at or below its visible height (`how: 'wall'`).
+  2. A wall edge within 0.6 tile of the ground point (`'near'`).
+  3. The full-height slab with the smallest overshoot (`'slab'`).
+  4. Unless `opts.wallsOnly`: the nearest grid edge within 0.35 tile, wall or not (`'grid'`).
+
+  `side` is the face under the cursor:
+  - on a standing wall, the face the ray enters;
+  - when aiming over a cut stub, the far (room) side;
+  - for ground picks, the side the ground point lies on.
+
+  **NEW** `edgeSideAt(key)` → the side currently facing the camera.
+- **§1 per-side wallpaper**: each wall body is two half-thickness slabs. Side A (north/west half) uses
+  `cA`, side B (south/east half) uses `cB`; a missing value falls back to `c`. The colour of an end face
+  is chosen as follows:
+  - An extended corner end takes the colour of the perpendicular wall's coplanar face.
+  - A free end is split A/B.
+
+  `showEdgeGhost(keys, valid)` also accepts `'h,3,4,A'` or `{ key, side }`, which draws a thin slab on
+  that face only.
+- **§4 `setWallsUpOverride(bool)`** (getter `wallsUpOverride`): while on, every wall is drawn full height,
+  whatever the wall mode. `setState` clears it.
+- **§4 `hideObject(objId, hide = true)`**: hides an object, for example the original while it is being
+  moved. While hidden, the object is not picked and casts no light, contact shadow or decor rule.
+  `hideObject(id, false)` restores it. `setState` clears every hidden object.
+- **§4 markers**:
+  - A newspaper whose `offer` is a valid career gets a floating yellow briefcase badge (smaller once
+    `read`).
+  - The mailbox's red flag (model mesh kind `flag`) is raised while `state.bills` is not empty and
+    lowered otherwise.
+  - A red envelope badge floats over the mailbox while any bill is due within a day.
+- **LIVE-5 / VIS-3 / BB-5 cutaway rule**: a wall whose camera-facing side carries a visible wall-mounted
+  object stays full height, unless it hides the selected character (the selected-character trace still
+  cuts it).
+  - On a lowered wall (`'down'` mode, or the trace case), camera-facing decor is drawn as a small framed
+    plaque standing on the cap. It stays visible and clickable.
+  - Decor facing away from the camera hides while its wall is lowered.
+- **BB-8**: cutaway uses `enclosed` regions (any region that does not leak off the lot), so a walled room
+  without a floor cuts like a room. `indoor` mirrors M.world: an enclosed region is indoor unless it is a
+  grassy yard walled along the lot border.
+- **VIS-1 lamp light region mask**: lamps no longer light the lawn or the next room through a wall.
+  - Every lit `MeshStandardMaterial` gets a shader patch via `onBeforeCompile`. A per-tile DataTexture
+    holds each tile's "light room" id (0 = outdoors). Each pooled lamp light carries the room id of its
+    lamp, and a fragment only receives the lamps of its own room. The lookup is offset 3 cm along the
+    world normal, so faces lying on a tile border (wall faces) resolve to the room they face.
+  - Lit rooms also get a soft warm ambient fill (`FILL_K`) at night, so the far side of a room is not
+    black.
+  - Lamp range is now 5.2 (it can be larger because the mask stops leaks).
+- **Night dressing**:
+  - Warm light patches on the lawn outside the windows of lit rooms (additive decals).
+  - Light pools under the street lamps.
+  - Neighbour house windows glow (env `glow` meshes).
+- **Contact shadows**:
+  - A soft dark rounded patch under every piece of furniture, sized from the model's bounding box.
+  - A soft strip along both sides of every wall base; door openings are skipped.
+- **Lot dressing**:
+  - Ground: desaturated lawn, large-scale tonal variation and soft mowing stripes. It is one ground grid
+    with variable spacing: fine on the lot, coarse far away.
+  - A low hedge along the back and side lot boundary, just outside the lot.
+  - A paver front path from the main exterior door to the street, and a 2×6 concrete driveway with an
+    apron across the sidewalk. Both are drawn under real floor tiles and rebuilt with the walls.
+  - Street details: crosswalk, manholes, drains, hydrant, two parked cars.
+  - More neighbour houses beside and behind the lot.
+- **Walls**:
+  - Cut door openings keep only the threshold and a 0.1-high jamb trim (no white stubs).
+  - Caps are two-tone (light top, darker sides).
+  - Counters and dishwashers with a solid wall behind them get a tiled backsplash. It is model mesh kind
+    `splash` and is hidden while that wall is cut.
+- **Buy ghost**:
+  - Stronger tint and emissive pulse.
+  - Pulsing footprint tiles plus a bright footprint outline drawn over everything.
+  - An x-ray copy (depthFunc GreaterDepth) shows the parts hidden behind walls or furniture.
+  - CR-9: one shared tile mesh and one outline mesh are reused for every catalog item, and the replaced
+    `ensureInstanced` meshes are disposed.
+- **VIS-8 carpool**: the car is drawn in the near road lane (z ≈ h + 2.75). It drives in when created and
+  drives off when removed. Its interaction slot stays at the lot edge.
+- **Characters**:
+  - VIS-6: the blob shadow follows the hips. It is smaller on furniture and hidden while lying in a bed,
+    tub or hot tub.
+  - VIS-12: the blanket only covers a sleeper with `sim.asleep`. The renderer passes `awake`, `recline`
+    (armchair meta), `partnerDist` (VIS-7, hug/kiss spacing), `prop: 'handset'` (landline) and `prep`
+    (counter stage of cooking: the object in front of the character is not a stove) to
+    `M.models.animate`.
+- **Camera**:
+  - Portrait phones start closer (`dist` 23 instead of 30).
+  - `focus()` centres the point in the area clear of the HUD on portrait screens, or when the UI reports
+    insets. **NEW** `setViewInsets({ top, right, bottom, left })` takes px.
+  - Auto-frame: when the selected character walks under a HUD panel or off the edge by itself while
+    still on screen, the view eases to bring it back into the clear area. It is off in Buy/Build.
+    - It never fights the player: if a pan, zoom or rotate leaves the character outside the clear area,
+      auto-frame stays disarmed until the character is back inside. It never acts within 1.5 s of
+      camera input.
+    - Selecting a character that is on screen but under a panel frames it once.
+    - A character that is fully off screen is left alone.
+- **Perf**: every InstancedMesh created here has `frustumCulled = false`. r128 culls an InstancedMesh by
+  its base geometry at the origin, which hid instances whenever the lot corner was off screen. On the
+  starter house in SwiftShader, the render JS cost is ~0.17 ms per frame without GL work, and the whole
+  frame costs about the same as before the changes.
+
 ## Lifecycle
 - `init(container, state)`: creates the canvas inside `container` (canvas fills it: `width/height:100%`,
   `touch-action:none`, class `morada-canvas`). A `ResizeObserver` on the container keeps the size in sync.
@@ -48,8 +161,8 @@ object's `surfaceHeight`. Wall-mounted objects hide while the wall behind them i
   - Clicking a standing wall returns the tile in front of the clicked face, with `wall: <edgeKey>`.
 - `pickTile(cx, cy)` → `{x, y, fx, fy}` (fx, fy = ground point in tile units, i.e. world X/Z; null off-lot).
 - **NEW** `pickGround(cx, cy)` → `{fx, fy}` unclamped (use for wall drags: corners are `Math.round(fx/fy)`).
-- `pickEdge(cx, cy)` → `{key, kind, x, y}`: nearest edge to the ground point within 0.35 tile; if none and
-  the cursor is on a standing wall, that wall's edge.
+- `pickEdge(cx, cy, opts?)` → `{key, kind, x, y, side, wall, how}`: see "QA round 2" above (full-height
+  wall volumes first, then walls near the ground point, then any grid edge within 0.35 tile).
 - `project(wx, wy, wz)` → `{x, y, visible, clientX, clientY}`; `x, y` are CSS px relative to the canvas
   (= container) top-left, `clientX/clientY` are viewport coordinates (for `position:fixed` overlays).
 - `simScreenPos(id)` → same shape, a point above the head (above the mood orb), meant as the bottom-centre
@@ -91,6 +204,23 @@ character parts share one vertex-colored material; object models share cached ge
 casts shadows; lamps use a pool of 8 point lights (intensity 0 when unused, so no shader recompiles).
 
 ## Tests
+- Round 2 (render key `fix_render_*`):
+  - `node tools/fix_render_models_test.mjs` (pure Node, 49 checks) covers the new model and animate
+    features: flag/splash/puddle kinds, counter variants, relax/recliner poses, hug/kiss spacing,
+    prep/handset props and idle fidgets.
+  - `node tools/integrate_check.mjs --clear --nohelp --script tools/fix_render_test.mjs` (also with
+    `--w 390 --h 844 --touch`) runs 18 functional checks. They cover:
+    - decor in every rotation, the plaque, BB-5, the override, hideObject;
+    - BB-1 heights, the pickEdge side, BB-2 occlusion and objectsOnly;
+    - LIVE-1 meal on a counter, the LIVE-7 snap, per-side colours, BB-8, CR-9, the VIS-8 carpool,
+      markers;
+    - VIS-1: lawn pixels next to lit lamps at night.
+  - Screenshot tools write to `../shots/fix_render/`:
+    - `fix_render_shots.mjs` (`TAG=before|after`): default view day and night, wide, rotated, Buy ghost.
+    - `fix_render_states.mjs`: dirty and broken states, puddle, cut door, handset, per-side wallpaper,
+      night street.
+    - `fix_render_chars.mjs`: hair and idle fidgets.
+    - `fix_render_close.mjs`: ad-hoc close-ups through `CLOSE='[...]'`.
 - `node tools/models_test.mjs` — pure Node (311 checks): every catalog model + variants builds without
   falling back, fits its footprint, surface/light/wall metadata, every character style × every anim × many
   contexts gives finite transforms, seat/bed pose geometry, props, orb.
@@ -102,3 +232,9 @@ casts shadows; lamps use a pool of 8 point lights (intensity 0 when unused, so n
   resize) must not throw.
 - Contact sheets (one viewport per model / animation): `node tools/models_sheet_shots.mjs objects|anims|variants`
   (page `tools/models_sheet.html?set=…&page=N`). In-engine gallery: `tools/render_gallery.html`.
+
+## Integration pass (after the fix round)
+- `focus(x, y, snap)` now counts as camera input for auto-frame (`userCamT`): after an explicit focus (toast "Ver",
+  the empty-lot framing, tests) auto-frame no longer pulls the view straight back to the selected character when
+  that character sits outside the clear area; it re-arms once the character is inside it again.
+- `pick` option `includeSims` was renamed `includeCharacters` (identifier hygiene; nothing called it).

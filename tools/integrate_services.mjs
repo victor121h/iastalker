@@ -106,7 +106,11 @@ export default async function (page, ctx) {
   if (job.npId) {
     const items = await clickObj('newspaper');
     await shot('5-newspaper-pie');
-    const picked = await choose('Aceitar|aceitar|vaga|R\\$|M\\$');
+    const picked = await choose('Aceitar|aceitar|vaga|Vaga|R\\$|M\\$');
+    // UI fix round (LIVE-2): the pie item opens an offer card; accept it there
+    await page.waitForTimeout(300);
+    await ev(() => { const b = Array.from(document.querySelectorAll('.modal .modal-foot .btn')).find((x) => /Aceitar|Trocar/.test(x.textContent)); if (b) b.click(); });
+    await page.waitForTimeout(200);
     jobRes = await ev((rid) => { const M = window.__morada.M, E = M.engine; const s = E.simById(rid); for (let i = 0; i < 200 && !s.career; i++) E.update(0.5); return { career: s.career, info: E.careerInfo(rid) && E.careerInfo(rid).title }; }, job.rita);
     jobRes.items = items; jobRes.picked = picked;
   }

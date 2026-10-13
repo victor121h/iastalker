@@ -98,13 +98,26 @@ export default async function (page, { W, H }) {
   // start placing a sofa and move the ghost
   await phase('buy-place');
   await ev(() => { const c = document.querySelector('#drawer .card[data-type="sofa_cheap"]') || document.querySelector('#drawer .card'); c.click(); });
-  if (isTouch) await tap(W * 0.5, H * 0.25); else await page.mouse.move(W * 0.32, H * 0.3, { steps: 4 });
+  // the camera re-frames beside the drawer when Buy opens (UI fix VIS-10): aim at a free tile that is visible
+  const spot = await ev(() => {
+    const M = window.M;
+    for (let y = 2; y < 19; y++) for (let x = 1; x < 22; x++) {
+      if (!M.world.canPlace('sofa_cheap', x, y, 0).ok) continue;
+      const p = M.render.project(x + 0.5, 0, y + 0.5);
+      const el = document.elementFromPoint(p.clientX, p.clientY);
+      if (!el || el.tagName !== 'CANVAS' || p.clientY < 70) continue;
+      const t = M.render.pickTile(p.clientX, p.clientY);
+      if (t && t.x === x && t.y === y) return { x: p.clientX, y: p.clientY };
+    }
+    return { x: W * 0.32, y: H * 0.3 };
+  });
+  if (isTouch) await tap(spot.x, spot.y); else await page.mouse.move(spot.x, spot.y, { steps: 4 });
   await page.waitForTimeout(400);
   out.checks.placing = await ev(() => window.M.ui.debug.ui.buy.placing);
   out.shots.push(await shot('6-buy-placing'));
   const money0 = await ev(() => window.M.engine.state.money);
   if (isTouch) await ev(() => { const b = Array.from(document.querySelectorAll('#toolbar .btn.primary'))[0]; if (b && !b.disabled) b.click(); });
-  else await page.mouse.click(W * 0.32, H * 0.3);
+  else await page.mouse.click(spot.x, spot.y);
   await page.waitForTimeout(300);
   out.checks.bought = money0 - (await ev(() => window.M.engine.state.money));
   // select an existing object and arm the sell confirm
@@ -127,7 +140,18 @@ export default async function (page, { W, H }) {
   // ---------- build mode: wall drag preview + floor swatches
   await ev(() => window.M.ui.setMode('build'));
   await page.waitForTimeout(300);
-  const a = await ev(() => window.M.render.project(3, 0, 3)), b = await ev(() => window.M.render.project(7, 0, 3));
+  // wall corners in the yard that are visible beside the drawer (the camera re-frames when Build opens)
+  const ab = await ev(() => {
+    const M = window.M;
+    const ok = (p) => { const el = document.elementFromPoint(p.clientX, p.clientY); return el && el.tagName === 'CANVAS' && p.clientY > 70; };
+    for (const [x1, y1, x2] of [[3, 3, 7], [3, 15, 7], [16, 15, 20], [2, 9, 6], [16, 3, 20]]) {
+      const a = M.render.project(x1, 0, y1), b = M.render.project(x2, 0, y1);
+      if (ok(a) && ok(b)) return { a: { x: a.clientX, y: a.clientY }, b: { x: b.clientX, y: b.clientY } };
+    }
+    const a = M.render.project(3, 0, 3), b = M.render.project(7, 0, 3);
+    return { a: { x: a.clientX, y: a.clientY }, b: { x: b.clientX, y: b.clientY } };
+  });
+  const a = ab.a, b = ab.b;
   if (isTouch) {
     // touch drag with a single finger (tool drag)
     await ev(({ a, b }) => {

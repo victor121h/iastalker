@@ -49,7 +49,7 @@ function hasNote(notes, re) { return notes.some((n) => re.test(n.text)); }
   run(E, 60 + 60);
   check(!tv.broken, 'técnico repaired the TV');
   run(E, 60);
-  check(S.money < m0 && hasNote(notes, /técnico cobrou/), 'técnico charged (' + (m0 - S.money) + ')');
+  check(S.money < m0 && hasNote(notes, /t[ée]cnic[oa] \S+ cobrou/), 'técnico charged (' + (m0 - S.money) + ')');   // gendered text since the QA fix round
   check(!S.sims.some((s) => s.role === 'repair'), 'técnico left the lot');
   // maid
   const toilet = find(S, 'toilet');

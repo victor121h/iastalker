@@ -128,6 +128,41 @@
     g.computeVertexNormals();
     return g;
   }
+  // rounded frustum: superellipse cross-section (rounded rectangle) from bw×bd at y0 to tw×td at y0+h,
+  // with a slightly bulged middle ring; closed with flat caps. Used for torsos / pelvis.
+  function roundFrustumGeo(bw, bd, tw, td, h, y0, seg, bulge) {
+    seg = seg || 16; bulge = bulge == null ? 0.03 : bulge;
+    const rings = [[bw, bd, y0], [(bw + tw) / 2 * (1 + bulge), (bd + td) / 2 * (1 + bulge * 1.5), y0 + h * 0.5], [tw, td, y0 + h]];
+    const ring = function (w, d, y) {
+      const pts = [];
+      for (let i = 0; i < seg; i++) {
+        const a = (i / seg) * PI * 2;
+        const c = Math.cos(a), s = Math.sin(a);
+        const e = 0.42;   // superellipse exponent (< 1 = squarer)
+        pts.push([Math.sign(c) * Math.pow(Math.abs(c), e) * w / 2, y, Math.sign(s) * Math.pow(Math.abs(s), e) * d / 2]);
+      }
+      return pts;
+    };
+    const R = rings.map(function (r) { return ring(r[0], r[1], r[2]); });
+    const pos = [];
+    for (let k = 0; k < R.length - 1; k++) {
+      const A = R[k], B = R[k + 1];
+      for (let i = 0; i < seg; i++) {
+        const j = (i + 1) % seg;
+        pos.push(...A[i], ...B[j], ...A[j], ...A[i], ...B[i], ...B[j]);
+      }
+    }
+    const top = R[R.length - 1], bot = R[0];
+    for (let i = 0; i < seg; i++) {
+      const j = (i + 1) % seg;
+      pos.push(0, y0 + h, 0, ...top[j], ...top[i]);
+      pos.push(0, y0, 0, ...bot[i], ...bot[j]);
+    }
+    const g = new THREE.BufferGeometry();
+    g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+    g.computeVertexNormals();
+    return g;
+  }
   function prim(key) {
     let g = PRIM[key];
     if (g) return g;
@@ -311,15 +346,19 @@
       screenOn: new THREE.MeshBasicMaterial({ vertexColors: true }),
       lit: new THREE.MeshBasicMaterial({ vertexColors: true }),
       // tinted variants used by the renderer
-      solidDirty: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, flatShading: true,
-        color: col('#c4cf9c') }),
+      solidDirty: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.95, metalness: 0, flatShading: true,
+        color: col('#a9b07a') }),
+      glassDirty: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.6, metalness: 0, transparent: true,
+        opacity: 0.55, depthWrite: false, color: col('#a7a66c') }),
+      puddle: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.06, metalness: 0.25, transparent: true,
+        opacity: 0.88, depthWrite: false, emissive: col('#10263a') }),
       solidBroken: new THREE.MeshStandardMaterial({ vertexColors: true, roughness: 0.9, metalness: 0, flatShading: true,
         color: col('#a7a29c') }),
     };
-    MATS.ghostOk = new THREE.MeshStandardMaterial({ color: col('#59e38a'), emissive: col('#1f8f4a'), transparent: true,
-      opacity: 0.55, depthWrite: false, roughness: 0.6, flatShading: true });
-    MATS.ghostBad = new THREE.MeshStandardMaterial({ color: col('#ff6a5c'), emissive: col('#a3241a'), transparent: true,
-      opacity: 0.55, depthWrite: false, roughness: 0.6, flatShading: true });
+    MATS.ghostOk = new THREE.MeshStandardMaterial({ color: col('#6ff09c'), emissive: col('#2bb862'), transparent: true,
+      opacity: 0.62, depthWrite: false, roughness: 0.6, flatShading: true });
+    MATS.ghostBad = new THREE.MeshStandardMaterial({ color: col('#ff7466'), emissive: col('#c4342a'), transparent: true,
+      opacity: 0.62, depthWrite: false, roughness: 0.6, flatShading: true });
     return MATS;
   }
 
@@ -380,7 +419,7 @@
     b.box(-0.27, 0.12, 0.06, 0.27, 0.66, 0.16, f);           // back cushion
     b.pop();
     b.sph(0.5, 0.56, 0.36, 0.13, C.cream, { sx: 1.3, sy: 0.75, sz: 0.45, w: 8, h: 6, rx: -0.2 }); // small pillow
-    return { support: 'chair', seatH: 0.46, top: 1.0 };
+    return { support: 'chair', seatH: 0.46, top: 1.0, recline: true };
   };
   function sofa(b, f, fd, cush, legC, lux) {
     for (const [x, z] of [[0.1, 0.16], [1.9, 0.16], [0.1, 0.86], [1.9, 0.86]]) {
@@ -495,10 +534,41 @@
     b.box(mid - 0.05, 0.5, 0.965, mid - 0.035, 0.6, 0.98, C.steel);
     b.box(mid + 0.035, 0.5, 0.965, mid + 0.05, 0.6, 0.98, C.steel);
   }
-  MODELS.counter = function (b) {
+  // tiled backsplash against the wall (only when the renderer reports a wall behind the counter)
+  // (own mesh kind 'splash': the renderer hides it while the wall behind is cut down)
+  function backsplash(b, x0, x1) {
+    b.box(x0, 0.9, 0.052, x1, 1.32, 0.07, '#e9e4d8', 'splash');
+    for (let i = 1; i < 4; i++) b.box(x0, 0.9 + i * 0.105, 0.07, x1, 0.906 + i * 0.105, 0.072, '#cfc6b6', 'splash');
+    for (let x = x0 + 0.2; x < x1 - 0.05; x += 0.2) b.box(x - 0.003, 0.9, 0.07, x + 0.003, 1.32, 0.072, '#cfc6b6', 'splash');
+    b.box(x0, 1.3, 0.052, x1, 1.33, 0.085, '#d8d0c0', 'splash');
+  }
+  MODELS.counter = function (b, o) {
     cabinet(b, 0, 1);
-    // tiny detail: a cutting board corner
-    b.box(0.62, 0.9, 0.15, 0.9, 0.915, 0.36, C.oak);
+    if (o.backsplash) backsplash(b, 0, 1);
+    // varied props per counter (o.variant = object id): none, cutting board + veg, jars, fruit bowl, utensil crock + kettle
+    const v = ((o.variant | 0) % 5 + 5) % 5;
+    if (v === 1) {
+      b.box(0.5, 0.9, 0.2, 0.86, 0.918, 0.46, C.oak);
+      b.sph(0.6, 0.94, 0.3, 0.035, C.red, { w: 7, h: 5 });
+      b.sph(0.72, 0.935, 0.36, 0.03, C.orange, { w: 7, h: 5, sx: 1.6 });
+      b.box(0.55, 0.918, 0.4, 0.75, 0.924, 0.42, C.steel);
+    } else if (v === 2) {
+      const jc = [C.terracotta, C.cream, C.sage];
+      for (let i = 0; i < 3; i++) {
+        b.cyl(0.2 + i * 0.13, 0.9, 0.18, 0.05, 0.12 + i * 0.03, jc[i], { seg: 10 });
+        b.cyl(0.2 + i * 0.13, 1.02 + i * 0.03, 0.18, 0.052, 0.02, C.walnut, { seg: 10 });
+      }
+    } else if (v === 3) {
+      b.cyl(0.62, 0.9, 0.4, 0.13, 0.06, '#e8e2d4', { seg: 14, top: 1.3 });
+      b.sph(0.58, 0.98, 0.38, 0.045, C.red, { w: 7, h: 5 });
+      b.sph(0.67, 0.98, 0.42, 0.045, C.yellow, { w: 7, h: 5, sx: 1.3 });
+      b.sph(0.62, 1.0, 0.35, 0.04, '#7bb04a', { w: 7, h: 5 });
+    } else if (v === 4) {
+      b.cyl(0.25, 0.9, 0.2, 0.055, 0.14, C.charcoal, { seg: 10 });
+      b.rod(0.24, 1.0, 0.2, 0.2, 1.17, 0.18, 0.008, C.oak); b.rod(0.26, 1.0, 0.2, 0.3, 1.15, 0.22, 0.008, C.steel);
+      b.cyl(0.7, 0.9, 0.3, 0.08, 0.13, '#c9433a', { seg: 12, top: 0.75 });
+      b.box(0.77, 0.97, 0.29, 0.83, 1.0, 0.31, C.charcoal);
+    }
     return { surfaceH: 0.9, top: 0.92 };
   };
   MODELS.table_dining = function (b) {
@@ -583,15 +653,19 @@
     b.box(0.18, 0.62, 0.97, 0.82, 0.645, 0.995, C.steel);
     // knobs
     for (let i = 0; i < 4; i++) b.cylZ(0.2 + i * 0.2, 0.78, 0.955, 0.03, 0.028, C.charcoal, { seg: 8 });
-    // a pot on the back-left burner
-    b.cyl(0.28, 0.925, 0.3, 0.1, 0.12, '#c75b3a', { seg: 12 });
-    b.cyl(0.28, 1.045, 0.3, 0.104, 0.015, '#a84a2e', { seg: 12 });
-    b.sph(0.28, 1.07, 0.3, 0.02, C.charcoal, { w: 6, h: 4 });
-    b.box(0.37, 0.98, 0.29, 0.46, 0.995, 0.31, C.charcoal);
+    // a pot on the front burner on the cook's right hand side (where the stirring hand is), a kettle at the back
+    b.cyl(0.72, 0.925, 0.68, 0.1, 0.12, '#c75b3a', { seg: 12 });
+    b.cyl(0.72, 1.045, 0.68, 0.104, 0.015, '#a84a2e', { seg: 12 });
+    b.sph(0.72, 1.07, 0.68, 0.02, C.charcoal, { w: 6, h: 4 });
+    b.box(0.81, 0.98, 0.67, 0.9, 0.995, 0.69, C.charcoal);
+    b.cyl(0.28, 0.925, 0.3, 0.075, 0.1, C.steel, { seg: 10, top: 0.8 });
+    b.cyl(0.28, 1.025, 0.3, 0.035, 0.03, C.charcoal, { seg: 8 });
+    b.rod(0.34, 0.97, 0.3, 0.41, 1.03, 0.3, 0.012, C.steel);
     return { top: 1.1, smoke: [0.5, 1.0, 0.5] };
   };
-  MODELS.dishwasher = function (b) {
+  MODELS.dishwasher = function (b, o) {
     cabinet(b, 0, 1, { noDoors: true });
+    if (o && o.backsplash) backsplash(b, 0, 1);
     b.box(0.03, 0.1, 0.95, 0.97, 0.84, 0.965, '#c9ced3');           // stainless front
     b.box(0.03, 0.74, 0.965, 0.97, 0.84, 0.968, '#aeb4ba');
     b.box(0.2, 0.67, 0.965, 0.8, 0.69, 0.99, C.chrome);             // handle bar
@@ -1215,11 +1289,13 @@
     b.cylZ(0.5, 1.12, 0.51, 0.42, 0.11, '#3d6fb0', { seg: 12 });
     b.box(0.385, 0.98, 0.72, 0.615, 1.2, 0.735, '#335f98');           // door
     b.box(0.48, 1.08, 0.735, 0.52, 1.1, 0.75, C.chrome);
-    b.box(0.61, 1.05, 0.38, 0.63, 1.32, 0.41, C.red);                 // flag
-    b.box(0.61, 1.24, 0.41, 0.63, 1.32, 0.52, C.red);
+    // flag (own mesh kind so the renderer can raise it while bills are unpaid; built raised)
+    b.box(0.612, 1.03, 0.38, 0.636, 1.36, 0.41, C.red, 'flag');
+    b.box(0.612, 1.25, 0.41, 0.636, 1.36, 0.55, '#e0473a', 'flag');
+    b.cylX(0.62, 1.05, 0.395, 0.03, 0.022, C.charcoal, { seg: 8 });
     // house number plaque
     b.box(0.455, 0.6, 0.54, 0.545, 0.7, 0.545, C.cream);
-    return { top: 1.32 };
+    return { top: 1.36, flagPivot: [0.624, 1.05, 0.395] };
   };
   function plateFood(b, x, z, r, spoiled, kind, burnt) {
     b.cyl(x, 0, z, r, 0.018, '#fbfbf8', { seg: 14, top: 1.12 });
@@ -1307,8 +1383,15 @@
       for (let k = 0; k < 3; k++) { const t = pa[i + 3 + k]; pa[i + 3 + k] = pa[i + 6 + k]; pa[i + 6 + k] = t; }
     }
     ni.computeVertexNormals();
-    b.geo(ni, '#7fbde0', 'water');
-    b.sph(0.38 + r() * 0.2, 0.016, 0.42 + r() * 0.15, 0.06, '#eaf7ff', { w: 6, h: 3, sy: 0.05, kind: 'water' });
+    // bright rim (a slightly larger copy underneath), glossy blue body, a couple of highlights
+    const rim = ni.clone();
+    const rp = rim.attributes.position;
+    for (let i = 0; i < rp.count; i++) { rp.setX(i, 0.5 + (rp.getX(i) - 0.5) * 1.1); rp.setZ(i, 0.5 + (rp.getZ(i) - 0.5) * 1.1); rp.setY(i, 0.011); }
+    b.geo(rim, '#d9f0fb', 'puddle');
+    b.geo(ni, '#3f86c4', 'puddle');
+    // reflection streaks
+    b.sph(0.42 + r() * 0.12, 0.0165, 0.44 + r() * 0.1, 0.09, '#cfe8f8', { w: 8, h: 3, sy: 0.02, sx: 1.5, sz: 0.22, ry: 0.6, kind: 'puddle' });
+    b.sph(0.58, 0.0167, 0.6, 0.045, '#f7fcff', { w: 6, h: 3, sy: 0.02, sx: 1.4, sz: 0.25, ry: 0.6, kind: 'puddle' });
     return { item: true, floor: true, top: 0.02 };
   };
   MODELS.newspaper = function (b) {
@@ -1428,6 +1511,37 @@
     return { top: H + 2.2 };
   };
 
+  // low boundary hedge segment, 1 unit long along +X from the origin, ~0.5 high, 0.36 deep (centred on z=0)
+  MODELS.env_hedge = function (b, o) {
+    const r = srand(1300 + ((o.variant | 0) % 6) * 11);
+    const g1 = '#5b8a4b', g2 = '#4f7d43', g3 = '#679653';
+    b.box(0.0, 0.0, -0.17, 1.0, 0.38, 0.17, g2);
+    for (let i = 0; i < 2; i++) {
+      b.ico(0.25 + i * 0.5 + (r() - 0.5) * 0.05, 0.36 + r() * 0.04, (r() - 0.5) * 0.06, 0.27 + r() * 0.03, i % 2 ? g1 : g3, { detail: 0, sx: 1.0, sy: 0.55, sz: 0.68 });
+    }
+    if (r() < 0.35) b.sph(0.3 + r() * 0.4, 0.5, 0.12, 0.03, r() < 0.5 ? '#f3d6e2' : '#fff6c4', { w: 5, h: 3 });
+    return { top: 0.55 };
+  };
+  MODELS.env_hydrant = function (b) {
+    b.cyl(0, 0, 0, 0.11, 0.06, '#b8352c', { seg: 10 });
+    b.cyl(0, 0.06, 0, 0.08, 0.36, '#d8443a', { seg: 10 });
+    b.sph(0, 0.42, 0, 0.085, '#d8443a', { w: 10, h: 6, hemi: true });
+    b.cylX(0, 0.3, 0, 0.26, 0.035, '#c63b31', { seg: 8 });
+    b.cyl(0, 0.5, 0, 0.025, 0.04, '#b8352c', { seg: 6 });
+    return { top: 0.55 };
+  };
+  MODELS.env_manhole = function (b) {
+    b.cyl(0, 0, 0, 0.42, 0.012, '#3a3b3f', { seg: 18 });
+    b.ring(0, 0.012, 0, 0.36, 0.06, '#4c4d52', { rs: 4, ts: 18, sy: 0.2 });
+    for (let i = -2; i <= 2; i++) b.box(-0.25, 0.012, i * 0.1 - 0.012, 0.25, 0.016, i * 0.1 + 0.012, '#2e2f33');
+    return { top: 0.02 };
+  };
+  MODELS.env_drain = function (b) {
+    b.box(-0.4, 0.0, -0.12, 0.4, 0.035, 0.12, '#2f3034');
+    for (let i = 0; i < 7; i++) b.box(-0.36 + i * 0.12, 0.035, -0.1, -0.33 + i * 0.12, 0.04, 0.1, '#55565b');
+    return { top: 0.04 };
+  };
+
   // fallback: a neutral crate sized to the footprint
   function fallbackModel(b, o) {
     const w = Math.max(1, o.w | 0 || 1), h = Math.max(1, o.h | 0 || 1);
@@ -1452,6 +1566,8 @@
     if (key === 'carpool' && o.car && CAR_STYLES[o.car]) k += 'c' + o.car;
     if (key === 'easel' && o.progress != null) k += 'p' + clamp(o.progress | 0, 0, 3);
     if (o.variant != null && /^(puddle|env_)/.test(key)) k += 'v' + ((o.variant | 0) % 6);
+    if (key === 'counter' && o.variant != null) k += 'v' + (((o.variant | 0) % 5) + 5) % 5;
+    if ((key === 'counter' || key === 'dishwasher') && o.backsplash) k += 'k';
     if (!MODELS[key]) k += 'f' + (o.w | 0) + 'x' + (o.h | 0);
     return k;
   }
@@ -1486,7 +1602,7 @@
     for (const p of e.parts) {
       const mesh = new THREE.Mesh(p.geometry, m[p.kind] || m.solid);
       mesh.userData.kind = p.kind;
-      const opaque = p.kind !== 'glass' && p.kind !== 'water';
+      const opaque = p.kind !== 'glass' && p.kind !== 'water' && p.kind !== 'puddle';
       mesh.castShadow = opaque && !e.meta.floor && !e.meta.item;
       mesh.receiveShadow = true;
       if (!opaque) mesh.renderOrder = 2;
@@ -1543,6 +1659,7 @@
       bread: charMat('#e0b36e'), sponge: charMat('#f2d15a'), wood: charMat('#c9955e'),
       palette: charMat('#d8b98a'), paint1: charMat('#d9473b'), paint2: charMat('#3f7fd0'), paint3: charMat('#f2c43c'),
       remote: charMat('#2b2c31', 0.5),
+      handset: charMat('#cc4b3f', 0.5), cord: charMat('#2a2b30', 0.7),
       water: new THREE.MeshStandardMaterial({ color: col('#bfe6ff'), transparent: true, opacity: 0.55, roughness: 0.1, depthWrite: false }),
       sheet: charMat('#ffffff', 0.85),
       plateBlack: charMat('#26272b', 0.5),
@@ -1651,7 +1768,7 @@
 
     // pelvis
     const pw = female ? 0.31 : 0.3;
-    part(new PartBuilder().add(cg('pelvis:' + pw, function () { return frustumBoxGeo(pw * 0.92, 0.2, pw, 0.21, 0.17, -0.1); }), 0, 0, 0, R_PANTS), hips);
+    part(new PartBuilder().add(cg('pelvisR:' + pw, function () { return roundFrustumGeo(pw * 0.92, 0.2, pw, 0.21, 0.17, -0.1, 16, 0.02); }), 0, 0, 0, R_PANTS), hips);
 
     // legs
     function leg(side) {
@@ -1668,8 +1785,8 @@
     // spine: chest + collar
     const spine = grp(0, 0.06, 0, 'spine'); hips.add(spine);
     const chestGeo = female
-      ? cg('chestF', function () { return frustumBoxGeo(0.27, 0.185, 0.33, 0.2, 0.45, 0, 0.0); })
-      : cg('chestM', function () { return frustumBoxGeo(0.3, 0.2, 0.4, 0.22, 0.45, 0, 0.0); });
+      ? cg('chestFR', function () { return roundFrustumGeo(0.27, 0.185, 0.32, 0.2, 0.45, 0, 18, 0.04); })
+      : cg('chestMR', function () { return roundFrustumGeo(0.3, 0.2, 0.39, 0.22, 0.45, 0, 18, 0.03); });
     const chest = part(new PartBuilder().add(chestGeo, 0, 0, 0, R_SHIRT).add(limbGeo(0.075, 0.09, 0.04, 10), 0, 0.47, 0, R_SHIRT), spine);
 
     // neck + head
@@ -1687,31 +1804,39 @@
       const blushGeo = cg('blush', function () { const g = new THREE.SphereGeometry(0.024, 8, 5); g.scale(1.2, 0.7, 0.3); return g; });
       hb.add(blushGeo, 0.088, HC - 0.035, R * 0.86, R_BLUSH).add(blushGeo, -0.088, HC - 0.035, R * 0.86, R_BLUSH);
     }
-    // hair (in head space, centred on the head centre)
+    // hair (in head space, centred on the head centre). Rounded volumes only (no boxes) so silhouettes
+    // read as hair, not helmets.
     const H0 = HC;
+    const ell = function (r) { return sphGeo(r, 10, 7); };
     if (!female) {
-      hb.add(capGeo(R * 1.05, 1.5, -0.55), 0, H0, 0, R_HAIR);
-      hb.add(boxGeo(0.2, 0.06, 0.07), 0.0, H0 + 0.1, 0.105, R_HAIR, -0.75);
-      hb.add(boxGeo(0.035, 0.07, 0.07), R * 0.99, H0, 0.02, R_HAIR).add(boxGeo(0.035, 0.07, 0.07), -R * 0.99, H0, 0.02, R_HAIR);
-      if (style === 1) hb.add(boxGeo(0.2, 0.07, 0.1), 0, H0 + 0.13, 0.075, R_HAIR, -0.35);
-      else if (style === 2) {
+      hb.add(capGeo(R * 1.05, 1.45, -0.5), 0, H0, 0, R_HAIR);
+      // soft fringe and small sideburns
+      hb.add(ell(0.1), 0.0, H0 + 0.105, 0.095, R_HAIR, -0.5, 0, 0, 1.15, 0.42, 0.55);
+      hb.add(ell(0.035), R * 0.97, H0 - 0.005, 0.02, R_HAIR, 0, 0, 0, 0.5, 1.2, 0.9).add(ell(0.035), -R * 0.97, H0 - 0.005, 0.02, R_HAIR, 0, 0, 0, 0.5, 1.2, 0.9);
+      if (style === 1) {                       // swept-up quiff
+        hb.add(ell(0.11), 0, H0 + 0.135, 0.06, R_HAIR, -0.35, 0, 0, 1.0, 0.55, 0.85);
+      } else if (style === 2) {                // short crop + beard
         hb.add(cg('beard', function () { return new THREE.SphereGeometry(0.12, 10, 6, 0, PI * 2, PI * 0.55, PI * 0.35); }), 0, H0 + 0.005, 0.03, R_HAIR);
-        hb.add(boxGeo(0.16, 0.05, 0.08), 0, H0 + 0.14, 0.05, R_HAIR, -0.2);
-      } else hb.add(boxGeo(0.12, 0.05, 0.12), 0.03, H0 + 0.15, 0.02, R_HAIR, 0, 0, 0.25);
+        hb.add(ell(0.1), 0, H0 + 0.13, 0.02, R_HAIR, -0.15, 0, 0, 1.15, 0.38, 1.0);
+      } else {                                 // tousled: a few rounded tufts
+        hb.add(ell(0.06), 0.05, H0 + 0.15, 0.03, R_HAIR, 0, 0, 0.3, 1.1, 0.6, 1.0);
+        hb.add(ell(0.055), -0.045, H0 + 0.148, 0.05, R_HAIR, 0, 0, -0.3, 1.1, 0.6, 1.0);
+        hb.add(ell(0.05), 0.0, H0 + 0.14, -0.04, R_HAIR, 0, 0, 0, 1.2, 0.55, 1.1);
+      }
     } else {
       hb.add(capGeo(R * 1.08, 1.55, -0.32), 0, H0, 0, R_HAIR);
-      if (style === 0) {          // long straight
-        hb.add(boxGeo(0.31, 0.36, 0.1), 0, H0 - 0.1, -0.1, R_HAIR);
-        hb.add(boxGeo(0.06, 0.28, 0.12), R * 0.96, H0 - 0.06, -0.01, R_HAIR).add(boxGeo(0.06, 0.28, 0.12), -R * 0.96, H0 - 0.06, -0.01, R_HAIR);
+      if (style === 0) {          // long straight: rounded back fall + side locks
+        hb.add(ell(0.17), 0, H0 - 0.13, -0.085, R_HAIR, 0.08, 0, 0, 0.98, 1.25, 0.5);
+        hb.add(ell(0.06), R * 0.93, H0 - 0.08, -0.01, R_HAIR, 0, 0, 0.05, 0.55, 2.3, 1.05).add(ell(0.06), -R * 0.93, H0 - 0.08, -0.01, R_HAIR, 0, 0, -0.05, 0.55, 2.3, 1.05);
       } else if (style === 1) {   // ponytail
         hb.add(sphGeo(0.06, 8, 6), 0, H0 + 0.05, -0.16, R_HAIR);
         hb.add(limbGeo(0.05, 0.02, 0.26, 8), 0, H0 + 0.04, -0.2, R_HAIR, 0.35);
       } else if (style === 2) {   // bun
         hb.add(sphGeo(0.085, 10, 8), 0, H0 + 0.13, -0.09, R_HAIR);
-      } else {                    // bob
-        hb.add(boxGeo(0.33, 0.2, 0.14), 0, H0 - 0.04, -0.07, R_HAIR);
-        hb.add(boxGeo(0.06, 0.18, 0.15), R * 0.95, H0 - 0.04, 0.0, R_HAIR).add(boxGeo(0.06, 0.18, 0.15), -R * 0.95, H0 - 0.04, 0.0, R_HAIR);
-        hb.add(boxGeo(0.24, 0.05, 0.05), 0, H0 + 0.1, 0.12, R_HAIR, -0.5);
+      } else {                    // bob: rounded volume framing the face
+        hb.add(ell(0.17), 0, H0 - 0.035, -0.04, R_HAIR, 0, 0, 0, 1.02, 0.8, 0.95);
+        hb.add(ell(0.06), R * 0.92, H0 - 0.06, 0.03, R_HAIR, 0, 0, 0, 0.6, 1.5, 1.2).add(ell(0.06), -R * 0.92, H0 - 0.06, 0.03, R_HAIR, 0, 0, 0, 0.6, 1.5, 1.2);
+        hb.add(ell(0.11), 0, H0 + 0.1, 0.105, R_HAIR, -0.5, 0, 0, 1.1, 0.35, 0.5);
       }
     }
     const headMesh = part(hb, head);
@@ -1750,6 +1875,26 @@
     // phone in right hand
     const phone = mesh(boxGeo(0.05, 0.16, 0.035), sh.phone, -0.01, -0.04, 0.03);
     prop('phone', armR.hand, phone);
+    // red corded handset of the landline (VIS-13): ear piece up at the ear, mouth piece toward the chin
+    const handset = new THREE.Group();
+    handset.add(mesh(boxGeo(0.038, 0.2, 0.03), sh.handset, 0.0, -0.03, 0.03));
+    handset.add(mesh(boxGeo(0.05, 0.05, 0.05), sh.handset, 0.012, 0.075, 0.045));
+    handset.add(mesh(boxGeo(0.05, 0.05, 0.05), sh.handset, 0.012, -0.135, 0.05));
+    handset.add(mesh(limbGeo(0.006, 0.006, 0.22, 4), sh.cord, 0.0, -0.15, 0.03));
+    prop('handset', armR.hand, handset);
+    // kitchen knife (counter prep) and a cutting board with vegetables in front of the body (pose frame)
+    const knife = new THREE.Group();
+    knife.add(mesh(boxGeo(0.022, 0.09, 0.03), sh.wood, 0, -0.03, 0.02));
+    const blade = mesh(boxGeo(0.006, 0.15, 0.04), sh.steel, 0, -0.15, 0.035); knife.add(blade);
+    knife.rotation.x = 0.35;
+    prop('knife', armR.hand, knife);
+    const board = new THREE.Group();
+    board.add(mesh(boxGeo(0.34, 0.022, 0.24), sh.wood, 0, 0, 0));
+    board.add(mesh(sphGeo(0.035, 7, 5), sh.paint1, -0.08, 0.03, 0.02));
+    board.add(mesh(boxGeo(0.07, 0.02, 0.05), sh.greens, 0.06, 0.02, -0.03));
+    board.add(mesh(boxGeo(0.05, 0.016, 0.04), sh.greens, 0.1, 0.018, 0.04));
+    board.position.set(0.03, 0.912, 0.5);
+    prop('board', pose, board);
     // spoon (cook)
     const spoon = new THREE.Group();
     spoon.add(mesh(limbGeo(0.008, 0.008, 0.26, 5), sh.wood, 0, 0.02, 0.0));
@@ -1898,6 +2043,31 @@
     P.br = 1 + 0.012 * Math.sin(t * 2.0 + r * 3);
     P.lsz = 0.08 + 0.01 * Math.sin(t * 2 + r); P.rsz = -0.08 - 0.01 * Math.sin(t * 2 + r);
   }
+  // occasional idle fidgets for standing characters: shift weight, check the watch, scratch the head,
+  // hands on hips, look around. One every ~6–10 s, ~2.6 s long, eased in and out.
+  function fidget(P, t, r) {
+    const cyc = 6 + r * 4;
+    const tt = t + r * 31;
+    const ph = tt % cyc;
+    const dur = 2.6;
+    if (ph >= dur) return;
+    const x = ph / dur;
+    const k = Math.sin(Math.PI * x) ** 2;
+    const which = (Math.floor(tt / cyc) + Math.floor(r * 7)) % 5;
+    if (which === 0) {          // weight shift onto one leg
+      P.px += 0.035 * k; P.hrz += 0.07 * k; P.srz -= 0.05 * k;
+      P.lkx += 0.28 * k; P.llx -= 0.1 * k; P.lfx -= 0.1 * k;
+    } else if (which === 1) {   // glance at the watch
+      P.lsx += -1.15 * k; P.lex += -1.45 * k; P.lsz += -0.35 * k; P.nrx += 0.4 * k; P.nry += 0.15 * k;
+    } else if (which === 2) {   // scratch the head
+      const sc = 0.12 * Math.sin(tt * 14) * k;
+      P.rsx += -2.3 * k; P.rsz += -0.55 * k; P.rex += -1.9 * k + sc; P.nrz += -0.12 * k;
+    } else if (which === 3) {   // hands on hips
+      P.lsz += 0.5 * k; P.rsz += -0.5 * k; P.lsx += 0.25 * k; P.rsx += 0.25 * k; P.lex += -1.45 * k; P.rex += -1.45 * k;
+    } else {                    // look around, small heel bounce
+      P.nry += 0.55 * Math.sin(x * Math.PI * 2) * k; P.hy += 0.012 * Math.abs(Math.sin(tt * 6)) * k;
+    }
+  }
   function lookAround(P, t, r, amt) {
     const s = Math.sin(t * 0.37 + r * 12) * Math.sin(t * 0.13 + r * 4);
     P.nry += (amt == null ? 0.35 : amt) * s;
@@ -1907,7 +2077,7 @@
   const ANIM = {
     idle: function (P, t, c) {
       if (c.seated) { sitLegs(P, c.seatH); handsOnLap(P); P.br = 1 + 0.012 * Math.sin(t * 2); }
-      else standIdle(P, t, c.r);
+      else { standIdle(P, t, c.r); fidget(P, t, c.r); }
       lookAround(P, t, c.r);
     },
     walk: function (P, t, c) {
@@ -1932,7 +2102,20 @@
       const breath = Math.sin(t * 1.6 + c.r * 3);
       P.eye = 0.1; P.br = 1 + 0.035 * breath; P.mw = 0.7;
       const sup = c.support;
-      if (sup === 'bed' || sup === 'bench') {
+      if ((sup === 'bed' || sup === 'bench') && c.awake) {
+        // "Deitar e relaxar": on top of the covers, eyes open, hands behind the head, one knee up (VIS-12)
+        P.eye = 1; P.mw = 1.1; P.br = 1 + 0.015 * breath;
+        P.hy = c.seatH + 0.12 + 0.003 * breath;
+        P.pz = c.off ? clamp(c.off.z, -0.6, 0.6) : 0;
+        P.hrx = -HP;
+        P.srx = 0.0; P.nrx = 0.45; P.nry = 0.3 * Math.sin(t * 0.21 + c.r * 5);
+        P.lsx = -2.75; P.lsz = 0.55; P.lex = -2.05;
+        P.rsx = -2.75; P.rsz = -0.55; P.rex = -2.05;
+        P.llx = -0.62; P.lkx = 1.15; P.rlx = 0.02; P.rkx = 0.1; P.llz = 0.05; P.rlz = -0.04;
+        P.lfx = 0.4; P.rfx = 1.45;
+        c.blanket = false;
+        c.awakeLie = true;
+      } else if (sup === 'bed' || sup === 'bench') {
         P.hy = c.seatH + 0.1 + 0.004 * breath;
         P.pz = c.off ? clamp(c.off.z, -0.6, 0.6) : 0;
         P.hrx = -HP;
@@ -1942,6 +2125,15 @@
         P.llx = -0.04; P.rlx = 0.02; P.lkx = 0.1; P.rkx = 0.14; P.llz = 0.03; P.rlz = -0.02;
         P.lfx = 1.5; P.rfx = 1.5;
         c.blanket = sup === 'bed';
+      } else if (sup === 'chair' && c.recline) {
+        // nap in the recliner: whole body tipped back, legs up on the footrest, head lolled to one side
+        sitLegs(P, c.seatH); handsOnLap(P);
+        P.hy -= 0.02; P.pz = -0.06;
+        P.hrx = -0.5; P.srx = -0.12;
+        P.lkx = 0.45; P.rkx = 0.5; P.lfx = 0.25; P.rfx = 0.25;
+        P.nrx = -0.05; P.nrz = 0.42 + 0.03 * breath; P.nry = 0.15;
+        P.lsx = -0.35; P.lex = -0.9; P.rsx = -0.3; P.rex = -0.85;
+        P.mw = 0.75; P.mh = 1.3;
       } else if (sup === 'sofa') {
         P.hy = c.seatH + 0.1 + 0.004 * breath;
         P.px = c.off ? clamp(c.off.x, -0.6, 0.6) : 0;
@@ -1985,11 +2177,20 @@
       standIdle(P, t, c.r);
       P.pz = 0.18;
       P.srx = 0.14; P.nrx = 0.35;
-      P.lsx = -0.75; P.lex = -0.55; P.lsz = 0.12;
-      P.rsx = -0.95 + 0.14 * Math.sin(t * 3.2); P.rsz = -0.12 + 0.16 * Math.cos(t * 3.2); P.rex = -0.85;
-      P.rwx = 0.2;
+      if (c.prep) {
+        // chopping on a board at the counter (VIS-13): left hand steadies the food, right hand chops
+        const chop = Math.max(0, Math.sin(t * 9));
+        P.srx = 0.2; P.nrx = 0.5;
+        P.lsx = -0.62; P.lex = -0.95; P.lsz = -0.22;
+        P.rsx = -0.55 - 0.12 * chop; P.rex = -1.0 - 0.3 * chop; P.rsz = 0.12; P.rwx = -0.2 + 0.25 * chop;
+        c.props.knife = 1; c.props.board = 1;
+      } else {
+        P.lsx = -0.75; P.lex = -0.55; P.lsz = 0.12;
+        P.rsx = -0.95 + 0.14 * Math.sin(t * 3.2); P.rsz = -0.12 + 0.16 * Math.cos(t * 3.2); P.rex = -0.85;
+        P.rwx = 0.2;
+        c.props.spoon = 1;
+      }
       P.hrz = 0.03 * Math.sin(t * 1.6);
-      c.props.spoon = 1;
     },
     shower: function (P, t, c) {
       P.py = c.support === 'shower' ? c.seatH : 0;
@@ -2146,7 +2347,7 @@
       const g = Math.max(0, Math.sin(t * 1.3 + c.r * 4));
       P.lsx = -0.3 - 0.5 * g; P.lex = -0.5 - 0.8 * g; P.lsz = 0.1 + 0.2 * g;
       P.mh = 1 + 1.0 * Math.max(0, Math.sin(t * 10)) * (Math.sin(t * 0.7) > 0 ? 1 : 0);
-      c.props.phone = 1;
+      if (c.prop === 'handset') c.props.handset = 1; else c.props.phone = 1;
     },
     piano: function (P, t, c) {
       sitLegs(P, 0.5);
@@ -2187,14 +2388,16 @@
     },
     hug: function (P, t, c) {
       standIdle(P, t, c.r);
-      P.pz = 0.3; P.srx = 0.12;
+      // step toward the partner so the torsos meet without passing through each other (VIS-7)
+      P.pz = clamp(((c.partnerDist == null ? 1 : c.partnerDist) - 0.46) / 2, 0, 0.45); P.srx = 0.12;
       P.lsx = P.rsx = -1.35; P.lsz = -0.35; P.rsz = 0.35; P.lex = P.rex = -1.15;
       P.hrz = 0.05 * Math.sin(t * 2); P.nrz = 0.3; P.nry = 0.2;
       P.eye = 0.2; P.mw = 1.2;
     },
     kiss: function (P, t, c) {
       standIdle(P, t, c.r);
-      P.pz = 0.33; P.srx = 0.16; P.nrx = 0.12; P.nrz = 0.28;
+      // head centres end ~0.29 apart: the lean already brings the head ~0.12 forward
+      P.pz = clamp(((c.partnerDist == null ? 1 : c.partnerDist) - 0.29) / 2 - 0.12, 0, 0.45); P.srx = 0.16; P.nrx = 0.12; P.nrz = 0.28;
       P.lsx = P.rsx = -0.95; P.lsz = -0.25; P.rsz = 0.25; P.lex = P.rex = -1.0;
       P.eye = 0.12; P.mw = 0.6; P.mh = 1.2;
       P.hy += 0.012 * Math.sin(t * 1.5);
@@ -2285,15 +2488,17 @@
       seatH: ctx.seatH != null && isFinite(+ctx.seatH) ? clamp(+ctx.seatH, 0, 1.5) : 0.45,
       off: ctx.off ? { x: fin(ctx.off.x, 0), z: fin(ctx.off.z, 0) } : null,
       phase: ctx.phase != null && isFinite(+ctx.phase) ? +ctx.phase : undefined, r: rig.seed, props: {}, blanket: false,
+      awake: ctx.awake === true, recline: !!ctx.recline, prep: !!ctx.prep, prop: typeof ctx.prop === 'string' ? ctx.prop : null,
+      partnerDist: ctx.partnerDist != null && isFinite(+ctx.partnerDist) ? clamp(+ctx.partnerDist, 0, 3) : null,
     };
     if (name === 'sit' && c.support == null && ctx.seatH == null) c.seatH = 0.45;
     const P = rig._pose || (rig._pose = newPose());
     restPose(P);
     ANIM[name](P, t, c);
-    if (name !== 'sleep' && name !== 'bath' && name !== 'toilet' && name !== 'shower') blink(P, t, rig.seed);
+    if ((name !== 'sleep' || c.awakeLie) && name !== 'bath' && name !== 'toilet' && name !== 'shower') blink(P, t, rig.seed);
 
     // transition blending when the pose family changes
-    const sig = name + (seated ? ':s' : '') + ':' + (c.support || '');
+    const sig = name + (seated ? ':s' : '') + ':' + (c.support || '') + (c.awakeLie ? ':a' : '') + (c.prep ? ':p' : '');
     let dt = rig._lastT == null ? 0 : clamp(t - rig._lastT, 0, 0.1);
     if (rig._lastT != null && t < rig._lastT) dt = 0.016;
     rig._lastT = t;

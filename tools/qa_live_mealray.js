@@ -1,0 +1,31 @@
+const M = window.__morada.M, st = M.engine.state;
+const hb = document.getElementById('help-ok'); if (hb) hb.click();
+M.main.setSpeed(0);
+const c = st.objects.find((o) => o.type === 'counter' && o.x === 16 && o.y === 11);
+const abs = st.time.day * 1440 + st.time.minute;
+const meal = { id: M.util.nextId(st), type: 'meal', x: c.x, y: c.y, rot: 0, dirty: 0, broken: false, boughtDay: 1, price: 0, uses: 0, servings: 3, quality: 60, food: 'home', spoilAt: abs + 480 };
+st.objects.push(meal); M.util.bus.emit('objects');
+M.main.setSpeed(1);
+await new Promise(r => setTimeout(r, 800));
+M.main.setSpeed(0);
+M.render.setCamera({ dist: 12 }); M.render.focus(16.5, 11.5, true);
+await new Promise(r => setTimeout(r, 800));
+const res = {};
+const g = M.render.scene.getObjectByProperty ? null : null;
+// find the meal group in the scene
+let mealGroup = null, counterGroup = null;
+M.render.scene.traverse((o) => { if (o.userData && o.userData.objId === meal.id && !o.isMesh && !mealGroup) mealGroup = o; if (o.userData && o.userData.objId === c.id && !o.isMesh && !counterGroup) counterGroup = o; });
+res.mealGroupPos = mealGroup && [mealGroup.position.x, mealGroup.position.y, mealGroup.position.z, mealGroup.visible];
+res.mealMeshes = [];
+mealGroup && mealGroup.traverse((m) => { if (m.isMesh) { m.geometry.computeBoundingBox(); const bb = m.geometry.boundingBox.clone().applyMatrix4(m.matrixWorld); res.mealMeshes.push({ kind: m.userData.kind, vis: m.visible, min: [bb.min.x, bb.min.y, bb.min.z].map(v => +v.toFixed(2)), max: [bb.max.x, bb.max.y, bb.max.z].map(v => +v.toFixed(2)), matAuto: m.matrixAutoUpdate }); } });
+// raycast at the meal mesh centre
+const ray = new THREE.Raycaster();
+const cam = M.render.camera;
+const centre = new THREE.Vector3(16.5, 0.95, 11.5);
+const ndc = centre.clone().project(cam);
+ray.setFromCamera({ x: ndc.x, y: ndc.y }, cam);
+const hits = ray.intersectObjects(M.render.scene.children, true).slice(0, 8);
+res.hits = hits.map((h) => ({ objId: h.object.userData.objId, type: h.object.userData.objId != null ? (M.engine.objectById(h.object.userData.objId) || {}).type : h.object.type + ':' + (h.object.name || ''), d: +h.distance.toFixed(3), y: +h.point.y.toFixed(3) }));
+const p = M.render.project(16.5, 0.95, 11.5);
+res.pick = M.render.pick(p.clientX, p.clientY);
+return res;

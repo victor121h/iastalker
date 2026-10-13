@@ -25,7 +25,9 @@
 
   // Passive decay, motive points per SIM-HOUR (RESEARCH "Per-tick motive deltas").
   const DECAY = {
-    hunger: { proportional: 0.063 },                 // −0.063 × (100 + hunger) per hour, awake and asleep
+    // −0.063 × (100 + hunger) per hour, awake and asleep, plus a small constant term so that a starving
+    // character really reaches the −100 emergency (QA SIM-9: the purely proportional decay is asymptotic)
+    hunger: { proportional: 0.063, constant: 0.4 },
     energy: { awake: 11.25, asleep: 0, asleepAfterWake: 0.3 },
     bladder: { awake: 9, asleep: 4.5, hungerCoupling: 0.3 },   // + 0.3 × this tick's hunger decrement
     hygiene: { awake: 5.1, asleep: 2.4 },
@@ -172,6 +174,22 @@
       -60, -25, 100, 100],
     napGate: [-100, -100, -100, -100, -100, -100, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -30, -45, -55,
       -100, -100, -100, -100],
+    // "Dormir no sofá" (QA SIM-4): only advertised when no bed slot is free for the character; by hour the energy
+    // must be at or below this. At night it behaves like a bed (low gate), by day like a long nap.
+    sofaSleepGate: [100, 100, 100, 100, 100, 100, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -50, -55, -50,
+      -40, -10, 100, 100],
+    sofaSleepAd: 0.8,          // × the bed-like energy ad
+    // (the critical override — energy ≤ overrideEnergy — ignores these gates: any sleep/nap/sofa spot advertises)
+    // purposeful downtime: when mood is good and no need is low, skill objects advertise a 'mood' gain scaled by
+    // personality fit and career requirements (QA improvement "purposeful downtime")
+    purposeMood: 20, purposeMinMotive: -25, purposeBase: 3, purposeDelta: 12, purposeCareer: 8,
+    purposeAutoMax: 90,        // autonomous skill sessions end after this many minutes (player ones keep maxDuration)
+    purposeDayMinutes: 150,    // the purpose ad fades out as a character's autonomous practice today approaches this
+    // per-pair social fatigue (QA SIM-1): every social with the same partner adds fatigue that halves every
+    // `fatigueHalfLife` sim-minutes; autonomous social ads are divided by (1 + fatigueK × fatigue). The same social
+    // with the same partner within `repeatDayWindow` minutes divides by (1 + repeatDayK × count).
+    fatigueHalfLife: 240, fatigueK: 0.4, repeatDayWindow: 1440, repeatDayK: 0.5, repeatAnyK: 0.45, relBoostCap: 1.25,
+    perTick: 2,                // full autonomy evaluations per engine tick (time-slicing, CR-6); overrides always run
   };
 
   // ------------------------------------------------------- economy & rules
@@ -179,7 +197,7 @@
     startFamily: 6500, startEmpty: 20000,
     billEveryDays: 3, billHour: 9, billPercent: 0.015, billBase: 50, billGraceDays: 3, collectorExtra: 0.2,
     hospitalBill: 500,
-    foodPerServing: 15, snackCost: 5, pizzaCost: 40, pizzaServings: 4, pizzaHunger: 40,
+    foodPerServing: 10, snackCost: 5, pizzaCost: 40, pizzaServings: 4, pizzaHunger: 40,
     repairPerHour: 50, maidPerHour: 10,
     floorPrice: 10, wallpaperPrice: 10,
     sellToday: 1.0, sellStart: 0.85, sellPerDay: 0.02, sellMin: 0.6,
@@ -195,12 +213,15 @@
     burnChance: 0.15,          // × (1 − cooking/10); burnt meals give 50 %
   };
   const CRITICAL = {
-    faintEnergy: -100, faintWake: 20, faintComfortRate: -20,
+    // faint: energy −100 → sleeps on the floor until about −40 (QA: 11 h on the floor wiped whole days)
+    faintEnergy: -100, faintWake: -40, faintComfortRate: -20, faintWorkWake: -95, faintRenotify: 120,
     accidentBladder: -100, accidentHygiene: 40, accidentFun: 15,
-    hospitalHunger: -100, hospitalMinutes: 120,
-    refuseMood: -60, skillMood: 0, thoughtBelow: -30,
+    hospitalHunger: -99.5, hospitalMinutes: 120,
+    refuseMood: -60, skillMood: 0, thoughtBelow: -30, needLow: -50,
     overrideHunger: -85, overrideBladder: -85, overrideEnergy: -90,
-    wakeBladder: -80, wakeHunger: -80,
+    // wake thresholds aligned with the overrides (QA SIM-12: a −80 wake with a −85 override made sleep ping-pong)
+    wakeBladder: -85, wakeHunger: -85,
+    workFloor: -80,            // the return-from-work drain never pushes a motive below this (QA SIM-3/SIM-12)
   };
   const SLEEP = { wakeHour: 6, wakeEnergy: 80, nightStart: 21, nightEnd: 6, playerRefuse: 90 };
   const WALK = { tilesPerMinute: 1.5, runFactor: 3, runAbove: 10 };
@@ -250,6 +271,16 @@
       rates: { comfort: sitRate(c) }, caps: { comfort: sitCap(c) },
       ads: { comfort: { min: 10 + 3 * c, delta: 0 } },
       duration: null, minDuration: 10, maxDuration: 90, until: ['comfort'], visitors: true, atten: 'medium',
+    });
+  }
+  function sofaSleepInter(c, e) {
+    // night fallback when no bed slot is free (QA SIM-4); the engine gates it on bed availability
+    return I({
+      key: 'sleep_sofa', label: 'Dormir no sofá', icon: '🛋️', anim: 'sleep', effect: 'sleep_sofa', seated: true,
+      rates: { energy: Math.round(sleepRate(e) * 0.75), comfort: Math.round(sitRate(c) * 0.4) },
+      caps: { energy: 100, comfort: sitCap(c) },
+      ads: { energy: { min: 60 + 2 * e, delta: 0 } },
+      duration: null, minDuration: 60, until: ['energy'], atten: 'low',
     });
   }
   function napInter(c, e) {
@@ -349,19 +380,19 @@
     obj({
       type: 'armchair', name: 'Poltrona reclinável', cat: 'seating', price: 450,
       desc: 'Reclina até quase deitar. Ótima para um cochilo depois do almoço.', seat: true,
-      slots: [onSlot(0, 0, 0)], ratings: { comfort: 6, energy: 3 }, interactions: [sitInter(6), napInter(6, 3)],
+      slots: [onSlot(0, 0, 0)], ratings: { comfort: 6, energy: 3 }, interactions: [sitInter(6), napInter(6, 3), sofaSleepInter(6, 3)],
     }),
     obj({
       type: 'sofa_cheap', name: 'Sofá de tecido', cat: 'seating', price: 300, w: 2, h: 1, capacity: 2,
       desc: 'Dois lugares, almofadas meio cansadas, muito amor.', seat: true,
       slots: [onSlot(0, 0, 0), onSlot(1, 0, 0)], ratings: { comfort: 3, energy: 5 },
-      interactions: [sitInter(3), napInter(3, 5)],
+      interactions: [sitInter(3), napInter(3, 5), sofaSleepInter(3, 5)],
     }),
     obj({
       type: 'sofa_lux', name: 'Sofá de couro', cat: 'seating', price: 1200, w: 2, h: 1, capacity: 2, room: 3,
       desc: 'Couro macio e costura impecável. A sala agradece.', seat: true,
       slots: [onSlot(0, 0, 0), onSlot(1, 0, 0)], ratings: { comfort: 8, energy: 5, room: 3 },
-      interactions: [sitInter(8), napInter(8, 5)],
+      interactions: [sitInter(8), napInter(8, 5), sofaSleepInter(8, 5)],
     }),
     // ---------------------------------------------------------------- beds
     obj({
@@ -522,8 +553,8 @@
         { dx: 1, dy: 2, facing: PI, on: false }],
       capacity: 6, ratings: { fun: 2 },
       interactions: [
-        funInter({ key: 'watch', label: 'Assistir TV', icon: '📺', anim: 'tv', f: 2, vary: 'playful', adMin: 10,
-          adDelta: 20, seatOk: true, maxDuration: 180 }),
+        funInter({ key: 'watch', label: 'Assistir TV', icon: '📺', anim: 'tv', f: 2, vary: 'playful', adMin: 16,
+          adDelta: 24, seatOk: true, maxDuration: 180 }),
         repairInter(),
       ],
     }),
@@ -578,7 +609,8 @@
       interactions: [
         I({ key: 'call_friend', label: 'Ligar para um vizinho', icon: '☎️', anim: 'phone', effect: 'call_friend',
           rates: { social: RATE.phoneSocial }, caps: { social: 100 }, duration: 20,
-          ads: { social: { min: 0, delta: 20, vary: 'outgoing' } }, atten: 'medium' }),
+          // lonely residents actually phone their neighbours (QA SIM-8: social sat at −100 for days)
+          ads: { social: { min: 8, delta: 22, vary: 'outgoing' } }, atten: 'medium' }),
         I({ key: 'invite', label: 'Convidar alguém para visitar', icon: '🏠', anim: 'phone', effect: 'invite',
           duration: 8, auto: false }),
         I({ key: 'order_pizza', label: 'Pedir pizza (M$ 40)', icon: '🍕', anim: 'phone', effect: 'order_pizza',
@@ -648,7 +680,7 @@
       skills: ['charisma'],
       interactions: [
         I({ key: 'speech', label: 'Praticar discurso', icon: '🗣️', anim: 'talk', skill: 'charisma', skillRate: 0.7,
-          rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: false }),
+          rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: true, purpose: true }),
         I({ key: 'look', label: 'Olhar-se no espelho', icon: '🪞', anim: 'idle', effect: 'check_self', duration: 2,
           auto: false }),
       ],
@@ -668,12 +700,13 @@
       desc: 'Livros de culinária, mecânica e romances. Leia sentado no sofá.', ratings: { fun: 1 },
       skills: ['cooking', 'mechanical'],
       interactions: [
-        funInter({ key: 'read', label: 'Ler um livro', icon: '📖', anim: 'read', f: 1, vary: '-playful', adMin: 10,
-          adDelta: 15, seatOk: true, maxDuration: 120 }),
+        funInter({ key: 'read', label: 'Ler um livro', icon: '📖', anim: 'read', f: 1, vary: '-playful', adMin: 15,
+          adDelta: 18, seatOk: true, maxDuration: 120 }),
+        // autonomous when mood is good (purposeful downtime: the engine adds a 'mood' ad by personality/career)
         I({ key: 'study_cooking', label: 'Estudar culinária', icon: '📚', anim: 'read', skill: 'cooking', skillRate: 0.7,
-          rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: false, seatOk: true }),
+          rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: true, purpose: true, seatOk: true }),
         I({ key: 'study_mechanical', label: 'Estudar mecânica', icon: '🔩', anim: 'read', skill: 'mechanical',
-          skillRate: 0.7, rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: false,
+          skillRate: 0.7, rates: { fun: -6 }, duration: null, minDuration: 30, maxDuration: 180, auto: true, purpose: true,
           seatOk: true }),
       ],
     }),
@@ -781,6 +814,7 @@
   // Hours are integer clock hours; end < start means the shift crosses midnight.
   // days = weekdays worked (0 = Segunda … 6 = Domingo). req = requirements to HOLD the level.
   const WEEK = [0, 1, 2, 3, 4];
+  // Pay per shift (economy pass after QA: research pay × 1.6 + 100, so a one-worker family slowly gets richer).
   function lvl(title, pay, start, end, req, friends, car, days) {
     return { title, pay, start, end, days: days || WEEK, car, req: { skills: req || {}, friends: friends || 0 } };
   }
@@ -789,64 +823,64 @@
       name: 'Negócios', icon: '💼', desc: 'Começa no correio interno e termina no topo da empresa.',
       workDelta: { hunger: -5, comfort: -2, hygiene: -4, energy: -5, fun: -5.2, social: 1 },
       levels: [
-        lvl('Auxiliar de escritório', 120, 9, 15, {}, 0, 'hatch'),
-        lvl('Assistente executivo', 180, 9, 16, {}, 0, 'hatch'),
-        lvl('Representante de vendas', 250, 9, 16, { mechanical: 2 }, 0, 'hatch'),
-        lvl('Executivo júnior', 320, 9, 16, { mechanical: 2, charisma: 2 }, 1, 'sedan'),
-        lvl('Executivo', 400, 9, 16, { mechanical: 2, charisma: 2, logic: 2 }, 3, 'sedan'),
-        lvl('Gerente sênior', 520, 9, 16, { mechanical: 2, charisma: 3, logic: 3, creativity: 2 }, 6, 'sedan'),
-        lvl('Vice-presidente', 660, 9, 17, { mechanical: 2, charisma: 4, logic: 4, creativity: 2 }, 8, 'executive'),
-        lvl('Presidente', 800, 9, 17, { mechanical: 2, charisma: 5, logic: 6, creativity: 3 }, 10, 'executive'),
-        lvl('Diretor-geral', 950, 9, 16, { mechanical: 2, charisma: 6, logic: 7, creativity: 4 }, 12, 'executive'),
-        lvl('Magnata', 1200, 10, 15, { mechanical: 2, charisma: 7, logic: 9, creativity: 6 }, 14, 'limo'),
+        lvl('Auxiliar de escritório', 290, 9, 15, {}, 0, 'hatch'),
+        lvl('Assistente executivo', 390, 9, 16, {}, 0, 'hatch'),
+        lvl('Representante de vendas', 500, 9, 16, { mechanical: 2 }, 0, 'hatch'),
+        lvl('Executivo júnior', 610, 9, 16, { mechanical: 2, charisma: 2 }, 1, 'sedan'),
+        lvl('Executivo', 740, 9, 16, { mechanical: 2, charisma: 2, logic: 2 }, 3, 'sedan'),
+        lvl('Gerente sênior', 930, 9, 16, { mechanical: 2, charisma: 3, logic: 3, creativity: 2 }, 6, 'sedan'),
+        lvl('Vice-presidente', 1160, 9, 17, { mechanical: 2, charisma: 4, logic: 4, creativity: 2 }, 8, 'executive'),
+        lvl('Presidente', 1380, 9, 17, { mechanical: 2, charisma: 5, logic: 6, creativity: 3 }, 10, 'executive'),
+        lvl('Diretor-geral', 1620, 9, 16, { mechanical: 2, charisma: 6, logic: 7, creativity: 4 }, 12, 'executive'),
+        lvl('Magnata', 2020, 10, 15, { mechanical: 2, charisma: 7, logic: 9, creativity: 6 }, 14, 'limo'),
       ],
     },
     ciencia: {
       name: 'Ciência', icon: '🔬', desc: 'Do tubo de ensaio ao prêmio internacional. Exige muita lógica.',
       workDelta: { hunger: -5, comfort: -1.6, hygiene: -4, energy: -5, fun: -4, social: 1 },
       levels: [
-        lvl('Voluntário de testes', 155, 9, 15, {}, 0, 'hatch'),
-        lvl('Assistente de laboratório', 230, 23, 5, {}, 0, 'hatch'),
-        lvl('Pesquisador de campo', 320, 9, 15, { logic: 2 }, 0, 'van'),
-        lvl('Professor de ciências', 375, 9, 16, { charisma: 1, logic: 3 }, 1, 'van'),
-        lvl('Líder de projeto', 450, 10, 17, { charisma: 2, logic: 4, creativity: 1 }, 3, 'sedan'),
-        lvl('Inventor', 540, 10, 19, { mechanical: 2, charisma: 2, logic: 5, creativity: 3 }, 4, 'sedan'),
-        lvl('Acadêmico', 640, 10, 15, { mechanical: 4, charisma: 3, logic: 6, creativity: 4 }, 5, 'sedan'),
-        lvl('Pesquisador sigiloso', 740, 10, 15, { cooking: 1, mechanical: 6, charisma: 4, logic: 7, creativity: 5 }, 7, 'executive'),
-        lvl('Teórico renomado', 870, 10, 14, { cooking: 1, mechanical: 7, charisma: 4, logic: 9, creativity: 7 }, 8, 'executive'),
-        lvl('Gênio da ciência', 1000, 10, 14, { cooking: 2, mechanical: 8, charisma: 5, logic: 10, creativity: 10 }, 10, 'limo'),
+        lvl('Voluntário de testes', 350, 9, 15, {}, 0, 'hatch'),
+        lvl('Assistente de laboratório', 470, 23, 5, {}, 0, 'hatch'),
+        lvl('Pesquisador de campo', 610, 9, 15, { logic: 2 }, 0, 'van'),
+        lvl('Professor de ciências', 700, 9, 16, { charisma: 1, logic: 3 }, 1, 'van'),
+        lvl('Líder de projeto', 820, 10, 17, { charisma: 2, logic: 4, creativity: 1 }, 3, 'sedan'),
+        lvl('Inventor', 960, 10, 19, { mechanical: 2, charisma: 2, logic: 5, creativity: 3 }, 4, 'sedan'),
+        lvl('Acadêmico', 1120, 10, 15, { mechanical: 4, charisma: 3, logic: 6, creativity: 4 }, 5, 'sedan'),
+        lvl('Pesquisador sigiloso', 1280, 10, 15, { cooking: 1, mechanical: 6, charisma: 4, logic: 7, creativity: 5 }, 7, 'executive'),
+        lvl('Teórico renomado', 1490, 10, 14, { cooking: 1, mechanical: 7, charisma: 4, logic: 9, creativity: 7 }, 8, 'executive'),
+        lvl('Gênio da ciência', 1700, 10, 14, { cooking: 2, mechanical: 8, charisma: 5, logic: 10, creativity: 10 }, 10, 'limo'),
       ],
     },
     seguranca: {
       name: 'Segurança Pública', icon: '🚓', desc: 'Plantões noturnos no começo, corpo em forma sempre.',
       workDelta: { hunger: -5, comfort: -2, hygiene: -6, energy: -7.5, fun: -4, social: 1 },
       levels: [
-        lvl('Vigia noturno', 240, 0, 6, {}, 0, 'police', [2, 3, 4, 5, 6]),
-        lvl('Cadete', 320, 9, 15, {}, 0, 'police'),
-        lvl('Patrulheiro', 380, 17, 1, { body: 2 }, 0, 'police', [2, 3, 4, 5, 6]),
-        lvl('Sargento de plantão', 440, 9, 15, { body: 2, mechanical: 2 }, 1, 'police'),
-        lvl('Investigador', 490, 10, 16, { mechanical: 3, body: 4 }, 2, 'police'),
-        lvl('Detetive', 540, 9, 15, { mechanical: 3, body: 5, logic: 2, charisma: 1 }, 3, 'sedan'),
-        lvl('Tenente', 590, 9, 15, { mechanical: 4, body: 6, logic: 3, charisma: 2 }, 4, 'sedan'),
-        lvl('Agente tático', 625, 9, 15, { mechanical: 5, body: 7, logic: 5, charisma: 3 }, 6, 'van'),
-        lvl('Delegado-chefe', 650, 9, 17, { mechanical: 6, body: 9, logic: 7, charisma: 4 }, 8, 'executive'),
-        lvl('Herói da cidade', 700, 10, 16, { mechanical: 7, body: 10, logic: 9, charisma: 6, creativity: 3 }, 10, 'limo'),
+        lvl('Vigia noturno', 480, 0, 6, {}, 0, 'police', [2, 3, 4, 5, 6]),
+        lvl('Cadete', 610, 9, 15, {}, 0, 'police'),
+        lvl('Patrulheiro', 710, 17, 1, { body: 2 }, 0, 'police', [2, 3, 4, 5, 6]),
+        lvl('Sargento de plantão', 800, 9, 15, { body: 2, mechanical: 2 }, 1, 'police'),
+        lvl('Investigador', 880, 10, 16, { mechanical: 3, body: 4 }, 2, 'police'),
+        lvl('Detetive', 960, 9, 15, { mechanical: 3, body: 5, logic: 2, charisma: 1 }, 3, 'sedan'),
+        lvl('Tenente', 1040, 9, 15, { mechanical: 4, body: 6, logic: 3, charisma: 2 }, 4, 'sedan'),
+        lvl('Agente tático', 1100, 9, 15, { mechanical: 5, body: 7, logic: 5, charisma: 3 }, 6, 'van'),
+        lvl('Delegado-chefe', 1140, 9, 17, { mechanical: 6, body: 9, logic: 7, charisma: 4 }, 8, 'executive'),
+        lvl('Herói da cidade', 1220, 10, 16, { mechanical: 7, body: 10, logic: 9, charisma: 6, creativity: 3 }, 10, 'limo'),
       ],
     },
     artes: {
       name: 'Artes & Mídia', icon: '🎬', desc: 'Salário baixo no início, fama e fortuna no fim. Muitos amigos!',
       workDelta: { hunger: -5, comfort: -2, hygiene: -4, energy: -5, fun: -3, social: 2 },
       levels: [
-        lvl('Garçom de bufê', 100, 9, 15, {}, 0, 'hatch', [1, 2, 3, 4, 5]),
-        lvl('Figurante', 150, 9, 15, {}, 0, 'hatch', [1, 2, 3, 4, 5]),
-        lvl('Dublê', 200, 9, 15, { charisma: 1 }, 0, 'van', [1, 2, 3, 4, 5]),
-        lvl('Ator de comercial', 275, 9, 15, { charisma: 3, creativity: 2, body: 1 }, 1, 'van', [1, 2, 3, 4, 5]),
-        lvl('Ator de novela', 375, 10, 16, { charisma: 4, creativity: 2, body: 1 }, 3, 'sedan', [1, 2, 3, 4, 5]),
-        lvl('Apresentador de TV', 500, 10, 16, { charisma: 5, creativity: 3, body: 2 }, 5, 'sedan', [1, 2, 3, 4, 5]),
-        lvl('Ator de cinema', 650, 10, 17, { charisma: 6, creativity: 4, body: 2 }, 7, 'executive', [1, 2, 3, 4, 5]),
-        lvl('Diretor de cinema', 900, 10, 17, { charisma: 8, creativity: 5, body: 2 }, 10, 'executive', [1, 2, 3, 4, 5]),
-        lvl('Estrela de cinema', 1100, 10, 17, { charisma: 9, creativity: 5, body: 3 }, 12, 'limo', [1, 2, 3, 4, 5]),
-        lvl('Celebridade internacional', 1400, 10, 17, { charisma: 10, creativity: 6, body: 3 }, 15, 'limo', [1, 2, 3, 4, 5]),
+        lvl('Garçom de bufê', 260, 9, 15, {}, 0, 'hatch', [1, 2, 3, 4, 5]),
+        lvl('Figurante', 340, 9, 15, {}, 0, 'hatch', [1, 2, 3, 4, 5]),
+        lvl('Dublê', 420, 9, 15, { charisma: 1 }, 0, 'van', [1, 2, 3, 4, 5]),
+        lvl('Ator de comercial', 540, 9, 15, { charisma: 3, creativity: 2, body: 1 }, 1, 'van', [1, 2, 3, 4, 5]),
+        lvl('Ator de novela', 700, 10, 16, { charisma: 4, creativity: 2, body: 1 }, 3, 'sedan', [1, 2, 3, 4, 5]),
+        lvl('Apresentador de TV', 900, 10, 16, { charisma: 5, creativity: 3, body: 2 }, 5, 'sedan', [1, 2, 3, 4, 5]),
+        lvl('Ator de cinema', 1140, 10, 17, { charisma: 6, creativity: 4, body: 2 }, 7, 'executive', [1, 2, 3, 4, 5]),
+        lvl('Diretor de cinema', 1540, 10, 17, { charisma: 8, creativity: 5, body: 2 }, 10, 'executive', [1, 2, 3, 4, 5]),
+        lvl('Estrela de cinema', 1860, 10, 17, { charisma: 9, creativity: 5, body: 3 }, 12, 'limo', [1, 2, 3, 4, 5]),
+        lvl('Celebridade internacional', 2340, 10, 17, { charisma: 10, creativity: 6, body: 3 }, 15, 'limo', [1, 2, 3, 4, 5]),
       ],
     },
   };
@@ -854,6 +888,11 @@
     carpoolBefore: 60, autoGoBefore: 25, alarmBefore: 120, alarmMinEnergy: 30,
     missedPerf: -25, fireAfterMisses: 2, promoBase: 0.4, demoteAt: -60, bladderReturn: 20,
     friendDaily: 50,
+    // night shifts (start 20:00–05:59): a pre-shift sleep is allowed from `preNapHours` before the shift and the
+    // alarm for such a sleep rings `napAlarmBefore` minutes before the shift (QA SIM-3)
+    preNapHours: 7, napAlarmBefore: 50, nightShiftFrom: 20, nightShiftTo: 6,
+    promoCooldown: 3,          // shifts after a demotion before a promotion can be rolled again
+    critMotives: ['hunger', 'energy', 'bladder', 'hygiene'],   // 'critical at departure' (QA SIM-8)
   };
 
   // --------------------------------------------------------------- socials
@@ -882,7 +921,7 @@
       key: 'tickle', label: 'Fazer cócegas', icon: '🤭', anim: 'laugh', targetAnim: 'laugh', minDaily: 25,
       maxDaily: 100, minLifetime: -100, acceptBase: 25, gainAccept: { daily: 5, lifetime: 1, social: 8, fun: 12 },
       gainReject: { daily: -6, lifetime: -1, social: -4, fun: 0 }, traits: { playful: 6 },
-      ads: { social: { min: 5, delta: 0 }, fun: { min: 5, delta: 15, vary: 'playful' } }, duration: 5, auto: true,
+      ads: { social: { min: 4, delta: 0 }, fun: { min: 3, delta: 10, vary: 'playful' } }, duration: 5, auto: true,
     },
     backrub: {
       key: 'backrub', label: 'Massagem nas costas', icon: '💆', anim: 'hug', targetAnim: 'stretch', minDaily: 30,
@@ -906,7 +945,8 @@
       key: 'dance', label: 'Dançar junto', icon: '💃', anim: 'dance', minDaily: 20, maxDaily: 100, minLifetime: -100,
       acceptBase: 20, gainAccept: { daily: 5, lifetime: 1, social: 10, fun: 15 },
       gainReject: { daily: -5, lifetime: -1, social: -5, fun: 0 }, traits: { playful: 4, outgoing: 4, active: 3 },
-      ads: { social: { min: 5, delta: 10, vary: 'outgoing' }, fun: { min: 5, delta: 15, vary: 'active' } },
+      // QA SIM-1: dancing/tickling were the default pastime (25–50 a week); toned down, plus fatigue in the engine
+      ads: { social: { min: 3, delta: 8, vary: 'outgoing' }, fun: { min: 3, delta: 10, vary: 'active' } },
       duration: 15, auto: true,
     },
     tease: {
@@ -930,7 +970,7 @@
     greet: {
       key: 'greet', label: 'Cumprimentar', icon: '👋', anim: 'wave', targetAnim: 'wave', minDaily: -100, maxDaily: 100,
       minLifetime: -100, acceptBase: -999, onlyRole: 'walkby', gainAccept: { daily: 3, lifetime: 1, social: 6, fun: 0 },
-      gainReject: { daily: 0, lifetime: 0, social: 0, fun: 0 }, traits: {}, ads: { social: { min: 5, delta: 15, vary: 'outgoing' } },
+      gainReject: { daily: 0, lifetime: 0, social: 0, fun: 0 }, traits: {}, ads: { social: { min: 15, delta: 20, vary: 'outgoing' } },
       duration: 3, auto: true,
     },
   };
@@ -943,6 +983,11 @@
     guestLeaveRel: -20, guestLeaveMotive: -50, maxVisitors: 6,
     walkbyStart: 9, walkbyEnd: 18, walkbyChance: 0.6, walkbyLinger: 25,
     serviceArrive: 60,
+    // QA SIM-15: initiators give up quickly when the partner is busy / does not answer
+    waitBusy: 1.5, waitRespond: 2,
+    guestMeanBelow: -10,       // guests only use mean socials when their opinion is already this bad (they leave below -20)
+    knownAtStartEmpty: 2,      // new empty-lot households already know this many neighbours
+    walkbyLatest: 20,          // a walk-by deferred until someone is home may happen until this hour
   };
 
   // ---------------------------------------------------------------- names
@@ -1039,7 +1084,8 @@
   function sellRefund(o, day) {
     const price = +(o && o.price) || 0;
     if (!price) return 0;
-    const owned = Math.max(0, (day || 1) - (o.boughtDay || day || 1));
+    const bd = o.boughtDay != null && isFinite(+o.boughtDay) ? +o.boughtDay : (day || 1);
+    const owned = Math.max(0, (day || 1) - bd);
     if (owned === 0) return Math.round(price * MONEY.sellToday);
     return Math.round(price * Math.max(MONEY.sellMin, MONEY.sellStart - MONEY.sellPerDay * owned));
   }

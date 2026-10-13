@@ -1,0 +1,20 @@
+// In-page check of the new M.world APIs on the real game (run with: node tools/integrate_check.mjs --clear --nohelp --eval tools/fix_world_page.js)
+const M = window.__morada.M, W = M.world, E = M.engine;
+const out = {};
+out.version = W.version;
+out.plantOutsideDoor = W.placementWarnings('plant_small', 9, 14, 0);
+out.fridgeSlot = W.placementWarnings('plant_small', 15, 9, 0);
+out.wallFridge = W.wallWarnings(['v,16,9']);
+out.bathEdges = W.roomEdges(13, 7).length;
+out.sides = { bathroomSide: W.edgeSideFacing('v,17,7', 16, 7), outside: W.edgeSideFacing('v,17,7', 17, 7), colorA: W.wallColor('v,17,7', 'A'), colorB: W.wallColor('v,17,7', 'B') };
+out.palm = W.roomScoreWith('plant_big', 10, 12, 0);
+const lr = W.rooms().find((r) => r.id === W.roomAt(9, 12));
+out.marble = W.roomScoreWithFloor(lr.tiles, 8);
+out.wood = W.roomScoreWithWallpaper(W.roomEdges(9, 12), 8);
+const t0 = performance.now();
+for (let i = 0; i < 100000; i++) W.isWalkable(i % 24, (i >> 5) % 20);
+out.isWalkableUs = +((performance.now() - t0) / 100000 * 1000).toFixed(3);
+const t1 = performance.now();
+for (let i = 0; i < 20; i++) W.placementWarnings('plant_small', 3 + (i % 15), 16, 0);
+out.placementWarningsMs = +((performance.now() - t1) / 20).toFixed(3);
+return out;

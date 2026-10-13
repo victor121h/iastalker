@@ -513,9 +513,19 @@ section('blocked start/destination, allowObjId, allowTiles, blockTiles');
   check(!Wd.isWalkable(5, 0), 'auto-detects pushed object');
   st.objects.pop();
   check(Wd.isWalkable(5, 0), 'auto-detects removed object');
+  // in-place moves are seen at the next epoch (CR-6): sim time change, next microtask, 512 queries
   const c2 = st.objects[0]; c2.x = 0; c2.y = 9;
-  check(!Wd.isWalkable(0, 9) && Wd.isWalkable(4, 4), 'auto-detects moved object');
+  st.time.minute += 0.5;
+  check(!Wd.isWalkable(0, 9) && Wd.isWalkable(4, 4), 'auto-detects moved object (next sim step)');
   c2.x = 4; c2.y = 4;
+  await Promise.resolve();
+  check(Wd.isWalkable(0, 9) && !Wd.isWalkable(4, 4), 'auto-detects moved object (next microtask)');
+  c2.x = 0; c2.y = 9;
+  for (let i = 0; i < 600; i++) Wd.isWalkable(1, 1);
+  check(!Wd.isWalkable(0, 9) && Wd.isWalkable(4, 4), 'auto-detects moved object (after 512 queries)');
+  c2.x = 4; c2.y = 4;
+  Wd.rebuild();
+  check(!Wd.isWalkable(4, 4) && Wd.isWalkable(0, 9), 'rebuild() sees in-place moves immediately');
   // smoothing
   st.lot.walls = {};
   st.objects = [];
@@ -581,8 +591,9 @@ section('rooms');
   st.lot.walls['h,3,5'] = { t: 2, c: 1 };   // door (bottom of room A)
   st.lot.walls['h,9,6'] = { t: 2, c: 1 };   // door room B
   Wd.rebuild();
-  // floors grass -> outdoor by grass majority
-  check(!Wd.isIndoor(3, 3), 'enclosed grass room is outdoor');
+  // BB-8: a region enclosed by walls away from the lot border is indoor even without a floor
+  check(Wd.isIndoor(3, 3), 'enclosed grass room is indoor (BB-8)');
+  check(Wd.rooms().find(r => r.id === Wd.roomAt(3, 3)).enclosed === true, 'rooms() exposes enclosed');
   for (const t of Wd.tilesInRect(2, 2, 5, 4).concat(Wd.tilesInRect(8, 2, 13, 5))) Wd.setFloor(t.x, t.y, 1);
   check(Wd.isIndoor(3, 3) && Wd.isIndoor(9, 3), 'floored rooms are indoor');
   check(!Wd.isIndoor(0, 0) && !Wd.isIndoor(7, 3), 'outside is outdoor');
@@ -591,14 +602,18 @@ section('rooms');
   const list = Wd.rooms();
   eq(list.length, 3, 'three regions (outside, A, B)');
   eq(list.filter(r => r.indoor).map(r => r.area).sort((a, b) => a - b), [12, 24], 'room areas');
-  // half grass, half floor: grass must be a strict majority to be outdoor
+  // grass inside an enclosed room no longer matters (BB-8)
   Wd.setFloor(2, 2, 0); Wd.setFloor(3, 2, 0); Wd.setFloor(4, 2, 0); Wd.setFloor(5, 2, 0); Wd.setFloor(2, 3, 0); Wd.setFloor(3, 3, 0);
   check(Wd.isIndoor(3, 3), '6/12 grass still indoor');
   Wd.setFloor(4, 3, 0);
-  check(!Wd.isIndoor(3, 3), '7/12 grass -> outdoor');
+  check(Wd.isIndoor(3, 3), '7/12 grass still indoor (enclosed away from the lot border)');
   for (const t of Wd.tilesInRect(2, 2, 5, 4)) Wd.setFloor(t.x, t.y, 1);
-  // room built against the lot border with walls on the border edges counts as indoor
+  // room built against the lot border with walls on the border edges: indoor when floored,
+  // outdoor while grass is a strict majority (a yard walled along the lot border)
   for (const k of Wd.edgesOfRect(0, 12, 2, 15)) st.lot.walls[k] = { t: 1, c: 0 };
+  Wd.rebuild();
+  check(!Wd.isIndoor(1, 13), 'unfloored region walled along the lot border is outdoor (yard)');
+  check(Wd.rooms().find(r => r.id === Wd.roomAt(1, 13)).enclosed === true, 'walled yard is still enclosed');
   for (const t of Wd.tilesInRect(0, 12, 2, 15)) st.lot.floors[t.y * 20 + t.x] = 1;
   Wd.rebuild();
   check(Wd.isIndoor(1, 13), 'room walled along the lot border is indoor');
@@ -701,6 +716,317 @@ section('rooms');
   const before = Wd.rooms().length;
   Wd.setWall('h,3,5', 0);
   check(Wd.rooms().length === before - 1 && !Wd.isIndoor(3, 3), 'setWall invalidates rooms (door removed -> merged with outside)');
+}
+
+// ================================================================ wallpaper per side (CONTRACT_V2 §1)
+section('wallpaper per side: setWall/setWallColor/wallColor/edgeSideFacing/edgeSideTile');
+{
+  const st = makeState(10, 8);
+  Wd.init(st);
+  eq(Wd.edgeSideFacing('h,3,4', 3, 3), 'A', 'h edge: side A faces the north tile');
+  eq(Wd.edgeSideFacing('h,3,4', 3, 4), 'B', 'h edge: side B faces the south tile');
+  eq(Wd.edgeSideFacing('v,3,4', 2, 4), 'A', 'v edge: side A faces the west tile');
+  eq(Wd.edgeSideFacing('v,3,4', 3, 4), 'B', 'v edge: side B faces the east tile');
+  eq(Wd.edgeSideFacing('v,3,4', 3.4, 4.2), 'B', 'edgeSideFacing rounds float tiles');
+  eq(Wd.edgeSideFacing('v,3,4', 5, 4), null, 'tile not beside the edge -> null');
+  eq(Wd.edgeSideFacing('bogus', 0, 0), null, 'invalid edge -> null');
+  eq(Wd.edgeSideFacing('h,0,0', 0, -1), 'A', 'border edge: off-lot side still named');
+  eq(Wd.edgeSideTile('h,3,4', 'A'), { x: 3, y: 3 }, 'edgeSideTile h A');
+  eq(Wd.edgeSideTile('v,3,4', 'B'), { x: 3, y: 4 }, 'edgeSideTile v B');
+  eq(Wd.edgeSideTile('v,3,4', 'x'), null, 'edgeSideTile bad side');
+  eq(Wd.wallColor('h,3,4', 'A'), null, 'wallColor without a wall -> null');
+  Wd.setWall('h,3,4', 1, 2);
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 2 }, 'new wall stores c only');
+  eq([Wd.wallColor('h,3,4', 'A'), Wd.wallColor('h,3,4', 'B'), Wd.wallColor('h,3,4')], [2, 2, 2], 'both sides fall back to c');
+  check(Wd.setWallColor('h,3,4', 1, 'A'), 'setWallColor side A');
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 2, cA: 1 }, 'only cA stored');
+  eq([Wd.wallColor('h,3,4', 'A'), Wd.wallColor('h,3,4', 'B')], [1, 2], 'side colours');
+  Wd.setWall('h,3,4', 2);
+  eq(Wd.getWall('h,3,4'), { t: 2, c: 2, cA: 1 }, 'type change (c omitted) keeps per-side colours');
+  Wd.setWall('h,3,4', 3, 2);
+  eq(Wd.getWall('h,3,4'), { t: 3, c: 2, cA: 1 }, 'legacy setWall(key, t, sameC) keeps per-side colours');
+  Wd.setWall('h,3,4', 1, 0);
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 0 }, 'legacy setWall(key, t, newC) paints both sides');
+  Wd.setWall('h,3,4', 1, 2, 'B');
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 0, cB: 2 }, 'setWall side B');
+  Wd.setWall('h,3,4', 1, 2, 'A');
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 2 }, 'equal sides collapse into c');
+  Wd.setWall('h,3,4', 1, 1, 'a');
+  Wd.setWall('h,3,4', 1, 2, 'both');
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 2 }, "side 'both' clears cA/cB even with the same c");
+  Wd.setWallColor('h,3,4', 1);
+  eq(Wd.getWall('h,3,4'), { t: 1, c: 1 }, 'setWallColor without side paints both sides');
+  check(!Wd.setWallColor('h,5,5', 1), 'setWallColor needs an existing wall');
+  check(!Wd.setWallColor('h,3,4', 99) && !Wd.setWallColor('h,3,4', -1), 'setWallColor validates the index');
+  eq(Wd.wallColor('h,3,4', 'A'), 1, 'still colour 1 after refused calls');
+  // entries written directly (old saves {t,c}, new saves with cA/cB) are read on rebuild
+  st.lot.walls['v,6,2'] = { t: 1, c: 1, cB: 2 };
+  st.lot.walls['v,7,2'] = { t: 2, c: 2 };
+  Wd.rebuild();
+  eq([Wd.wallColor('v,6,2', 'A'), Wd.wallColor('v,6,2', 'B')], [1, 2], 'direct cB entry');
+  eq([Wd.wallColor('v,7,2', 'A'), Wd.wallColor('v,7,2', 'B')], [2, 2], 'old {t,c} entry: both sides = c');
+  st.lot.walls['v,6,2'] = { t: 1, c: 1, cA: 'x', cB: -3 };
+  Wd.rebuild();
+  eq([Wd.wallColor('v,6,2', 'A'), Wd.wallColor('v,6,2', 'B')], [1, 1], 'garbage cA/cB fall back to c');
+  Wd.setWall('v,6,2', 0);
+  eq(Wd.getWall('v,6,2'), null, 'demolish removes the entry with its sides');
+}
+
+section('room bonus per side + roomEdges');
+{
+  const NOON = 720;
+  const st = makeState(12, 10);
+  Wd.init(st);
+  // room L (1..3, 1..3) and room R (4..6, 1..3) share the wall v,4,1..3; door of each to the yard
+  for (const k of Wd.edgesOfRect(1, 1, 3, 3).concat(Wd.edgesOfRect(4, 1, 6, 3))) st.lot.walls[k] = { t: 1, c: 0 };
+  st.lot.walls['h,2,4'] = { t: 2, c: 0 };
+  st.lot.walls['h,5,4'] = { t: 2, c: 0 };
+  for (const t of Wd.tilesInRect(1, 1, 6, 3)) st.lot.floors[t.y * 12 + t.x] = 1;
+  Wd.rebuild();
+  const rL = Wd.roomAt(2, 2), rR = Wd.roomAt(5, 2);
+  check(rL !== rR && Wd.isIndoor(2, 2) && Wd.isIndoor(5, 2), 'two indoor rooms');
+  // paint the shared wall lux (tier 3) on room R's side only
+  for (let y = 1; y <= 3; y++) check(Wd.setWallColor('v,4,' + y, 2, Wd.edgeSideFacing('v,4,' + y, 4, y)), 'paint R side of v,4,' + y);
+  near(Wd.roomBreakdown(2, 2, NOON).wallBonus, 0, 'left room keeps its wall bonus (other side painted)');
+  near(Wd.roomBreakdown(5, 2, NOON).wallBonus, 2 * (3 * 3) / 12, 'right room bonus from its own side (3 of 12 sides lux)');
+  eq([Wd.wallColor('v,4,2', 'A'), Wd.wallColor('v,4,2', 'B')], [0, 2], 'shared wall: A (left room) 0, B (right room) 2');
+  // the incremental update equals a full recompute
+  const inc = [Wd.roomBreakdown(2, 2, NOON), Wd.roomBreakdown(5, 2, NOON)];
+  st.lot = Object.assign({}, st.lot);   // new lot identity -> full rebuild
+  Wd.rebuild();
+  eq([Wd.roomBreakdown(2, 2, NOON), Wd.roomBreakdown(5, 2, NOON)], inc, 'incremental wallpaper update == full recompute');
+  // in-place edit of cA/cB is picked up by rebuild()
+  st.lot.walls['v,4,1'].cA = 2;
+  Wd.rebuild();
+  near(Wd.roomBreakdown(2, 2, NOON).wallBonus, 2 * 3 / 12, 'rebuild() reads an in-place cA edit');
+  // ... and, without rebuild, at the next microtask
+  st.lot.walls['v,4,2'].cA = 2;
+  await Promise.resolve();
+  near(Wd.roomBreakdown(2, 2, NOON).wallBonus, 2 * 6 / 12, 'in-place cA edit detected at the next microtask');
+  // roomEdges
+  const eR = Wd.roomEdges(5, 2), eL = Wd.roomEdges(2, 2);
+  eq(eR.length, 12, 'roomEdges: 12 sides around the 3x3 room');
+  check(eR.every(e => { const t = Wd.edgeSideTile(e.key, e.side); return Wd.roomAt(t.x, t.y) === rR; }), 'every listed side faces into the room');
+  check(eR.some(e => e.key === 'v,4,2' && e.side === 'B') && eL.some(e => e.key === 'v,4,2' && e.side === 'A'), 'shared wall: B from the right, A from the left');
+  check(eR.some(e => e.key === 'h,5,4' && e.t === 2), 'doors included with their type');
+  eq(Wd.roomEdges(-1, 0), [], 'roomEdges off the lot');
+  const rt = Wd.roomTiles(5, 2);
+  eq(rt.length, 9, 'roomTiles: 9 tiles');
+  check(rt.every(t => Wd.roomAt(t.x, t.y) === rR) && rt !== Wd.rooms()[rR].tiles, 'roomTiles returns a fresh copy of the room tiles');
+  eq(Wd.roomTiles(-3, 0), [], 'roomTiles off the lot');
+  const bdR = Wd.roomBreakdown(5, 2, NOON);
+  check(bdR.enclosed === true && bdR.doors === 1, 'roomBreakdown exposes enclosed and doors');
+  const outside = Wd.roomEdges(0, 0);
+  check(outside.length === 2 * (3 + 3) + 2 * 3 - 0 && outside.every(e => { const t = Wd.edgeSideTile(e.key, e.side); return !Wd.isIndoor(t.x, t.y); }), `roomEdges of the yard = house facades (${outside.length})`);
+  // a free-standing wall inside a room counts both of its sides
+  st.lot.walls['h,8,7'] = { t: 1, c: 0 };
+  Wd.rebuild();
+  const stub = Wd.roomEdges(8, 8).filter(e => e.key === 'h,8,7');
+  eq(stub.map(e => e.side).sort(), ['A', 'B'], 'free-standing wall: both sides face the same region');
+}
+
+section('roomScoreWith / roomScoreWithFloor / roomScoreWithWallpaper');
+{
+  const NOON = 720, NIGHT = 22 * 60;
+  const st = makeState(16, 12);
+  Wd.init(st);
+  for (const k of Wd.edgesOfRect(2, 2, 5, 4)) st.lot.walls[k] = { t: 1, c: 0 };   // 12-tile room, no door
+  for (const t of Wd.tilesInRect(2, 2, 5, 4)) st.lot.floors[t.y * 16 + t.x] = 1;
+  Wd.rebuild();
+  let r = Wd.roomScoreWith('painting', 3, 2, 0, null, NOON);
+  eq([r.before, r.after, r.delta, r.indoor], [-10, 20, 30, true], 'painting (room 6) adds +30 to a 12-tile room');
+  r = Wd.roomScoreWith('lamp', 2, 2, 0, null, NIGHT);
+  eq([r.before, r.after], [-30, 0], 'lamp at night: removes the dark penalty and adds its light');
+  eq(Wd.roomScoreWith('lamp', 2, 2, 0, null, NOON).delta, 0, 'lamp by day: no change');
+  st.time.minute = NIGHT;
+  eq(Wd.roomScoreWith('lamp', 2, 2, 0).after, 0, 'default minute = state time');
+  st.time.minute = NOON;
+  // prediction matches the real score after placing
+  const pred = Wd.roomScoreWith('rug', 3, 3, 0);
+  const rug = add(st, 'rug', 3, 3, 0);
+  eq(Wd.roomScore(3, 3, NOON), pred.after, 'roomScoreWith.after == real score after placing');
+  // moving an object inside the same room (ignoreId) changes nothing
+  eq(Wd.roomScoreWith('rug', 2, 2, 0, rug.id).delta, 0, 'moving within the room: delta 0');
+  eq(Wd.roomScoreWith('rug', 9, 9, 0, rug.id).room !== Wd.roomAt(3, 3), true, 'room of the target spot');
+  eq(Wd.roomScoreWith('nope', 3, 3, 0), null, 'unknown type -> null');
+  eq(Wd.roomScoreWith('rug', -5, -5, 0), null, 'off the lot -> null');
+  // floor preview: marble (tier 3) on every tile -> +6
+  const tiles = Wd.tilesInRect(2, 2, 5, 4);
+  const pf = Wd.roomScoreWithFloor(tiles, 3, NOON);
+  eq(pf.after - pf.before, 6, 'floor preview: wood (tier 0) -> marble (tier 3, +6)');
+  for (const t of tiles) Wd.setFloor(t.x, t.y, 3);
+  eq(Wd.roomScore(3, 3, NOON), pf.after, 'roomScoreWithFloor.after == real score after painting');
+  eq(Wd.roomScoreWithFloor([], 3), null, 'no tiles -> null');
+  eq(Wd.roomScoreWithFloor(tiles, 99), null, 'bad floor index -> null');
+  // wallpaper preview on the inward sides
+  const sides = Wd.roomEdges(3, 3);
+  const pw = Wd.roomScoreWithWallpaper(sides, 2, NOON);
+  for (const e of sides) Wd.setWallColor(e.key, 2, e.side);
+  eq(Wd.roomScore(3, 3, NOON), pw.after, 'roomScoreWithWallpaper.after == real score after painting');
+  check(pw.after > pw.before, 'lux wallpaper raises the score');
+  eq(Wd.roomScoreWithWallpaper(['h,9,9'], 1), null, 'edges without walls -> null');
+  const pk = Wd.roomScoreWithWallpaper(['h,3,2'], 0, NOON);   // keys = both sides; most face the outside? one each
+  check(pk && typeof pk.before === 'number', 'edge keys accepted');
+  // walled yard on the lot border: flooring it turns it indoor (BB-8 rule)
+  for (const k of Wd.edgesOfRect(0, 8, 2, 11)) st.lot.walls[k] = { t: 1, c: 0 };
+  Wd.rebuild();
+  check(!Wd.isIndoor(1, 9), 'border yard outdoor while grass');
+  const py = Wd.roomScoreWithFloor(Wd.tilesInRect(0, 8, 2, 11), 1, NOON);
+  check(py.indoor === true, 'floor preview reports the room turning indoor');
+  for (const t of Wd.tilesInRect(0, 8, 2, 11)) Wd.setFloor(t.x, t.y, 1);
+  check(Wd.isIndoor(1, 9) && Wd.roomScore(1, 9, NOON) === py.after, 'incremental setFloor flips indoor and matches the preview');
+}
+
+section('placementWarnings / wallWarnings (BB-3)');
+{
+  const st = makeState(12, 10);
+  st.sims = [];
+  Wd.init(st);
+  // house: bedroom (1..4, 1..3) above living room (1..4, 4..6); door between at h,2,4; front door h,2,7
+  for (const k of Wd.edgesOfRect(1, 1, 4, 3).concat(Wd.edgesOfRect(1, 4, 4, 6))) st.lot.walls[k] = { t: 1, c: 0 };
+  st.lot.walls['h,2,4'] = { t: 2, c: 0 };
+  st.lot.walls['h,2,7'] = { t: 2, c: 0 };
+  for (const t of Wd.tilesInRect(1, 1, 4, 6)) st.lot.floors[t.y * 12 + t.x] = 1;
+  const fridge = add(st, 'fridge', 4, 1, 0);   // slot (4,2)
+  const toilet = add(st, 'toilet', 1, 1, 0);   // on-slot; free neighbours (2,1), (1,2)
+  Wd.rebuild();
+  eq(Wd.placementWarnings('counter', 8, 8, 0), [], 'harmless placement in the yard');
+  eq(Wd.placementWarnings('counter', 2, 7, 0), ['Bloqueia a única saída da casa'], 'blocking the front door from outside');
+  eq(Wd.placementWarnings('counter', 2, 6, 2), ['Bloqueia a única saída da casa'], 'blocking the front door from inside');
+  check(Wd.placementWarnings('counter', 2, 3, 2).includes('Bloqueia a única porta do cômodo'), 'blocking the bedroom door');
+  eq(Wd.placementWarnings('counter', 4, 2, 0), ['Bloqueia o acesso a Geladeira'], "blocking the fridge's only slot");
+  eq(Wd.placementWarnings('counter', 2, 1, 0), [], 'toilet keeps its other free neighbour');
+  const c1 = add(st, 'counter', 2, 1, 0);
+  Wd.rebuild();
+  eq(Wd.placementWarnings('counter', 1, 2, 0), ['Bloqueia o acesso a Vaso'], "blocking the toilet's last free neighbour");
+  // moving (ignoreId): the moved object's old tiles are freed
+  eq(Wd.placementWarnings('counter', 1, 2, 0, c1.id), [], 'moving the blocker next door frees the old neighbour');
+  eq(Wd.placementWarnings('counter', 2, 1, 0, c1.id), [], 'moving onto its own spot: nothing new');
+  // non-blocking types and refused spots never warn
+  eq(Wd.placementWarnings('rug', 2, 6, 0), [], 'rugs never block');
+  eq(Wd.placementWarnings('painting', 2, 4, 0), [], 'wall-mounted items never block');
+  eq(Wd.placementWarnings('counter', 4, 1, 0), [], 'refused spot (overlap) -> []');
+  eq(Wd.placementWarnings('nope', 8, 8, 0), [], 'unknown type -> []');
+  // characters (gender agreement), hidden ones ignored
+  st.sims = [{ id: 1, name: 'Rita Alves', gender: 'f', x: 3, y: 2 }];
+  eq(Wd.wallWarnings(['h,2,4']), ['Bloqueia a única porta do cômodo', 'Deixa Rita presa'], 'wall over the bedroom door seals Rita in');
+  st.sims.push({ id: 2, name: 'Caio Alves', gender: 'm', x: 3.4, y: 1.6 });
+  check(Wd.wallWarnings(['h,2,4']).includes('Deixa Rita e Caio presos'), 'mixed group -> presos');
+  st.sims[1].gender = 'f'; st.sims[1].name = 'Lia';
+  check(Wd.wallWarnings(['h,2,4']).includes('Deixa Rita e Lia presas'), 'all female -> presas');
+  st.sims[0].hidden = true;
+  check(Wd.wallWarnings(['h,2,4']).includes('Deixa Lia presa'), 'hidden characters (at work) ignored');
+  st.sims.push({ id: 3, name: 'Ana', gender: 'f', x: 2, y: 2 }, { id: 4, name: 'Bia', gender: 'f', x: 3, y: 3 }, { id: 5, name: 'Edu', gender: 'm', x: 4, y: 3 });
+  st.sims[0].hidden = false;
+  check(Wd.wallWarnings(['h,2,4']).includes('Deixa Rita, Lia, Ana e mais 2 presos'), 'long lists are shortened');
+  st.sims = [{ id: 1, name: 'Rita Alves', gender: 'f', x: 8, y: 8 }];
+  check(!Wd.wallWarnings(['h,2,4']).some(m => /Rita/.test(m)), 'a character outside is not trapped');
+  // walls: a second bedroom exit makes the wall over the inner door a plain "Fecha uma porta"
+  st.lot.walls['v,1,2'] = { t: 2, c: 0 };
+  Wd.rebuild();
+  eq(Wd.wallWarnings(['h,2,4']), ['Fecha uma porta'], 'replacing a door that is not the only exit');
+  eq(Wd.wallWarnings(['h,2,4'], 3), ['Fecha uma porta'], 'a window over a door too');
+  eq(Wd.wallWarnings(['h,2,4'], 2), [], 'doors never block');
+  eq(Wd.wallWarnings(['h,2,4'], 0), [], 'demolition never blocks');
+  eq(Wd.wallWarnings(['h,1,1']), [], 'wall already there: no change, no warning');
+  eq(Wd.wallWarnings(['bogus', 'h,99,0']), [], 'invalid keys ignored');
+  delete st.lot.walls['v,1,2']; st.lot.walls['v,1,2'] = { t: 1, c: 0 };
+  Wd.rebuild();
+  // a wall between the fridge and its slot
+  eq(Wd.wallWarnings(['h,4,2']), ['Bloqueia o acesso a Geladeira'], 'wall between the fridge and its slot');
+  // a new closed room in the yard
+  eq(Wd.wallWarnings(Wd.edgesOfRect(7, 1, 9, 3)), ['O cômodo fica sem porta'], 'new enclosure without a door');
+  eq(Wd.wallWarnings(Wd.edgesOfRect(7, 1, 9, 3).slice(0, 5)), [], 'partial drag: nothing closed yet');
+  // a lot-wide wall cutting the house off from the street (bottom row)
+  const fence = []; for (let x = 0; x < 12; x++) fence.push('h,' + x + ',8');
+  check(Wd.wallWarnings(fence).includes('Bloqueia a única saída da casa'), 'fence between the house and the street');
+  // many objects losing access at once are summarised
+  const many = makeState(14, 6); many.sims = [];
+  Wd.init(many);
+  add(many, 'fridge', 0, 0, 0); add(many, 'counter', 2, 0, 0); add(many, 'toilet', 4, 0, 0); add(many, 'desk', 6, 0, 0);
+  add(many, 'noslot', 9, 0, 0); add(many, 'chair', 11, 0, 0); add(many, 'fridge', 13, 0, 0);
+  Wd.rebuild();
+  const row = []; for (let x = 0; x < 14; x++) row.push('h,' + x + ',1');
+  eq(Wd.wallWarnings(row), ['Bloqueia o acesso a Geladeira', 'Bloqueia o acesso a Balcão', 'Bloqueia o acesso a Vaso',
+    'Bloqueia o acesso a mais 3 objetos'], 'many objects: duplicates merged, list summarised');
+  many.objects.splice(4, 2);   // 4 distinct names left: all listed (never "mais 1 objeto")
+  Wd.rebuild();
+  eq(Wd.wallWarnings(row), ['Bloqueia o acesso a Geladeira', 'Bloqueia o acesso a Balcão', 'Bloqueia o acesso a Vaso',
+    'Bloqueia o acesso a Mesa teste'], 'four objects are listed by name');
+  // performance: a full warning pass on a 64x64 lot stays cheap
+  const big = makeState(64, 64); big.sims = [];
+  Wd.init(big);
+  for (let y = 2; y < 62; y += 4) for (let x = 2; x < 62; x += 3) add(big, 'fridge', x, y, 0);
+  Wd.rebuild();
+  let t = performance.now();
+  for (let i = 0; i < 50; i++) Wd.placementWarnings('counter', i % 64, 0, 0);
+  const tp = (performance.now() - t) / 50;
+  t = performance.now();
+  for (let i = 0; i < 50; i++) Wd.wallWarnings(Wd.edgesOfRect(10, 10, 14 + (i % 5), 14));
+  const tw = (performance.now() - t) / 50;
+  console.log(`  warnings on 64x64 with ${big.objects.length} objects: placement ${tp.toFixed(3)} ms, walls ${tw.toFixed(3)} ms`);
+  check(tp < 8 && tw < 8, 'warning passes stay under a few ms on a 64x64 lot');
+}
+
+section('CR-6: O(1) queries, incremental rebuild/rooms, epochs');
+{
+  const st = makeState(48, 48);
+  Wd.init(st);
+  for (const k of Wd.edgesOfRect(4, 4, 20, 20)) st.lot.walls[k] = { t: 1, c: 0 };
+  st.lot.walls['h,10,21'] = { t: 2, c: 0 };
+  Wd.rebuild();
+  const timeQueries = () => {
+    for (let i = 0; i < 20000; i++) Wd.isWalkable(i % 48, (i >> 6) % 48);
+    const t = performance.now();
+    for (let i = 0; i < 200000; i++) Wd.isWalkable(i % 48, (i >> 6) % 48);
+    return (performance.now() - t) / 200000 * 1000;
+  };
+  const few = timeQueries();
+  for (let n = 0; n < 1500; n++) add(st, 'lamp', n % 48, 24 + ((n / 48) | 0) % 24, 0);
+  Wd.rebuild();
+  const lots = timeQueries();
+  console.log(`  isWalkable: ${few.toFixed(3)} us with 0 objects, ${lots.toFixed(3)} us with ${st.objects.length}`);
+  check(lots < 0.5 && lots < few * 4 + 0.05, 'query cost does not grow with the object count');
+  // object-only rebuilds keep the room cache (same tiles arrays)
+  const tilesBefore = Wd.rooms()[Wd.roomAt(5, 5)].tiles;
+  add(st, 'chair', 6, 6, 0);
+  Wd.rebuild();
+  check(Wd.rooms()[Wd.roomAt(5, 5)].tiles === tilesBefore, 'object change: rooms not recomputed');
+  check(!Wd.isWalkable(6, 6), '... but occupancy is');
+  st.lot.walls['h,11,21'] = { t: 2, c: 0 };   // in-place wall edit + rebuild -> rooms recomputed
+  Wd.rebuild();
+  check(Wd.rooms()[Wd.roomAt(5, 5)].tiles !== tilesBefore && Wd.rooms()[Wd.roomAt(5, 5)].doors === 2, 'wall change: rooms recomputed');
+  // version bumps on every change
+  const v0 = Wd.version;
+  Wd.setFloor(5, 5, 1);
+  check(Wd.version > v0, 'version bumps on setFloor');
+  // in-place floor edit detected at the next microtask; incremental floors == full recompute
+  st.lot.floors[6 * 48 + 7] = 3;
+  await Promise.resolve();
+  const inc = Wd.roomBreakdown(5, 5, 720);
+  st.lot = Object.assign({}, st.lot);
+  Wd.rebuild();
+  eq(Wd.roomBreakdown(5, 5, 720), inc, 'in-place floor edit picked up at the next microtask');
+  // fuzz: incremental setFloor / setWallColor == full recompute
+  const rnd = ctx.M.util.rng(5);
+  for (let i = 0; i < 400; i++) {
+    if (rnd() < 0.6) Wd.setFloor(Math.floor(rnd() * 48), Math.floor(rnd() * 48), Math.floor(rnd() * FLOORS.length));
+    else {
+      const ks = Object.keys(st.lot.walls);
+      const k = ks[Math.floor(rnd() * ks.length)];
+      Wd.setWallColor(k, Math.floor(rnd() * WALLPAPERS.length), rnd() < 0.4 ? 'A' : rnd() < 0.7 ? 'B' : 'both');
+    }
+  }
+  const incAll = Wd.rooms(720).map(r => [r.indoor, r.score, Wd.roomBreakdown(r.tiles[0].x, r.tiles[0].y, 720).bonus]);
+  st.lot = Object.assign({}, st.lot);
+  Wd.rebuild();
+  const fullAll = Wd.rooms(720).map(r => [r.indoor, r.score, Wd.roomBreakdown(r.tiles[0].x, r.tiles[0].y, 720).bonus]);
+  eq(incAll, fullAll, 'fuzz: incremental floor/wallpaper updates == full recompute');
+  // M.data tables swapped -> rooms re-tiered without rebuild
+  const savedF = M.data.FLOORS;
+  M.data.FLOORS = FLOORS.map(f => Object.assign({}, f, { room: 0 }));
+  near(Wd.roomBreakdown(5, 5, 720).floorBonus, 0, 'new FLOORS table identity re-tiers the rooms');
+  M.data.FLOORS = savedF;
 }
 
 // ================================================================ robustness

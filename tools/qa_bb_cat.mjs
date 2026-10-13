@@ -1,0 +1,11 @@
+import vm from 'node:vm'; import fs from 'node:fs';
+const ctx = { window: {}, console }; ctx.window.M = {}; vm.createContext(ctx);
+for (const f of ['util', 'data']) vm.runInContext(fs.readFileSync(`js/${f}.js`, 'utf8'), ctx);
+const D = ctx.window.M.data;
+const list = Object.values(D.CATALOG).filter(d => d.buyable !== false && d.cat !== 'system');
+console.log(list.length, 'buyable');
+for (const d of list) console.log(d.type.padEnd(16), d.cat.padEnd(12), String(d.price).padStart(5), d.w + 'x' + d.h, d.wall ? 'WALL' : '', d.noBlock ? 'noBlock' : '', d.surface ? 'surface' : '', 'slots=' + (d.slots ? d.slots.length : '-'), (d.slots||[]).map(s=>`${s.dx},${s.dy}${s.on?'on':''}`).join(' '));
+console.log(D.CATEGORIES.map(c=>c.key).join(','));
+console.log('FLOORS', D.FLOORS.map(f=>f.key+':'+f.price).join(' '));
+console.log('WALLPAPERS', D.WALLPAPERS.map(f=>f.key+':'+f.price).join(' '));
+console.log('WALL_PRICES', JSON.stringify(D.WALL_PRICES), D.DEMOLISH_REFUND);

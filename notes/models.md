@@ -51,3 +51,44 @@ unknown names fall back to idle. `t` = seconds. Pose changes blend over ~0.3 s.
 
 ## orb()
 Glowing sphere + additive halo sprite; `orb.userData.setColor(css)`, `orb.userData.dispose()`.
+
+## QA round 2 — what changed (render key)
+- **New mesh kinds** in built groups (all use the shared `solid` material unless noted):
+  - `flag`: the mailbox flag. It is built raised; `meta.flagPivot` is its hinge (local) and the renderer
+    rotates it down while there are no bills.
+  - `splash`: a counter/dishwasher backsplash, built when `opts.backsplash` is set; the renderer hides
+    it while the wall behind is cut.
+  - `puddle`: the puddle body. It uses the new `materials.puddle` (glossy, bluish, slight emissive) and
+    has a bright rim and reflection streaks.
+- **Model changes**:
+  - `counter` props vary by `opts.variant` (object id % 5): none, cutting board with vegetables, jars,
+    fruit bowl, utensil crock with kettle. `opts.backsplash` adds a tiled backsplash.
+  - The variant key includes `v<n>` and `k` for `counter`, and `k` for `dishwasher`.
+  - `armchair` meta gains `recline: true`.
+  - `stove`: the pot is on the front burner on the cook's right-hand side, and a kettle is at the back.
+  - New environment models: `env_hedge` (1-unit segment along +X, centred on z=0), `env_hydrant`,
+    `env_manhole`, `env_drain`.
+- **Materials**:
+  - `solidDirty` has a stronger grime tint.
+  - New `glassDirty`: the renderer swaps glass to it on dirty objects such as the shower.
+  - New `puddle`.
+  - Ghost materials are brighter, with stronger emissive.
+- **Character**:
+  - Hair is built from rounded volumes (no boxes). Male: tousled, quiff, crop + beard. Female: long,
+    ponytail, bun, bob.
+  - Torso and pelvis are rounded frustums (superellipse cross-section).
+  - New props: `handset` (red corded landline handset), `knife` (right hand), `board` (cutting board
+    with vegetables, pose frame at counter height).
+- **New `animate()` ctx fields** (all optional):
+  - `awake`: `sleep` on a bed or bench with `awake` is "Deitar e relaxar": on top of the covers, eyes
+    open, hands behind the head, one knee up, no blanket.
+  - `recline`: `sleep` on a `chair` support with `recline` is a nap in the recliner: body tipped back,
+    legs out, head to one side.
+  - `partnerDist`: hug/kiss step `pz` toward the partner from this distance. Hug: torsos ~0.46 apart.
+    Kiss: head centres ~0.29 apart. Without it, 1 tile is assumed.
+  - `prep`: `cook` becomes chopping with knife and board (the counter stage) instead of stirring.
+  - `prop: 'handset'`: `phone` shows the landline handset instead of the mobile.
+- **Idle fidgets**: standing `idle` adds a fidget every ~6–10 s for ~2.6 s, eased in and out: shift
+  weight, glance at the watch, scratch the head, hands on hips, or look around.
+- Tests: `node tools/models_test.mjs` (unchanged, 311 checks) and `node tools/fix_render_models_test.mjs`
+  (49 checks for the round-2 additions).

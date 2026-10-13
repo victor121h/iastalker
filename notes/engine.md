@@ -133,3 +133,107 @@ paying bills and repairing).
 ## For M.main
 Bootstrap: `state = loaded || M.engine.newGame()`, `M.engine.init(state)`; loop: `M.engine.update(simMinutes)` (any
 size), Buy/Build modes simply stop calling update. Use `M.engine.allAsleepOrAway()` for the 30× rule.
+
+## QA fix round (CONTRACT_V2) — engine side, what changed for other modules
+Tests: `node tools/fix_engine_test.mjs` (all fixes + contract API), `node tools/fix_engine_sofa.mjs`,
+`fix_engine_socwait.mjs`, `fix_engine_socials.mjs`, `fix_engine_guests.mjs` (Node); in-page smoke test:
+`node tools/integrate_check.mjs --clear --nohelp --eval tools/fix_engine_page.js`.
+
+### New / changed API (all old calls keep working)
+- **`M.engine.lastReason`** (getter, pt-BR) — set whenever a *player* `queueInteraction / queueSocial / queueWalk`,
+  or any `buyObject / sellObject / moveObject / buildWall / buildRoom / paintFloor / paintWall / paintRoomWalls /
+  paintRoomFloor / payBill` call refuses (returns false / ok:false); reset to `''` at the start of each such call.
+  Internal autonomous calls never touch it. **Refused player commands no longer emit a 'notify'** (they still show a ✋
+  thought bubble): the UI toasts `lastReason` (CONTRACT_V2 §3). Failures that happen later (route failed, slot taken)
+  still notify.
+- Queue cap: at most 8 actions per character (player commands + urgent/critical ones, cancelled head excluded) →
+  `lastReason = 'A fila de ações está cheia (máx. 8).'`. Walks count too.
+- `queueWalk(simId, x, y, opts)` (also the old `queueWalk(simId, x, y, source, opts)`): a player click while the current
+  action is a player walk **redirects** it (same action id, new x/y, re-routed from where the character is); if the last
+  queued action is a pending player walk it is retargeted instead. `opts.append` (Shift+click) appends.
+- `pendingDeliveries()` → `[{ kind: 'pizza'|'repair'|'maid'|'guest', label, at }]` (scheduled events + a pizza courier
+  walking to the door). A second pizza order is refused while one is pending/queued (`'Já tem uma pizza a caminho.'`;
+  the pie entry is disabled with that reason).
+- `homeTile(simId)` → `{x, y}` indoor walkable tile next to the nearest bed (else inside the front door).
+- **Notifications**: bus `'notify' { text, kind, id, focus? }`, `focus` = `{simId}` | `{objId}` | `{x, y}`; the stored
+  notification keeps `focus`. The same text+kind within 60 sim-min is merged: the stored entry gets `count` (2, 3…) and
+  `lastDay/lastMinute`, and the bus emits **`'notifyRepeat' { id, text, kind, count }`** instead of a new 'notify'.
+- `paintWall(edgeKey, idx, side = 'both')` — side `'A'|'B'|'both'`, charges the wallpaper price **per side changed**
+  (default 'both' = 2 sides). Wall entries get `cA`/`cB` (normalized back to `c` when both sides match). After in-place
+  edits the engine calls `M.world.rebuild()`. `buildWall` keeps `cA/cB` when a wall becomes a door/window.
+- `paintRoomWalls(x, y, idx)` → `{ ok, cost, count, reason }` (inward side of every wall/door/window of the region at
+  x,y; uses `M.world.roomEdges` when present, else computes it). `paintRoomFloor(x, y, idx)` → same shape, indoor rooms
+  only (outdoor → reason). Both all-or-nothing on money.
+- `estimateRoom(x1, y1, x2, y2, floorIdx|null)` → `{ ok, cost, walls, tiles, reason }`; `buildRoom(...)` → `{ ok, cost,
+  reason, walls, tiles }`. Perimeter of the inclusive tile rect (via `M.world.edgesOfRect`), existing wall entries are
+  skipped, segments refused by `M.world.canBuildWall` (objects in the way) make it fail; optional floor inside.
+- `snapshotBuild()` → deep clone `{ lot, objects, money, nextId }`; `restoreBuild(snap)` → `{ ok }`: replaces lot,
+  objects, money (`nextId` = max of both so ids are never reused), re-inits world caches, drops queued actions whose
+  objects vanished, moves characters out of newly blocked tiles, emits 'lot', 'objects', 'money'.
+- `debug.candidates(simId, restrict?)` → sorted autonomy candidates (for tuning/tests).
+
+### Behaviour changes worth knowing (render/UI)
+- New interaction **`sleep_sofa` "Dormir no sofá"** on `sofa_cheap`, `sofa_lux`, `armchair` (effect `sleep_sofa`,
+  anim `'sleep'`, `asleep: true`, seated on the slot like the nap). Autonomy only uses it when no bed slot is free.
+- Faint (`_faint`) now ends at energy ≈ −40 (was +20) and never ends because of the bladder (the accident happens while
+  fainted); one notification per episode. A worker who faints right before the shift comes to for the carpool.
+- The automatic walk to the carpool has priority 60 (> player 50): a running player action is interrupted
+  ("… parou o que estava fazendo para pegar a carona.").
+- Night shifts: pre-shift sleep window (7 h before; alarm 50 min before the shift for a sleep started inside the alarm
+  window), post-shift sleep allowed; work drain on return never pushes a motive below −80; no promotion roll for 3
+  shifts after a demotion; promotion text warns about night shifts.
+- Moving/selling/repossessing an object in use ends the user's action **immediately** (idle, not seated, moved to the
+  exit/nearest walkable tile) — no update needed while Buy/Build is paused. Cancel hooks run (cooking refunds).
+- Characters never stand inside each other on purpose: idle characters step aside (`sim.data.nudge` = short lerp, anim
+  'walk'), slots under busy/talking characters are skipped, social meeting spots avoid object slots and tiles another
+  character is heading to, exits avoid occupied tiles. A responder left on furniture steps off before the social.
+- Socials: one candidate per partner (the best) before the top-4 cut, per-pair fatigue (`sim.data.fatigue`), same-social
+  repeat penalties over 24 h (`sim.data.socialLog`, now 30 entries); guests use mean socials only when they already
+  dislike the host (daily ≤ −10); social waits for a busy partner end after 1.5–2 min (player: 10–12 min).
+- Purposeful downtime: in a good mood with no low need, skill objects advertise a 'mood' gain by personality fit and
+  next-career-level requirements, fading with practice already done today (`sim.data.practice`); `study_*` and mirror
+  `speech` are now autonomous (auto sessions end after 90 min or when a need gets low).
+- Requirements are re-checked when a queued action starts: chores no longer needed are dropped quietly (no 'bad'
+  toast; player commands get a ❔ bubble). "Pagar contas" with no bills → info 'As contas já estavam pagas.'.
+- Cooking makes servings for the cook plus members/guests at home, awake and with hunger < 60; the meal object keeps
+  `diners: [simId]` and those people are called to eat as soon as they are free (an autonomous pastime is interrupted;
+  player commands, socials and the bathroom are not). Nobody snacks while dinner is on the stove (unless hunger ≤ −60).
+  Without a free table seat, a diner steps 1–2 tiles away from the serving spot to eat standing. Someone waiting for
+  the only free spot by a meal waits up to 6 min instead of giving up. (Spoiled meals, default family, 10 seeds × 8 days:
+  2.2 → 0.6.)
+- Bill collector re-checks what is owed at the door, waits while someone is paying at the mailbox, takes objects worth
+  at most owed + 20 % and keeps any uncovered rest as a new bill (`debt: true`, due next day) — no silent forgiveness.
+- Gendered texts everywhere (Técnica/Técnico, Entregadora/Entregador, Faxineira/Faxineiro, "A/O oficial de cobrança",
+  demitida/demitido, levada/levado, rebaixada/rebaixado, ocupada/ocupado). Service events carry `gender` and `first`.
+- Starter furniture has `boughtDay: 0, starter: true` (depreciated resale from day 1).
+- Empty-lot households start knowing 2 neighbours; a walk-by while nobody is home is postponed until someone returns
+  (until 20:00).
+- Performance: slots, object rooms and tile→object maps are cached per layout (key: `M.world.version` + engine change
+  counter + object count); at most 2 full autonomy evaluations per tick (others retry next tick). 239 objects,
+  4 residents: 14.4 s → 2.3 s CPU per sim-day, p99 step 41.6 → 6.3 ms (`node tools/fix_engine_perf.mjs`, CPU time).
+  The rest of the cost is `M.world` queries (world.js `ensure()` hashing every object per query — world owner's side).
+
+### M.data changes
+- `CRITICAL`: `faintWake −40`, `faintWorkWake −95`, `faintRenotify 120`, `hospitalHunger −99.5`, `wakeBladder/wakeHunger
+  −85` (= overrides), `workFloor −80`, `needLow −50`. `DECAY.hunger.constant 0.4`/h.
+- `AUTONOMY`: `sofaSleepGate`, `sofaSleepAd`, `purpose*`, `fatigueHalfLife/fatigueK/repeatDayWindow/repeatDayK/
+  repeatAnyK/relBoostCap`, `perTick`. `CAREER_RULES`: `preNapHours, napAlarmBefore, nightShiftFrom/To, promoCooldown,
+  critMotives` (hunger, energy, bladder, hygiene). `SOCIAL_RULES`: `waitBusy, waitRespond, guestMeanBelow,
+  knownAtStartEmpty, walkbyLatest`.
+- Economy: career pay = research pay × 1.6 + 100 (Negócios L1 M$ 290 … L10 M$ 2.020), `foodPerServing` 10. Default
+  family ≈ +M$ 200/day over 10 days (was ≈ +M$ 10/day).
+- Ads: `tv_cheap` watch 16+24, bookshelf read 15+18, phone call 8+22, greet 15+20, dance/tickle toned down.
+- `sellRefund` treats `boughtDay: 0` correctly (owned days counted from day 0).
+
+### Integration pass (after the fix round)
+- `sanitizeState` also drops `null` / non-object entries of `npcs`, `notifications`, `events` (CR-4, direct calls).
+- Per-layout caches: `isSlotTile` / `buildTileMaps` build into locals first (a nested query could reset the shared
+  caches mid-build and crash `stepSocial`, seen in `qa_verify_sim_11`).
+- Bill collector at the door: waits up to 12 sim-min while a resident's head action is `pay_bills` in route/walk
+  (on the way to the mailbox), and up to 8 sim-min from when paying starts (enter/do/exit).
+- Critical-need override (`overrideCritical`): it now looks for a fix **before** cancelling the current action. When
+  nothing can address the critical motive (no food / toilet in reach), the current action goes on (sleep re-checks
+  only every 90 sim-min) instead of being cut every 20 min; `sleep_sofa` counts as sleep for a critical energy.
+- Sleep / nap wake on a critical bladder or hunger (`needWake`): if the previous such wake fixed nothing (same motive,
+  still within +10 of the value it woke at, < 180 min ago) the character sleeps on. In the QA `noneeds` scenario
+  (bed, fridge and toilet sold) the 3-minute sofa-sleep ping-pong is gone: exhaustion faints 10 → 0 in 8 days.

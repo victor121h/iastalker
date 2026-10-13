@@ -1,5 +1,92 @@
 # Integration notes
 
+## QA fix round — integration pass (CONTRACT_V2)
+
+The five owners changed engine/data, world, render/models, ui/index and save/main in parallel against
+CONTRACT_V2.md. This pass checked every cross-module seam end to end in the real page, ran all suites, re-ran the
+QA repro and verify scripts on the integrated build and fixed what still failed.
+
+### Seams verified end to end (real input in the page)
+| CONTRACT_V2 | path checked | how |
+|---|---|---|
+| §1 wallpaper per side | `render.pickEdge().side` → ui paper tool → `engine.paintWall(key, idx, side)` → `world.setWallColor` → render faces | `integrate_flows_v2` build.wallpaperOneSide (other side unchanged, M$ 10) |
+| §1 whole room | Shift+click / "Cômodo inteiro" → `engine.paintRoomWalls` (via `world.roomEdges`) | build.wallpaperWholeRoom (14/14 inward sides) |
+| §1 floor fill | Shift+click / toggle → `engine.paintRoomFloor` (via `world.roomTiles` + `isIndoor`) | build.floorFill (12/12 tiles) |
+| §2 room tool | drag → `engine.estimateRoom` (tip + `world.wallWarnings`) → `engine.buildRoom` | build.roomTool (14 walls, "⚠ O cômodo fica sem porta") |
+| §2 undo | `snapshotBuild` before each change → Ctrl+Z / Desfazer → `restoreBuild` | buy.undo, build.undoChain (5 steps back to the start money) |
+| §2 warnings / Ambiente | `world.placementWarnings` / `roomScoreWith*` → placement, floor and wallpaper tips | buy.ambienteTip ("Ambiente +6 neste cômodo") |
+| §3 lastReason | refused queue → ✋ bubble + `engine.lastReason` → ui toast | live.refusalToast ("A fila de ações está cheia (máx. 8).") |
+| §3 walk redirect | floor click → `queueWalk(.., {append:false})` redirects; Shift+click appends | live.walkRedirect |
+| §3 pendingDeliveries / focus | ETA chip, toast "Ver" → `render.focus` | fix_ui_test §3 |
+| §3 homeTile | self menu "Ir para dentro de casa" → `engine.homeTile` → walk | live.selfMenu (indoor tile next to the bed) |
+| §4 pick order | meal on a counter: `render.pick` item → ui `resolveTarget` (world.itemAt) → pie "Pegar um prato e comer" | live.foodOnCounterPie |
+| §4 walls-up override | painting card → `setWallsUpOverride(true)`, off after placing; bought painting stays visible (BB-5) | buy.paintingOverride |
+| §4 hideObject / markers | moving hides the original; newspaper badge / mailbox flag | fix_ui_test §2/§4, fix_render_test |
+| §5/§6 saves | `M.ui.choice` from save/main (conflict, recovery), active slot in the chip | fix_save_browser (54), options.saveSlot2 ("Salvo neste aparelho · Espaço 2") |
+
+Note: `M.world.itemAt(x, y)` returns the **object**, `M.render.itemAt(x, y)` returns its **id** (both documented).
+
+### Fixes made in this pass (by file)
+- **js/engine.js**
+  - `sanitizeState` drops `null` / non-object entries of `npcs`, `notifications`, `events` (CR-4: the engine
+    no longer throws when called directly with such a save; `qa_cr_sanitize` reports no throws).
+  - Crash fix (found by `qa_verify_sim_11`): `isSlotTile` and `buildTileMaps` filled the shared per-layout caches
+    while a nested query could run `cacheCheck()` and reset them to `null` → `TypeError: Cannot read properties of
+    null (reading 'add')` inside `stepSocial`. Both now build into locals and assign at the end.
+  - CR-5 follow-up: the collector at the door also waits (up to 12 sim-min) while a resident is **on the way** to
+    pay (`pay_bills` head action in route/walk), and the paying wait (8 min) counts from when paying starts. The
+    natural reaction to the alert (order "Pagar contas" at 10:00–10:02) now pays and nothing is taken
+    (`qa_verify_code_collector`: 0/3 → 3/3 paid, 0 furniture taken).
+  - Sleep ping-pong when a critical need cannot be fixed (QA `noneeds`: bed, fridge and toilet sold): the critical
+    override cancelled the sofa sleep every 20 min to look for food that does not exist, and a critical
+    hunger/bladder woke the sleeper after 1 min every time. Now the override looks for a fix before cancelling, and
+    a wake that fixed nothing is not repeated for a while (`needWake`). Exhaustion faints 10 → 0 in 8 days; sofa
+    sleeps 3 min → 2–2.5 h; the starvation emergency still happens (no food at all).
+- **js/engine.js / js/render.js**: identifiers containing the forbidden trademark word were renamed
+  (`relocateSims` → `relocateCharacters`, render `pick` option `includeSims` → `includeCharacters`).
+- **js/render.js**: an explicit `focus()` counts as camera input for auto-frame. Before, a toast's "Ver" (or any
+  programmatic focus) could be undone within a frame or two on phones: auto-frame panned back to the selected
+  character because it sat outside the small clear area.
+- **js/ui.js**
+  - The save chip shows the slot natively ("Salvo ☁️ · Espaço 2", tooltip "Espaço 2 · Família X") from the
+    `'saved'` payload's `slotLabel` (main.js's fallback append steps aside).
+  - The pause chip uses `M.main.pauseLabel()` for non-mode pauses ("Pausado · Janela aberta", "Pausado · Ajuda").
+  - Buy mode: a click on the floor inside an object's footprint (beside a slim model: toilet, lamp, chair) selects
+    that object (`world.objectAt`, wall-mounted and system objects excluded).
+  - Phones: collapsing / expanding the catalog sheet updates `render.setViewInsets` (no camera move), so `focus()`
+    calls use the area the sheet really covers.
+  - New family on an empty lot: the camera frames the lot (between the family at the mailbox and the lot centre);
+    on phones the first view used to be mostly road and neighbour houses.
+- **index.html**: on desktop/tablet (≥ 761 px) the Build drawer hugs its content (door/window/wall/demolish no longer
+  show a mostly empty full-height panel); swatch lists still scroll inside `.tool-opts`.
+- **tools/integrate_flows.mjs**: runs the new `tools/integrate_flows_v2.mjs` first, then reloads with cleared saves
+  and UI prefs and runs the original flows (`FLOWS=v1|v2` runs one part). The paint check uses `paintWall(k, idx, 'A')`.
+- **tools/integrate_flows_v2.mjs** (new): the CONTRACT_V2 flows above with real mouse/touch/keyboard input, plus
+  day/night screenshots, Options (save to Espaço 2, slot list, export) and a new family on an empty lot with the
+  move-in checklist. Screenshots: `$SHOTS/flow2-<desk|phone>-*.png`.
+
+### Test results on the integrated build (final run)
+- Node: engine_test, fix_engine_test (+ sofa / socwait / socials / guests), engine_scenarios all pass; world_test 629/0;
+  save_test 101/0; models_test 311/311; fix_render_models_test 49/49.
+- Browser (integrate_check; no page errors, 0 console errors, only cdnjs three.js + Google Fonts requested):
+  integrate_flows (v2 18 + v1 24 checks) 42/42 at 1280×800 and at 390×844 touch; fix_ui_test 32/32 desktop, phone,
+  768×1024; fix_render_test 18/18; fix_save_browser 54/54; integrate_scenes, _hobbies, _services, _robust, _misc,
+  _reload, _days, _align, fix_engine_page, fix_world_page clean.
+- QA repro + verify scripts re-run on the integrated build: outputs in `scratchpad/integ_out/{repro,repro2,verify,brepro}`.
+
+### QA scripts that still print "fail" by design (behaviour changed on purpose)
+- `qa_bb_build` / `qa_bb_build2` `paper.*`: they look for the old per-edge `c`; painting is per side now (`cA`/`cB`).
+- `qa_bb_build` `window.place`: aims 0.8 above a cut stub (outside the 0.6 tolerance), where the cursor is over the
+  visible back wall, which correctly gets the window. `wall.diagonal.steep`: its corners are off screen.
+- `qa_bb_build*` `door.noWall`: hovering bare ground with the Door tool shows no tip (it used to flash a red
+  "Precisa de uma parede"; BB-6).
+- `qa_live_job` `acceptClicked: null`: the "Aceitar vaga" pie label is gone; jobs go through the offer card.
+- `qa_verify_build_bb9` `buyAfterBackspace`: Backspace now arms the sale first (BB-9).
+- `qa_verify_code_scale`: patches the old world.js source text ("patch point not found"); `qa_cr_scale` is the
+  current measure.
+
+## First integration pass
+
 Integration pass over the five modules as delivered (data/engine, world, models/render, ui/save/main,
 index.html). The modules already matched ARCHITECTURE.md on the important seams. Verified:
 - rotation and footprint math: every rendered mesh lands on its world footprint, in all 4 rotations, for

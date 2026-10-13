@@ -11,13 +11,17 @@
   // ===========================================================================
 
   const PI = Math.PI, TWO_PI = PI * 2, HALF_PI = PI / 2;
-  const PRIO = { auto: 2, urgent: 40, player: 50, critical: 100 };
+  // work (60): the automatic walk to the carpool outranks player commands (QA SIM-2)
+  const PRIO = { auto: 2, urgent: 40, player: 50, work: 60, critical: 100 };
   const MAX_PLAYER_ACTIONS = 8;
+  const MSG_QUEUE_FULL = 'A fila de ações está cheia (máx. 8).';
   const NEED_MOTIVES = ['hunger', 'energy', 'bladder', 'hygiene', 'comfort'];
   const NEED_EFFECTS = {
-    snack: 1, cook_meal: 1, eat_meal: 1, sleep: 1, nap: 1, toilet: 1, wash_hands: 1, go_work: 1,
+    snack: 1, cook_meal: 1, eat_meal: 1, sleep: 1, nap: 1, sleep_sofa: 1, toilet: 1, wash_hands: 1, go_work: 1,
     order_pizza: 1, pay_bills: 1, call_repair: 1, repair: 1, mop: 1, accept_job: 1, find_job: 1, read_paper: 1,
   };
+  const SLEEP_EFFECTS = { sleep: 1, nap: 1, sleep_sofa: 1 };
+  function isSleepEff(e) { return !!(e && SLEEP_EFFECTS[e]); }
   // interactions a social partner should not be pulled out of (they wait instead)
   const BUSY_EFFECTS = { toilet: 1, cook_meal: 1, eat_meal: 1, go_work: 1, faint: 1, repair: 1, snack: 1 };
   const BUSY_KEYS = { shower: 1, bath: 1, use: 1 };
@@ -32,6 +36,10 @@
   let objMapRef = null, objMapLen = -1;
   let debugThrow = false;
   let lastError = null;
+  let lastReason = '';          // pt-BR reason of the last refused queue*/buy*/build*/paint* call (CONTRACT_V2 §3)
+  let tickNo = 0;               // engine tick counter (per-tick caches)
+  let autoBudget = Infinity;    // full autonomy evaluations left in this tick (time-slicing, CR-6)
+  let localVer = 0;             // bumped on every object/lot change made through the engine (cache key)
 
   // --------------------------------------------------------------- basics
   function D() { return M.data; }
@@ -54,6 +62,11 @@
   function fmtMoney(n) { return M.util && M.util.fmtMoney ? M.util.fmtMoney(n) : 'M$ ' + Math.round(n); }
   function fmtTime(m) { return M.util && M.util.fmtTime ? M.util.fmtTime(m) : String(m); }
   function firstName(s) { return String((s && s.name) || '').split(' ')[0] || 'Morador'; }
+  // gendered Portuguese (QA LIVE-16): g(sim, 'o', 'a') → 'a' for a female character
+  function g(s, m, f) { return s && s.gender === 'f' ? f : m; }
+  function refuse(reason) { lastReason = String(reason || 'Não é possível agora.'); return false; }
+  const refusePlayer = refuse;
+  function refuseQuiet() { return false; }
   function shallow(o) { const r = {}; if (o) for (const k in o) r[k] = o[k]; return r; }
 
   // Seeded RNG whose state lives in the save (mulberry32 step).
@@ -80,13 +93,44 @@
   }
 
   // --------------------------------------------------------------- notifications / money / bubbles
-  function notify(text, kind) {
-    if (!S) return;
-    const n = { id: nid(), day: S.time.day, minute: Math.floor(S.time.minute), text: String(text), kind: kind || 'info' };
+  // notify(text, kind, focus?) — focus: { x, y } | { simId } | { objId } (CONTRACT_V2 §3, UI 'Ver' button).
+  // The same text (and kind) again within 60 sim-minutes only increments `count` on the stored notification
+  // and emits 'notifyRepeat' instead of a new toast (QA: faint loops / route failures spammed toasts).
+  function notify(text, kind, focus) {
+    if (!S) return null;
+    text = String(text); kind = kind || 'info';
+    const now = nowAbs();
+    for (let i = S.notifications.length - 1; i >= 0; i--) {
+      const p = S.notifications[i];
+      if (!p) continue;
+      const pt = num(p.day) * 1440 + num(p.minute);
+      if (now - pt > 60) break;
+      if (p.text === text && p.kind === kind) {
+        p.count = num(p.count, 1) + 1;
+        p.lastDay = S.time.day; p.lastMinute = Math.floor(S.time.minute);
+        emit('notifyRepeat', { id: p.id, text: p.text, kind: p.kind, count: p.count });
+        return p;
+      }
+    }
+    const n = { id: nid(), day: S.time.day, minute: Math.floor(S.time.minute), text, kind };
+    const fc = cleanFocus(focus);
+    if (fc) n.focus = fc;
     S.notifications.push(n);
     if (S.notifications.length > 30) S.notifications.splice(0, S.notifications.length - 30);
-    emit('notify', { text: n.text, kind: n.kind, id: n.id });
+    const payload = { text: n.text, kind: n.kind, id: n.id };
+    if (fc) payload.focus = fc;
+    emit('notify', payload);
+    return n;
   }
+  function cleanFocus(f) {
+    if (!f || typeof f !== 'object') return null;
+    if (f.simId != null) return { simId: f.simId };
+    if (f.objId != null) return { objId: f.objId };
+    if (isFinite(+f.x) && isFinite(+f.y)) return { x: +f.x, y: +f.y };
+    return null;
+  }
+  function focusSim(s) { return s ? { simId: s.id } : null; }
+  function focusObj(o) { return o ? { objId: o.id } : null; }
   function addMoney(delta, reason) {
     delta = Math.round(num(delta));
     if (!delta) return;
@@ -104,6 +148,7 @@
   // --------------------------------------------------------------- objects
   function def(type) { return (D() && D().CATALOG && D().CATALOG[type]) || null; }
   function rebuildObjMap() {
+    localVer++;
     objMap = new Map();
     for (const o of S.objects) if (o && o.id != null) objMap.set(o.id, o);
     objMapRef = S.objects; objMapLen = S.objects.length;
@@ -157,28 +202,74 @@
   function walkable(x, y, allow) { return guard(() => !!WO().isWalkable(x, y, allow), false); }
   function edgeOpen(x1, y1, x2, y2) { return guard(() => !WO().edgeBlocked(x1, y1, x2, y2), false); }
   function roomAt(x, y) { return guard(() => WO().roomAt(Math.round(x), Math.round(y)), -1); }
-  function itemAt(x, y) {
+
+  // ---- per-layout caches (CR-6): slots, object rooms and tile→object maps are recomputed only when the world
+  // version, the engine's own change counter or the object list changes (instead of per query).
+  let cacheKey = '';
+  let slotCache = new Map(), roomCache = new Map(), tileBlk = null, tileItm = null, slotTiles = null;
+  function cacheCheck() {
+    const W = WO();
+    const wv = W && typeof W.version === 'number' ? W.version : 'x' + tickNo;
+    const k = wv + '|' + localVer + '|' + (S ? S.objects.length : 0);
+    if (k !== cacheKey || !S || objMapRef !== S.objects) {
+      cacheKey = k;
+      slotCache = new Map(); roomCache = new Map(); tileBlk = null; tileItm = null; slotTiles = null;
+    }
+  }
+  function invalidateCaches() { localVer++; cacheKey = ''; }
+  function buildTileMaps() {
+    const w = S.lot.w, h = S.lot.h;
+    // locals first (a nested query may run cacheCheck() and reset the shared maps mid-build)
+    const blkMap = new Array(w * h).fill(null);
+    const itmMap = new Array(w * h).fill(null);
     for (const o of S.objects) {
       const d = def(o.type);
-      if (!d || !d.noBlock || d.wall || o.type === 'rug') continue;
-      for (const t of footTiles(o)) if (t.x === x && t.y === y) return o;
+      if (!d) continue;
+      const blk = !d.noBlock;
+      const itm = d.noBlock && !d.wall && o.type !== 'rug';
+      if (!blk && !itm) continue;
+      for (const t of footTiles(o)) {
+        if (!inBounds(t.x, t.y)) continue;
+        const i = t.y * w + t.x;
+        if (blk && !blkMap[i]) blkMap[i] = o;
+        if (itm && !itmMap[i]) itmMap[i] = o;
+      }
     }
-    return null;
+    tileBlk = blkMap; tileItm = itmMap;
+  }
+  function itemAt(x, y) {
+    cacheCheck();
+    if (!tileItm) buildTileMaps();
+    if (!inBounds(x, y)) return null;
+    const o = tileItm[y * S.lot.w + x];
+    return o && objById(o.id) === o ? o : null;
   }
   function blockerAt(x, y) {
-    for (const o of S.objects) {
-      const d = def(o.type);
-      if (!d || d.noBlock) continue;
-      for (const t of footTiles(o)) if (t.x === x && t.y === y) return o;
-    }
-    return null;
+    cacheCheck();
+    if (!tileBlk) buildTileMaps();
+    if (!inBounds(x, y)) return null;
+    const o = tileBlk[y * S.lot.w + x];
+    return o && objById(o.id) === o ? o : null;
   }
   function objRoom(o) {
+    cacheCheck();
+    const k = o.id;
+    if (k != null && roomCache.has(k)) return roomCache.get(k);
     const c = objCenter(o);
-    return roomAt(Math.round(c.x), Math.round(c.y));
+    const r = roomAt(Math.round(c.x), Math.round(c.y));
+    if (k != null) roomCache.set(k, r);
+    return r;
   }
 
   function dataSlots(o, d) {
+    cacheCheck();
+    const ck = o.id != null && o.type !== '__tile' ? o.id + ':d' : null;
+    if (ck && slotCache.has(ck)) return slotCache.get(ck);
+    const out = dataSlotsRaw(o, d);
+    if (ck) slotCache.set(ck, out);
+    return out;
+  }
+  function dataSlotsRaw(o, d) {
     const rot = normRot(o.rot);
     const oroom = objRoom(o);
     const out = [];
@@ -212,7 +303,16 @@
     return false;
   }
   // Tiles around a footprint (and the item's own tile when it does not block) as slots.
+  // Cached per layout: callers must copy before mutating (Object.assign({}, s, ...)).
   function adjacentSlots(o, d) {
+    cacheCheck();
+    const ck = o.id != null && o.type !== '__tile' ? o.id + ':a' : null;
+    if (ck && slotCache.has(ck)) return slotCache.get(ck);
+    const out = adjacentSlotsRaw(o, d);
+    if (ck) slotCache.set(ck, out);
+    return out;
+  }
+  function adjacentSlotsRaw(o, d) {
     const tiles = footTiles(o);
     const set = new Set(tiles.map((t) => t.x + ',' + t.y));
     const out = [];
@@ -234,7 +334,77 @@
     return out;
   }
   function tileAdjSlots(x, y) {
-    return adjacentSlots({ x, y, rot: 0, type: '__tile' }, { w: 1, h: 1, noBlock: false });
+    return adjacentSlotsRaw({ x, y, rot: 0, type: '__tile' }, { w: 1, h: 1, noBlock: false });
+  }
+  // Tiles that are standing slots of some interactive object (social meeting spots avoid them, SIM-7).
+  function isSlotTile(x, y) {
+    cacheCheck();
+    if (!slotTiles) {
+      // built into a local: dataSlots() may run cacheCheck() and reset the shared caches mid-loop
+      const set = new Set();
+      for (const o of S.objects) {
+        const d = def(o.type);
+        if (!d || !d.interactions || !d.interactions.length || d.approach === 'adjacent' || d.noBlock) continue;
+        for (const sl of dataSlots(o, d)) if (!sl.on) set.add(sl.x + ',' + sl.y);
+      }
+      slotTiles = set;
+    }
+    return slotTiles.has(x + ',' + y);
+  }
+
+  // ---- characters standing still on a floor tile (SIM-7): 'idle' (may be asked to step aside),
+  // 'busy' (using something there / fainted) or 'social' (talking or waiting for a partner).
+  let standCache = { tick: -1, map: null };
+  function standers() {
+    if (standCache.tick === tickNo && standCache.map) return standCache.map;
+    const map = new Map();
+    for (const s of S.sims) {
+      if (s.hidden) continue;
+      const a = s.queue && s.queue[0];
+      let mode = null;
+      if (s.data && s.data.nudge) mode = null;
+      else if (!a) mode = 'idle';
+      else if (a.kind === 'walk') mode = a.phase === 'walk' ? null : 'idle';
+      else if (a.phase === 'walk') mode = null;
+      else if (a.phase === 'route') mode = 'idle';
+      else if (a.effect === 'faint') mode = 'busy';
+      else if (a.kind === 'social') mode = 'social';
+      else if (a.slot && a.slot.on) mode = null;          // on the furniture, not on a floor tile
+      else mode = 'busy';
+      if (!mode) continue;
+      const k = Math.round(num(s.x)) + ',' + Math.round(num(s.y));
+      const prev = map.get(k);
+      if (!prev || (prev.mode === 'idle' && mode !== 'idle')) map.set(k, { sim: s, mode });
+    }
+    standCache = { tick: tickNo, map };
+    return map;
+  }
+  // another character is heading to / using this floor tile as the end of their current action
+  function tileClaimed(x, y, except) {
+    for (const s of S.sims) {
+      if (s === except || s.hidden) continue;
+      const a = s.queue && s.queue[0];
+      if (!a || !a.slot || a.slot.on) continue;
+      if (a.phase !== 'walk' && a.phase !== 'enter' && a.phase !== 'do') continue;
+      if (a.slot.x === x && a.slot.y === y) return true;
+    }
+    return false;
+  }
+  function standerAt(x, y, except) {
+    const e = standers().get(x + ',' + y);
+    if (!e || e.sim === except) {
+      if (e && e.sim === except) {
+        // another character may share the tile with `except`
+        for (const s of S.sims) {
+          if (s === except || s.hidden || Math.round(num(s.x)) !== x || Math.round(num(s.y)) !== y) continue;
+          const a = s.queue && s.queue[0];
+          if (a && (a.phase === 'walk' || (a.slot && a.slot.on && a.phase !== 'route'))) continue;
+          return { sim: s, mode: !a || a.phase === 'route' || a.kind === 'walk' ? 'idle' : a.kind === 'social' ? 'social' : 'busy' };
+        }
+      }
+      return null;
+    }
+    return e;
   }
   function objSlots(o, it) {
     const d = def(o.type);
@@ -271,7 +441,14 @@
       if (!s.usable) continue;
       if (it && typeof it.slot === 'number' && s.index !== it.slot) continue;
       if (slotHolder(o.id, s.index, sim)) continue;
-      out.push(Object.assign({}, s, { objId: o.id }));
+      const c = Object.assign({}, s, { objId: o.id });
+      if (!s.on && sim) {
+        const st = standerAt(s.x, s.y, sim);
+        if (st && st.mode !== 'idle') continue;                    // someone is using / talking on that tile
+        if (tileClaimed(s.x, s.y, sim)) continue;                  // or about to (another object's slot there)
+        if (st) c.penalty = num(c.penalty) + 3;                    // idle: they will step aside if chosen
+      }
+      out.push(c);
     }
     return out;
   }
@@ -469,14 +646,31 @@
     }
     return list.filter(Boolean);
   }
-  function isNeedInter(it) {
+  function raisesMotive(it, k) {
+    if (!it) return false;
+    if (num(it.rates && it.rates[k]) > 0) return true;
+    const a = it.ads && it.ads[k];
+    return !!(a && (num(a.min) > 0 || num(a.delta) > 0 || (typeof a === 'number' && a > 0)));
+  }
+  // Fun and Social count as needs when they are the lowest motive or below CRITICAL.needLow (QA LIVE-6:
+  // the low-mood refusal advised "Cuide de: Diversão" while refusing every fun action).
+  function lowNeed(sim, k) {
+    if (!sim || !sim.motives) return false;
+    return num(sim.motives[k]) <= D().CRITICAL.needLow || lowestMotive(sim).key === k;
+  }
+  function isNeedInter(it, sim) {
     if (!it) return false;
     if (it.effect && NEED_EFFECTS[it.effect]) return true;
-    for (const k of NEED_MOTIVES) {
-      if (num(it.rates && it.rates[k]) > 0) return true;
-      const a = it.ads && it.ads[k];
-      if (a && (num(a.min) > 0 || num(a.delta) > 0 || (typeof a === 'number' && a > 0))) return true;
-    }
+    for (const k of NEED_MOTIVES) if (raisesMotive(it, k)) return true;
+    if (sim) for (const k of ['fun', 'social']) if (lowNeed(sim, k) && raisesMotive(it, k)) return true;
+    return false;
+  }
+  function isNeedSocial(so, sim) {
+    if (!so || !sim) return false;
+    if (so.key === 'goodbye') return true;
+    const ga = so.gainAccept || {};
+    if (lowNeed(sim, 'social') && (num(ga.social) > 0 || raisesMotive(so, 'social'))) return true;
+    if (lowNeed(sim, 'fun') && (num(ga.fun) > 0 || raisesMotive(so, 'fun'))) return true;
     return false;
   }
   function isSkillHobby(it) { return !!(it && it.skill && it.effect !== 'cook_meal' && it.effect !== 'repair'); }
@@ -525,7 +719,7 @@
       case 'spoiled': return o.spoiled ? null : 'Ainda está boa.';
       case 'hasBills': return S.bills.length ? null : 'Nenhuma conta para pagar.';
       case 'anyBroken': return anyBroken() ? null : 'Nada está quebrado.';
-      case 'employed': return sim.career ? null : 'Não está empregado(a).';
+      case 'employed': return sim.career ? null : 'Não está ' + g(sim, 'empregado', 'empregada') + '.';
       case 'thirsty': return o.dead ? 'A planta morreu.' : (num(o.water, 100) < D().PLANT.thirstyBelow ? null : 'Não precisa de água agora.');
       case 'dead': return o.dead ? null : 'A planta está viva.';
       case 'unmade': return o.unmade ? null : 'A cama já está arrumada.';
@@ -550,7 +744,7 @@
       if (auto && (anyMealEdible() || someoneCooking(sim))) return { ok: false, reason: 'Já tem comida.' };
     }
     if (isSkillHobby(it) && mood(sim) < D().CRITICAL.skillMood) return { ok: false, reason: 'Sem disposição (humor ruim).' };
-    if (it.effect === 'sleep' && !auto && num(sim.motives.energy) >= D().SLEEP.playerRefuse) return { ok: false, reason: 'Sem sono.' };
+    if ((it.effect === 'sleep' || it.effect === 'sleep_sofa') && !auto && num(sim.motives.energy) >= D().SLEEP.playerRefuse) return { ok: false, reason: 'Sem sono.' };
     if (it.effect === 'call_friend' || it.effect === 'invite') {
       if (!S.npcs.some((n) => n.known)) return { ok: false, reason: 'Não conhece nenhum vizinho ainda.' };
     }
@@ -558,7 +752,7 @@
       return { ok: false, reason: 'Já trabalha nesta área.' };
     }
     if (it.effect === 'accept_job' && sim.visitor) return { ok: false, reason: 'Só para moradores.' };
-    if (it.effect === 'paint' || it.effect === 'eat_meal') { /* fine */ }
+    if (it.effect === 'order_pizza' && pizzaPending(null)) return { ok: false, reason: 'Já tem uma pizza a caminho.' };
     return { ok: true, reason: '' };
   }
   function hasCapacity(sim, o, it) {
@@ -579,7 +773,68 @@
     const C = D().AUTONOMY.circadian;
     return num(C[h], 1);
   }
-  function effectiveAds(sim, o, it) {
+  // Sleep context of a character for this tick: is a bed slot free for them, are they in a night-shift
+  // pre-shift window (QA SIM-3) or just back from a night shift.
+  const sleepCtxCache = new Map();   // sim id -> context of the current tick (not saved)
+  function sleepCtx(sim) {
+    if (!sim.data) sim.data = {};
+    const c = sleepCtxCache.get(sim.id);
+    if (c && c.tick === tickNo) return c;
+    const out = { tick: tickNo, bedFree: false, preShift: false, postShift: false };
+    for (const o of S.objects) {
+      if (o.broken) continue;
+      const d = def(o.type);
+      if (!d || d.cat !== 'beds') continue;
+      const it = getInter(o, 'sleep');
+      if (it && freeSlots(sim, o, it).length) { out.bedFree = true; break; }
+    }
+    if (!sim.visitor && sim.career) {
+      const R = D().CAREER_RULES;
+      const sh = shiftWindow(sim);
+      if (sh && isNightShift(sh.lv)) {
+        const toGo = sh.start - nowAbs();
+        if (toGo <= R.preNapHours * 60 && toGo >= R.napAlarmBefore + 20) out.preShift = true;
+      }
+      if (num(sim.data.lastReturn) && nowAbs() - num(sim.data.lastReturn) < 240 && sim.data.lastReturnNight) out.postShift = true;
+    }
+    if (sleepCtxCache.size > 64) sleepCtxCache.clear();
+    sleepCtxCache.set(sim.id, out);
+    return out;
+  }
+  function isNightShift(lv) {
+    const R = D().CAREER_RULES;
+    return !!lv && (lv.start >= R.nightShiftFrom || lv.start < R.nightShiftTo);
+  }
+  // Purposeful downtime: skill objects advertise a 'mood' gain when the character is in a good mood and no
+  // need is low; the amount follows the personality trait of that skill and the next career level's needs.
+  function purposeAd(sim, it) {
+    const A = D().AUTONOMY;
+    if (sim.visitor || !it.skill || it.effect === 'cook_meal' || it.effect === 'repair') return 0;
+    if (mood(sim) < A.purposeMood) return 0;
+    for (const k of D().MOTIVES) if (k !== 'room' && num(sim.motives[k]) < A.purposeMinMotive) return 0;
+    const lvl = num(sim.skills && sim.skills[it.skill]);
+    if (lvl >= 10) return 0;
+    let fit = 0.25;
+    const tk = D().SKILL_TRAIT[it.skill];
+    if (tk) {
+      const inv = tk[0] === '-';
+      const tv = num(sim.personality[inv ? tk.slice(1) : tk], 5);
+      fit = Math.max(fit, (inv ? 10 - tv : tv) / 10);
+    } else fit = 0.45;
+    let career = 0;
+    if (sim.career) {
+      const tr = D().CAREERS[sim.career.track];
+      const next = tr && tr.levels[sim.career.level];
+      const need = next && next.req && next.req.skills ? num(next.req.skills[it.skill]) : 0;
+      if (need > Math.floor(lvl)) career = A.purposeCareer;
+    }
+    // diminishing returns: practice already done today (autonomous) makes more practice less attractive
+    const pd = sim.data && sim.data.practice;
+    const today = pd && pd.day === S.time.day ? num(pd.min) : 0;
+    const fade = Math.max(0, 1 - today / Math.max(1, num(A.purposeDayMinutes, 150)));
+    return (A.purposeBase + A.purposeDelta * fit + career) * fade;
+  }
+  function effectiveAds(sim, o, it, opts) {
     const out = {};
     const P = sim.personality || {}, SK = sim.skills || {};
     for (const k in (it.ads || {})) {
@@ -587,10 +842,25 @@
       if (v) out[k] = v;
     }
     const eff = it.effect;
-    if (eff === 'sleep' || eff === 'nap') {
-      const gate = num((eff === 'sleep' ? D().AUTONOMY.sleepGate : D().AUTONOMY.napGate)[hourNow()], 100);
-      if (num(sim.motives.energy) > gate) return {};
-      if (out.energy) out.energy *= circadian();
+    const critical = !!(opts && opts.critical);
+    if (isSleepEff(eff)) {
+      const A = D().AUTONOMY, h = hourNow();
+      const ctx = sleepCtx(sim);
+      if (eff === 'sleep_sofa' && ctx.bedFree) return {};      // a free bed always wins (naps stay possible)
+      if (!critical) {
+        let gate, circ = circadian();
+        if (eff === 'sleep') gate = num(A.sleepGate[h], 100);
+        else if (eff === 'nap') gate = num(A.napGate[h], 100);
+        else gate = num(A.sofaSleepGate[h], 100);
+        if (ctx.preShift) { gate = Math.max(gate, 70); circ = 1; }
+        else if (ctx.postShift) { gate = Math.max(gate, 40); circ = Math.max(circ, 0.8); }
+        if (num(sim.motives.energy) > gate) return {};
+        if (out.energy) out.energy *= circ * (eff === 'sleep_sofa' ? num(A.sofaSleepAd, 1) : 1);
+      }
+    }
+    if (it.purpose || (it.skill && it.effect !== 'cook_meal' && it.effect !== 'repair')) {
+      const pa = purposeAd(sim, it);
+      if (pa > 0) out.mood = num(out.mood) + pa;
     }
     if (eff === 'eat_meal' && o) out.hunger = Math.max(30, num(o.quality, 60));
     if (eff === 'clean_object') {
@@ -612,6 +882,8 @@
     }
     if (eff === 'read_paper' && o && o.read) return {};
     if (eff === 'snack' && num(S.money) < num(it.cost)) return {};
+    // dinner is on the stove: wait for it instead of a snack (unless really starving)
+    if (eff === 'snack' && someoneCooking(sim) && num(sim.motives.hunger) > -60) return {};
     return out;
   }
   function scoreAds(motives, moodVal, ads) {
@@ -666,8 +938,35 @@
     return null;
   }
 
+  // per-pair social fatigue (QA SIM-1): decays exponentially, see AUTONOMY.fatigueHalfLife
+  function pairFatigue(sim, t) {
+    const F = sim.data && sim.data.fatigue;
+    const e = F && F[t.id];
+    if (!e) return 0;
+    const dtm = Math.max(0, nowAbs() - num(e.t));
+    return num(e.v) * Math.pow(0.5, dtm / Math.max(1, D().AUTONOMY.fatigueHalfLife));
+  }
+  function addFatigue(sim, t, amount) {
+    if (!sim || !t) return;
+    if (!sim.data) sim.data = {};
+    if (!sim.data.fatigue || typeof sim.data.fatigue !== 'object') sim.data.fatigue = {};
+    const v = pairFatigue(sim, t) + amount;
+    sim.data.fatigue[t.id] = { v: Math.round(v * 100) / 100, t: Math.floor(nowAbs()) };
+    // forget partners that are long gone
+    for (const k in sim.data.fatigue) {
+      const e = sim.data.fatigue[k];
+      if (!e || nowAbs() - num(e.t) > 4 * 1440) delete sim.data.fatigue[k];
+    }
+  }
+  function sameSocialCount(sim, t, key, window) {
+    const log = (sim.data && sim.data.socialLog) || [];
+    const since = nowAbs() - window;
+    let n = 0;
+    for (const e of log) if (e && e.t > since && (!t || e.target === t.id) && e.key === key) n++;
+    return n;
+  }
   function socialCandidates(sim, restrict, att, out) {
-    const SR = D().SOCIAL_RULES;
+    const SR = D().SOCIAL_RULES, A = D().AUTONOMY;
     for (const t of S.sims) {
       if (t === sim || t.hidden || t.asleep) continue;
       if (t.data && t.data.leaving) continue;
@@ -676,8 +975,11 @@
       if (!sim.visitor && sim.role) continue;
       const ta = t.queue && t.queue[0];
       if (ta && (ta.prio >= PRIO.player || ta.kind === 'social' || busyFor(ta))) continue;
+      if (!t.visitor || t.role === 'guest') { if (criticalMotive(t)) continue; }   // QA SIM-11
       const rel = relPeek(sim, t);
       const relT = relPeek(t, sim);
+      const fat = pairFatigue(sim, t);
+      let best = null;
       for (const key in D().SOCIALS) {
         const so = D().SOCIALS[key];
         if (!so.auto) continue;
@@ -686,11 +988,14 @@
         if (so.onlyRole === 'walkby' && (sim.visitor || (t.data && t.data.greeted))) continue;
         if (!socialAllowed(sim, t, so, rel)) continue;
         if (so.mean && !(num(sim.personality.nice) <= 3 || rel.daily < -20)) continue;
+        // guests do not tease or insult their hosts unless they already dislike them (QA improvement)
+        if (so.mean && sim.visitor && rel.daily > SR.guestMeanBelow) continue;
         if (!so.mean && rel.daily < SR.hideFriendlyBelow && so.key !== 'talk') continue;
         const ads = {};
         const P = sim.personality, SK = sim.skills;
         // check-tree style: friendly socials advertise less when a rejection is likely
-        const scale = (so.mean ? 1 : Math.max(0, 1 + rel.daily / SR.relAdScale)) * (so.mean ? 1 : acceptChance(sim, t, so));
+        const boost = Math.min(num(A.relBoostCap, 1.5), Math.max(0, 1 + rel.daily / SR.relAdScale));
+        const scale = (so.mean ? 1 : boost) * (so.mean ? 1 : acceptChance(sim, t, so));
         for (const k in (so.ads || {})) { const v = D().adAmount(so.ads[k], P, SK) * scale; if (v) ads[k] = v; }
         if (num(sim.motives.social) <= -70 && ads.social) ads.social *= 1.5;
         if (restrict && !(ads[restrict] > 0)) continue;
@@ -699,9 +1004,22 @@
         let sc = scoreAds(sim.motives, mood(sim), ads);
         if (!(sc > 0)) continue;
         if (relT.daily < -50) sc *= 0.3;
+        // fatigue with this partner and repeats of the same social today
+        if (so.key !== 'greet') {
+          sc /= (1 + num(A.fatigueK) * fat);
+          const win = num(A.repeatDayWindow, 1440);
+          const talkK = so.key === 'talk' ? 0.4 : 1;
+          const reps = Math.min(6, sameSocialCount(sim, t, key, win));
+          sc /= (1 + num(A.repeatDayK) * talkK * reps);
+          // the same social with anybody today (dancing with every housemate in turn is still a lot of dancing)
+          const any = Math.min(10, sameSocialCount(sim, null, key, win));
+          sc /= (1 + num(A.repeatAnyK, 0.25) * talkK * any);
+        }
         sc /= (1 + att[SR.atten] * dist(sim.x, sim.y, t.x, t.y));
-        out.push({ kind: 'social', target: t, so, score: sc });
+        // one candidate per partner: the best social (the top-N cut then sees objects too)
+        if (!best || sc > best.score) best = { kind: 'social', target: t, so, score: sc };
       }
+      if (best) out.push(best);
     }
   }
   function busyFor(a) {
@@ -709,7 +1027,7 @@
     if (a.kind === 'object') {
       if (a.effect && BUSY_EFFECTS[a.effect]) return true;
       if (BUSY_KEYS[a.interaction]) return true;
-      if (a.effect === 'sleep' || a.effect === 'nap') return true;
+      if (isSleepEff(a.effect)) return true;
     }
     return false;
   }
@@ -726,7 +1044,7 @@
     switch (it.effect) {
       case 'cook_meal': return 40;
       case 'eat_meal': return 25;
-      case 'sleep': return 480;
+      case 'sleep': case 'sleep_sofa': return 480;
       case 'nap': return 60;
       case 'repair': return 90;
       default: break;
@@ -740,12 +1058,13 @@
     if (!sh) return Infinity;
     return sh.start - D().CAREER_RULES.autoGoBefore - nowAbs();
   }
-  function runAutonomy(sim, restrict) {
+  function runAutonomy(sim, restrict, opts) {
     const A = D().AUTONOMY;
     const att = sim.visitor ? D().ATTENUATION_VISITOR : D().ATTENUATION;
     const md = mood(sim);
     const cands = [];
     const budget = restrict ? Infinity : minutesUntilWork(sim);
+    const critOpts = (restrict || (opts && opts.critical)) ? { critical: true } : null;
     for (const o of S.objects) {
       const d = def(o.type);
       if (!d || !d.interactions || !d.interactions.length) continue;
@@ -755,18 +1074,22 @@
         if (sim.visitor && !it.visitors) continue;
         const av = availability(sim, o, it, true);
         if (!av.ok) continue;
-        const ads = effectiveAds(sim, o, it);
+        const ads = effectiveAds(sim, o, it, critOpts);
         let any = false;
         for (const k in ads) if (ads[k]) { any = true; break; }
         if (!any) continue;
         if (restrict && !(ads[restrict] > 0)) continue;
-        if (budget < 180 && estMinutes(it) > budget) continue;
+        // long things are not started right before work; sleep is fine (the alarm / carpool wakes them, SIM-3)
+        if (budget < 180 && estMinutes(it) > budget && !(isSleepEff(it.effect) && budget >= 40)) continue;
         if (isLocked(sim, lockKey(o.id, it.key), ads)) continue;
         if (!canDeliver(sim, o, it)) continue;
         if (!hasCapacity(sim, o, it)) continue;
         let sc;
-        if ((it.effect === 'sleep' || it.effect === 'nap') && ads.energy) {
-          const press = num(D().AUTONOMY.sleepPressure[hourNow()]);
+        if (isSleepEff(it.effect) && ads.energy) {
+          // night 'sleep pressure', plus a strong one in a night worker's pre-shift window (a full tank scores 0
+          // on the energy curve, so without it nobody naps before a 23:00 shift — QA SIM-3)
+          const ctx = sleepCtx(sim);
+          const press = num(D().AUTONOMY.sleepPressure[hourNow()]) + (ctx.preShift ? 90 : ctx.postShift ? 40 : 0);
           const mm = press ? Object.assign({}, sim.motives, { energy: clamp(num(sim.motives.energy) - press, -100, 100) }) : sim.motives;
           sc = scoreAds(mm, md, ads);
         } else sc = scoreAds(sim.motives, md, ads);
@@ -779,6 +1102,7 @@
     if (!restrict || restrict === 'social') socialCandidates(sim, restrict, att, cands);
     const minScore = sim.seated ? A.minScoreSeated : A.minScore;
     const valid = cands.filter((c) => c.score > minScore).sort((a, b) => b.score - a.score);
+    if (opts && opts.list) return valid;
     const top = valid.slice(0, A.topN);
     if (!top.length) return null;
     let total = 0;
@@ -866,13 +1190,21 @@
     act.failed = true;
     if (reason && act.source === 'player') {
       setBubble(sim, 'think', '🚫', 4);
-      notify(firstName(sim) + ': ' + reason, 'bad');
+      notify(firstName(sim) + ': ' + reason, 'bad', focusSim(sim));
     } else if (reason) setBubble(sim, 'think', '❔', 3);
     cancelHooks(sim, act);
     if (sim.seated || sim.asleep || isOnBlocked(sim)) { act.phase = 'exit'; act.completed = false; act.data.noFinish = true; }
     else act.phase = 'done';
   }
   function isOnBlocked(sim) { const t = simTile(sim); return !walkable(t.x, t.y); }
+  // A cancelled walk/enter that left the character on (or stepping onto) furniture steps back off it first
+  // instead of ending there (QA SIM-6: responders danced inside the sofa).
+  function cancelToExit(sim, act) {
+    if (sim.seated || sim.asleep || isOnBlocked(sim)) {
+      act.phase = 'exit'; act.completed = false; act.data.noFinish = true; act.data.exitInit = false;
+      act.rates = null;
+    } else act.phase = 'done';
+  }
 
   // Routing to candidate tiles (multi-goal A* through M.world.nearestReachable)
   function routeTo(sim, act, cands, noRun) {
@@ -964,11 +1296,20 @@
   function exitTarget(sim, act) {
     const t = simTile(sim);
     if (walkable(t.x, t.y) && !(act.slot && act.slot.on)) return null;
+    const occupied = (x, y) => S.sims.some((o) => o !== sim && !o.hidden && Math.round(num(o.x)) === x && Math.round(num(o.y)) === y) ||
+      tileClaimed(x, y, sim);
     const e = act.data.exit;
+    if (e && walkable(e.x, e.y) && !occupied(e.x, e.y)) return { x: e.x, y: e.y };
+    // the usual exit tile is taken by somebody (e.g. a friend waiting to talk): step off on another side (SIM-7)
+    for (const d of [[0, 1], [0, -1], [1, 0], [-1, 0]]) {
+      const x = t.x + d[0], y = t.y + d[1];
+      if (!inBounds(x, y) || !walkable(x, y) || !edgeOpen(t.x, t.y, x, y) || occupied(x, y)) continue;
+      return { x, y };
+    }
     if (e && walkable(e.x, e.y)) return { x: e.x, y: e.y };
     const nw = guard(() => WO().nearestWalkable ? WO().nearestWalkable(sim.x, sim.y) : null, null);
     if (nw) return nw;
-    return walkable(t.x, t.y) ? null : null;
+    return null;
   }
   function stepExit(sim, act, dt) {
     if (!act.data.exitInit) {
@@ -1045,6 +1386,8 @@
           const tgt0 = objById(act.tgtId != null ? act.tgtId : act.objId);
           const maxWait = tgt0 && usersOf(tgt0.id, sim).length ? 30 : 10;
           if (act.source === 'player' && act.data.waited < maxWait) { sim.anim = 'idle'; if (!sim.bubble) setBubble(sim, 'think', '⏳', 2); return; }
+          // somebody is just taking a plate from the same meal (often the only free spot by a counter): wait a bit
+          if (act.effect === 'eat_meal' && !num(act.stage) && tgt0 && usersOf(tgt0.id, sim).length && act.data.waited < 6) { sim.anim = 'idle'; return; }
           failAction(sim, act, 'Não há lugar livre para isso agora.', 20);
           return;
         }
@@ -1056,15 +1399,21 @@
         return;
       }
       case 'walk': {
-        if (act.cancel) { cancelHooks(sim, act); act.phase = 'done'; return; }
+        if (act.cancel) { cancelHooks(sim, act); cancelToExit(sim, act); return; }
         if (act.useObjId != null && !objById(act.useObjId)) { act.phase = 'route'; return; }
         const holder = act.useObjId != null && act.slotIdx != null ? slotHolder(act.useObjId, act.slotIdx, sim) : null;
         if (holder) { act.phase = 'route'; act.data.reroutes = num(act.data.reroutes) + 1; return; }
+        if (act.slot && !act.slot.on && !act.data.nudged && act.path.length - act.progress <= 2) {
+          // somebody idle stands on the spot: ask them to step aside (SIM-7)
+          act.data.nudged = true;
+          const st = standerAt(act.slot.x, act.slot.y, sim);
+          if (st && st.mode === 'idle') stepAside(st.sim, { x: act.slot.x, y: act.slot.y });
+        }
         if (stepWalk(sim, act, dt)) { act.phase = 'enter'; act.data.enterFrom = null; act.data.enterT = 0; }
         return;
       }
       case 'enter': {
-        if (act.cancel) { cancelHooks(sim, act); act.phase = sim.seated ? 'exit' : 'done'; return; }
+        if (act.cancel) { cancelHooks(sim, act); cancelToExit(sim, act); return; }
         sim.anim = 'idle';
         if (stepEnter(sim, act, dt)) startDo(sim, act, it, eff);
         return;
@@ -1090,6 +1439,20 @@
     }
   }
   function startDo(sim, act, it, eff) {
+    if (!act.data.didDo && !act.stage && it.requires) {
+      const o = objById(act.objId);
+      const rq = o ? checkRequires(sim, o, it) : null;
+      if (rq) {
+        // the chore is no longer needed (someone else did it): drop it quietly
+        if (act.source === 'player') setBubble(sim, 'think', '❔', 3);
+        act.failed = true;
+        cancelHooks(sim, act);
+        if (sim.seated || sim.asleep || isOnBlocked(sim) || (act.slot && act.slot.on)) {
+          act.phase = 'exit'; act.completed = false; act.data.noFinish = true; act.data.exitInit = false;
+        } else act.phase = 'done';
+        return;
+      }
+    }
     act.phase = 'do';
     act.elapsed = 0;
     act.data.didDo = true;
@@ -1107,6 +1470,7 @@
       const seat = objById(act.data.seatId);
       const sit = seat ? getInter(seat, 'sit') : null;
       if (sit) {
+        if (!(num(rates.comfort) > 0)) act.data.passive = { comfort: true };   // seat comfort never ends the action
         rates.comfort = num(sit.rates.comfort);
         caps.comfort = sit.caps && sit.caps.comfort != null ? num(sit.caps.comfort) : 100;
       }
@@ -1130,6 +1494,10 @@
     if (isSkillHobby(it) && mood(sim) < D().CRITICAL.skillMood && act.elapsed > 1) {
       setBubble(sim, 'think', '😞', 4);
       res = 'done';
+    }
+    if (res == null && act.source === 'auto' && it.purpose && act.elapsed >= num(it.minDuration)) {
+      const low = lowestMotive(sim);
+      if (act.elapsed >= D().AUTONOMY.purposeAutoMax || low.value < D().AUTONOMY.purposeMinMotive - 10) res = 'done';
     }
     if (res === 'done') endDo(sim, act, it, eff, true);
     else if (res === 'fail') endDo(sim, act, it, eff, false);
@@ -1176,8 +1544,9 @@
       if (all) return 'done';
     }
     let anyPos = false, canMore = false;
+    const passive = act.data.passive || {};
     for (const k in rates) {
-      if (num(rates[k]) <= 0) continue;
+      if (num(rates[k]) <= 0 || passive[k]) continue;
       anyPos = true;
       const cap = caps[k] != null ? caps[k] : 100;
       if (num(sim.motives[k]) < cap - 0.5) { canMore = true; break; }
@@ -1188,6 +1557,12 @@
   function skillTick(sim, act, it, dtH) {
     const k = it.skill;
     if (!k || !it.skillRate || sim.visitor) return;
+    if (act.source === 'auto' && it.effect !== 'cook_meal' && it.effect !== 'repair') {
+      if (!sim.data) sim.data = {};
+      const pd = sim.data.practice;
+      if (!pd || pd.day !== S.time.day) sim.data.practice = { day: S.time.day, min: 0 };
+      sim.data.practice.min = num(sim.data.practice.min) + dtH * 60;
+    }
     if (it.effect === 'cook_meal' && !(act.stage === 1 || act.stage === 2)) return;
     if (mood(sim) < D().CRITICAL.skillMood) return;
     const G = D().SKILL_GAIN;
@@ -1207,7 +1582,7 @@
     const next = Math.min(10, cur + gain);
     sim.skills[k] = next;
     if (Math.floor(next) > lvl) {
-      notify(firstName(sim) + ' melhorou em ' + D().SKILL_LABELS[k] + ': nível ' + Math.floor(next) + '!', 'good');
+      notify(firstName(sim) + ' melhorou em ' + D().SKILL_LABELS[k] + ': nível ' + Math.floor(next) + '!', 'good', focusSim(sim));
       setBubble(sim, 'think', D().SKILL_ICONS[k] || '⭐', 4);
     }
   }
@@ -1226,8 +1601,8 @@
   function breakObject(o) {
     const d = def(o.type);
     o.broken = true;
-    if (o.type === 'toilet' || o.type === 'toilet_lux') notify('O ' + d.name.toLowerCase() + ' entupiu!', 'bad');
-    else notify(d.name + ' quebrou! Conserte ou chame um técnico pelo telefone.', 'bad');
+    if (o.type === 'toilet' || o.type === 'toilet_lux') notify('O ' + d.name.toLowerCase() + ' entupiu!', 'bad', focusObj(o));
+    else notify(d.name + ' quebrou! Conserte ou chame um técnico pelo telefone.', 'bad', focusObj(o));
     if (d.cat === 'plumbing' && o.type !== 'toilet' && o.type !== 'toilet_lux' || o.type === 'dishwasher') {
       const s = dataSlots(o, d).find((x) => x.usable && !x.on) || dataSlots(o, d)[0];
       const c = s ? { x: s.x, y: s.y } : objCenter(o);
@@ -1318,8 +1693,35 @@
   function itemCands(sim, o) {
     if (!o) return [];
     const d = def(o.type);
-    return adjacentSlots(o, d || { w: 1, h: 1, noBlock: true }).filter((s) => s.usable && !slotHolder(o.id, s.index, sim))
-      .map((s) => Object.assign(s, { objId: o.id }));
+    const out = adjacentSlots(o, d || { w: 1, h: 1, noBlock: true }).filter((s) => s.usable && !slotHolder(o.id, s.index, sim))
+      .map((s) => {
+        const c = Object.assign({}, s, { objId: o.id });
+        const st = s.x === Math.round(num(sim.x)) && s.y === Math.round(num(sim.y)) ? null : standerAt(s.x, s.y, sim);
+        if (st && st.mode !== 'idle') { c.penalty = num(c.penalty) + 6; c.taken = true; }
+        else if (st) c.penalty = num(c.penalty) + 2;
+        return c;
+      });
+    // spots where somebody is busy (eating, cleaning…) are only used when nothing else is free
+    const free = out.filter((c) => !c.taken);
+    return free.length ? free : out;
+  }
+  // free floor spots one or two tiles away to stand and eat (not an object's slot, nobody there or heading there)
+  function standSpots(sim) {
+    const st = simTile(sim);
+    const out = [];
+    for (let r = 1; r <= 2; r++) for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+      if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+      const x = st.x + dx, y = st.y + dy;
+      if (!inBounds(x, y) || !walkable(x, y) || itemAt(x, y)) continue;
+      if (roomAt(x, y) !== roomAt(st.x, st.y)) continue;
+      if (S.sims.some((o) => o !== sim && !o.hidden && Math.round(num(o.x)) === x && Math.round(num(o.y)) === y)) continue;
+      if (tileClaimed(x, y, sim)) continue;
+      const slotT = isSlotTile(x, y);
+      let nearItem = false;
+      for (const d of [[0, 1], [1, 0], [0, -1], [-1, 0]]) { const it = itemAt(x + d[0], y + d[1]); if (it && it.type === 'meal') nearItem = true; }
+      out.push({ x, y, px: x, py: y, facing: null, on: false, index: null, objId: null, penalty: (r - 1) * 0.5 + (slotT ? 2 : 0) + (nearItem ? 3 : 0) });
+    }
+    return out;
   }
   function frontCands(sim, o) {
     if (!o) return [];
@@ -1351,43 +1753,90 @@
     }
     return best;
   }
+  // Service workers (pizza, repair, maid) get their gender and first name when the call is made, so the
+  // notification, the delivery chip and the arriving character agree (QA LIVE-16).
+  const ROLE_TITLES = {
+    repair: ['Técnico', 'Técnica'], pizza: ['Entregador', 'Entregadora'], maid: ['Faxineiro', 'Faxineira'],
+    collector: ['Oficial de cobrança', 'Oficial de cobrança'],
+  };
+  function roleTitle(role, gender) { const t = ROLE_TITLES[role]; return t ? t[gender === 'f' ? 1 : 0] : 'Visitante'; }
+  function serviceWorker(role) {
+    const gender = role === 'maid' ? (rand() < 0.8 ? 'f' : 'm') : (rand() < 0.5 ? 'f' : 'm');
+    const first = pick(D().NAMES[gender] || D().NAMES.m) || 'Alex';
+    return { gender, first };
+  }
+  // "O técnico Bruno" / "A técnica Ana" / "A oficial de cobrança Marta"
+  function whoService(sim) {
+    const first = (sim.data && sim.data.first) || firstName({ name: String(sim.name || '').split(' ').slice(-1)[0] });
+    return g(sim, 'O ', 'A ') + roleTitle(sim.role, sim.gender).toLowerCase() + ' ' + first;
+  }
   function scheduleEvent(kind, at, extra) {
     S.events.push(Object.assign({ id: nid(), kind, at }, extra || {}));
   }
   function eventPending(kind) {
     return S.events.some((e) => e.kind === kind) || S.sims.some((s) => s.visitor && s.role === kind);
   }
+  // a pizza is on its way, being delivered, or already ordered by someone's queued phone call (QA LIVE-12)
+  function pizzaPending(exceptAct) {
+    if (S.events.some((e) => e.kind === 'pizza')) return true;
+    if (S.sims.some((s) => s.visitor && s.role === 'pizza' && !(s.data && num(s.data.stage) >= 2))) return true;
+    for (const s of S.sims) for (const a of s.queue || []) {
+      if (a !== exceptAct && a.kind === 'object' && a.effect === 'order_pizza' && !a.cancel && !a.failed) return true;
+    }
+    return false;
+  }
+
+  // A critical bladder / hunger wakes a sleeper — but if the last such wake fixed nothing (no toilet, no food in
+  // reach: the motive is still about as low), the character sleeps on for a while instead of waking every few
+  // minutes (sleep ping-pong ending in a faint, seen in the QA 'noneeds' scenario).
+  function needWake(sim) {
+    const C = D().CRITICAL, m = sim.motives;
+    const k = num(m.bladder) <= C.wakeBladder ? 'bladder' : num(m.hunger) <= C.wakeHunger ? 'hunger' : null;
+    if (!k) return false;
+    if (!sim.data || typeof sim.data !== 'object') sim.data = {};
+    const w = sim.data.needWake, now = nowAbs();
+    if (w && w.k === k && now - num(w.at) < 180 && num(m[k]) <= num(w.v) + 10) return false;
+    sim.data.needWake = { at: now, k, v: num(m[k]) };
+    return true;
+  }
 
   const EFFECTS = {
     // ---- sleeping
     sleep: {
-      start(sim) { sim.asleep = true; sim.anim = 'sleep'; },
+      start(sim, act) { sim.asleep = true; sim.anim = 'sleep'; act.data.sleepStart = nowAbs(); },
       tick(sim, act) {
         sim.asleep = true; sim.anim = 'sleep';
         const C = D().CRITICAL, SL = D().SLEEP, m = sim.motives;
         if (act.elapsed < 1) return 'continue';
-        if (num(m.bladder) <= C.wakeBladder || num(m.hunger) <= C.wakeHunger) return 'done';
+        if (needWake(sim)) return 'done';
         if (act.data.alarm) return 'done';
         const h = hourNow();
         const night = h >= SL.nightStart || h < SL.nightEnd;
         if (act.elapsed < 60) return 'continue';
         if (night) return 'continue';
-        if (num(m.energy) >= 95) return 'done';
-        if (h >= SL.wakeHour && h < SL.wakeHour + 3 && num(m.energy) >= SL.wakeEnergy) return 'done';
+        // a night on the sofa ends earlier in the morning (it is not that comfortable)
+        const sofa = act.effect === 'sleep_sofa';
+        if (num(m.energy) >= (sofa ? 85 : 95)) return 'done';
+        if (h >= SL.wakeHour && h < SL.wakeHour + 3 && num(m.energy) >= (sofa ? 55 : SL.wakeEnergy)) return 'done';
         return 'continue';
       },
       finish(sim, act) {
         sim.asleep = false;
         const bed = objById(act.objId);
-        if (bed && act.elapsed > 60) { bed.unmade = true; emit('objects'); }
+        if (bed && act.elapsed > 60 && def(bed.type) && def(bed.type).cat === 'beds') { bed.unmade = true; emit('objects'); }
       },
     },
+    // "Dormir no sofá": sleeps like in a bed (night rules, alarm) on a sofa/armchair when no bed is free (SIM-4)
+    sleep_sofa: {
+      start(sim, act) { sim.asleep = true; sim.anim = 'sleep'; act.data.sleepStart = nowAbs(); },
+      tick(sim, act, it, dt) { return EFFECTS.sleep.tick(sim, act, it, dt); },
+      finish(sim) { sim.asleep = false; },
+    },
     nap: {
-      start(sim) { sim.asleep = true; },
+      start(sim, act) { sim.asleep = true; act.data.sleepStart = nowAbs(); },
       tick(sim, act) {
         sim.asleep = true; sim.anim = 'sleep';
-        const C = D().CRITICAL, m = sim.motives;
-        if (num(m.bladder) <= C.wakeBladder || num(m.hunger) <= C.wakeHunger) return 'done';
+        if (needWake(sim)) return 'done';
         return null;
       },
       finish(sim) { sim.asleep = false; },
@@ -1401,8 +1850,14 @@
       },
       tick(sim, act) {
         sim.asleep = true; sim.anim = 'sleep';
-        act.rates = { energy: D().RATE.floorSleepEnergy, comfort: D().CRITICAL.faintComfortRate };
-        if (num(sim.motives.energy) >= D().CRITICAL.faintWake || num(sim.motives.bladder) <= -95) return 'done';
+        const C = D().CRITICAL;
+        act.rates = { energy: D().RATE.floorSleepEnergy, comfort: C.faintComfortRate };
+        const e = num(sim.motives.energy);
+        // wakes at about −40 (not +20: 11 h on the floor wiped whole days); a bladder at −100 causes the accident
+        // in critical() while still fainted instead of ending the faint (QA SIM-5 flicker loop)
+        if (e >= C.faintWake) return 'done';
+        // a worker who fainted right before the shift comes to for the carpool (QA SIM-3 / improvement)
+        if (e >= C.faintWorkWake && headingToCarpool(sim)) return 'done';
         return 'continue';
       },
       finish(sim) { sim.asleep = false; },
@@ -1476,9 +1931,13 @@
         act.rates = {};
         if (act.stage === 0) {
           sim.anim = 'use';
-          // one serving for each household member who is home and awake, plus guests
-          let servings = presentHousehold().filter((s) => s === sim || !s.asleep).length +
-            S.sims.filter((s) => s.visitor && s.role === 'guest' && !s.hidden).length;
+          // one serving for the cook and for each member at home, awake and hungry (hunger < 60), plus hungry guests
+          // (QA: meals for everybody spoiled 1–5 times per 8 days)
+          const hungry = (s) => num(s.motives && s.motives.hunger, 0) < 60;
+          const diners = presentHousehold().filter((s) => s !== sim && !s.asleep && hungry(s))
+            .concat(S.sims.filter((s) => s.visitor && s.role === 'guest' && !s.hidden && !(s.data && s.data.leaving) && hungry(s)));
+          let servings = 1 + diners.length;
+          act.data.diners = diners.map((s) => s.id);
           servings = clamp(servings, 1, 8);
           const per = D().MONEY.foodPerServing;
           while (servings > 1 && num(S.money) < servings * per) servings--;
@@ -1541,7 +2000,8 @@
           act.data.paid = 0;
         }
       },
-      finish() { /* meal placed in stageDone */ },
+      // meal placed in stageDone; a cook stopped before the stove refunds the groceries (QA CR-7)
+      finish(sim, act, it, completed) { if (!completed) EFFECTS.cook_meal.cancel(sim, act); },
     },
     eat_meal: {
       begin(sim, act) { act.stage = 0; act.tgtId = act.objId; return true; },
@@ -1552,7 +2012,7 @@
           if (!meal || meal.type !== 'meal' || meal.spoiled || num(meal.servings) <= 0) return [];
           return itemCands(sim, meal);
         }
-        if (act.stage === 1) return diningSeats(sim);
+        if (act.stage === 1) return act.data.standEat ? standSpots(sim) : diningSeats(sim);
         return [];
       },
       start(sim, act) {
@@ -1584,6 +2044,9 @@
           else emit('objects');
           act.data.duration = null;
           if (diningSeats(sim).length) return nextStage(act, 1, { tgtId: null });
+          // no free seat at a table: step away from the serving spot to eat standing, so the next person can take
+          // a plate (QA SIM-7: two characters ate inside each other in front of the counter)
+          if (standSpots(sim).length) { act.data.standEat = true; return nextStage(act, 1, { tgtId: null }); }
           return nextStage(act, 1, { tgtId: null, inPlace: true });
         }
         return false;
@@ -1696,13 +2159,13 @@
             m.hygiene = clamp(num(m.hygiene) - 30, -100, 100);
             m.comfort = clamp(num(m.comfort) - 20, -100, 100);
             setBubble(sim, 'think', '⚡', 5);
-            notify(firstName(sim) + ' levou um choque tentando consertar: ' + d.name + '. Tente de novo ou chame um técnico.', 'bad');
+            notify(firstName(sim) + ' levou um choque tentando consertar: ' + d.name + '. Tente de novo ou chame um técnico.', 'bad', focusSim(sim));
             return;
           }
         }
         o.broken = false;
         o.immuneUntil = nowAbs() + R.immuneHours * 60;
-        notify((sim.role === 'repair' ? 'O técnico' : firstName(sim)) + ' consertou: ' + (d ? d.name : 'objeto') + '.', 'good');
+        notify((sim.role === 'repair' ? whoService(sim) : firstName(sim)) + ' consertou: ' + (d ? d.name : 'objeto') + '.', 'good', focusObj(o));
         objectsChanged();
       },
     },
@@ -1725,7 +2188,7 @@
         if (!o || !completed) return;
         o.read = true;
         const c = D().CAREERS[o.offer];
-        if (c) notify('Classificados: vaga de ' + c.levels[0].title + ' (' + c.name + '), ' + fmtMoney(c.levels[0].pay) + '/dia, ' + c.levels[0].start + 'h–' + c.levels[0].end + 'h. Clique no jornal para aceitar.', 'career');
+        if (c) notify('Classificados: vaga de ' + c.levels[0].title + ' (' + c.name + '), ' + fmtMoney(c.levels[0].pay) + '/dia, ' + c.levels[0].start + 'h–' + c.levels[0].end + 'h. Clique no jornal para aceitar.', 'career', focusObj(o));
       },
     },
     accept_job: {
@@ -1734,6 +2197,7 @@
     pay_bills: {
       finish(sim, act, it, completed) {
         if (!completed) return;
+        if (!S.bills.length) { if (act.source === 'player') notify('As contas já estavam pagas.', 'info'); return; }   // QA CR-8
         const list = S.bills.slice().sort((a, b) => num(a.dueDay) - num(b.dueDay));
         let paid = 0, count = 0;
         for (const b of list) {
@@ -1743,7 +2207,7 @@
           S.bills.splice(S.bills.indexOf(b), 1);
         }
         if (count) notify(firstName(sim) + ' pagou ' + count + (count > 1 ? ' contas' : ' conta') + ' (' + fmtMoney(paid) + ').', 'money');
-        else notify('Dinheiro insuficiente para pagar as contas.', 'bad');
+        else notify('Dinheiro insuficiente para pagar as contas.', 'bad', focusObj(objById(act.objId)));
       },
     },
     call_friend: {
@@ -1812,28 +2276,39 @@
       },
     },
     order_pizza: {
-      start(sim, act, it) { if (!chargeOrFail(sim, act, num(it.cost), 'a pizza')) return false; act.data.paid = num(it.cost); },
+      start(sim, act, it) {
+        if (pizzaPending(act)) { failAction(sim, act, 'Já tem uma pizza a caminho.', 30); return false; }
+        if (!chargeOrFail(sim, act, num(it.cost), 'a pizza')) return false;
+        act.data.paid = num(it.cost);
+      },
       finish(sim, act, it, completed) {
         if (!act.data.paid) return;
-        scheduleEvent('pizza', nowAbs() + D().SOCIAL_RULES.serviceArrive, {});
-        notify('Pizza pedida! O entregador chega em cerca de 1 hora.', 'money');
+        const w = serviceWorker('pizza');
+        scheduleEvent('pizza', nowAbs() + D().SOCIAL_RULES.serviceArrive, w);
+        notify('Pizza pedida! ' + roleTitle('pizza', w.gender) + ' ' + w.first + ' chega em cerca de 1 hora.', 'money');
         act.data.paid = 0;
+      },
+      cancel(sim, act) {
+        // a call cut short before it was placed gives the money back
+        if (act.data.paid) { addMoney(act.data.paid, 'reembolso'); act.data.paid = 0; }
       },
     },
     call_repair: {
       finish(sim, act, it, completed) {
         if (!completed) return;
-        if (eventPending('repair')) { notify('O técnico já foi chamado.', 'info'); return; }
-        scheduleEvent('repair', nowAbs() + D().SOCIAL_RULES.serviceArrive, {});
-        notify('Técnico chamado: chega em cerca de 1 hora (M$ 50 por hora).', 'info');
+        if (eventPending('repair')) { notify('Já há um serviço de conserto a caminho.', 'info'); return; }
+        const w = serviceWorker('repair');
+        scheduleEvent('repair', nowAbs() + D().SOCIAL_RULES.serviceArrive, w);
+        notify(roleTitle('repair', w.gender) + ' ' + w.first + ' foi ' + (w.gender === 'f' ? 'chamada' : 'chamado') + ': chega em cerca de 1 hora (M$ 50 por hora).', 'info');
       },
     },
     call_maid: {
       finish(sim, act, it, completed) {
         if (!completed) return;
-        if (eventPending('maid')) { notify('A faxineira já foi chamada.', 'info'); return; }
-        scheduleEvent('maid', nowAbs() + D().SOCIAL_RULES.serviceArrive, {});
-        notify('Faxineira chamada: chega em cerca de 1 hora (M$ 10 por hora).', 'info');
+        if (eventPending('maid')) { notify('Já há um serviço de limpeza a caminho.', 'info'); return; }
+        const w = serviceWorker('maid');
+        scheduleEvent('maid', nowAbs() + D().SOCIAL_RULES.serviceArrive, w);
+        notify(roleTitle('maid', w.gender) + ' ' + w.first + ' foi ' + (w.gender === 'f' ? 'chamada' : 'chamado') + ': chega em cerca de 1 hora (M$ 10 por hora).', 'info');
       },
     },
     quit_job: {
@@ -1911,12 +2386,39 @@
     objectsChanged();
     if (!o) return;
     setBubble(sim, 'talk', '🍽️', 3);
-    notify(firstName(sim) + ' preparou uma refeição (' + o.servings + (o.servings > 1 ? ' porções' : ' porção') + ').', 'good');
+    notify(firstName(sim) + ' preparou uma refeição (' + o.servings + (o.servings > 1 ? ' porções' : ' porção') + ').', 'good', focusObj(o));
+    let left = num(o.servings);
     if (num(sim.motives.hunger) < 85) {
       const eat = buildObjectAction(sim, o, getInter(o, 'eat'), act.source === 'player' ? 'player' : 'auto');
-      if (eat) { eat.prio = act.prio; sim.queue.splice(1, 0, eat); }
+      if (eat) { eat.prio = act.prio; sim.queue.splice(1, 0, eat); left--; }
+    }
+    // "A comida está na mesa!": the hungry people the meal was cooked for come to eat as soon as they are free
+    // (callDiners, checked every tick), so their servings are not left to spoil
+    o.diners = (Array.isArray(act.data.diners) ? act.data.diners : []).slice(0, Math.max(0, left));
+    callDiners(o);
+  }
+  function callDiners(o) {
+    if (!o || !Array.isArray(o.diners) || !o.diners.length) return;
+    if (o.spoiled || num(o.servings) <= 0) { o.diners = []; return; }
+    const eatIt = getInter(o, 'eat');
+    for (const id of o.diners.slice()) {
+      const s = simById(id);
+      const drop = () => { const i = o.diners.indexOf(id); if (i >= 0) o.diners.splice(i, 1); };
+      if (!s || s.hidden || (s.data && s.data.leaving) || num(s.motives.hunger) > 80) { drop(); continue; }
+      const mine = s.queue.find((a) => a.effect === 'eat_meal');
+      // already took a plate (or is eating something else): done; on the way: keep watching (a social may cancel it)
+      if (mine) { if (mine.objId !== o.id || mine.data.hasPlate || num(mine.stage) >= 1) drop(); continue; }
+      if (s.asleep || s.queue.some((a) => a.effect === 'cook_meal')) continue;
+      const h = s.queue[0];
+      // an autonomous pastime is interrupted for dinner; player commands, socials and the bathroom are not
+      if (h && (h.source === 'player' || num(h.prio) >= PRIO.urgent || h.kind === 'social' || busyFor(h) || h.nocancel)) continue;
+      const a = buildObjectAction(s, o, eatIt, 'auto');
+      if (!a) continue;
+      a.prio = PRIO.auto + 1;
+      enqueue(s, a);
     }
   }
+
 
   function buildObjectAction(sim, o, it, source) {
     if (!o || !it) return null;
@@ -1950,12 +2452,16 @@
     if (!t || t.hidden) return 'no';
     if (t.asleep) return 'no';
     if (t.data && t.data.leaving) return 'no';
+    // a partner with a critical need declines once instead of being pulled in every tick (QA SIM-11)
+    if (!isScripted(t) && criticalMotive(t)) return 'no';
     const a = t.queue[0];
     if (!a) return 'ok';
     if (a.kind === 'social' && a.data && a.data.respond && a.data.pairId === act.id) return 'ok';
     if (a.kind === 'social') return 'wait';
     if (a.effect === 'faint' || a.effect === 'go_work') return 'no';
     if (num(a.prio) >= PRIO.player && act.source !== 'player') return 'no';
+    // "Despedir-se": a guest stops eating/sitting to say goodbye (only the bathroom makes them wait)
+    if (act.interaction === 'goodbye' && !(a.kind === 'object' && (BUSY_KEYS[a.interaction] || a.effect === 'toilet'))) return 'ok';
     if (busyFor(a)) return 'wait';
     return 'ok';
   }
@@ -2007,7 +2513,9 @@
       if (Math.abs(r[0]) + Math.abs(r[1]) === 1 && !edgeOpen(tx, ty, x, y)) continue;
       if (Math.abs(r[0]) + Math.abs(r[1]) === 2 && (!edgeOpen(tx, ty, x, ty) || !edgeOpen(x, ty, x, y))) continue;
       if (S.sims.some((s) => s !== sim && s !== t && !s.hidden && Math.round(s.x) === x && Math.round(s.y) === y)) continue;
-      out.push({ x, y, px: x, py: y, facing: Math.atan2(tx - x, ty - y), on: false, index: null, objId: null, penalty: Math.abs(r[0]) + Math.abs(r[1]) === 2 ? 0.3 : 0 });
+      if (tileClaimed(x, y, sim)) continue;           // somebody else is walking to that spot (SIM-7)
+      const pen = (Math.abs(r[0]) + Math.abs(r[1]) === 2 ? 0.3 : 0) + (isSlotTile(x, y) ? 1.5 : 0);
+      out.push({ x, y, px: x, py: y, facing: Math.atan2(tx - x, ty - y), on: false, index: null, objId: null, penalty: pen });
     }
     return out;
   }
@@ -2066,17 +2574,22 @@
         sim.facing = normAngle(Math.atan2(t.x - sim.x, t.y - sim.y));
         if (dist(sim.x, sim.y, t.x, t.y) > 2.2) { act.data.reroutes = num(act.data.reroutes) + 1; act.phase = 'route'; return; }
         const st = canRespond(t, sim, act);
+        const SRw = D().SOCIAL_RULES;
+        const busyMsg = firstName(t) + ' está ' + g(t, 'ocupado', 'ocupada') + '.';
         if (st === 'no') { failAction(sim, act, firstName(t) + ' não pode agora.', 30); return; }
+        // QA SIM-15: give up after a couple of minutes instead of standing there 10–12 min
+        const waitBusy = act.source === 'player' ? 10 : num(SRw.waitBusy, 2);
+        const waitResp = act.source === 'player' ? 12 : num(SRw.waitRespond, 3);
         if (st === 'wait') {
           act.data.waited = num(act.data.waited) + dt;
-          if (act.data.waited > 10) { failAction(sim, act, firstName(t) + ' está ocupado(a).', 30); return; }
+          if (act.data.waited > waitBusy) { failAction(sim, act, busyMsg, 30); return; }
           return;
         }
         const ta = t.queue[0];
         if (!(ta && ta.kind === 'social' && ta.data && ta.data.respond && ta.data.pairId === act.id)) {
           if (!t.queue.some((a) => a.data && a.data.respond && a.data.pairId === act.id)) pushRespond(t, sim, act);
           act.data.waited = num(act.data.waited) + dt;
-          if (act.data.waited > 12) { failAction(sim, act, firstName(t) + ' está ocupado(a).', 30); return; }
+          if (act.data.waited > waitResp) { failAction(sim, act, busyMsg, 30); return; }
           return;
         }
         if (ta.phase !== 'do') return;
@@ -2098,13 +2611,13 @@
         act.phase = 'do';
         act.elapsed = 0;
         act.data.accepted = acceptRoll(sim, t, so);
-        const g = act.data.accepted ? so.gainAccept : null;
+        const gain = act.data.accepted ? so.gainAccept : null;
         act.rates = {};
         act.caps = {};
-        if (g) {
+        if (gain) {
           const dur = Math.max(1, num(so.duration, 5));
-          if (num(g.social) > 0) { act.rates.social = g.social / dur * 60; act.caps.social = 100; }
-          if (num(g.fun) > 0) { act.rates.fun = g.fun / dur * 60; act.caps.fun = 100; }
+          if (num(gain.social) > 0) { act.rates.social = gain.social / dur * 60; act.caps.social = 100; }
+          if (num(gain.fun) > 0) { act.rates.fun = gain.fun / dur * 60; act.caps.fun = 100; }
           ta.rates = shallow(act.rates); ta.caps = shallow(act.caps);
         }
         ta.data.anim = so.targetAnim || so.anim;
@@ -2113,8 +2626,9 @@
         setBubble(sim, 'talk', so.icon, Math.min(4, num(so.duration, 4)));
         if (!sim.data) sim.data = {};
         if (!Array.isArray(sim.data.socialLog)) sim.data.socialLog = [];
-        sim.data.socialLog.push({ t: nowAbs(), target: t.id, key: so.key });
-        if (sim.data.socialLog.length > 12) sim.data.socialLog.splice(0, sim.data.socialLog.length - 12);
+        sim.data.socialLog.push({ t: Math.floor(nowAbs()), target: t.id, key: so.key });
+        if (sim.data.socialLog.length > 30) sim.data.socialLog.splice(0, sim.data.socialLog.length - 30);
+        if (so.key !== 'greet' && so.key !== 'goodbye') { addFatigue(sim, t, 1); addFatigue(t, sim, 0.6); }
         return;
       }
       case 'do': {
@@ -2151,6 +2665,21 @@
       act.phase = 'done'; act.rates = null; return;
     }
     sim.seated = false;
+    sim.asleep = false;
+    if (!act.data.offChecked) {
+      act.data.offChecked = true;
+      if (isOnBlocked(sim)) {
+        const nw = guard(() => WO().nearestWalkable(sim.x, sim.y), null);
+        if (nw) act.data.off = { fx: sim.x, fy: sim.y, x: nw.x, y: nw.y, t: 0 };
+      }
+    }
+    const off = act.data.off;
+    if (off && off.t < 1) {
+      off.t = Math.min(1, off.t + dt / 0.5);
+      sim.x = off.fx + (off.x - off.fx) * off.t; sim.y = off.fy + (off.y - off.fy) * off.t;
+      sim.anim = 'walk';
+      return;
+    }
     sim.anim = ia.phase === 'do' ? (act.data.anim || 'talk') : 'idle';
     sim.facing = normAngle(Math.atan2(init.x - sim.x, init.y - sim.y));
   }
@@ -2246,59 +2775,74 @@
   }
 
   // --------------------------------------------------------------- queue API
+  // Actions that count toward the 8-action cap: player commands and urgent/critical ones (autonomous fillers are
+  // dropped behind a player command anyway; a cancelled head is on its way out).
+  function queuedCount(sim) {
+    let n = 0;
+    for (const a of sim.queue) {
+      if (!a || a.cancel) continue;
+      if (a.data && a.data.respond) continue;
+      if (a.source === 'player' || num(a.prio) >= PRIO.urgent) n++;
+    }
+    return n;
+  }
+  // lastReason is only touched by player commands (internal autonomous calls never overwrite it)
   function queueInteraction(simId, objId, key, source, opts) {
     if (!S) return false;
+    source = source || 'player';
+    const refuse = source === 'player' ? refusePlayer : refuseQuiet;
+    if (source === 'player') lastReason = '';
     const sim = simById(simId);
     const o = objById(objId);
-    if (!sim || !o) return false;
-    source = source || 'player';
-    if (source === 'player' && sim.visitor) return false;
-    if (sim.hidden) return false;
+    if (!sim) return refuse('Morador não encontrado.');
+    if (!o) return refuse('Este objeto não existe mais.');
+    if (source === 'player' && sim.visitor) return refuse('Visitas não aceitam comandos.');
+    if (sim.hidden) return refuse(firstName(sim) + ' não está em casa.');
     const it = getInter(o, key);
-    if (!it) return false;
+    if (!it) return refuse('Ação indisponível.');
     const av = availability(sim, o, it, source !== 'player');
     if (!av.ok) {
-      if (source === 'player') { setBubble(sim, 'think', '✋', 3); notify(firstName(sim) + ': ' + av.reason, 'bad'); }
-      return false;
+      if (source === 'player') setBubble(sim, 'think', '✋', 3);
+      return refuse(source === 'player' ? firstName(sim) + ': ' + av.reason : av.reason);
     }
     if (source === 'player') {
-      if (mood(sim) < D().CRITICAL.refuseMood && !isNeedInter(it)) {
+      if (mood(sim) < D().CRITICAL.refuseMood && !isNeedInter(it, sim)) {
         const low = lowestMotive(sim);
         setBubble(sim, 'think', D().MOTIVE_ICONS[low.key] || '😞', 4);
-        notify(firstName(sim) + ' está de mau humor e se recusa. Cuide de: ' + D().MOTIVE_LABELS[low.key] + '.', 'bad');
-        return false;
+        return refuse(firstName(sim) + ' está de mau humor e se recusa. Cuide de: ' + D().MOTIVE_LABELS[low.key] + '.');
       }
-      if (sim.queue.filter((a) => a.source === 'player').length >= MAX_PLAYER_ACTIONS) return false;
+      if (queuedCount(sim) >= MAX_PLAYER_ACTIONS) return refuse(MSG_QUEUE_FULL);
     }
     const a = buildObjectAction(sim, o, it, source);
     if (opts && typeof opts === 'object') {
       if (opts.npcId != null) a.data.npcId = opts.npcId;
       if (opts.prio != null) a.prio = opts.prio;
     }
-    if (it.effect === 'go_work') a.prio = Math.max(a.prio, PRIO.urgent);
+    if (it.effect === 'go_work') a.prio = Math.max(a.prio, PRIO.work);
     enqueue(sim, a);
     if (source === 'player') { if (!sim.data) sim.data = {}; sim.data.lastCmdAt = nowAbs(); }
     return true;
   }
   function queueSocial(simId, targetSimId, key, source) {
     if (!S) return false;
+    source = source || 'player';
+    const refuse = source === 'player' ? refusePlayer : refuseQuiet;
+    if (source === 'player') lastReason = '';
     const sim = simById(simId), t = simById(targetSimId);
     const so = D().SOCIALS[key];
-    source = source || 'player';
-    if (!sim || !t || !so || sim === t) return false;
-    if (source === 'player' && sim.visitor) return false;
+    if (!sim || !t || !so || sim === t) return refuse('Interação indisponível.');
+    if (source === 'player' && sim.visitor) return refuse('Visitas não aceitam comandos.');
     const av = socialAvailability(sim, t, so, source === 'player');
     if (!av.ok) {
-      if (source === 'player') { setBubble(sim, 'think', '✋', 3); notify(firstName(sim) + ': ' + av.reason, 'bad'); }
-      return false;
+      if (source === 'player') setBubble(sim, 'think', '✋', 3);
+      return refuse(source === 'player' ? firstName(sim) + ': ' + av.reason : av.reason);
     }
-    if (source === 'player' && mood(sim) < D().CRITICAL.refuseMood && key !== 'goodbye') {
+    if (source === 'player' && mood(sim) < D().CRITICAL.refuseMood && !isNeedSocial(so, sim)) {
       const low = lowestMotive(sim);
       setBubble(sim, 'think', D().MOTIVE_ICONS[low.key] || '😞', 4);
-      notify(firstName(sim) + ' está de mau humor e não quer socializar.', 'bad');
-      return false;
+      return refuse(firstName(sim) + ' está de mau humor e não quer socializar. Cuide de: ' + D().MOTIVE_LABELS[low.key] + '.');
     }
-    if (source === 'player' && sim.queue.filter((a) => a.source === 'player').length >= MAX_PLAYER_ACTIONS) return false;
+    if (source === 'player' && queuedCount(sim) >= MAX_PLAYER_ACTIONS) return refuse(MSG_QUEUE_FULL);
     const a = makeAction({
       kind: 'social', targetSimId: t.id, interaction: key, source, prio: source === 'player' ? PRIO.player : PRIO.auto,
       label: so.label + ' com ' + firstName(t), icon: so.icon,
@@ -2308,17 +2852,44 @@
     if (source === 'player') { if (!sim.data) sim.data = {}; sim.data.lastCmdAt = nowAbs(); }
     return true;
   }
+  // queueWalk(simId, x, y, source='player', opts) — a player click while the character is already on a player
+  // walk redirects that walk (CONTRACT_V2 §3); opts.append (Shift+click) appends instead.
   function queueWalk(simId, x, y, source, opts) {
     if (!S) return false;
-    const sim = simById(simId);
-    if (!sim || sim.hidden) return false;
+    // contract form queueWalk(simId, x, y, opts)
+    if (source && typeof source === 'object') { opts = source; source = null; }
     source = source || 'player';
-    if (source === 'player' && sim.visitor) return false;
+    opts = opts || {};
+    const refuse = source === 'player' ? refusePlayer : refuseQuiet;
+    if (source === 'player') lastReason = '';
+    const sim = simById(simId);
+    if (!sim) return refuse('Morador não encontrado.');
+    if (sim.hidden) return refuse(firstName(sim) + ' não está em casa.');
+    if (source === 'player' && sim.visitor) return refuse('Visitas não aceitam comandos.');
+    if (!isFinite(+x) || !isFinite(+y)) return refuse('Lugar inválido.');
+    if (source === 'player' && !opts.append) {
+      const cur = sim.queue[0];
+      let w = cur && cur.kind === 'walk' && cur.source === 'player' && !cur.cancel && cur.phase !== 'done' ? cur : null;
+      if (!w) {
+        // the last queued action is a pending player walk: change its target
+        const last = sim.queue[sim.queue.length - 1];
+        if (last && last !== cur && last.kind === 'walk' && last.source === 'player' && !started(last)) w = last;
+      }
+      if (w) {
+        w.x = num(x); w.y = num(y);
+        if (w.phase === 'walk') { w.phase = 'route'; w.data.reroutes = 0; }
+        w.path = w.phase === 'route' ? [] : w.path;
+        if (!sim.data) sim.data = {};
+        sim.data.lastCmdAt = nowAbs();
+        return true;
+      }
+    }
+    if (source === 'player' && queuedCount(sim) >= MAX_PLAYER_ACTIONS) return refuse(MSG_QUEUE_FULL);
     const a = makeAction({
       kind: 'walk', x: num(x), y: num(y), source, prio: source === 'player' ? PRIO.player : PRIO.auto,
       label: 'Andar até aqui', icon: '🚶',
     });
-    if (opts) { if (opts.noRun) a.data.noRun = true; if (opts.leave) a.data.leave = true; if (opts.prio != null) a.prio = opts.prio; if (opts.label) a.label = opts.label; }
+    if (opts.noRun) a.data.noRun = true; if (opts.leave) a.data.leave = true; if (opts.prio != null) a.prio = opts.prio; if (opts.label) a.label = opts.label;
     enqueue(sim, a);
     if (source === 'player') { if (!sim.data) sim.data = {}; sim.data.lastCmdAt = nowAbs(); }
     return true;
@@ -2350,7 +2921,7 @@
       }
       if (o.broken && it.effect !== 'repair' && it.effect !== 'dispose' && it.effect !== 'clean_object') continue;
       let enabled = av.ok, reason = av.reason;
-      if (enabled && mood(sim) < D().CRITICAL.refuseMood && !isNeedInter(it)) { enabled = false; reason = 'De mau humor demais.'; }
+      if (enabled && mood(sim) < D().CRITICAL.refuseMood && !isNeedInter(it, sim)) { enabled = false; reason = 'De mau humor demais.'; }
       out.push({ key: it.key, label: interLabel(o, it), icon: it.icon || '•', enabled, reason: enabled ? '' : reason });
     }
     return out;
@@ -2371,7 +2942,7 @@
       const av = socialAvailability(sim, t, so, true);
       if (!av.ok && (rel.daily > num(so.maxDaily, 100))) continue;   // hide 'too close for this'
       let enabled = av.ok, reason = av.reason;
-      if (enabled && mood(sim) < D().CRITICAL.refuseMood && key !== 'goodbye') { enabled = false; reason = 'De mau humor demais.'; }
+      if (enabled && mood(sim) < D().CRITICAL.refuseMood && !isNeedSocial(so, sim)) { enabled = false; reason = 'De mau humor demais.'; }
       out.push({ key, label: so.label, icon: so.icon, enabled, reason: enabled ? '' : reason });
     }
     return out;
@@ -2386,7 +2957,7 @@
     const asleep = !!sim.asleep;
     let hungerDec = 0;
     if (!raising.hunger) {
-      hungerDec = DE.hunger.proportional * (100 + num(m.hunger)) * dtH;
+      hungerDec = (DE.hunger.proportional * (100 + num(m.hunger)) + num(DE.hunger.constant)) * dtH;
       m.hunger = num(m.hunger) - hungerDec;
     }
     if (!asleep) m.energy = num(m.energy) - DE.energy.awake * dtH;
@@ -2444,7 +3015,12 @@
         phase: 'enter', label: 'Desmaiado', icon: '😵', nocancel: true,
       })];
       sim.seated = false;
-      notify(firstName(sim) + ' desmaiou de cansaço!', 'bad');
+      if (!sim.data) sim.data = {};
+      // one notification per episode (QA SIM-5: a new toast every 1.5 min)
+      if (nowAbs() - num(sim.data.faintNoteAt, -1e9) > num(C.faintRenotify, 120)) {
+        notify(firstName(sim) + ' desmaiou de cansaço!', 'bad', focusSim(sim));
+      }
+      sim.data.faintNoteAt = nowAbs();
       setBubble(sim, 'think', '😵', 6);
     }
     // bladder accident
@@ -2452,12 +3028,12 @@
       const t = simTile(sim);
       let p = t;
       if (!walkable(t.x, t.y)) p = (act && act.data && act.data.exit) || guard(() => WO().nearestWalkable(sim.x, sim.y), t) || t;
-      spawnPuddle(p.x, p.y);
+      const pud = spawnPuddle(p.x, p.y);
       m.bladder = 100;
       m.hygiene = clamp(num(m.hygiene) - C.accidentHygiene, -100, 100);
       m.fun = clamp(num(m.fun) - C.accidentFun, -100, 100);
       setBubble(sim, 'think', '😳', 5);
-      notify(firstName(sim) + ' não chegou ao banheiro a tempo...', 'bad');
+      notify(firstName(sim) + ' não chegou ao banheiro a tempo...', 'bad', pud ? focusObj(pud) : focusSim(sim));
       if (sim.visitor) startLeaving(sim);
     }
     // starvation emergency
@@ -2471,7 +3047,7 @@
       sim.data.awayUntil = nowAbs() + C.hospitalMinutes;
       sim.data.awayReason = 'hospital';
       S.bills.push({ id: nid(), amount: D().MONEY.hospitalBill, dueDay: S.time.day + D().MONEY.billGraceDays, kind: 'hospital' });
-      notify(firstName(sim) + ' desmaiou de fome e foi levado(a) para o atendimento de emergência. Conta de ' + fmtMoney(D().MONEY.hospitalBill) + '.', 'bad');
+      notify(firstName(sim) + ' desmaiou de fome e foi ' + g(sim, 'levado', 'levada') + ' para o atendimento de emergência. Conta de ' + fmtMoney(D().MONEY.hospitalBill) + '.', 'bad');
       emit('sims');
     }
   }
@@ -2496,15 +3072,22 @@
       const it = actInter(act);
       if (it && ((num(it.rates && it.rates[crit]) > 0) || (it.ads && it.ads[crit]))) return;
       if (crit === 'hunger' && (act.effect === 'cook_meal' || act.effect === 'eat_meal' || act.effect === 'snack')) return;
-      if (crit === 'energy' && (act.effect === 'sleep' || act.effect === 'nap')) return;
+      if (crit === 'energy' && isSleepEff(act.effect)) return;
     }
     if (act.data && act.data.respond) { act.cancel = true; return; }
     if (sim.data && num(sim.data.overrideAt) > nowAbs()) return;
     if (!sim.data) sim.data = {};
     sim.data.overrideAt = nowAbs() + 20;
+    // look for a fix first: when nothing can address the critical need (no food, no toilet in reach) the current
+    // action — typically sleep — goes on instead of being cut every 20 minutes for nothing
+    const c = runAutonomy(sim, crit, { critical: true });
+    if (!c) {
+      if (isSleepEff(act.effect) || act.effect === 'faint') sim.data.overrideAt = nowAbs() + 90;
+      if (!isSleepEff(act.effect)) setBubble(sim, 'think', D().MOTIVE_ICONS[crit], 4);
+      return;
+    }
     if (started(act)) act.cancel = true; else { sim.queue.shift(); cancelHooks(sim, act); }
-    const c = runAutonomy(sim, crit);
-    if (c) queueCandidate(sim, c, PRIO.player + 5);
+    queueCandidate(sim, c, PRIO.player + 5);
     setBubble(sim, 'think', D().MOTIVE_ICONS[crit], 4);
   }
   function queueCandidate(sim, c, prio) {
@@ -2537,10 +3120,13 @@
     const A = D().AUTONOMY;
     if (!sim.visitor && S.settings && S.settings.freeWill === false) {
       const crit = criticalMotive(sim);
-      if (crit) { const c = runAutonomy(sim, crit); if (c) queueCandidate(sim, c); }
+      if (crit) { const c = runAutonomy(sim, crit, { critical: true }); if (c) queueCandidate(sim, c); }
       sim.data.nextAutoAt = n + randRange(A.retryMin, A.retryMax);
       return;
     }
+    // time-slicing (CR-6): at most AUTONOMY.perTick full evaluations per tick; the rest try again next tick
+    if (autoBudget <= 0) return;
+    autoBudget--;
     const c = runAutonomy(sim, null);
     if (c) { queueCandidate(sim, c); return; }
     sim.data.nextAutoAt = n + randRange(A.retryMin, A.retryMax);
@@ -2557,6 +3143,7 @@
       if ((x === t.x && y === t.y) || !inBounds(x, y) || !walkable(x, y)) continue;
       if (!far && room >= 0 && roomAt(x, y) !== room) continue;
       if (S.sims.some((o) => o !== sim && !o.hidden && Math.round(o.x) === x && Math.round(o.y) === y)) continue;
+      if (tileClaimed(x, y, sim) || isSlotTile(x, y)) continue;
       queueWalk(sim.id, x, y, 'auto', { noRun: true, label: 'Passear' });
       return;
     }
@@ -2583,21 +3170,78 @@
       if (sim.hidden) return;
       overrideCritical(sim);
     }
+    if (sim.queue.length && sim.data.nudge) sim.data.nudge = null;
     processQueue(sim, dt);
     if (!sim.queue.length) {
       sim.anim = 'idle';
       sim.asleep = false;
       if (sim.seated) sim.seated = false;
+      if (sim.data.nudge) { stepNudge(sim, dt); return finishTick(sim, scripted); }
       if (isOnBlocked(sim)) {
         const nw = guard(() => WO().nearestWalkable(sim.x, sim.y), null);
         if (nw) { sim.x = nw.x; sim.y = nw.y; }
       }
+      if (separate(sim)) return finishTick(sim, scripted);
       if (scripted || (sim.visitor && sim.data.leaving)) scriptThink(sim);
       else maybeAutonomy(sim);
     }
+    finishTick(sim, scripted);
+  }
+  function finishTick(sim, scripted) {
     if (!scripted) thoughtBubbles(sim);
     if (sim.bubble && nowAbs() >= num(sim.bubble.until)) { sim.bubble = null; emit('bubble', { simId: sim.id }); }
     clampMotives(sim);
+  }
+
+  // ---- step aside / light separation (QA SIM-7 + improvement): idle characters never stand inside others
+  function stepAside(sim, avoid) {
+    if (!sim || sim.hidden || sim.queue.length) return false;
+    if (sim.data && sim.data.nudge) return true;
+    const t = simTile(sim);
+    const ring = [[1, 0], [-1, 0], [0, 1], [0, -1], [1, 1], [-1, 1], [1, -1], [-1, -1]];
+    let best = null, bs = Infinity;
+    for (const r of ring) {
+      const x = t.x + r[0], y = t.y + r[1];
+      if (!inBounds(x, y) || !walkable(x, y)) continue;
+      if (avoid && avoid.x === x && avoid.y === y) continue;
+      const diag = Math.abs(r[0]) + Math.abs(r[1]) === 2;
+      if (!diag && !edgeOpen(t.x, t.y, x, y)) continue;
+      if (diag && (!edgeOpen(t.x, t.y, x, t.y) || !edgeOpen(x, t.y, x, y) || !walkable(x, t.y) || !walkable(t.x, y))) continue;
+      if (S.sims.some((o) => o !== sim && !o.hidden && Math.round(num(o.x)) === x && Math.round(num(o.y)) === y)) continue;
+      if (tileClaimed(x, y, sim)) continue;
+      const sc = (diag ? 0.4 : 0) + (isSlotTile(x, y) ? 2 : 0) + rand() * 0.3;
+      if (sc < bs) { bs = sc; best = { x, y }; }
+    }
+    if (!best) return false;
+    if (!sim.data) sim.data = {};
+    sim.data.nudge = { fx: num(sim.x), fy: num(sim.y), x: best.x, y: best.y, t: 0 };
+    return true;
+  }
+  function stepNudge(sim, dt) {
+    const n = sim.data.nudge;
+    if (!n) return;
+    n.t = Math.min(1, num(n.t) + dt / 0.8);
+    sim.x = n.fx + (n.x - n.fx) * n.t; sim.y = n.fy + (n.y - n.fy) * n.t;
+    sim.anim = 'walk';
+    if (Math.hypot(n.x - n.fx, n.y - n.fy) > 1e-6) sim.facing = normAngle(Math.atan2(n.x - n.fx, n.y - n.fy));
+    if (n.t >= 1) { sim.data.nudge = null; sim.anim = 'idle'; }
+  }
+  function separate(sim) {
+    if (!sim.data) sim.data = {};
+    const n = nowAbs();
+    if (n < num(sim.data.sepAt)) return false;
+    sim.data.sepAt = n + 1;
+    for (const o of S.sims) {
+      if (o === sim || o.hidden) continue;
+      if (dist(num(o.x), num(o.y), num(sim.x), num(sim.y)) > 0.45) continue;
+      const a = o.queue && o.queue[0];
+      if (a && a.phase === 'walk') continue;                 // just passing by
+      if (o.data && o.data.nudge) continue;
+      const otherIdle = !a;
+      if (otherIdle && o.id > sim.id) continue;              // two idle characters: the higher id moves
+      return stepAside(sim, null);
+    }
+    return false;
   }
 
   // --------------------------------------------------------------- careers
@@ -2685,7 +3329,7 @@
       car = addSystemObject('carpool', spot.x, spot.y, 2, { shift: sh.start, simIds: [], leaveAt: sh.start, car: sh.lv.car }, true);
       if (!car) return null;
       objectsChanged();
-      notify('A carona de ' + firstName(sim) + ' chegou! Sai às ' + fmtTime(sh.start % 1440) + '.', 'career');
+      notify('A carona de ' + firstName(sim) + ' chegou! Sai às ' + fmtTime(sh.start % 1440) + '.', 'career', focusObj(car));
     }
     if (!Array.isArray(car.simIds)) car.simIds = [];
     if (car.simIds.indexOf(sim.id) < 0) car.simIds.push(sim.id);
@@ -2706,7 +3350,7 @@
   }
   function wakeUp(sim) {
     const a = sim.queue[0];
-    if (a && (a.effect === 'sleep' || a.effect === 'nap') && a.phase === 'do') { a.data.alarm = true; a.cancel = true; }
+    if (a && isSleepEff(a.effect) && a.phase === 'do') { a.data.alarm = true; a.cancel = true; }
   }
   function careerTick() {
     const R = D().CAREER_RULES;
@@ -2716,11 +3360,17 @@
       if (!sh) continue;
       const toGo = sh.start - nowAbs();
       const c = sim.career;
-      if (toGo <= R.alarmBefore && toGo > 0 && sim.asleep && c.alarmFor !== sh.start) {
-        c.alarmFor = sh.start;
-        if (num(sim.motives.energy) >= R.alarmMinEnergy) {
-          wakeUp(sim);
-          notify('⏰ Despertador: ' + firstName(sim) + ' acordou para o trabalho.', 'career');
+      if (toGo > 0 && sim.asleep && c.alarmFor !== sh.start) {
+        // a sleep that began inside the alarm window (a pre-shift nap) rings later, so it is worth taking (SIM-3)
+        const a = sim.queue[0];
+        const began = a && a.data ? num(a.data.sleepStart, 0) : 0;
+        const late = isSleepEff(a && a.effect) && began > sh.start - R.alarmBefore;
+        if (toGo <= (late ? R.napAlarmBefore : R.alarmBefore)) {
+          c.alarmFor = sh.start;
+          if (late || num(sim.motives.energy) >= R.alarmMinEnergy) {
+            wakeUp(sim);
+            notify('⏰ Despertador: ' + firstName(sim) + ' acordou para o trabalho.', 'career', focusSim(sim));
+          }
         }
       }
       if (toGo <= R.carpoolBefore && toGo > 0) ensureCarpool(sim, sh);
@@ -2730,8 +3380,12 @@
           if (sim.asleep) wakeUp(sim);
           const it = getInter(car, 'go');
           const a = buildObjectAction(sim, car, it, 'auto');
-          a.prio = PRIO.urgent;
+          // above player commands: whatever the character is doing is interrupted (QA SIM-2)
+          a.prio = PRIO.work;
+          const cur = sim.queue[0];
+          const interrupted = cur && cur.source === 'player' && !cur.nocancel && cur.effect !== 'go_work';
           enqueue(sim, a);
+          if (interrupted) notify(firstName(sim) + ' parou o que estava fazendo para pegar a carona.', 'career', focusSim(sim));
         }
       }
       if (toGo <= 0) missedWork(sim, sh);
@@ -2752,10 +3406,10 @@
     if (c.missedDays >= R.fireAfterMisses) {
       const tr = D().CAREERS[c.track];
       sim.career = null;
-      notify(firstName(sim) + ' faltou ao trabalho de novo e foi demitido(a)' + (tr ? ' (' + tr.name + ')' : '') + '.', 'bad');
+      notify(firstName(sim) + ' faltou ao trabalho de novo e foi ' + g(sim, 'demitido', 'demitida') + (tr ? ' (' + tr.name + ')' : '') + '.', 'bad', focusSim(sim));
       emit('sims');
     } else {
-      notify(firstName(sim) + ' perdeu a carona e faltou ao trabalho. Mais uma falta e será demitido(a)!', 'bad');
+      notify(firstName(sim) + ' perdeu a carona e faltou ao trabalho. Mais uma falta e será ' + g(sim, 'demitido', 'demitida') + '!', 'bad', focusSim(sim));
     }
   }
   function departToWork(sim, car) {
@@ -2764,7 +3418,8 @@
     const sh = { start: num(car.shift), lv: D().careerLevel(c.track, c.level) };
     const md = mood(sim);
     c.moodAtDeparture = Math.round(md);
-    c.critAtDeparture = D().MOTIVES.some((k) => k !== 'room' && num(sim.motives[k]) <= -80);
+    // only physiological needs count (QA SIM-8: a lonely worker lost 20 performance every shift)
+    c.critAtDeparture = (D().CAREER_RULES.critMotives || ['hunger', 'energy', 'bladder', 'hygiene']).some((k) => num(sim.motives[k]) <= -80);
     c.lastShift = sh.start;
     for (const a of sim.queue.slice(1)) cancelHooks(sim, a);
     sim.queue = [];
@@ -2791,9 +3446,19 @@
     const lv = D().careerLevel(c.track, c.level);
     const hours = Math.max(0, (num(sim.workReturnAt) - num(sim.data.workStart, num(sim.workReturnAt) - D().shiftHours(lv) * 60)) / 60);
     const wd = (tr && tr.workDelta) || {};
-    for (const k in wd) if (k in sim.motives) sim.motives[k] = clamp(num(sim.motives[k]) + num(wd[k]) * hours, -100, 100);
+    // the work drain never pushes a motive below CRITICAL.workFloor (QA SIM-3/SIM-12: instant faint / hospital)
+    const floor = num(D().CRITICAL.workFloor, -80);
+    for (const k in wd) {
+      if (!(k in sim.motives)) continue;
+      const v0 = num(sim.motives[k]);
+      let v = v0 + num(wd[k]) * hours;
+      if (num(wd[k]) < 0 && v < floor) v = Math.min(v0, floor);
+      sim.motives[k] = clamp(v, -100, 100);
+    }
     sim.motives.bladder = Math.max(num(sim.motives.bladder), R.bladderReturn);
     sim.motives.room = 0;
+    sim.data.lastReturn = nowAbs();
+    sim.data.lastReturnNight = isNightShift(lv);
     addMoney(lv.pay, 'salário');
     c.daysWorked = num(c.daysWorked) + 1;
     c.missedDays = 0;
@@ -2804,21 +3469,24 @@
     let msg = firstName(sim) + ' voltou do trabalho e recebeu ' + fmtMoney(lv.pay) + '.';
     let kind = 'money';
     const next = tr && tr.levels[c.level] ? tr.levels[c.level] : null;
-    if (next && md > 0 && meetsReqs(sim, next)) {
+    const cooling = num(c.noPromoUntil) > num(c.daysWorked);   // a few shifts after a demotion (QA SIM-3)
+    if (next && md > 0 && !cooling && meetsReqs(sim, next)) {
       const chance = clamp(R.promoBase + c.performance / 200, 0.05, 0.98);
       if (rand() < chance) {
         c.level += 1;
         c.performance = 0;
-        msg = 'Promoção! ' + firstName(sim) + ' agora é ' + next.title + ' (' + fmtMoney(next.pay) + '/dia, ' + next.start + 'h–' + next.end + 'h). Recebeu ' + fmtMoney(lv.pay) + ' hoje.';
+        const night = isNightShift(next) ? ' Atenção: turno da noite — durma um pouco antes de sair.' : '';
+        msg = 'Promoção! ' + firstName(sim) + ' agora é ' + next.title + ' (' + fmtMoney(next.pay) + '/dia, ' + next.start + 'h–' + next.end + 'h). Recebeu ' + fmtMoney(lv.pay) + ' hoje.' + night;
         kind = 'career';
       }
     } else if (c.performance <= R.demoteAt && c.level > 1) {
       c.level -= 1;
       c.performance = 0;
-      msg = firstName(sim) + ' foi rebaixado(a) para ' + tr.levels[c.level - 1].title + ' por mau desempenho. Recebeu ' + fmtMoney(lv.pay) + '.';
+      c.noPromoUntil = num(c.daysWorked) + num(R.promoCooldown, 3);
+      msg = firstName(sim) + ' foi ' + g(sim, 'rebaixado', 'rebaixada') + ' para ' + tr.levels[c.level - 1].title + ' por mau desempenho. Recebeu ' + fmtMoney(lv.pay) + '.';
       kind = 'bad';
     }
-    notify(msg, kind);
+    notify(msg, kind, focusSim(sim));
     emit('sims');
   }
   function meetsReqs(sim, level) {
@@ -2892,17 +3560,17 @@
     const D_ = D();
     const side = rand() < 0.5 ? 0 : 1;
     const p = spawnTile(side);
-    const roleNames = { repair: 'Técnico', maid: 'Faxineira', pizza: 'Entregador', collector: 'Oficial de cobrança' };
-    const gender = npc ? npc.gender : (role === 'maid' ? 'f' : rand() < 0.5 ? 'm' : 'f');
+    const ex = extra || {};
+    const gender = npc ? npc.gender : (ex.gender === 'f' || ex.gender === 'm' ? ex.gender : (role === 'maid' ? 'f' : rand() < 0.5 ? 'm' : 'f'));
     const uni = { repair: '#2b59c3', maid: '#e07aa5', pizza: '#d62828', collector: '#3a3a3a' };
     const colors = npc ? shallow(npc.colors) : {
       skin: pick(D_.PALETTES.skin), hair: pick(D_.PALETTES.hair), shirt: uni[role] || pick(D_.PALETTES.shirt), pants: '#2b2d42',
     };
-    let name;
+    let name, first = null;
     if (npc) name = npc.name;
     else {
-      const fn = pick(D_.NAMES[gender] || D_.NAMES.m);
-      name = (role === 'maid' ? 'Dona ' + fn : (roleNames[role] || 'Visitante') + ' ' + fn);
+      first = ex.first || pick(D_.NAMES[gender] || D_.NAMES.m);
+      name = roleTitle(role, gender) + ' ' + first;   // "Entregadora Rafaela", "Técnico Bruno" (QA LIVE-16)
     }
     const motives = {};
     for (const k of D_.MOTIVES) motives[k] = randInt(20, 80);
@@ -2915,6 +3583,8 @@
       atWork: false, workReturnAt: 0, hidden: false, visitor: true, npcId: npc ? npc.id : null, role, leaveAt: 0,
       lockouts: {}, asleep: false, seated: false, data: Object.assign({ arrivedAt: nowAbs(), side, stage: 0 }, extra || {}),
     };
+    if (first) sim.data.first = first;
+    delete sim.data.gender;
     S.sims.push(sim);
     emit('sims');
     return sim;
@@ -2940,7 +3610,7 @@
     const pay = Math.min(cost, Math.max(0, num(S.money)));
     if (pay > 0) addMoney(-pay, sim.role === 'repair' ? 'técnico' : 'faxineira');
     if (cost > pay) S.bills.push({ id: nid(), amount: cost - pay, dueDay: S.time.day + D().MONEY.billGraceDays, kind: 'service' });
-    notify((sim.role === 'repair' ? 'O técnico' : 'A faxineira') + ' cobrou ' + fmtMoney(cost) + ' (' + hours + ' h).', 'money');
+    notify(whoService(sim) + ' cobrou ' + fmtMoney(cost) + ' (' + hours + ' h).', 'money');
   }
   function removeVisitor(sim) {
     const i = S.sims.indexOf(sim);
@@ -2971,7 +3641,7 @@
         const host = household();
         if (host.length && host.every((hh) => relPeek(s, hh).daily < SR.guestLeaveRel)) leave = true;
         if (leave) {
-          notify(s.name + ' foi embora.', 'info');
+          notify(s.name + ' foi embora.', 'info', focusSim(s));
           startLeaving(s);
         }
       }
@@ -3066,6 +3736,21 @@
           return;
         }
         if (sim.data.stage === 1) {
+          // somebody is paying at the mailbox right now (or already on the way there, e.g. the player reacted to
+          // the alert): the collector waits a few minutes (QA CR-5)
+          if (sim.role === 'collector') {
+            const waited = n - num(sim.data.doorAt, n);
+            const paying = S.sims.some((h) => !h.hidden && h.queue[0] && h.queue[0].effect === 'pay_bills' &&
+              (h.queue[0].phase === 'do' || h.queue[0].phase === 'enter' || (h.queue[0].phase === 'exit' && !h.queue[0].data.finished)));
+            const onTheWay = !paying && S.sims.some((h) => !h.hidden && !h.visitor && h.queue[0] && !h.queue[0].cancel &&
+              h.queue[0].effect === 'pay_bills' && (h.queue[0].phase === 'route' || h.queue[0].phase === 'walk'));
+            if (paying && sim.data.payAt == null) sim.data.payAt = n;
+            if ((paying && n - num(sim.data.payAt, n) < 8) || (onTheWay && waited < 12)) {
+              if (sim.data.doorAt == null) sim.data.doorAt = n;
+              sim.anim = 'idle';
+              return;
+            }
+          }
           sim.data.stage = 2;
           if (sim.role === 'pizza') deliverPizza(sim);
           else repossess(sim);
@@ -3093,36 +3778,84 @@
     }
     if (!o) o = addSystemObject('meal', st.x, st.y, 0, extra, true);
     objectsChanged();
-    notify('🍕 A pizza chegou! Está na porta de casa.', 'good');
+    notify('🍕 A pizza chegou! Está na porta de casa.', 'good', o ? focusObj(o) : focusSim(sim));
   }
+  // Bill collector at the door (QA CR-5 / SIM-13): re-checks what is still owed, takes objects worth at most the
+  // debt + 20 % (never the fridge for a small remainder) and keeps any part of the debt that could not be covered.
   function repossess(sim) {
-    const amount = num(sim.data.amount);
+    const ids = sim.data.billIds || [];
+    const due = S.bills.filter((b) => ids.indexOf(b.id) >= 0 || S.time.day >= num(b.dueDay));
+    if (!due.length) {
+      notify(whoService(sim) + ' viu que as contas já foram pagas e foi embora.', 'good');
+      return;
+    }
+    const owed = due.reduce((a, b) => a + num(b.amount), 0);
+    const extra = 1 + D().MONEY.collectorExtra;
+    const cap = Math.round(owed * extra);
     const list = S.objects.filter((o) => { const d = def(o.type); return d && d.buyable !== false && num(o.price) > 0; })
       .map((o) => ({ o, v: D().sellRefund(o, S.time.day) }))
+      .filter((e) => e.v > 0)
       .sort((a, b) => b.v - a.v);
+    const take = [];
     let taken = 0;
-    const names = [];
+    // most valuable first, but only objects that still fit under owed + 20 %
     for (const e of list) {
-      if (taken >= amount) break;
+      if (taken >= owed) break;
+      if (taken + e.v > cap) continue;
+      take.push(e); taken += e.v;
+    }
+    for (const e of take) {
       cancelUsersOf(e.o.id);
       removeObject(e.o, true);
-      taken += e.v;
-      names.push((def(e.o.type) || {}).name || e.o.type);
     }
-    const ids = sim.data.billIds || [];
-    S.bills = S.bills.filter((b) => ids.indexOf(b.id) < 0);
+    const names = take.map((e) => (def(e.o.type) || {}).name || e.o.type);
+    // what was taken pays the debt (anything above it, up to 20 %, is the collector's fee)
+    const credit = Math.min(owed, taken);
+    const left = Math.max(0, Math.round(owed - credit));
+    S.bills = S.bills.filter((b) => due.indexOf(b) < 0);
+    if (left > 0) {
+      S.bills.push({ id: nid(), amount: left, dueDay: S.time.day + 1, kind: 'bill', debt: true });
+    }
     objectsChanged();
-    notify('O oficial de cobrança levou: ' + (names.join(', ') || 'nada (não havia o que levar)') + '. As contas atrasadas foram quitadas.', 'bad');
+    const mb = S.objects.find((o) => o.type === 'mailbox');
+    if (!take.length) {
+      notify(whoService(sim) + ' não encontrou nada que pudesse levar. A dívida de ' + fmtMoney(left) + ' continua e vence amanhã.', 'bad', focusObj(mb));
+    } else if (left > 0) {
+      notify(whoService(sim) + ' levou: ' + names.join(', ') + ' (' + fmtMoney(taken) + '). Ainda falta pagar ' + fmtMoney(left) + ', com vencimento amanhã.', 'bad', focusObj(mb));
+    } else {
+      notify(whoService(sim) + ' levou: ' + names.join(', ') + ' (' + fmtMoney(taken) + '). As contas atrasadas foram quitadas.', 'bad');
+    }
   }
+  // Someone is using an object that is sold, moved or repossessed: their action ends right away (Buy/Build mode is
+  // paused, so a graceful exit would leave them sitting in mid-air — QA BB-4) and the cancel hooks run (refunds, CR-7).
   function cancelUsersOf(objId) {
     for (const s of S.sims) {
       for (const a of s.queue.slice()) {
-        if (a.objId === objId || a.tgtId === objId || a.useObjId === objId) {
-          if (s.queue[0] === a && started(a)) { a.cancel = true; a.data.noFinish = true; if (a.phase === 'do' || a.phase === 'enter') { a.phase = 'exit'; a.data.exitInit = false; a.completed = false; } }
-          else { const j = s.queue.indexOf(a); if (j >= 0) { s.queue.splice(j, 1); cancelHooks(s, a); } }
+        if (a.objId === objId || a.tgtId === objId || a.useObjId === objId || (a.data && a.data.seatId === objId)) {
+          if (s.queue[0] === a && started(a)) {
+            cancelHooks(s, a);
+            a.cancel = true; a.data.noFinish = true;
+            endActionNow(s, a);
+          } else { const j = s.queue.indexOf(a); if (j >= 0) { s.queue.splice(j, 1); cancelHooks(s, a); } }
         }
       }
     }
+  }
+  function endActionNow(s, a) {
+    const i = s.queue.indexOf(a);
+    if (i >= 0) s.queue.splice(i, 1);
+    const wasOn = !!(a.slot && a.slot.on && a.phase !== 'walk') || s.seated || s.asleep;
+    s.seated = false; s.asleep = false; s.anim = 'idle';
+    a.phase = 'done';
+    if (wasOn || isOnBlocked(s)) {
+      const e = a.data && a.data.exit;
+      let p = null;
+      if (e && inBounds(e.x, e.y) && walkable(e.x, e.y)) p = e;
+      if (!p) p = guard(() => WO().nearestWalkable(s.x, s.y), null);
+      if (p) { s.x = p.x; s.y = p.y; }
+    }
+    if (!s.data) s.data = {};
+    s.data.nextAutoAt = Math.max(num(s.data.nextAutoAt), nowAbs() + 1);
   }
 
   // --------------------------------------------------------------- scheduler
@@ -3154,7 +3887,7 @@
       }
     }
     for (const b of S.bills) {
-      if (num(b.dueDay) === S.time.day) notify('Atenção: há contas vencendo hoje (' + fmtMoney(b.amount) + '). Pague na caixa de correio ou o oficial de cobrança virá.', 'bad');
+      if (num(b.dueDay) === S.time.day) notify('Atenção: há contas vencendo hoje (' + fmtMoney(b.amount) + '). Pague na caixa de correio ou o oficial de cobrança virá.', 'bad', focusObj(mb));
     }
     // decide today's walk-by
     if (rand() < D().SOCIAL_RULES.walkbyChance) {
@@ -3168,15 +3901,15 @@
     S.lastBillDay = S.time.day;
     const amount = Math.round(objectsValue() * MO.billPercent + MO.billBase);
     S.bills.push({ id: nid(), amount, dueDay: S.time.day + MO.billGraceDays, kind: 'bill' });
-    notify('Chegou uma conta de ' + fmtMoney(amount) + ' na caixa de correio. Vence em ' + MO.billGraceDays + ' dias.', 'money');
+    notify('Chegou uma conta de ' + fmtMoney(amount) + ' na caixa de correio. Vence em ' + MO.billGraceDays + ' dias.', 'money', focusObj(S.objects.find((o) => o.type === 'mailbox')));
   }
   function collectorCheck() {
     const overdue = S.bills.filter((b) => S.time.day >= num(b.dueDay));
     if (!overdue.length) return;
     if (S.sims.some((s) => s.role === 'collector')) return;
     const amount = Math.round(overdue.reduce((a, b) => a + num(b.amount), 0) * (1 + D().MONEY.collectorExtra));
-    makeVisitorSim(null, 'collector', { amount, billIds: overdue.map((b) => b.id) });
-    notify('O oficial de cobrança chegou para levar objetos no valor de ' + fmtMoney(amount) + '!', 'bad');
+    const c = makeVisitorSim(null, 'collector', { amount, billIds: overdue.map((b) => b.id) });
+    notify(whoService(c) + ' chegou para levar objetos no valor de ' + fmtMoney(amount) + '! Pague as contas na caixa de correio antes que chegue à porta.', 'bad', focusSim(c));
   }
   function relationshipDecay() {
     const SR = D().SOCIAL_RULES;
@@ -3216,7 +3949,7 @@
       o.water = clamp(num(o.water, 100) - 100 / P.waterHours, 0, 100);
       if (o.water <= 0) {
         o.dryHours = num(o.dryHours) + 1;
-        if (o.dryHours >= P.deadAfterHours) { o.dead = true; changed = true; notify('Uma planta morreu por falta de água.', 'bad'); }
+        if (o.dryHours >= P.deadAfterHours) { o.dead = true; changed = true; notify('Uma planta morreu por falta de água.', 'bad', focusObj(o)); }
       }
     }
     if (changed) emit('objects');
@@ -3231,12 +3964,13 @@
         for (const e of due) guard(() => runEvent(e));
       }
     }
-    // spoilage
+    // spoilage (and meals still waiting for the people they were cooked for)
     let changed = false;
     for (const o of S.objects) {
+      if (o.type === 'meal' && o.diners && o.diners.length) guard(() => callDiners(o));
       if ((o.type === 'meal' || o.type === 'dirty_plate') && !o.spoiled && o.spoilAt && n >= num(o.spoilAt)) {
         o.spoiled = true; changed = true;
-        if (o.type === 'meal') notify('Uma refeição estragou. Jogue fora antes que atraia bichos!', 'bad');
+        if (o.type === 'meal') notify('Uma refeição estragou. Jogue fora antes que atraia bichos!', 'bad', focusObj(o));
       }
     }
     if (changed) emit('objects');
@@ -3247,13 +3981,22 @@
       else if (!s.atWork && s.data && s.data.awayUntil && n >= num(s.data.awayUntil)) {
         s.hidden = false; s.data.awayUntil = 0;
         const p = arrivalTile(); s.x = p.x; s.y = p.y;
-        notify(firstName(s) + ' voltou para casa.', 'info');
+        notify(firstName(s) + ' voltou para casa.', 'info', focusSim(s));
         emit('sims');
       } else if (!s.atWork && !(s.data && s.data.awayUntil)) { s.hidden = false; emit('sims'); }
     }
     careerTick();
     visitorChecks();
-    if (S.walkbyAt && n >= S.walkbyAt) { S.walkbyAt = null; guard(spawnWalkby); }
+    if (S.walkbyAt && n >= S.walkbyAt) {
+      // nobody home to greet them: wait until someone returns (QA SIM-8), no later than walkbyLatest
+      const home = presentHousehold().filter((h) => !h.asleep);
+      if (!home.length) {
+        const back = household().filter((h) => h.hidden && h.atWork).map((h) => num(h.workReturnAt)).sort((a, b) => a - b)[0];
+        const latest = S.time.day * 1440 + num(D().SOCIAL_RULES.walkbyLatest, 20) * 60;
+        const next = back ? back + randInt(20, 60) : n + 30;
+        S.walkbyAt = next <= latest ? next : null;
+      } else { S.walkbyAt = null; guard(spawnWalkby); }
+    }
   }
   function runEvent(e) {
     const SR = D().SOCIAL_RULES;
@@ -3265,19 +4008,21 @@
         const s = makeVisitorSim(npc, 'guest', {});
         s.leaveAt = nowAbs() + randInt(SR.guestStayMin, SR.guestStayMax);
         s.data.greeted = true;
-        notify(npc.name + ' chegou para a visita!', 'good');
+        notify(npc.name + ' chegou para a visita!', 'good', focusSim(s));
         return;
       }
-      case 'repair':
-        makeVisitorSim(null, 'repair', {});
-        notify('O técnico chegou.', 'info');
+      case 'repair': {
+        const s = makeVisitorSim(null, 'repair', { gender: e.gender, first: e.first });
+        notify(whoService(s) + ' chegou.', 'info', focusSim(s));
         return;
-      case 'maid':
-        makeVisitorSim(null, 'maid', {});
-        notify('A faxineira chegou.', 'info');
+      }
+      case 'maid': {
+        const s = makeVisitorSim(null, 'maid', { gender: e.gender, first: e.first });
+        notify(whoService(s) + ' chegou.', 'info', focusSim(s));
         return;
+      }
       case 'pizza':
-        makeVisitorSim(null, 'pizza', {});
+        makeVisitorSim(null, 'pizza', { gender: e.gender, first: e.first });
         return;
       default:
     }
@@ -3290,7 +4035,7 @@
     const npc = (unknown.length && rand() < 0.65) ? pick(unknown) : pick(free);
     const s = makeVisitorSim(npc, 'walkby', {});
     s.leaveAt = nowAbs() + 90;
-    notify(npc.name + ' está passeando pela calçada. Que tal cumprimentar?', 'info');
+    notify(npc.name + ' está passeando pela calçada. Que tal cumprimentar?', 'info', focusSim(s));
   }
   function onMinute(mod) {
     emit('time', { day: S.time.day, minute: mod });
@@ -3306,6 +4051,8 @@
 
   // --------------------------------------------------------------- update loop
   function tick(dt) {
+    tickNo++;
+    autoBudget = Math.max(1, num(D().AUTONOMY.perTick, 2));
     const before = num(S.time.minute);
     let after = before + dt;
     const b0 = Math.floor(before);
@@ -3331,11 +4078,21 @@
   }
 
   // --------------------------------------------------------------- buy / sell / build
-  function relocateSims() {
+  // the character is mid-step onto (or already on) the furniture slot of a walking action: keep them there
+  function onSlotStep(s, a) {
+    if (!a || !a.slot || !a.slot.on || a.phase !== 'walk') return false;
+    const t = simTile(s);
+    if (t.x === a.slot.x && t.y === a.slot.y) return true;
+    const last = a.path && a.path[a.path.length - 1];
+    if (last && Math.round(num(last.x)) === a.slot.x && Math.round(num(last.y)) === a.slot.y && num(a.progress) >= a.path.length - 1) return true;
+    return false;
+  }
+  function relocateCharacters() {
     for (const s of S.sims) {
       if (s.hidden) continue;
       const a = s.queue[0];
-      if (a && a.slot && a.slot.on && (a.phase === 'do' || a.phase === 'enter')) continue;
+      if (a && a.slot && a.slot.on && (a.phase === 'do' || a.phase === 'enter' || a.phase === 'exit') && objById(a.useObjId != null ? a.useObjId : a.objId)) continue;
+      if (onSlotStep(s, a) && objById(a.useObjId)) continue;
       const t = simTile(s);
       if (!walkable(t.x, t.y)) {
         const nw = guard(() => WO().nearestWalkable(s.x, s.y), null);
@@ -3347,12 +4104,14 @@
   }
   function buyObject(type, x, y, rot) {
     if (!S) return { ok: false, reason: 'Jogo não iniciado.' };
+    lastReason = '';
+    const fail = (reason) => { refuse(reason); return { ok: false, reason }; };
     const d = def(type);
-    if (!d || d.buyable === false) return { ok: false, reason: 'Este objeto não está à venda.' };
-    if (num(S.money) < d.price) return { ok: false, reason: 'Dinheiro insuficiente.' };
+    if (!d || d.buyable === false) return fail('Este objeto não está à venda.');
+    if (num(S.money) < d.price) return fail('Dinheiro insuficiente.');
     x = Math.round(num(x)); y = Math.round(num(y)); rot = normRot(rot);
     const cp = guard(() => WO().canPlace(type, x, y, rot), { ok: false, reason: 'Posição inválida.' });
-    if (!cp || !cp.ok) return { ok: false, reason: (cp && cp.reason) || 'Posição inválida.' };
+    if (!cp || !cp.ok) return fail((cp && cp.reason) || 'Posição inválida.');
     const o = { id: nid(), type, x, y, rot, dirty: 0, broken: false, boughtDay: S.time.day, price: d.price, uses: 0 };
     if (type === 'plant_small' || type === 'plant_big') { o.water = 100; o.dryHours = 0; }
     if (d.light) o.on = true;
@@ -3360,7 +4119,7 @@
     S.objects.push(o);
     objectsChanged();
     addMoney(-d.price, 'compra');
-    relocateSims();
+    relocateCharacters();
     return { ok: true, reason: '', obj: o };
   }
   function sellValue(objId) {
@@ -3372,28 +4131,32 @@
   }
   function sellObject(objId) {
     if (!S) return { ok: false, refund: 0 };
+    lastReason = '';
     const o = objById(objId);
-    if (!o) return { ok: false, refund: 0, reason: 'Objeto não encontrado.' };
-    if (o.type === 'mailbox' || o.type === 'carpool') return { ok: false, refund: 0, reason: 'Este objeto não pode ser vendido.' };
+    if (!o) { refuse('Objeto não encontrado.'); return { ok: false, refund: 0, reason: 'Objeto não encontrado.' }; }
+    if (o.type === 'mailbox' || o.type === 'carpool') { refuse('Este objeto não pode ser vendido.'); return { ok: false, refund: 0, reason: 'Este objeto não pode ser vendido.' }; }
     const refund = sellValue(objId);
     cancelUsersOf(o.id);
     removeObject(o);
     if (refund) addMoney(refund, 'venda');
-    relocateSims();
+    relocateCharacters();
     return { ok: true, refund };
   }
   function moveObject(objId, x, y, rot) {
     if (!S) return { ok: false, reason: 'Jogo não iniciado.' };
+    lastReason = '';
+    const fail = (reason) => { refuse(reason); return { ok: false, reason }; };
     const o = objById(objId);
-    if (!o) return { ok: false, reason: 'Objeto não encontrado.' };
-    if (o.type === 'carpool') return { ok: false, reason: 'A carona não pode ser movida.' };
+    if (!o) return fail('Objeto não encontrado.');
+    if (o.type === 'carpool') return fail('A carona não pode ser movida.');
     x = Math.round(num(x)); y = Math.round(num(y)); rot = normRot(rot == null ? o.rot : rot);
     const cp = guard(() => WO().canPlace(o.type, x, y, rot, o.id), { ok: false, reason: 'Posição inválida.' });
-    if (!cp || !cp.ok) return { ok: false, reason: (cp && cp.reason) || 'Posição inválida.' };
+    if (!cp || !cp.ok) return fail((cp && cp.reason) || 'Posição inválida.');
+    if (o.x === x && o.y === y && normRot(o.rot) === rot) return { ok: true, reason: '' };
     cancelUsersOf(o.id);
     o.x = x; o.y = y; o.rot = rot;
     objectsChanged();
-    relocateSims();
+    relocateCharacters();
     return { ok: true, reason: '' };
   }
   function wallPrice(t) {
@@ -3407,30 +4170,46 @@
     if (ex && ex.t === t) return 0;
     return wallPrice(t) - (ex ? Math.round(wallPrice(ex.t) * D().DEMOLISH_REFUND) : 0);
   }
+  function lotChanged() {
+    invalidateCaches();
+    emit('lot');
+  }
   function buildWall(edgeKey, t, c) {
     if (!S) return { ok: false, reason: 'Jogo não iniciado.', cost: 0 };
+    lastReason = '';
+    const fail = (reason, cost) => { refuse(reason); return { ok: false, reason, cost: cost || 0 }; };
     t = Math.round(num(t));
-    if ([0, 1, 2, 3].indexOf(t) < 0) return { ok: false, reason: 'Tipo inválido.', cost: 0 };
+    if ([0, 1, 2, 3].indexOf(t) < 0) return fail('Tipo inválido.');
     const W = WO();
-    if (W.isValidEdge && !W.isValidEdge(edgeKey)) return { ok: false, reason: 'Fora do terreno.', cost: 0 };
+    if (W.isValidEdge && !W.isValidEdge(edgeKey)) return fail('Fora do terreno.');
     const ex = guard(() => W.getWall(edgeKey), null);
-    if (t === 0 && !ex) return { ok: false, reason: 'Não há parede aqui.', cost: 0 };
+    if (t === 0 && !ex) return fail('Não há parede aqui.');
     if (ex && ex.t === t) {
       if (c != null && Math.round(num(c)) !== num(ex.c)) return Object.assign(paintWall(edgeKey, c), {});
-      return { ok: false, reason: 'Já existe aqui.', cost: 0 };
+      return fail('Já existe aqui.');
     }
     if (W.canBuildWall) {
       const cb = guard(() => W.canBuildWall(edgeKey, t), { ok: true });
-      if (cb && !cb.ok) return { ok: false, reason: cb.reason || 'Não é possível construir aqui.', cost: 0 };
+      if (cb && !cb.ok) return fail(cb.reason || 'Não é possível construir aqui.');
     }
     const cost = wallCost(edgeKey, t);
-    if (cost > 0 && num(S.money) < cost) return { ok: false, reason: 'Dinheiro insuficiente.', cost };
+    if (cost > 0 && num(S.money) < cost) return fail('Dinheiro insuficiente.', cost);
     const color = c != null ? Math.round(num(c)) : (ex ? num(ex.c) : 0);
+    const sides = ex && t !== 0 && c == null ? { cA: ex.cA, cB: ex.cB } : null;
     const ok = guard(() => W.setWall(edgeKey, t, color), false);
-    if (ok === false) return { ok: false, reason: 'Não é possível construir aqui.', cost: 0 };
+    if (ok === false) return fail('Não é possível construir aqui.');
+    // keep per-side wallpaper when a wall becomes a door/window (CONTRACT_V2 §1)
+    if (sides && (sides.cA != null || sides.cB != null)) {
+      const e = guard(() => W.getWall(edgeKey), null);
+      if (e) {
+        if (sides.cA != null) e.cA = sides.cA;
+        if (sides.cB != null) e.cB = sides.cB;
+        guard(() => W.rebuild());
+      }
+    }
     if (cost) addMoney(-cost, t === 0 ? 'demolição' : 'construção');
-    relocateSims();
-    emit('lot');
+    relocateCharacters();
+    lotChanged();
     return { ok: true, reason: '', cost };
   }
   function floorCost(x, y, idx) {
@@ -3442,37 +4221,237 @@
   }
   function paintFloor(x, y, idx) {
     if (!S) return { ok: false, cost: 0 };
+    lastReason = '';
     x = Math.round(num(x)); y = Math.round(num(y)); idx = Math.round(num(idx));
     const F = D().FLOORS;
-    if (!inBounds(x, y) || !(idx >= 0 && idx < F.length)) return { ok: false, cost: 0, reason: 'Inválido.' };
+    if (!inBounds(x, y) || !(idx >= 0 && idx < F.length)) { refuse('Inválido.'); return { ok: false, cost: 0, reason: 'Inválido.' }; }
     const cost = floorCost(x, y, idx);
     if (cost === 0 && num(S.lot.floors[y * S.lot.w + x]) === idx) return { ok: true, cost: 0 };
-    if (cost > 0 && num(S.money) < cost) return { ok: false, cost, reason: 'Dinheiro insuficiente.' };
+    if (cost > 0 && num(S.money) < cost) { refuse('Dinheiro insuficiente.'); return { ok: false, cost, reason: 'Dinheiro insuficiente.' }; }
     guard(() => WO().setFloor(x, y, idx));
     if (cost) addMoney(-cost, 'piso');
-    emit('lot');
+    lotChanged();
     return { ok: true, cost };
   }
-  function paintWall(edgeKey, idx) {
+  // ---- wallpaper per wall side (CONTRACT_V2 §1). Side A of "h,x,y" faces tile (x, y−1), side B faces (x, y);
+  // side A of "v,x,y" faces (x−1, y), side B faces (x, y). Missing cA/cB fall back to c.
+  function sideColor(e, side) {
+    if (!e) return 0;
+    const v = side === 'A' ? e.cA : side === 'B' ? e.cB : e.c;
+    return v != null && isFinite(+v) ? Math.round(+v) : Math.round(num(e.c));
+  }
+  function normalizeSides(e) {
+    if (e.cA != null && e.cB != null && +e.cA === +e.cB) { e.c = +e.cA; delete e.cA; delete e.cB; }
+    if (e.cA != null && +e.cA === +e.c) delete e.cA;
+    if (e.cB != null && +e.cB === +e.c) delete e.cB;
+  }
+  function wallpaperSidesCost(e, idx, side) {
+    const price = num((D().WALLPAPERS[idx] || {}).price, D().MONEY.wallpaperPrice);
+    let n = 0;
+    if (side === 'A' || side === 'both') { if (sideColor(e, 'A') !== idx) n++; }
+    if (side === 'B' || side === 'both') { if (sideColor(e, 'B') !== idx) n++; }
+    return { cost: n * price, count: n };
+  }
+  function applyWallpaper(e, idx, side) {
+    if (side === 'both') { e.c = idx; delete e.cA; delete e.cB; return; }
+    if (side === 'A') e.cA = idx; else e.cB = idx;
+    normalizeSides(e);
+  }
+  function paintWall(edgeKey, idx, side) {
     if (!S) return { ok: false, cost: 0 };
+    lastReason = '';
     idx = Math.round(num(idx));
+    side = side === 'A' || side === 'B' ? side : 'both';
     const WP = D().WALLPAPERS;
-    if (!(idx >= 0 && idx < WP.length)) return { ok: false, cost: 0, reason: 'Inválido.' };
+    if (!(idx >= 0 && idx < WP.length)) { refuse('Inválido.'); return { ok: false, cost: 0, reason: 'Inválido.' }; }
     const ex = guard(() => WO().getWall(edgeKey), null);
-    if (!ex) return { ok: false, cost: 0, reason: 'Não há parede aqui.' };
-    if (num(ex.c) === idx) return { ok: true, cost: 0 };
-    const cost = num(WP[idx].price);
-    if (num(S.money) < cost) return { ok: false, cost, reason: 'Dinheiro insuficiente.' };
-    guard(() => WO().setWall(edgeKey, ex.t, idx));
+    if (!ex) { refuse('Não há parede aqui.'); return { ok: false, cost: 0, reason: 'Não há parede aqui.' }; }
+    const pc = wallpaperSidesCost(ex, idx, side);
+    if (!pc.count) return { ok: true, cost: 0, count: 0 };
+    if (num(S.money) < pc.cost) { refuse('Dinheiro insuficiente.'); return { ok: false, cost: pc.cost, reason: 'Dinheiro insuficiente.' }; }
+    applyWallpaper(ex, idx, side);
+    guard(() => WO().rebuild());
+    addMoney(-pc.cost, 'papel de parede');
+    lotChanged();
+    return { ok: true, cost: pc.cost, count: pc.count };
+  }
+  // tiles of the room (region) containing tile (x, y)
+  function roomTilesAt(x, y) {
+    const W = WO();
+    const id = roomAt(x, y);
+    if (id < 0) return { id, tiles: [], indoor: false };
+    const list = guard(() => W.rooms(), []) || [];
+    const r = list.find((q) => q && q.id === id);
+    if (r) return { id, tiles: r.tiles || [], indoor: !!r.indoor };
+    const tiles = [];
+    for (let yy = 0; yy < S.lot.h; yy++) for (let xx = 0; xx < S.lot.w; xx++) if (roomAt(xx, yy) === id) tiles.push({ x: xx, y: yy });
+    const indoor = guard(() => (W.isIndoor ? !!W.isIndoor(x, y) : false), false);
+    return { id, tiles, indoor };
+  }
+  // [{ key, side }] for every wall/door/window edge bounding the room at (x, y), side facing into the room
+  function roomEdgesAt(x, y) {
+    const W = WO();
+    if (typeof W.roomEdges === 'function') {
+      const r = guard(() => W.roomEdges(x, y), null);
+      if (Array.isArray(r)) return r;
+    }
+    const out = [], seen = new Set();
+    const add = (key, side) => { if (seen.has(key + side)) return; if (!guard(() => W.getWall(key), null)) return; seen.add(key + side); out.push({ key, side }); };
+    for (const t of roomTilesAt(x, y).tiles) {
+      add('h,' + t.x + ',' + t.y, 'B');            // top edge: side B faces this tile
+      add('h,' + t.x + ',' + (t.y + 1), 'A');      // bottom edge: side A faces this tile
+      add('v,' + t.x + ',' + t.y, 'B');            // left edge
+      add('v,' + (t.x + 1) + ',' + t.y, 'A');      // right edge
+    }
+    return out;
+  }
+  function paintRoomWalls(x, y, idx) {
+    if (!S) return { ok: false, cost: 0, count: 0, reason: 'Jogo não iniciado.' };
+    lastReason = '';
+    x = Math.round(num(x)); y = Math.round(num(y)); idx = Math.round(num(idx));
+    const fail = (reason, cost) => { refuse(reason); return { ok: false, cost: cost || 0, count: 0, reason }; };
+    if (!inBounds(x, y)) return fail('Fora do terreno.');
+    if (!(idx >= 0 && idx < D().WALLPAPERS.length)) return fail('Inválido.');
+    const edges = roomEdgesAt(x, y);
+    if (!edges.length) return fail('Este cômodo não tem paredes.');
+    let cost = 0, count = 0;
+    const todo = [];
+    for (const ed of edges) {
+      const e = guard(() => WO().getWall(ed.key), null);
+      if (!e) continue;
+      const pc = wallpaperSidesCost(e, idx, ed.side);
+      if (pc.count) { cost += pc.cost; count += pc.count; todo.push({ e, side: ed.side }); }
+    }
+    if (!count) return { ok: true, cost: 0, count: 0, reason: '' };
+    if (num(S.money) < cost) return fail('Dinheiro insuficiente.', cost);
+    for (const t of todo) applyWallpaper(t.e, idx, t.side);
+    guard(() => WO().rebuild());
     addMoney(-cost, 'papel de parede');
-    emit('lot');
-    return { ok: true, cost };
+    lotChanged();
+    return { ok: true, cost, count, reason: '' };
+  }
+  function paintRoomFloor(x, y, idx) {
+    if (!S) return { ok: false, cost: 0, count: 0, reason: 'Jogo não iniciado.' };
+    lastReason = '';
+    x = Math.round(num(x)); y = Math.round(num(y)); idx = Math.round(num(idx));
+    const fail = (reason, cost) => { refuse(reason); return { ok: false, cost: cost || 0, count: 0, reason }; };
+    if (!inBounds(x, y)) return fail('Fora do terreno.');
+    if (!(idx >= 0 && idx < D().FLOORS.length)) return fail('Inválido.');
+    const room = roomTilesAt(x, y);
+    if (!room.indoor) return fail('Só dá para pintar o piso de cômodos fechados de uma vez.');
+    let cost = 0, count = 0;
+    const todo = [];
+    for (const t of room.tiles) {
+      if (num(S.lot.floors[t.y * S.lot.w + t.x]) === idx) continue;
+      cost += floorCost(t.x, t.y, idx); count++; todo.push(t);
+    }
+    if (!count) return { ok: true, cost: 0, count: 0, reason: '' };
+    if (cost > 0 && num(S.money) < cost) return fail('Dinheiro insuficiente.', cost);
+    for (const t of todo) guard(() => WO().setFloor(t.x, t.y, idx));
+    if (cost) addMoney(-cost, 'piso');
+    lotChanged();
+    return { ok: true, cost, count, reason: '' };
+  }
+  // ---- room tool (CONTRACT_V2 §2): perimeter walls of the inclusive tile rect + optional floor inside
+  function roomPlan(x1, y1, x2, y2, floorIdx) {
+    const W = WO();
+    let ax = Math.round(num(x1)), ay = Math.round(num(y1)), bx = Math.round(num(x2)), by = Math.round(num(y2));
+    if (ax > bx) { const t = ax; ax = bx; bx = t; }
+    if (ay > by) { const t = ay; ay = by; by = t; }
+    ax = clamp(ax, 0, S.lot.w - 1); bx = clamp(bx, 0, S.lot.w - 1); ay = clamp(ay, 0, S.lot.h - 1); by = clamp(by, 0, S.lot.h - 1);
+    const plan = { x1: ax, y1: ay, x2: bx, y2: by, edges: [], tiles: [], cost: 0, reason: '' };
+    let keys = typeof W.edgesOfRect === 'function' ? guard(() => W.edgesOfRect(ax, ay, bx, by), null) : null;
+    if (!Array.isArray(keys)) {
+      keys = [];
+      for (let x = ax; x <= bx; x++) { keys.push('h,' + x + ',' + ay); keys.push('h,' + x + ',' + (by + 1)); }
+      for (let y = ay; y <= by; y++) { keys.push('v,' + ax + ',' + y); keys.push('v,' + (bx + 1) + ',' + y); }
+    }
+    for (const k of keys) {
+      if (guard(() => W.getWall(k), null)) continue;          // already a wall/door/window
+      if (W.canBuildWall) {
+        const cb = guard(() => W.canBuildWall(k, 1), { ok: true });
+        if (cb && !cb.ok) { plan.reason = plan.reason || cb.reason || 'Há um objeto no caminho da parede.'; continue; }
+      }
+      plan.edges.push(k);
+      plan.cost += wallPrice(1);
+    }
+    if (floorIdx != null && floorIdx !== '') {
+      const fi = Math.round(num(floorIdx));
+      if (fi >= 0 && fi < D().FLOORS.length) {
+        for (let y = ay; y <= by; y++) for (let x = ax; x <= bx; x++) {
+          if (num(S.lot.floors[y * S.lot.w + x]) === fi) continue;
+          plan.tiles.push({ x, y });
+          plan.cost += floorCost(x, y, fi);
+        }
+        plan.floorIdx = fi;
+      } else plan.reason = plan.reason || 'Piso inválido.';
+    }
+    if (!plan.reason && !plan.edges.length && !plan.tiles.length) plan.reason = 'Já existe um cômodo aqui.';
+    if (!plan.reason && plan.cost > 0 && num(S.money) < plan.cost) plan.reason = 'Dinheiro insuficiente.';
+    return plan;
+  }
+  function estimateRoom(x1, y1, x2, y2, floorIdx) {
+    if (!S) return { ok: false, cost: 0, walls: 0, tiles: 0, reason: 'Jogo não iniciado.' };
+    const p = roomPlan(x1, y1, x2, y2, floorIdx);
+    return { ok: !p.reason, cost: p.cost, walls: p.edges.length, tiles: p.tiles.length, reason: p.reason };
+  }
+  function buildRoom(x1, y1, x2, y2, floorIdx) {
+    if (!S) return { ok: false, cost: 0, reason: 'Jogo não iniciado.' };
+    lastReason = '';
+    const p = roomPlan(x1, y1, x2, y2, floorIdx);
+    if (p.reason) { refuse(p.reason); return { ok: false, cost: p.cost, reason: p.reason }; }
+    const W = WO();
+    for (const k of p.edges) guard(() => W.setWall(k, 1, 0));
+    for (const t of p.tiles) guard(() => W.setFloor(t.x, t.y, p.floorIdx));
+    if (p.cost) addMoney(-p.cost, 'construção');
+    relocateCharacters();
+    lotChanged();
+    return { ok: true, cost: p.cost, reason: '', walls: p.edges.length, tiles: p.tiles.length };
+  }
+  // ---- undo for Buy/Build (time is paused there) — CONTRACT_V2 §2
+  function snapshotBuild() {
+    if (!S) return null;
+    return JSON.parse(JSON.stringify({ lot: S.lot, objects: S.objects, money: S.money, nextId: S.nextId }));
+  }
+  function restoreBuild(snap) {
+    if (!S || !snap || typeof snap !== 'object' || !snap.lot || !Array.isArray(snap.objects)) return { ok: false, reason: 'Nada para desfazer.' };
+    const c = JSON.parse(JSON.stringify(snap));
+    S.lot = c.lot;
+    S.objects = c.objects.filter((o) => o && def(o.type));
+    S.money = Math.round(num(c.money, S.money));
+    S.nextId = Math.max(num(S.nextId), num(c.nextId));     // ids handed out meanwhile are never reused
+    objMapRef = null;
+    rebuildObjMap();
+    guard(() => WO().init(S));
+    invalidateCaches();
+    // characters: drop actions whose objects vanished, step out of tiles that became blocked
+    for (const s of S.sims) {
+      if (!Array.isArray(s.queue)) s.queue = [];
+      const head = s.queue[0];
+      const gone = (a) => a.kind === 'object' && ((a.objId != null && !objById(a.objId) && !(a.effect === 'faint')) ||
+        (a.useObjId != null && !objById(a.useObjId)) || (a.tgtId != null && !objById(a.tgtId) && num(a.stage) === 0) ||
+        (a.data && a.data.seatId != null && !objById(a.data.seatId)));
+      s.queue = s.queue.filter((a) => !gone(a));
+      if (head && s.queue[0] !== head) { s.seated = false; s.asleep = false; s.anim = 'idle'; }
+      const a = s.queue[0];
+      if (a && a.phase === 'walk') a.phase = 'route';
+      if (s.hidden) continue;
+      if (a && a.slot && a.slot.on && (a.phase === 'do' || a.phase === 'enter' || a.phase === 'exit')) continue;
+      const t = simTile(s);
+      if (!inBounds(t.x, t.y) || !walkable(t.x, t.y)) {
+        const nw = guard(() => WO().nearestWalkable(clamp(s.x, 0, S.lot.w - 1), clamp(s.y, 0, S.lot.h - 1)), null);
+        if (nw) { s.x = nw.x; s.y = nw.y; }
+      }
+    }
+    emit('lot'); emit('objects'); emit('money', { money: S.money, delta: 0, reason: 'desfazer' });
+    return { ok: true };
   }
   function payBill(billId) {
     if (!S) return { ok: false };
+    lastReason = '';
     const b = S.bills.find((x) => x.id === billId);
-    if (!b) return { ok: false, reason: 'Conta não encontrada.' };
-    if (num(S.money) < num(b.amount)) return { ok: false, reason: 'Dinheiro insuficiente.' };
+    if (!b) { refuse('Conta não encontrada.'); return { ok: false, reason: 'Conta não encontrada.' }; }
+    if (num(S.money) < num(b.amount)) { refuse('Dinheiro insuficiente.'); return { ok: false, reason: 'Dinheiro insuficiente.' }; }
     addMoney(-num(b.amount), 'contas');
     S.bills.splice(S.bills.indexOf(b), 1);
     notify('Conta de ' + fmtMoney(b.amount) + ' paga.', 'money');
@@ -3585,7 +4564,8 @@
     const cp = guard(() => WO().canPlace(type, x, y, rot), { ok: true });
     if (cp && !cp.ok) { try { console.warn('[engine] starter placement failed', type, x, y, rot, cp.reason); } catch (e) { /* */ } return null; }
     const d = def(type);
-    const o = Object.assign({ id: nid(), type, x, y, rot, dirty: 0, broken: false, boughtDay: 1, price: d ? d.price : 0, uses: 0 }, extra || {});
+    // starter furniture is already used: boughtDay 0 so it never resells at 100 % (QA BB-10)
+    const o = Object.assign({ id: nid(), type, x, y, rot, dirty: 0, broken: false, boughtDay: 0, starter: true, price: d ? d.price : 0, uses: 0 }, extra || {});
     if (type === 'plant_small' || type === 'plant_big') { o.water = 100; o.dryHours = 0; }
     if (d && d.light) o.on = true;
     S.objects.push(o);
@@ -3686,6 +4666,13 @@
         if (parts.length > 1) S.householdName = 'Família ' + parts[parts.length - 1];
       }
       makeNpcs(8, null);
+      // a new family already knows a couple of neighbours, so the phone works from day 1 (QA SIM-8)
+      const nk = Math.min(S.npcs.length, Math.max(0, Math.round(num(D().SOCIAL_RULES.knownAtStartEmpty, 2))));
+      for (let i = 0; i < nk; i++) {
+        const n = S.npcs[i];
+        n.known = true;
+        for (const h of hh) { const r = npcRel(h, n, true); r.hn.daily = randInt(10, 20); r.nh.daily = randInt(10, 20); r.hn.lifetime = 5; r.nh.lifetime = 5; }
+      }
     } else {
       S.money = D().MONEY.startFamily;
       buildStarterHouse();
@@ -3734,6 +4721,11 @@
     st.bills = st.bills.filter((b) => b && isFinite(+b.amount));
     if (!Array.isArray(st.notifications)) st.notifications = [];
     if (!Array.isArray(st.events)) st.events = [];
+    // CR-4: one stray null / non-object entry must not make a save unreadable
+    const isObj = (v) => !!v && typeof v === 'object' && !Array.isArray(v);
+    st.npcs = st.npcs.filter(isObj);
+    st.notifications = st.notifications.filter(isObj);
+    st.events = st.events.filter(isObj);
     if (!st.settings || typeof st.settings !== 'object') st.settings = {};
     if (st.settings.freeWill === undefined) st.settings.freeWill = true;
     if (!st.settings.wallMode) st.settings.wallMode = 'cutaway';
@@ -3813,11 +4805,18 @@
     objMapRef = null;
     rebuildObjMap();
     guard(() => WO().init(S));
+    invalidateCaches();
+    standCache = { tick: -1, map: null };
+    sleepCtxCache.clear();
     // characters standing inside furniture (old saves / edits) step out
     for (const s of S.sims) {
       if (s.hidden) continue;
       const a = s.queue[0];
       if (a && a.slot && a.slot.on && (a.phase === 'do' || a.phase === 'enter' || a.phase === 'exit')) continue;
+      // mid-step onto a bed/sofa: keep walking from where they are (QA SIM-14)
+      if (onSlotStep(s, a) && a.path && a.path.length) continue;
+      // responding to a social while standing in furniture (old saves): stepRespond moves them out smoothly
+      if (a && a.kind === 'social' && a.data && a.data.respond) continue;
       const t = simTile(s);
       if (!inBounds(t.x, t.y) || !walkable(t.x, t.y)) {
         const nw = guard(() => WO().nearestWalkable(clamp(s.x, 0, S.lot.w - 1), clamp(s.y, 0, S.lot.h - 1)), null);
@@ -3855,6 +4854,64 @@
     return hh.length > 0 && hh.every((s) => s.hidden || s.asleep);
   }
   function netWorth() { return num(S.money) + objectsValue(); }
+  // [{ kind: 'pizza'|'repair'|'maid'|'guest', label, at }] for the clock-area chip (CONTRACT_V2 §3)
+  function pendingDeliveries() {
+    if (!S) return [];
+    const out = [];
+    for (const e of S.events || []) {
+      if (!e || !e.kind) continue;
+      let label;
+      if (e.kind === 'pizza') label = 'Pizza a caminho';
+      else if (e.kind === 'repair' || e.kind === 'maid') label = roleTitle(e.kind, e.gender) + (e.first ? ' ' + e.first : '') + ' a caminho';
+      else if (e.kind === 'guest') { const n = npcById(e.npcId); label = 'Visita: ' + (n ? n.name : 'vizinho'); }
+      else continue;
+      out.push({ kind: e.kind, label, at: num(e.at) });
+    }
+    for (const s of S.sims) {
+      if (s.visitor && s.role === 'pizza' && !s.hidden && !(s.data && num(s.data.stage) >= 2)) {
+        out.push({ kind: 'pizza', label: 'Pizza chegando', at: Math.floor(nowAbs()) });
+      }
+    }
+    return out.sort((a, b) => a.at - b.at);
+  }
+  // an indoor walkable tile near the household's beds (else just inside the front door) for the self menu
+  function homeTile(simId) {
+    if (!S) return null;
+    const sim = simById(simId);
+    const W = WO();
+    const indoor = (x, y) => guard(() => (W.isIndoor ? !!W.isIndoor(x, y) : roomAt(x, y) >= 0), false);
+    const ref = sim ? { x: num(sim.x), y: num(sim.y) } : { x: S.lot.w / 2, y: S.lot.h / 2 };
+    const beds = S.objects.filter((o) => { const d = def(o.type); return d && d.cat === 'beds'; })
+      .sort((a, b) => dist(ref.x, ref.y, a.x, a.y) - dist(ref.x, ref.y, b.x, b.y));
+    for (const b of beds) {
+      const cands = adjacentSlots(b, def(b.type)).filter((sl) => sl.usable && indoor(sl.x, sl.y));
+      const free = cands.find((sl) => !S.sims.some((o) => o !== sim && !o.hidden && Math.round(o.x) === sl.x && Math.round(o.y) === sl.y));
+      if (free || cands[0]) { const c = free || cands[0]; return { x: c.x, y: c.y }; }
+    }
+    // inside the front door
+    const walls = S.lot.walls || {};
+    let best = null;
+    for (const key in walls) {
+      const e = walls[key];
+      if (!e || e.t !== 2) continue;
+      const p = key.split(','); const k = p[0], x = +p[1], y = +p[2];
+      const tiles = k === 'h' ? [{ x, y: y - 1 }, { x, y }] : [{ x: x - 1, y }, { x, y }];
+      for (const t of tiles) {
+        if (!inBounds(t.x, t.y) || !walkable(t.x, t.y) || !indoor(t.x, t.y)) continue;
+        const d0 = dist(ref.x, ref.y, t.x, t.y);
+        if (!best || d0 < best.d) best = { x: t.x, y: t.y, d: d0 };
+      }
+    }
+    if (best) return { x: best.x, y: best.y };
+    for (let r = 0; r < Math.max(S.lot.w, S.lot.h); r++) {
+      for (let dy = -r; dy <= r; dy++) for (let dx = -r; dx <= r; dx++) {
+        if (Math.max(Math.abs(dx), Math.abs(dy)) !== r) continue;
+        const x = Math.round(ref.x) + dx, y = Math.round(ref.y) + dy;
+        if (inBounds(x, y) && walkable(x, y) && indoor(x, y)) return { x, y };
+      }
+    }
+    return arrivalTile();
+  }
   function slotsFor(objId) { const o = objById(objId); return o ? objSlots(o, null) : []; }
 
   M.engine = {
@@ -3862,6 +4919,10 @@
     get state() { return S; },
     mood, moodColor, getInteractions, getSocials, queueInteraction, queueSocial, queueWalk, cancelAction,
     buyObject, sellObject, moveObject, buildWall, paintFloor, paintWall, payBill, setFreeWill, addSim, removeSim,
+    // CONTRACT_V2
+    get lastReason() { return lastReason; }, set lastReason(v) { lastReason = String(v || ''); },
+    paintRoomWalls, paintRoomFloor, estimateRoom, buildRoom, snapshotBuild, restoreBuild,
+    pendingDeliveries, homeTile,
     characters() { return S ? S.sims : []; },
     // additions (see notes/engine.md)
     household() { return S ? household() : []; },
@@ -3871,6 +4932,14 @@
     netWorth, allAsleepOrAway, slotsFor,
     debug: {
       scoreAds, effectiveAds, runAutonomy, curve: (k, m) => D().curve(k, m),
+      // sorted autonomy candidates of a character (tests / tuning): [{ kind, key, objType|target, score }]
+      candidates(simId, restrict) {
+        const sim = simById(simId);
+        if (!sim) return [];
+        return (runAutonomy(sim, restrict || null, { list: true }) || []).map((c) => c.kind === 'object'
+          ? { kind: 'object', key: c.it.key, objType: c.o.type, objId: c.o.id, score: c.score }
+          : { kind: 'social', key: c.so.key, target: c.target.id, score: c.score });
+      },
       set throwErrors(v) { debugThrow = !!v; }, get throwErrors() { return debugThrow; },
       get lastError() { return lastError; },
       rand: () => rand(),
