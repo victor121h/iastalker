@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morada — teste do render</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d2b3a; font-family: system-ui, sans-serif; }
+  #view { position: absolute; inset: 0; }
+  #hud { position: absolute; left: 10px; top: 10px; color: #fff; background: rgba(20,40,55,.75); padding: 8px 10px; border-radius: 8px; font-size: 13px; line-height: 1.5; }
+  #hud button { font: inherit; margin: 2px; }
+  .bubble { position: absolute; transform: translate(-50%, -100%); background: #fff; border-radius: 12px; padding: 2px 6px; font-size: 16px; pointer-events: none; box-shadow: 0 2px 6px rgba(0,0,0,.25); }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<div id="hud">
+  <div id="clock">--:--</div>
+  <div>
+    <button data-a="rotL">⟲ Q</button><button data-a="rotR">⟳ E</button>
+    <button data-a="up">Paredes ↑</button><button data-a="cut">Recorte</button><button data-a="down">Paredes ↓</button>
+    <button data-a="cycle">Ciclo dia</button>
+  </div>
+  <div id="pick">clique em algo</div>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/data.js"></script>
+<script src="render_datastub.js"></script>
+<script src="../js/models.js"></script>
+<script src="../js/render.js"></script>
+<script src="render_fixture.js"></script>
+<script>
+(function () {
+  const state = window.RENDER_FIXTURE();
+  const params = new URLSearchParams(location.search);
+  if (params.has('minute')) state.time.minute = +params.get('minute');
+  const view = document.getElementById('view');
+  M.render.init(view, state);
+  M.render.setSelected(state.settings.selectedSimId);
+  let cycle = params.has('cycle');
+  let last = performance.now();
+  const bubbles = state.sims.map(function (s, i) {
+    const d = document.createElement('div'); d.className = 'bubble'; d.textContent = ['📺', '🍳', '💤', '🎮', '💃'][i] || '💬';
+    document.body.appendChild(d); return d;
+  });
+  function loop(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    if (cycle && state.time) state.time.minute = (state.time.minute + dt * 60) % 1440;
+    // make the dancer move around a little to exercise interpolation/walk
+    M.render.frame(dt);
+    document.getElementById('clock').textContent = (state.time ? M.util.fmtTime(state.time.minute) : '--:--') + '  ' + JSON.stringify(M.render.stats());
+    state.sims.forEach(function (s, i) {
+      if (!s || !bubbles[i]) return;
+      const p = M.render.simScreenPos(s.id);
+      bubbles[i].style.display = p.visible ? 'block' : 'none';
+      bubbles[i].style.left = p.x + 'px'; bubbles[i].style.top = p.y + 'px';
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  document.getElementById('hud').addEventListener('click', function (e) {
+    const a = e.target.getAttribute('data-a');
+    if (a === 'rotL') M.render.rotate(-1); if (a === 'rotR') M.render.rotate(1);
+    if (a === 'up') M.render.setWallMode('up'); if (a === 'cut') M.render.setWallMode('cutaway'); if (a === 'down') M.render.setWallMode('down');
+    if (a === 'cycle') cycle = !cycle;
+  });
+  let drag = null;
+  const cv = M.render.canvas;
+  cv.addEventListener('pointerdown', function (e) { drag = { x: e.clientX, y: e.clientY, moved: false }; });
+  cv.addEventListener('pointermove', function (e) {
+    if (drag) { const dx = e.clientX - drag.x, dy = e.clientY - drag.y; if (Math.abs(dx) + Math.abs(dy) > 3) drag.moved = true; if (drag.moved) { M.render.pan(dx, dy); drag.x = e.clientX; drag.y = e.clientY; } }
+  });
+  cv.addEventListener('pointerup', function (e) {
+    if (drag && !drag.moved) {
+      const p = M.render.pick(e.clientX, e.clientY);
+      const ed = M.render.pickEdge(e.clientX, e.clientY);
+      document.getElementById('pick').textContent = JSON.stringify(p) + ' edge ' + JSON.stringify(ed);
+      if (p && p.kind === 'sim') M.render.setSelected(p.id);
+    }
+    drag = null;
+  });
+  cv.addEventListener('wheel', function (e) { e.preventDefault(); M.render.zoom(e.deltaY); }, { passive: false });
+  window.addEventListener('keydown', function (e) {
+    if (e.key === 'q') M.render.rotate(-1); if (e.key === 'e') M.render.rotate(1);
+    const s = 40; if (e.key === 'ArrowLeft') M.render.pan(s, 0); if (e.key === 'ArrowRight') M.render.pan(-s, 0);
+    if (e.key === 'ArrowUp') M.render.pan(0, s); if (e.key === 'ArrowDown') M.render.pan(0, -s);
+  });
+  window.__demo = { state: state, setCycle: function (v) { cycle = v; } };
+})();
+</script>
+</body>
+</html>

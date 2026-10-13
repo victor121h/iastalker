@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Engine Demo</title>
+<style>
+  :root { --bg: #0f2230; --panel: #16334a; --ink: #e8eef2; --muted: #9fb3c2; --accent: #f3b33d; }
+  @media (prefers-color-scheme: light) { :root:not([data-theme="dark"]) { --bg: #eef3f6; --panel: #ffffff; --ink: #14212b; --muted: #50606c; } }
+  body { margin: 0; background: var(--bg); color: var(--ink); font: 13px/1.35 system-ui, sans-serif; }
+  #wrap { display: flex; flex-wrap: wrap; gap: 12px; padding: 12px 16px; }
+  canvas { background: #23412b; border-radius: 8px; max-width: 100%; }
+  .panel { background: var(--panel); border-radius: 8px; padding: 10px 12px; min-width: 280px; flex: 1; }
+  h2 { margin: 0 0 6px; font-size: 15px; color: var(--accent); }
+  .bar { display: inline-block; width: 70px; height: 7px; background: #0003; border-radius: 4px; vertical-align: middle; overflow: hidden; }
+  .bar > i { display: block; height: 100%; }
+  .row { margin: 2px 0; white-space: nowrap; }
+  .muted { color: var(--muted); }
+  #log div { border-bottom: 1px solid #0002; padding: 2px 0; }
+  button { background: var(--accent); border: 0; border-radius: 6px; padding: 4px 10px; font-weight: 600; cursor: pointer; }
+</style>
+</head>
+<body>
+<div id="wrap">
+  <canvas id="cv" width="720" height="600"></canvas>
+  <div class="panel">
+    <h2 id="clock">—</h2>
+    <div class="row"><button data-s="0">⏸</button> <button data-s="1">1×</button> <button data-s="10">10×</button> <button data-s="60">60×</button> <button data-s="240">240×</button></div>
+    <div id="sims"></div>
+    <h2 style="margin-top:10px">Notificações</h2>
+    <div id="log"></div>
+  </div>
+</div>
+<script src="../js/util.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/world.js"></script>
+<script src="../js/engine.js"></script>
+<script>
+(function () {
+  const M = window.M, E = M.engine, D = M.data;
+  const params = new URLSearchParams(location.search);
+  E.newGame({ seed: +(params.get('seed') || 42) });
+  let speed = +(params.get('speed') || 60);
+  const logs = [];
+  M.util.bus.on('notify', (n) => { logs.unshift(`${M.util.weekdayName(E.state.time.day)} ${M.util.fmtTime(E.state.time.minute)} · ${n.text}`); logs.length = Math.min(logs.length, 14); });
+  document.querySelectorAll('button[data-s]').forEach((b) => b.onclick = () => { speed = +b.dataset.s; });
+  const cv = document.getElementById('cv'), g = cv.getContext('2d');
+  const T = 30;
+  const catColor = { seating: '#c98e66', beds: '#7aa2d6', surfaces: '#a07a55', appliances: '#d9d9d9', plumbing: '#9fd3e0',
+    electronics: '#444', lighting: '#f3e28a', decor: '#5fa35f', hobbies: '#b48ad6', system: '#ffcc33' };
+  function draw() {
+    const S = E.state;
+    g.clearRect(0, 0, cv.width, cv.height);
+    for (let y = 0; y < S.lot.h; y++) for (let x = 0; x < S.lot.w; x++) {
+      const f = D.FLOORS[S.lot.floors[y * S.lot.w + x]] || D.FLOORS[0];
+      g.fillStyle = f.color; g.fillRect(x * T, y * T, T, T);
+    }
+    for (const o of S.objects) {
+      const d = D.CATALOG[o.type]; if (!d) continue;
+      const sz = M.world.rotatedSize(o.type, o.rot);
+      g.fillStyle = o.broken ? '#e0412c' : (catColor[d.cat] || '#999');
+      g.globalAlpha = d.noBlock ? 0.75 : 1;
+      const pad = d.noBlock && !d.wall ? 8 : 2;
+      g.fillRect(o.x * T + pad, o.y * T + pad, sz.w * T - 2 * pad, sz.h * T - 2 * pad);
+      g.globalAlpha = 1;
+      // front marker
+      const f = [[0, 1], [-1, 0], [0, -1], [1, 0]][o.rot % 4];
+      const cx = (o.x + sz.w / 2) * T, cy = (o.y + sz.h / 2) * T;
+      g.strokeStyle = '#0008'; g.beginPath(); g.moveTo(cx, cy); g.lineTo(cx + f[0] * 10, cy + f[1] * 10); g.stroke();
+    }
+    for (const k in S.lot.walls) {
+      const w = S.lot.walls[k]; const p = k.split(','); const x = +p[1], y = +p[2];
+      g.strokeStyle = w.t === 2 ? '#c8873a' : w.t === 3 ? '#8fd0ff' : '#f2efe8'; g.lineWidth = w.t === 1 ? 4 : 3;
+      g.beginPath();
+      if (p[0] === 'h') { g.moveTo(x * T, y * T); g.lineTo((x + 1) * T, y * T); } else { g.moveTo(x * T, y * T); g.lineTo(x * T, (y + 1) * T); }
+      g.stroke(); g.lineWidth = 1;
+    }
+    for (const s of S.sims) {
+      if (s.hidden) continue;
+      const px = (s.x + 0.5) * T, py = (s.y + 0.5) * T;
+      g.fillStyle = s.colors.shirt; g.beginPath(); g.arc(px, py, 9, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = s.visitor ? '#fff' : E.moodColor(s); g.lineWidth = 3; g.stroke(); g.lineWidth = 1;
+      g.strokeStyle = '#000'; g.beginPath(); g.moveTo(px, py); g.lineTo(px + Math.sin(s.facing) * 12, py + Math.cos(s.facing) * 12); g.stroke();
+      g.fillStyle = '#fff'; g.font = '11px system-ui'; g.fillText(s.name.split(' ')[0] + (s.bubble ? ' ' + s.bubble.icon : ''), px + 10, py - 8);
+      const a = s.queue[0];
+      if (a && a.path && a.phase === 'walk') {
+        g.strokeStyle = '#fff6'; g.beginPath(); g.moveTo(px, py);
+        for (let i = a.progress; i < a.path.length; i++) g.lineTo((a.path[i].x + 0.5) * T, (a.path[i].y + 0.5) * T);
+        g.stroke();
+      }
+    }
+  }
+  function panel() {
+    const S = E.state;
+    document.getElementById('clock').textContent = `Dia ${S.time.day} (${M.util.weekdayName(S.time.day, true)}) · ${M.util.fmtTime(S.time.minute)} · ${M.util.fmtMoney(S.money)}`;
+    let h = '';
+    for (const s of S.sims) {
+      h += `<div style="margin-top:8px"><b>${s.name}</b> ${s.visitor ? '<span class="muted">(' + s.role + ')</span>' : ''} · humor ${Math.round(E.mood(s))} ${s.hidden ? '· <i>no trabalho</i>' : ''}</div>`;
+      if (!s.visitor) {
+        for (const k of D.MOTIVES) {
+          const v = s.motives[k], pct = (v + 100) / 2;
+          h += `<div class="row">${D.MOTIVE_ICONS[k]} <span class="bar"><i style="width:${pct}%;background:${v >= 0 ? '#5fc46a' : '#e0583c'}"></i></span> <span class="muted">${D.MOTIVE_LABELS[k]} ${Math.round(v)}</span></div>`;
+        }
+      }
+      h += `<div class="muted">${s.queue.slice(0, 4).map((a) => a.icon + ' ' + a.label + (a.phase === 'do' ? '' : ' …')).join(' → ') || 'ocioso'}</div>`;
+    }
+    document.getElementById('sims').innerHTML = h;
+    document.getElementById('log').innerHTML = logs.map((l) => `<div>${l}</div>`).join('');
+  }
+  let last = performance.now(), acc = 0;
+  function loop(t) {
+    const dt = Math.min(0.1, (t - last) / 1000); last = t;
+    acc += dt * speed;
+    let n = 0;
+    while (acc >= 0.5 && n++ < 2000) { E.update(0.5); acc -= 0.5; }
+    draw(); panel();
+    requestAnimationFrame(loop);
+  }
+  // fast-forward option for automated screenshots
+  const ff = +(params.get('ff') || 0);
+  for (let i = 0; i < ff * 2; i++) E.update(0.5);
+  window.__morada = { M, get state() { return E.state; } };
+  requestAnimationFrame(loop);
+})();
+</script>
+</body>
+</html>

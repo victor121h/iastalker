@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>World Check</title>
+<style>
+  :root { --bg: #10202a; --fg: #e8eef2; }
+  body { margin: 0; background: var(--bg); color: var(--fg); font: 13px/1.4 system-ui, sans-serif; }
+  #wrap { display: flex; gap: 12px; padding: 12px; align-items: flex-start; }
+  canvas { flex: none; }
+  canvas { background: #1b2f3a; border-radius: 6px; }
+  pre { margin: 0; white-space: pre-wrap; max-width: 520px; }
+</style>
+</head>
+<body>
+<div id="wrap"><canvas id="c" width="720" height="600"></canvas><pre id="log"></pre></div>
+<script src="../js/util.js"></script>
+<script src="../js/data.js"></script>
+<script src="../js/world.js"></script>
+<script>
+(function () {
+  'use strict';
+  const M = window.M, Wd = M.world;
+  const log = [];
+  const st = {
+    version: 1, nextId: 100, time: { day: 1, minute: 21 * 60 },
+    lot: { w: 24, h: 20, floors: new Array(24 * 20).fill(0), walls: {} }, objects: [],
+  };
+  Wd.init(st);
+  // house 10x8 at (6..15, 4..11): bedroom left, living right, bathroom top-left corner
+  const wall = (k, t) => Wd.setWall(k, t || 1, 1);
+  Wd.edgesOfRect(6, 4, 15, 11).forEach(k => wall(k));
+  Wd.wallSegmentsForDrag(11, 4, 11, 12).forEach(k => wall(k));     // vertical divider x=11
+  Wd.wallSegmentsForDrag(6, 7, 11, 7).forEach(k => wall(k));       // bathroom/bedroom divider y=7
+  wall('h,13,12', 2);   // front door (south)
+  wall('v,11,9', 2);    // bedroom door
+  wall('h,8,7', 2);     // bathroom door
+  wall('h,7,12', 3); wall('h,9,12', 3); wall('v,16,6', 3); wall('h,14,4', 3); wall('v,6,5', 3);
+  Wd.tilesInRect(6, 4, 15, 11).forEach(t => Wd.setFloor(t.x, t.y, 1));
+  Wd.tilesInRect(6, 4, 10, 6).forEach(t => Wd.setFloor(t.x, t.y, 2));
+  let id = 1;
+  const place = (type, x, y, rot) => {
+    const r = Wd.canPlace(type, x, y, rot);
+    if (!r.ok) { log.push(`NÃO colocou ${type} (${x},${y},r${rot}): ${r.reason}`); return null; }
+    const o = { id: id++, type, x, y, rot, dirty: 0, broken: false };
+    st.objects.push(o); Wd.rebuild(); return o;
+  };
+  const bed = place('bed_double', 6, 9, 3);
+  place('end_table', 6, 8, 0);
+  place('lamp_floor', 10, 8, 0);
+  place('rug', 12, 7, 0);
+  const sofa = place('sofa_cheap', 12, 6, 0);
+  place('tv_cheap', 13, 10, 2);
+  place('painting_lux', 13, 5, 2);    // needs h,13,5? (rot2 back = h,13,6) -> demonstrates refusal
+  place('painting_lux', 12, 4, 0);
+  place('toilet', 6, 4, 0);
+  place('shower', 10, 4, 0);
+  place('sink', 8, 4, 0);
+  place('mirror', 8, 4, 0);
+  place('fridge_cheap', 15, 10, 1);
+  place('counter', 15, 9, 1);
+  place('meal', 15, 9, 0);
+  place('plant_big', 15, 4, 0);
+  place('mailbox', 18, 18, 2);
+  place('fridge_cheap', 3, 3, 0);
+  st.lot.walls['h,3,4'] = { t: 1, c: 0 }; Wd.rebuild();   // wall in front of the outdoor fridge -> unusable slot
+
+  // paths
+  const near = Wd.nearestReachable(18, 17, Wd.slotsFor(bed));
+  const sm = near ? Wd.smoothPath(18, 17, near.path) : null;
+  const toSofa = Wd.nearestReachable(18, 17, Wd.slotsFor(sofa));
+
+  // ------------------------------------------------------------ draw
+  const cv = document.getElementById('c'), g = cv.getContext('2d');
+  const S = 30;
+  const rooms = Wd.rooms();
+  const hue = (i) => (i * 67) % 360;
+  for (const r of rooms) {
+    g.fillStyle = r.indoor ? `hsla(${hue(r.id)},45%,45%,0.55)` : 'rgba(80,140,70,0.35)';
+    for (const t of r.tiles) g.fillRect(t.x * S, t.y * S, S, S);
+  }
+  g.strokeStyle = 'rgba(255,255,255,0.06)';
+  for (let x = 0; x <= 24; x++) { g.beginPath(); g.moveTo(x * S, 0); g.lineTo(x * S, 600); g.stroke(); }
+  for (let y = 0; y <= 20; y++) { g.beginPath(); g.moveTo(0, y * S); g.lineTo(720, y * S); g.stroke(); }
+  for (const k of Object.keys(st.lot.walls)) {
+    const e = Wd.getWall(k); if (!e) continue;
+    const p = M.util.parseEdge(k);
+    g.lineWidth = 5; g.setLineDash(e.t === 2 ? [4, 4] : []);
+    g.strokeStyle = e.t === 1 ? '#e8e2d0' : e.t === 2 ? '#c08040' : '#7fd7ff';
+    g.beginPath();
+    if (p.kind === 'h') { g.moveTo(p.x * S, p.y * S); g.lineTo((p.x + 1) * S, p.y * S); }
+    else { g.moveTo(p.x * S, p.y * S); g.lineTo(p.x * S, (p.y + 1) * S); }
+    g.stroke();
+  }
+  g.setLineDash([]);
+  for (const o of st.objects) {
+    const sz = Wd.rotatedSize(o.type, o.rot), d = M.data.CATALOG[o.type];
+    g.fillStyle = d.noBlock ? 'rgba(255,220,120,0.35)' : 'rgba(30,40,60,0.85)';
+    g.fillRect(o.x * S + 3, o.y * S + 3, sz.w * S - 6, sz.h * S - 6);
+    g.fillStyle = '#fff'; g.font = '9px sans-serif';
+    g.fillText(o.type.slice(0, 8), o.x * S + 4, o.y * S + 13);
+    // front arrow from footprint centre
+    const cx = (o.x + sz.w / 2) * S, cy = (o.y + sz.h / 2) * S, f = Wd.frontFacing(o.rot);
+    g.strokeStyle = '#ffd34d'; g.lineWidth = 2; g.beginPath(); g.moveTo(cx, cy);
+    g.lineTo(cx + Math.sin(f) * S * 0.45, cy + Math.cos(f) * S * 0.45); g.stroke();
+    for (const s of Wd.slotsFor(o)) {
+      const sx = (s.px + 0.5) * S, sy = (s.py + 0.5) * S;
+      g.fillStyle = s.usable ? (s.on ? '#7dff9a' : '#4dd2ff') : '#ff5a5a';
+      g.beginPath(); g.arc(sx, sy, 3.5, 0, Math.PI * 2); g.fill();
+      g.strokeStyle = g.fillStyle; g.lineWidth = 1.5; g.beginPath(); g.moveTo(sx, sy);
+      g.lineTo(sx + Math.sin(s.facing) * 9, sy + Math.cos(s.facing) * 9); g.stroke();
+    }
+  }
+  const drawPath = (from, path, color, w) => {
+    if (!path) return;
+    g.strokeStyle = color; g.lineWidth = w; g.beginPath(); g.moveTo((from.x + 0.5) * S, (from.y + 0.5) * S);
+    for (const p of path) g.lineTo((p.x + 0.5) * S, (p.y + 0.5) * S);
+    g.stroke();
+  };
+  drawPath({ x: 18, y: 17 }, near && near.path, '#ff9f1c', 3);
+  drawPath({ x: 18, y: 17 }, sm, 'rgba(255,255,255,0.8)', 1.5);
+  drawPath({ x: 18, y: 17 }, toSofa && toSofa.path, '#c77dff', 2);
+  g.font = 'bold 12px sans-serif';
+  for (const r of rooms) {
+    const cx = r.tiles.reduce((a, t) => a + t.x, 0) / r.tiles.length, cy = r.tiles.reduce((a, t) => a + t.y, 0) / r.tiles.length;
+    g.fillStyle = '#fff';
+    g.fillText(`${r.indoor ? 'in' : 'out'} ${r.score}`, cx * S, cy * S + 4);
+  }
+
+  const out = {
+    rooms: rooms.map(r => ({ id: r.id, indoor: r.indoor, area: r.area, windows: r.windows, score: r.score })),
+    pathToBed: near && { slot: near.index, cost: +near.cost.toFixed(3), len: near.path.length, smoothed: sm.length },
+    pathToSofa: toSofa && { slot: toSofa.index, cost: +toSofa.cost.toFixed(3) },
+    bedroomNight: Wd.roomBreakdown(7, 9, 21 * 60), bedroomDay: Wd.roomScore(7, 9, 720),
+    placed: st.objects.length, log,
+  };
+  document.getElementById('log').textContent = JSON.stringify(out, null, 1);
+  window.__worldCheck = out;
+})();
+</script>
+</body>
+</html>

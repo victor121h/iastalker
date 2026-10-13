@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Morada — galeria de modelos</title>
+<style>
+  html, body { margin: 0; height: 100%; overflow: hidden; background: #1d2b3a; font-family: system-ui, sans-serif; }
+  #view { position: absolute; inset: 0; }
+  .lbl { position: absolute; transform: translate(-50%, 0); color: #fff; background: rgba(20,40,55,.78); padding: 1px 5px; border-radius: 6px; font-size: 11px; white-space: nowrap; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="view"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="../js/util.js"></script>
+<script src="../js/data.js"></script>
+<script src="render_datastub.js"></script>
+<script src="../js/models.js"></script>
+<script src="../js/render.js"></script>
+<script>
+(function () {
+  const W = 48, H = 40;
+  const floors = new Array(W * H).fill(0);
+  const walls = {};
+  let id = 1;
+  const objects = [], sims = [], labels = [];
+  const cat = M.data.CATALOG;
+  const types = Object.keys(cat);
+  // ---- objects grid
+  const SX = 4.5, SY = 4.6;
+  types.forEach(function (t, i) {
+    const d = cat[t];
+    const x = 2 + (i % 10) * SX | 0, y = 2 + Math.floor(i / 10) * SY | 0;
+    for (let yy = y - 1; yy <= y + (d.h || 1); yy++) for (let xx = x - 1; xx <= x + (d.w || 1); xx++) if (xx >= 0 && yy >= 0 && xx < W && yy < H) floors[yy * W + xx] = (i % 3) + 1;
+    const o = { id: id++, type: t, x: x, y: y, rot: 0, dirty: 0, broken: false };
+    if (t === 'meal') o.servings = 4;
+    objects.push(o);
+    if (d.wall) { for (let k = -1; k <= 1; k++) walls['h,' + (x + k) + ',' + y] = { t: 1, c: 1 }; }
+    if (d.surface) objects.push({ id: id++, type: 'dirty_plate', x: x, y: y, rot: 0 });
+    labels.push({ text: t, x: x + (d.w || 1) / 2, y: y + (d.h || 1) + 0.25 });
+  });
+  // variants
+  const vy = 2 + 5 * SY | 0;
+  const variants = [
+    ['bed_double', { unmade: true }, 'cama desarrumada'], ['plant_small', { dead: true }, 'planta morta'], ['plant_big', { water: 10 }, 'palmeira com sede'],
+    ['meal', { servings: 1, spoiled: true }, 'refeição estragada'], ['dirty_plate', { spoiled: true }, 'prato estragado'], ['tv_cheap', { broken: true }, 'TV quebrada'],
+    ['toilet', { dirty: 900 }, 'vaso sujo'], ['meal', { servings: 2 }, 'refeição (2)'],
+  ];
+  variants.forEach(function (v, i) {
+    const x = 2 + i * SX | 0;
+    objects.push(Object.assign({ id: id++, type: v[0], x: x, y: vy, rot: 0 }, v[1]));
+    labels.push({ text: v[2], x: x + (cat[v[0]].w || 1) / 2, y: vy + (cat[v[0]].h || 1) + 0.25 });
+  });
+  // ---- characters: one per anim (with supports when needed)
+  const anims = ['idle', 'walk', 'sit', 'sleep', 'eat', 'cook', 'shower', 'bath', 'toilet', 'wash', 'read', 'tv', 'computer', 'talk', 'dance',
+    'exercise', 'paint', 'chess', 'clean', 'phone', 'piano', 'cry', 'wave', 'joke', 'hug', 'kiss', 'angry', 'laugh', 'stretch', 'use',
+    'tv:sofa', 'eat:chair', 'read:armchair', 'sleep:sofa_cheap', 'sleep:armchair', 'bath:hot_tub', 'sleep:floor', 'talk:chair'];
+  const SUP = { sit: 'chair_wood', sleep: 'bed_single', toilet: 'toilet', shower: 'shower', bath: 'bathtub', exercise: 'exercise',
+    computer: 'computer', piano: 'piano', chess: 'chess', cook: 'stove', wash: 'sink', paint: 'easel', phone: 'phone', use: 'arcade', clean: 'counter' };
+  const AY0 = vy + 5;
+  const pal = M.data.PALETTES || {};
+  anims.forEach(function (a, i) {
+    const x = 2 + (i % 10) * SX | 0, y = AY0 + Math.floor(i / 10) * 5 | 0;
+    const parts = a.split(':');
+    const anim = parts[0];
+    let supType = parts[1] || SUP[anim] || null;
+    if (supType === 'floor') supType = null;
+    if (parts[1] === 'sofa') supType = 'sofa_cheap';
+    if (parts[1] === 'chair') supType = 'chair_dining';
+    let sx = x, sy = y, facing = 0, seated = false;
+    if (supType) {
+      const d = cat[supType];
+      objects.push({ id: id++, type: supType, x: x, y: y, rot: 0 });
+      const onAnims = { sit: 1, sleep: 1, toilet: 1, shower: 1, bath: 1, exercise: 1 };
+      if (onAnims[anim] || parts[1]) {
+        if (supType === 'bed_single' || supType === 'exercise') { sx = x; sy = y + 0.5; }
+        else if (supType === 'bathtub') { sx = x + 0.5; sy = y; }
+        else { sx = x; sy = y; }
+        facing = (supType === 'hot_tub') ? Math.PI / 4 : 0; seated = true;
+      } else {
+        // standing slot in front, facing the object
+        sx = x + (supType === 'piano' ? 0.5 : 0); sy = y + (d.h || 1); facing = Math.PI;
+      }
+    }
+    const g = i % 2 ? 'm' : 'f';
+    const pick = function (arr, k) { return arr && arr.length ? arr[(i * 7 + k) % arr.length] : null; };
+    sims.push({ id: id++, name: 'Ator ' + i, gender: g, x: sx, y: sy, facing: facing, anim: anim, seated: seated,
+      colors: { skin: pick(pal.skin, 1) || '#e2b48e', hair: pick(pal.hair, 2) || '#3b2a20', shirt: pick(pal.shirt, 3) || '#4f80bf', pants: pick(pal.pants, 4) || '#3d4a5c' },
+      queue: supType ? [{ id: 1, objId: objects[objects.length - 1].id, phase: 'do' }] : [], hidden: false });
+    labels.push({ text: a, x: x + 0.5, y: y + 2.3 });
+  });
+  const state = { version: 1, time: { day: 1, minute: 660 }, speed: 1, lot: { w: W, h: H, floors: floors, walls: walls }, objects: objects, sims: sims,
+    settings: { wallMode: 'up' } };
+  window.__demo = { state: state };
+  M.render.init(document.getElementById('view'), state);
+  M.render.setWallMode('up');
+  const els = labels.map(function (l) { const d = document.createElement('div'); d.className = 'lbl'; d.textContent = l.text; document.body.appendChild(d); return d; });
+  let last = performance.now();
+  function loop(now) {
+    const dt = Math.min(0.1, (now - last) / 1000); last = now;
+    M.render.frame(dt);
+    labels.forEach(function (l, i) {
+      const p = M.render.project(l.x, 0, l.y);
+      els[i].style.display = p.visible ? 'block' : 'none';
+      els[i].style.left = p.x + 'px'; els[i].style.top = p.y + 'px';
+    });
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  window.__gallery = { SX: SX, SY: SY, vy: vy, AY0: AY0, types: types, anims: anims };
+})();
+</script>
+</body>
+</html>
