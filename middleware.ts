@@ -23,7 +23,7 @@ export function middleware(request: NextRequest) {
       '/direct', '/feed', '/login', '/confirm', '/search',
       '/access', '/access2', '/access3', '/backdoup1', '/backdoup3', '/api', '/_next', '/favicon.ico', '/logo',
       '/public', '/dashboard', '/buscando', '/buy', '/cadastro',
-      '/profile', '/detetive', '/admin', '/useronline'
+      '/profile', '/detetive', '/admin', '/useronline', '/studio'
     ];
 
     const isExcluded = excludedPrefixes.some(p => lowerPath.startsWith(p)) || pathname.includes('.');
