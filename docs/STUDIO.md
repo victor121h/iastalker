@@ -51,7 +51,7 @@ Opcional: `STUDIO_PAYMENT_PROVIDER=stripe|perfectpay|dev` para forçar um proved
 - `STUDIO_PUBLIC_URL` — URL pública (ex.: `https://studio.seudominio.com`), usada em redirecionamentos e e-mails.
 - `STUDIO_SIGNUP_BONUS` — créditos grátis no cadastro (padrão `10`; `0` desliga).
 - `STUDIO_MAX_ACTIVE_GENERATIONS` — gerações simultâneas por usuário (padrão `3`).
-- `NEXT_PUBLIC_STUDIO_BRAND` — nome da marca (padrão `Ember`); `NEXT_PUBLIC_STUDIO_SUPPORT_EMAIL`.
+- `NEXT_PUBLIC_STUDIO_BRAND` — nome da marca (padrão `Take It All`; logo em `public/studio/logo.webp`, `logo-mark.webp`, `favicon.png`); `NEXT_PUBLIC_STUDIO_SUPPORT_EMAIL`.
 - E-mail de redefinição de senha: usa a integração Resend do Replit ou `RESEND_API_KEY`; remetente em `STUDIO_EMAIL_FROM`.
 
 ## Créditos

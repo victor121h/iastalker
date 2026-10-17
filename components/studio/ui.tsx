@@ -343,24 +343,34 @@ export function Modal({
 
 // ── Brand ────────────────────────────────────────────────────────────────────────────────────
 export function LogoMark({ size = 32, className }: { size?: number; className?: string }) {
-  const gid = useId().replace(/:/g, '');
   return (
-    <svg width={size} height={size} viewBox="0 0 40 40" className={className} aria-hidden="true">
-      <defs>
-        <linearGradient id={`lg-${gid}`} x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0%" stopColor="#FF1F4B" />
-          <stop offset="55%" stopColor="#FF4A2B" />
-          <stop offset="100%" stopColor="#FF8A1F" />
-        </linearGradient>
-      </defs>
-      <rect x="1" y="1" width="38" height="38" rx="12" fill={`url(#lg-${gid})`} />
-      <path
-        d="M20.4 31c4.6 0 8-3.2 8-7.8 0-4-2.6-6.9-4.8-9.2-.5 2.2-1.8 3.7-3.5 4.2.5-3.4-.9-6.5-3.9-9.4-.4 3.6-3.8 7.2-3.8 13.6 0 5 3.4 8.6 8 8.6z"
-        fill="#fff"
-        fillOpacity="0.95"
-      />
-      <path d="M20.6 31c-2.2 0-3.8-1.6-3.8-3.8 0-2.6 2-4 3-6.2 1.4 1.6 4.4 3.6 4.4 6.4 0 2-1.6 3.6-3.6 3.6z" fill="#FF4A2B" />
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/studio/logo-mark.webp"
+      alt=""
+      aria-hidden="true"
+      width={size}
+      height={size}
+      className={cx('select-none object-contain drop-shadow-[0_4px_14px_rgba(255,74,43,0.45)]', className)}
+      style={{ width: size, height: size }}
+      draggable={false}
+    />
+  );
+}
+
+/** Full brand artwork (emblem + "Take It All App" lettering). */
+export function LogoFull({ size = 220, className }: { size?: number; className?: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src="/studio/logo.webp"
+      alt={BRAND_NAME}
+      width={size}
+      height={Math.round(size * 1.02)}
+      className={cx('select-none object-contain', className)}
+      style={{ width: size, height: 'auto' }}
+      draggable={false}
+    />
   );
 }
 
@@ -368,7 +378,7 @@ export function Logo({ href = '/studio', size = 32, className }: { href?: string
   const content = (
     <span className={cx('inline-flex items-center gap-2.5', className)}>
       <LogoMark size={size} />
-      <span className="font-display text-xl font-bold tracking-tight text-studio-text">{BRAND_NAME}</span>
+      <span className="font-display text-xl font-extrabold tracking-tight studio-gradient-text">{BRAND_NAME}</span>
     </span>
   );
   return href ? (

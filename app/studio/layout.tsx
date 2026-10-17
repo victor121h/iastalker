@@ -20,6 +20,8 @@ export const metadata: Metadata = {
   },
   description: 'Turn any idea into exclusive AI images and videos in seconds. Chat-based creation with reference images.',
   robots: { index: true, follow: true },
+  icons: { icon: '/studio/favicon.png', apple: '/studio/logo-mark.webp' },
+  openGraph: { images: ['/studio/logo.webp'] },
 };
 
 export const viewport: Viewport = {

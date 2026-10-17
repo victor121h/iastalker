@@ -3,7 +3,7 @@
 import { useId, type CSSProperties } from 'react';
 import { GENERATION_COST, VIDEO_DURATION_SECONDS } from '@/lib/studio/plans';
 import { useI18n } from '@/lib/studio/i18n/client';
-import { Badge, cx } from '@/components/studio/ui';
+import { Badge, LogoFull, cx } from '@/components/studio/ui';
 import { IconCheck, IconImage, IconSparkles, IconUser, IconVideo } from '@/components/studio/icons';
 
 /**
@@ -34,6 +34,7 @@ export function AuthVisual({ className }: { className?: string }) {
         </div>
 
         <div className="relative z-10 mt-auto">
+          <LogoFull size={150} className="mb-6 drop-shadow-[0_10px_40px_rgba(255,74,43,0.45)]" />
           <h2 className="font-display text-[40px] font-bold leading-[1.04] tracking-tight text-studio-text xl:text-[52px]">
             {t('auth.visual.titleA')}
             <br />

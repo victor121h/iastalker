@@ -1,7 +1,7 @@
 // Client-safe product configuration for the Studio (AI image & video generation).
 // Everything here can be imported from both server and client code — never put secrets here.
 
-export const BRAND_NAME = process.env.NEXT_PUBLIC_STUDIO_BRAND || 'Ember';
+export const BRAND_NAME = process.env.NEXT_PUBLIC_STUDIO_BRAND || 'Take It All';
 export const SUPPORT_EMAIL = process.env.NEXT_PUBLIC_STUDIO_SUPPORT_EMAIL || 'support@iastalker.com';
 
 export type GenerationType = 'image' | 'video';
